@@ -1,0 +1,26 @@
+<h1 id="install">Install</h1>
+
+<h2 id="install_git">Install Git</h2>
+
+<pre><code>sudo apt-get install git
+</code></pre>
+
+<h2 id="install_django">Install Django</h2>
+
+<pre><code>cd /path/to/your/Project
+pip install -r deploy/requirements.txt
+</code></pre>
+
+<h2 id="clone_the_project">Clone the Project</h2>
+
+<pre><code>git clone https://github.com/floatec/MEPSS2013.git
+</code></pre>
+
+<h2 id="initalize_the_project">Initalize the Project</h2>
+
+<p>if you like to use an other database the te defoult sqlite(only recomended for develping) you can change it in ProsDataBase/ProsDataBase/settings.py</p>
+
+<pre><code>./manange.py syncdb
+</code></pre>
+
+<p>please say yes if you get asked to create an admin user</p>
