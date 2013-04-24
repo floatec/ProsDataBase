@@ -1,78 +1,140 @@
 from django.db import models
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 
-class Table(models.Model):
-    id = models.IntegerField
-    name = models.CharField(max_length=100)
-#    columns = DataDescr[]
-#    datasets = Dataset[]
-#    references = Reference[]
+# -- Table structure
+
 
 class DataDescr(models.Model):
-    id = models.IntegerField
+    id = models.IntegerField()
     name = models.CharField(max_length=100)
-    table = models.ForeignKey(Table)
-    type = models.ForeignKey(Datatype)
-    required = models.BooleanField
+    table = models.ForeignKey('Table.id')
+    type = models.ForeignKey('Datatype.id')
+    required = models.BooleanField()
+
+    def data(self):
+        Data.objects.filter(dataset=self.id)
+
+
+class Reference(models.Model):
+    column1 = models.ForeignKey('DataDescr.id')
+    column2 = models.ForeignKey('DataDescr.id')
+
 
 class Dataset(models.Model):
-    id = models.IntegerField
-#    data = Data[]
-    table = models.ForeignKey(Table)
-    created = models.DateTimeField
-    deleted = models.DateTimeField
-    creator = models.ForeignKey(User)
-    deleter = models.ForeignKey(User)
+    id = models.IntegerField()
+    table = models.ForeignKey('Table.id')
+    created = models.DateTimeField()
+    deleted = models.DateTimeField()
+    creator = models.ForeignKey('User.id')
+    deleter = models.ForeignKey('User.id')
+
+
+class Table(models.Model):
+    id = models.IntegerField()
+    name = models.CharField(max_length=100)
+
+    def dataDescrs(self):
+        DataDescr.objects.filter(table=self.id)
+
+    def datasets(self):
+        Dataset.objects.filter(table=self.id)
+
+    def references(self):
+        Reference.objects.filter(table1=self.id)
+
+
+# -- Data fields
+
 
 class Data(models.Model):
     id = models.IntegerField
-    column = models.ForeignKey(DataDescr)
-    value = models.ForeignKey(Datatype)
-    created = models.DateTimeField
-    deleted = models.DateTimeField
-    creator = models.ForeignKey(User)
-    deleter = models.ForeignKey(User)
+    column = models.ForeignKey(DataDescr.id)
+    dataset = models.ForeignKey(Dataset.id)
+    content = models.Field  # TODO
+    created = models.DateTimeField()
+    deleted = models.DateTimeField()
+    creator = models.ForeignKey(User.id)
+    deleter = models.ForeignKey(User.id)
+
+
+class TextData(Data):
+    content = models.TextField()
+
+
+class NumericData(Data):
+    content = models.FloatField()
+
+
+class SelectionData(Data):
+    content = models.ForeignKey(SelectionValue.id)
+
+
+class DateData(Data):
+    content = models.DateTimeField()
+
+
+# -- data types
+
 
 class Datatype(models.Model):
-    pass
+    id = models.IntegerField()
 
-class Text(Datatype):
-    content = models.CharField(max_length=200)
-    length = models.IntegerField
 
-class Numeric(Datatype):
-    content = models.FloatField
-    min = models.FloatField
-    max = models.FloatField
+class TextType(Datatype):
+    length = models.IntegerField()
 
-class Selection(Datatype):
-#    values = models.Field ??
-    length = models.IntegerField
 
-class Date(Datatype):
-    content = models.DateTimeField
-    min = models.DateTimeField
-    max = models.DateTimeField
+class NumericType(Datatype):
+    min = models.FloatField()
+    max = models.FloatField()
 
-class Reference(models.Model):
-    table1 = models.ForeignKey(Table)
-    table2 = models.ForeignKey(Table)
-#    match = models.Map ??
 
-class User(models.Model):
-    id = models.IntegerField
-    name = models.CharField(max_length=100)
-#    groups = Group[]
-    rights = models.ForeignKey(RightList)
+class SelectionValue(models.Model):
+    selectionType = models.ForeignKey(SelectionType.id)
+    content = models.CharField(200)
 
-class Group(models.Model):
-    name = models.CharField(max_length=100)
-#    admin = User[]
-    rights = models.ForeignKey(RightList)
+
+class SelectionType(Datatype):
+    count = models.IntegerField()
+
+    def values(self):
+        SelectionValue.objects.filter(selectionType=self.id)
+
+
+class DateType(Datatype):
+    min = models.DateTimeField()
+    max = models.DateTimeField()
+
+# -- Permission system
+
+
+class dbUser(models.User):
+    id = models.IntegerField()
+    rights = models.ForeignKey(RightList.id)
+
+
+class dbGroup(models.Group):
+    rights = models.ForeignKey(RightList.id)
+
+
+class RelUserGroup(models.Model):
+    user = models.ForeignKey(dbUser.id)
+    group = models.ForeignKey(dbGroup.name)
+    isAdmin = models.BooleanField()
+
+
 class RightList(models.Model):
-    table = models.ForeignKey(Table)
-#    read = DataDescr[]
-#    insert = DataDescr[]
-#    modify = DataDescr[]
-#    delete = DataDescr[]
-    viewLog = models.BooleanField
-    rightsAdmin = models.BooleanField
+    id = models.IntegerField()
+    table = models.ForeignKey(Table.id)
+    viewLog = models.BooleanField()
+    rightsAdmin = models.BooleanField()
+
+
+class RelRightsDataDescr(models.Model):
+    column = models.ForeignKey(DataDescr.id)
+    rightList = models.ForeignKey(RightList.id)
+    read = models.BooleanField()
+    insert = models.BooleanField()
+    modify = models.BooleanField()
+    delete = models.BooleanField()
