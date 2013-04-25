@@ -1,37 +1,34 @@
 from django.db import models
-from django.contrib.auth.models import User, Group, Permission
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User, Group
+
 
 # -- Table structure
 
 
 class DataDescr(models.Model):
-    id = models.IntegerField()
     name = models.CharField(max_length=100)
-    table = models.ForeignKey('Table.id')
-    type = models.ForeignKey('Datatype.id')
+    table = models.ForeignKey('Table')
+    type = models.ForeignKey('Datatype')
     required = models.BooleanField()
+
+
+class Reference(models.Model):
+    column1 = models.ForeignKey('DataDescr', related_name='col1')
+    column2 = models.ForeignKey('DataDescr', related_name='col2')
+
+
+class Dataset(models.Model):
+    table = models.ForeignKey('Table')
+    created = models.DateTimeField()
+    deleted = models.DateTimeField()
+    creator = models.ForeignKey('dbUser', related_name='set-creator')
+    deleter = models.ForeignKey('dbUser', related_name='set-deleter')
 
     def data(self):
         Data.objects.filter(dataset=self.id)
 
 
-class Reference(models.Model):
-    column1 = models.ForeignKey('DataDescr.id')
-    column2 = models.ForeignKey('DataDescr.id')
-
-
-class Dataset(models.Model):
-    id = models.IntegerField()
-    table = models.ForeignKey('Table.id')
-    created = models.DateTimeField()
-    deleted = models.DateTimeField()
-    creator = models.ForeignKey('User.id')
-    deleter = models.ForeignKey('User.id')
-
-
 class Table(models.Model):
-    id = models.IntegerField()
     name = models.CharField(max_length=100)
 
     def dataDescrs(self):
@@ -46,39 +43,52 @@ class Table(models.Model):
 
 # -- Data fields
 
-
+# to receive
 class Data(models.Model):
-    id = models.IntegerField
-    column = models.ForeignKey(DataDescr.id)
-    dataset = models.ForeignKey(Dataset.id)
-    content = models.Field  # TODO
+    column = models.ForeignKey('DataDescr')
+    dataset = models.ForeignKey('Dataset')
     created = models.DateTimeField()
     deleted = models.DateTimeField()
-    creator = models.ForeignKey(User.id)
-    deleter = models.ForeignKey(User.id)
+    creator = models.ForeignKey('dbUser', related_name='data-creator')
+    deleter = models.ForeignKey('dbUser', related_name='data-deleter')
+
+    def content(self):
+        pass
 
 
 class TextData(Data):
-    content = models.TextField()
+    content = models.CharField(max_length=200)
+
+    def content(self):
+        return self.content
 
 
 class NumericData(Data):
     content = models.FloatField()
 
+    def content(self):
+        return self.content
+
 
 class SelectionData(Data):
-    content = models.ForeignKey(SelectionValue.id)
+    content = models.ForeignKey('SelectionValue')
+
+    def content(self):
+        return self.content
 
 
 class DateData(Data):
     content = models.DateTimeField()
+
+    def content(self):
+        return self.content
 
 
 # -- data types
 
 
 class Datatype(models.Model):
-    id = models.IntegerField()
+    pass
 
 
 class TextType(Datatype):
@@ -91,8 +101,8 @@ class NumericType(Datatype):
 
 
 class SelectionValue(models.Model):
-    selectionType = models.ForeignKey(SelectionType.id)
-    content = models.CharField(200)
+    selectionType = models.ForeignKey('SelectionType')
+    content = models.CharField(max_length=100)
 
 
 class SelectionType(Datatype):
@@ -109,31 +119,29 @@ class DateType(Datatype):
 # -- Permission system
 
 
-class dbUser(models.User):
-    id = models.IntegerField()
-    rights = models.ForeignKey(RightList.id)
+class dbUser(User):
+    rights = models.ForeignKey('RightList')
 
 
-class dbGroup(models.Group):
-    rights = models.ForeignKey(RightList.id)
+class dbGroup(Group):
+    rights = models.ForeignKey('RightList')
 
 
 class RelUserGroup(models.Model):
-    user = models.ForeignKey(dbUser.id)
-    group = models.ForeignKey(dbGroup.name)
+    user = models.ForeignKey('dbUser')
+    group = models.ForeignKey('dbGroup')
     isAdmin = models.BooleanField()
 
 
 class RightList(models.Model):
-    id = models.IntegerField()
-    table = models.ForeignKey(Table.id)
+    table = models.ForeignKey('Table')
     viewLog = models.BooleanField()
     rightsAdmin = models.BooleanField()
 
 
 class RelRightsDataDescr(models.Model):
-    column = models.ForeignKey(DataDescr.id)
-    rightList = models.ForeignKey(RightList.id)
+    column = models.ForeignKey('DataDescr')
+    rightList = models.ForeignKey('RightList')
     read = models.BooleanField()
     insert = models.BooleanField()
     modify = models.BooleanField()

@@ -18,6 +18,7 @@ Initalize the Project
 if you like to use an other database the te defoult sqlite(only recomended for develping) you can change it in ProsDataBase/ProsDataBase/settings.py
 
 	./manange.py syncdb
+	./manage.py migrate
 	
 please say yes if you get asked to create an admin user
 
