@@ -1,11 +1,6 @@
-Django==1.4.4
-South==0.7.6
-django-autocomplete-light==0.7
+Django==1.5.1
+South
 django-crispy-forms==1.1.3
-django-extensions==0.8
-django-registration==0.8
-easy-thumbnails==1.0.3
-Pillow==1.7.7
--e git://github.com/alex/django-filter.git#egg=django-filter
-geopy
+django-extensions
+django-registration
 django-activelink
