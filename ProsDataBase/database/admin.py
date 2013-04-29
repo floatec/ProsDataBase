@@ -8,7 +8,6 @@ admin.site.register(Table)
 admin.site.register(DataDescr)
 admin.site.register(Dataset)
 
-admin.site.register(Data)
 admin.site.register(TextData)
 admin.site.register(NumericData)
 admin.site.register(SelectionData)
