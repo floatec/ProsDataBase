@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, Group, BaseUserManager, UserManager
+from django.contrib.auth.models import AbstractUser, Group, UserManager
 
 
 '''
@@ -33,16 +33,22 @@ class Reference(models.Model):
     column1 = models.ForeignKey('DataDescr', related_name='col1')
     column2 = models.ForeignKey('DataDescr', related_name='col2')
 
+    def __unicode__(self):
+        return unicode(self.column1) + "-" + unicode(self.column2)
+
 
 class Dataset(models.Model):
     table = models.ForeignKey('Table')
     created = models.DateTimeField()
-    deleted = models.DateTimeField()
+    deleted = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-creator')
-    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-deleter')
+    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-deleter', blank=True, null=True)
 
     def data(self):
         Data.objects.filter(dataset=self.id)
+
+    def __unicode__(self):
+        return unicode(self.table)
 
 
 class Table(models.Model):
@@ -58,16 +64,7 @@ class Table(models.Model):
         Reference.objects.filter(table1=self.id)
 
     def __unicode__(self):  # TODO: does not check for tables without columns
-        txt = self.name + ": "
-
-        if self.dataDescrs(self).isEmpty():
-            txt += "<empty>"
-            return txt
-
-        for col in self.dataDescrs(self):
-            txt += col + ", "
-
-        return txt[:-2]
+        return self.name
 
 
 # -- Data fields
@@ -77,46 +74,64 @@ class Data(models.Model):
     column = models.ForeignKey('DataDescr')
     dataset = models.ForeignKey('Dataset')
     created = models.DateTimeField()
-    deleted = models.DateTimeField()
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='data-creator')
-    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='data-deleter')
+    deleted = models.DateTimeField(blank=True, null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
+    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-deleter', blank=True, null=True)
 
-    def content(self):  # workaround for overwriting parent field attribute
+    def getContent(self):  # workaround for overwriting parent field attribute
         pass
+
+    class Meta:
+        abstract = True
 
 
 class TextData(Data):
     content = models.CharField(max_length=200)
 
-    def content(self):
+    def getContent(self):
+        return self.content
+
+    def __unicode__(self):
         return self.content
 
 
 class NumericData(Data):
     content = models.FloatField()
 
-    def content(self):
+    def getContent(self):
+        return self.content
+
+    def __unicode__(self):
         return self.content
 
 
 class SelectionData(Data):
     content = models.ForeignKey('SelectionValue')
 
-    def content(self):
+    def getContent(self):
         return self.content
+
+    def __unicode__(self):
+        return unicode(self.content)
 
 
 class DateData(Data):
     content = models.DateTimeField()
 
-    def content(self):
+    def getContent(self):
+        return self.content
+
+    def __unicode__(self):
         return self.content
 
 
 class BoolData(Data):
-    content = models.BooleanField
+    content = models.BooleanField()
 
-    def content(self):
+    def getContent(self):
+        return self.content
+
+    def __unicode__(self):
         return self.content
 
 
@@ -124,43 +139,66 @@ class BoolData(Data):
 
 
 class Datatype(models.Model):
-    pass
+    name = models.CharField(max_length=30)
+
+    def __unicode__(self):
+        return self.name
 
 
-class TextType(Datatype):
+class TextType(models.Model):
+    name = models.ForeignKey('Datatype')
     length = models.IntegerField()
 
+    def __unicode__(self):
+        return unicode(self.name)
 
-class NumericType(Datatype):
+
+class NumericType(models.Model):
+    name = models.ForeignKey('Datatype')
     min = models.FloatField()
     max = models.FloatField()
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 class SelectionValue(models.Model):
     selectionType = models.ForeignKey('SelectionType')
     content = models.CharField(max_length=100)
 
+    def __unicode__(self):
+        return self.content
 
-class SelectionType(Datatype):
+
+class SelectionType(models.Model):
+    name = models.ForeignKey('Datatype')
     count = models.IntegerField()
 
     def values(self):
-        SelectionValue.objects.filter(selectionType=self.id)
+        SelectionValue.objects.filter(selectionType=self)
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 
-class DateType(Datatype):
+class DateType(models.Model):
+    name = models.ForeignKey('Datatype')
     min = models.DateTimeField()
     max = models.DateTimeField()
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 # -- Permission system
 
 
 class DBUser(AbstractUser):
-    rights = models.ForeignKey('RightList', null=True)
+    rights = models.ForeignKey('RightList', null=True, blank=True)
     objects = UserManager()
 
 
-class DBGroup(Group):
+class DBGroup(models.Model):
+    name = models.CharField(max_length=30)
     rights = models.ForeignKey('RightList')
     DBUsers = models.ManyToManyField(settings.AUTH_USER_MODEL, through='RelUserGroup')
 
@@ -170,11 +208,17 @@ class RelUserGroup(models.Model):
     group = models.ForeignKey('DBGroup')
     isAdmin = models.BooleanField()
 
+    def __unicode__(self):
+        return unicode(self.user) + " - " + unicode(self.group)
+
 
 class RightList(models.Model):
     table = models.ForeignKey('Table')
     viewLog = models.BooleanField()
     rightsAdmin = models.BooleanField()
+
+    def __unicode__(self):
+        return "list " + str(self.id) + " for " + unicode(self.table)
 
 
 class RelRightsDataDescr(models.Model):
@@ -184,3 +228,6 @@ class RelRightsDataDescr(models.Model):
     insert = models.BooleanField()
     modify = models.BooleanField()
     delete = models.BooleanField()
+
+    def __unicode__(self):
+        return unicode(self.rightList) + ":" + unicode(self.column)
