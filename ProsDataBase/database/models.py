@@ -1,5 +1,19 @@
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser, Group, BaseUserManager, UserManager
+
+
+'''
+FYI:
+- Usage of ForeignKey(): first param = name of referenced model X as string.
+                         Second param is required if X is referenced more than once: related_name=[unique String]
+
+- django does not support overwriting of parent field-attributes by child classes
+
+- an id-field is automatically added to each model without primary-key
+
+- BoolData does not need BoolType, as range is already clear
+'''
 
 
 # -- Table structure
@@ -11,6 +25,9 @@ class DataDescr(models.Model):
     type = models.ForeignKey('Datatype')
     required = models.BooleanField()
 
+    def __unicode__(self):
+        return self.name
+
 
 class Reference(models.Model):
     column1 = models.ForeignKey('DataDescr', related_name='col1')
@@ -21,8 +38,8 @@ class Dataset(models.Model):
     table = models.ForeignKey('Table')
     created = models.DateTimeField()
     deleted = models.DateTimeField()
-    creator = models.ForeignKey('dbUser', related_name='set-creator')
-    deleter = models.ForeignKey('dbUser', related_name='set-deleter')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-creator')
+    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-deleter')
 
     def data(self):
         Data.objects.filter(dataset=self.id)
@@ -40,19 +57,31 @@ class Table(models.Model):
     def references(self):
         Reference.objects.filter(table1=self.id)
 
+    def __unicode__(self):  # TODO: does not check for tables without columns
+        txt = self.name + ": "
+
+        if self.dataDescrs(self).isEmpty():
+            txt += "<empty>"
+            return txt
+
+        for col in self.dataDescrs(self):
+            txt += col + ", "
+
+        return txt[:-2]
+
 
 # -- Data fields
 
-# to receive
+
 class Data(models.Model):
     column = models.ForeignKey('DataDescr')
     dataset = models.ForeignKey('Dataset')
     created = models.DateTimeField()
     deleted = models.DateTimeField()
-    creator = models.ForeignKey('dbUser', related_name='data-creator')
-    deleter = models.ForeignKey('dbUser', related_name='data-deleter')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='data-creator')
+    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='data-deleter')
 
-    def content(self):
+    def content(self):  # workaround for overwriting parent field attribute
         pass
 
 
@@ -79,6 +108,13 @@ class SelectionData(Data):
 
 class DateData(Data):
     content = models.DateTimeField()
+
+    def content(self):
+        return self.content
+
+
+class BoolData(Data):
+    content = models.BooleanField
 
     def content(self):
         return self.content
@@ -119,17 +155,19 @@ class DateType(Datatype):
 # -- Permission system
 
 
-class dbUser(User):
-    rights = models.ForeignKey('RightList')
+class DBUser(AbstractUser):
+    rights = models.ForeignKey('RightList', null=True)
+    objects = UserManager()
 
 
-class dbGroup(Group):
+class DBGroup(Group):
     rights = models.ForeignKey('RightList')
+    DBUsers = models.ManyToManyField(settings.AUTH_USER_MODEL, through='RelUserGroup')
 
 
 class RelUserGroup(models.Model):
-    user = models.ForeignKey('dbUser')
-    group = models.ForeignKey('dbGroup')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    group = models.ForeignKey('DBGroup')
     isAdmin = models.BooleanField()
 
 
