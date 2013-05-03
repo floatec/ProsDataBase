@@ -7,7 +7,7 @@ Install Git
 Install Django
 --------------------
 	cd /path/to/your/Project
-	pip install -r deploy/requirements.txt
+	sudo pip install -r deploy/requirements.txt
 
 Clone the Project
 --------------------
