@@ -4,14 +4,14 @@ Install Git
 --------------------
 	sudo apt-get install git
 
+Clone the Project
+--------------------
+	git clone https://github.com/floatec/MEPSS2013.git
+
 Install Django
 --------------------
 	cd /path/to/your/Project
 	sudo pip install -r deploy/requirements.txt
-
-Clone the Project
---------------------
-	git clone https://github.com/floatec/MEPSS2013.git
 
 Initalize the Project
 --------------------
