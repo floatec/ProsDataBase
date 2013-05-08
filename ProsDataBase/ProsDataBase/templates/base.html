@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>ProsDataBase</title>
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/cupertino/jquery-ui.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+
+		
+		
+	</head>
+
+	
+	
+	
+	
+	
+	<body>
+    {% block body %}
+		<div id="heading">
+			{% block header %}
+                ProsDataBase
+			{% endblock %}
+            <div id="loginNameMenu">
+			<p>Max Mustermann</p>
+
+
+
+
+
+			<ul id="subMenuList">
+				<li><a href="#">Settings</a></li>
+				<li><a href="#">Admin</a></li>
+				<li><a href="#">Logout</a></li>
+			</ul>
+
+		</div>
+			<hr>
+		</div>
+
+	
+		<div id="menu">
+		    {% block menu %}
+			{% endblock %}
+		
+		</div>
+		
+		
+		
+		
+		
+		
+		
+		<div id="navigationMenu">
+		<div>Tabellen</div>
+			<ul id="navigationMenuContent">
+			    {% block navigation %}
+			{% endblock %}
+			</ul>
+		
+		</div>
+		<div id="content">
+			{% block content %}
+			{% endblock %}
+		</div>
+
+		{% endblock %}
+	</body>
+	
+<script language="JavaScript" src="/static/js/methods.js"></script>
+	<script>
+	
+	var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
+	
+	for (key in tables) {
+		var tablename = tables[key].name;
+		
+		// fill Navigation-Bar
+		$("#navigationMenuContent").append("<li>"+tables[key].name+"<li>");
+		// create tables
+		$("#content").append("<div  id='table"+key+"' class='tableInfoBox' >"+tablename+"</div>");
+		for (rows in tables[key].dataDescr){
+			$("#table"+key).append("<div>"+tables[key].dataDescr[rows]+"</div>");
+		
+		}
+		
+	}
+	
+	
+	
+	
+	
+
+	</script>
+</html>
+

@@ -1,0 +1,85 @@
+		@import url(http://fonts.googleapis.com/css?family=Mr+Dafoe);
+		@import url(http://fonts.googleapis.com/css?family=Arbutus+Slab);
+	
+		
+		#heading{
+            background-image: url("../img/header_bg.png");
+
+		}
+		h1{
+
+		
+		}
+		#loginNameMenu{
+			z-index:2;
+			font-size:14px;
+			position:fixed;
+			top:20px;
+			right:20px;
+
+		}
+		
+		#subMenuList{
+			padding:0px;
+			overflow:hidden	
+		}
+		
+		
+		#menu{
+			background-color:blue;
+		}
+
+		#navigationMenu{
+
+		}
+	
+		#content{
+			font-family: 'Arbutus Slab', serif;
+			text-align:left;
+			position:absolute;
+			top:200px;
+			left:400px;
+
+			
+		
+		}
+		
+		
+		/*
+		
+		Only for Login and Register Page
+		
+		*/
+		
+	
+		#RegisterBtnCell{
+			text-align:right;
+		
+		}
+		
+		#infoDiv{
+			position:absolute;
+			top:5%;
+			left:5%;
+			width:300px;
+			height:500px;
+		}
+		#LoginRegisterDiv{
+			
+			top:200px;
+			left:800px;
+			position:fixed;
+			width:200px;
+			height:500px;
+		
+		
+		}
+		#registerDiv{
+			position:absolute;
+			bottom:40%;
+		
+		}
+		
+		
+		
+		
