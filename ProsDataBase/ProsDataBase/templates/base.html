@@ -8,22 +8,19 @@
 		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
-		
+
 		
 	</head>
 
-	
-	
-	
-	
-	
-	<body>
+
+
+
+
+
+	<body style="margin: 0px;padding: 0px">
     {% block body %}
-		<div id="heading">
-			{% block header %}
-                ProsDataBase
-			{% endblock %}
-            <div id="loginNameMenu">
+        <div id=header>{% block header %}ProsData{% endblock %}
+        <div id="loginNameMenu">
 			<p>Max Mustermann</p>
 
 
@@ -37,62 +34,24 @@
 			</ul>
 
 		</div>
-			<hr>
-		</div>
-
-	
-		<div id="menu">
-		    {% block menu %}
-			{% endblock %}
-		
-		</div>
-		
-		
-		
-		
-		
-		
-		
-		<div id="navigationMenu">
+        </div>
+        <div id="navigationMenu">
 		<div>Tabellen</div>
 			<ul id="navigationMenuContent">
 			    {% block navigation %}
 			{% endblock %}
 			</ul>
-		
+
 		</div>
 		<div id="content">
 			{% block content %}
 			{% endblock %}
 		</div>
 
-		{% endblock %}
+    {% endblock %}
 	</body>
-	
-<script language="JavaScript" src="/static/js/methods.js"></script>
-	<script>
-	
-	var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
-	
-	for (key in tables) {
-		var tablename = tables[key].name;
-		
-		// fill Navigation-Bar
-		$("#navigationMenuContent").append("<li>"+tables[key].name+"<li>");
-		// create tables
-		$("#content").append("<div  id='table"+key+"' class='tableInfoBox' >"+tablename+"</div>");
-		for (rows in tables[key].dataDescr){
-			$("#table"+key).append("<div>"+tables[key].dataDescr[rows]+"</div>");
-		
-		}
-		
-	}
-	
-	
-	
-	
-	
-
+<script language="JavaScript" src="/static/js/methods.js">
+<script language="JavaScript" >
+{% block javascript %}{% endblock %}
 	</script>
 </html>
-

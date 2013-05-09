@@ -2,14 +2,15 @@
 		@import url(http://fonts.googleapis.com/css?family=Arbutus+Slab);
 	
 		
-		#heading{
+		#header{
             background-image: url("../img/header_bg.png");
-
+            height: 70px;
 		}
-		h1{
 
-		
-		}
+        #navigationMenu{
+            width: 150px;
+        }
+
 		#loginNameMenu{
 			z-index:2;
 			font-size:14px;
@@ -37,8 +38,8 @@
 			font-family: 'Arbutus Slab', serif;
 			text-align:left;
 			position:absolute;
-			top:200px;
-			left:400px;
+			top:70px;
+			left:150px;
 
 			
 		
