@@ -5,18 +5,33 @@
 		#header{
             background-image: url("../img/header_bg.png");
             height: 70px;
+            color: #1e3d68;
+            text-align: center;
+            font-size: 48px;
+            font-weight: bolder;
+            padding: 10px;
 		}
-
-        #navigationMenu{
-            width: 150px;
+        #logo{
+         position:fixed;
+			top:5px;
+			left:15px;
         }
 
+        #navigationMenu{
+            background-color: DFEFFC;
+            width: 150px;
+
+
+        }
+#search{
+    width: 150px;
+}
 		#loginNameMenu{
 			z-index:2;
 			font-size:14px;
 			position:fixed;
-			top:20px;
-			right:20px;
+			top:5px;
+			right:5px;
 
 		}
 		

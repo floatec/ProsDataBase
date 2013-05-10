@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>ProsDataBase</title>
-		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/cupertino/jquery-ui.css" />
+		<link rel="stylesheet" href="/static/css/jqueryui.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/style.css">
 		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
@@ -19,7 +19,7 @@
 
 	<body style="margin: 0px;padding: 0px">
     {% block body %}
-        <div id=header>{% block header %}ProsData{% endblock %}
+        <div id=header><img id="logo" src="/static/img/logo.png" height="80px">{% block header %}ProsData{% endblock %}
         <div id="loginNameMenu">
 			<p>Max Mustermann</p>
 
@@ -36,11 +36,10 @@
 		</div>
         </div>
         <div id="navigationMenu">
-		<div>Tabellen</div>
-			<ul id="navigationMenuContent">
+            <input id="search" type="text" placeholder="suche">
 			    {% block navigation %}
 			{% endblock %}
-			</ul>
+
 
 		</div>
 		<div id="content">
@@ -50,7 +49,7 @@
 
     {% endblock %}
 	</body>
-<script language="JavaScript" src="/static/js/methods.js">
+<script language="JavaScript" src="/static/js/methods.js"></script>
 <script language="JavaScript" >
 {% block javascript %}{% endblock %}
 	</script>

@@ -1,1 +1,29 @@
 {% extends "base.html" %}
+
+{% block navigation %}
+<div>Tabellen</div>
+			<ul id="navigationMenuContent">
+
+			</ul>
+
+{% endblock %}
+
+{% block javascript %}
+
+	var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
+
+	for (key in tables) {
+		var tablename = tables[key].name;
+
+		// fill Navigation-Bar
+		$("#navigationMenuContent").append("<li>"+tables[key].name+"<li>");
+		// create tables
+		$("#content").append("<a href='#'><div  id='table"+key+">"+tablename+"</div></a>");
+		for (rows in tables[key].dataDescr){
+			$("#table"+key).append("<a href='#'><div>"+tables[key].dataDescr[rows]+"</div></a>");
+
+		}
+
+	}
+
+{% endblock %}
