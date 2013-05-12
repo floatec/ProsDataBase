@@ -6,7 +6,8 @@
 		navigationMenu = $("#navigationMenu");
 		navigationMenuContent = $("#navigationMenuContent");
 		navigationMenu.accordion({	collapsible: false,
-									
+									heightStyle: "content",
+                                    active: false
 														});
 		loginNameMenu.accordion({	collapsible: true,
 									autoHeight:false,

@@ -19,7 +19,7 @@
 
 	<body style="margin: 0px;padding: 0px">
     {% block body %}
-        <div id=header><img id="logo" src="/static/img/logo.png" height="80px">{% block header %}ProsData{% endblock %}
+        <div id=header><img id="logo" src="/static/img/logo.png" height="80px">{% block header %}ProsDataBase{% endblock %}
         <div id="loginNameMenu">
 			<p>Max Mustermann</p>
 
@@ -29,14 +29,19 @@
 
 			<ul id="subMenuList">
 				<li><a href="#">Settings</a></li>
-				<li><a href="#">Admin</a></li>
-				<li><a href="#">Logout</a></li>
+				<li><a href="/groupadmin">Admin</a></li>
+				<li><a href="/login">Logout</a></li>
 			</ul>
 
 		</div>
         </div>
-        <div id="navigationMenu">
+        <div id="searchDiv">
             <input id="search" type="text" placeholder="suche">
+
+
+        </div>
+        <div id="navigationMenu">
+
 			    {% block navigation %}
 			{% endblock %}
 
