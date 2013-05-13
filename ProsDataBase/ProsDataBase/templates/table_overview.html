@@ -15,10 +15,17 @@
 
 {% block javascript %}
 
+    // variable um json format zu testen und tabelle mit daten zu füllen
 	var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
-
+    // bezug zur datenbank (befinden sich noch keine Daten in der DB)
+    var table2 = jQuery.getJSON('/api/table');
 	for (key in tables) {
 		var tablename = tables[key].name;
+
+
+
+
+
 
 		// fill Navigation-Bar
 		$("#navigationMenuContent").append("<li>"+tables[key].name+"<li>");
