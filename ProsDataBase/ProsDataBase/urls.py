@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
+
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'ProsDataBase.views.home', name='home'),
@@ -20,6 +21,7 @@ urlpatterns = patterns('',
     (r'^createTable/$', TemplateView.as_view(template_name="createTable.html")),
     (r'^createGroup/$', TemplateView.as_view(template_name="createGroup.html")),
     (r'^groupadmin/$', TemplateView.as_view(template_name="groupadmin.html")),
+    (r'^api/table/$', "database.views.showAllTables"),
     (r'^table/$', TemplateView.as_view(template_name="table_overview.html")),
     (r'^register/$', TemplateView.as_view(template_name="register.html")),
     (r'^login/$', TemplateView.as_view(template_name="login.html")),

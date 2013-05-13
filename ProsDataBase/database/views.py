@@ -1,6 +1,6 @@
 # Create your views here.
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 
 from serializers import *
 from forms import *
@@ -10,7 +10,7 @@ from datetime import datetime
 def showAllTables(request):
     if request.method == 'GET':
         tables = TableSerializer.serializeAll()
-        return HttpResponse(tables)
+        return HttpResponse(tables, content_type="application/json")
 
 
 #{
@@ -27,17 +27,17 @@ def showAllTables(request):
 
 
 def AddTable(request):
-    '''
-
-
-    '''
 
     if request.method == 'POST':
         tableData = dict()
-        tableData["name"] = request["name"]
-        tableData["creator"] = request.user.name
+        tableData["name"] = HttpRequest.POST["name"]
+        tableData["creator"] = request.user
         tableData["created"] = datetime.now()
         newTable(tableData)
+
+        colDatas = []
+        colData = dict()
+        colData["name"] = request["dataDescr"][0]["name"]
 
 
 def newTable(data):

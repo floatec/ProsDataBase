@@ -10,12 +10,17 @@ import json
 class TableSerializer:
     @staticmethod
     def serializeOne(id):
+        """
+        return table with specified id
+
+        {"name": "example", "dataDescr": ["columname","anothercolum"]}
+        """
         table = Table.objects.get(pk=id)
-        dataDescrs = table.dataDescrs()
+        dataDescrs = table.getDataDescrs()
         dataDescrNames = []
 
         for col in dataDescrs:
-            dataDescrNames.append(unicode(col.name))
+            dataDescrNames.append(col.name)
 
         result = dict()
         result["name"] = table.name
@@ -25,12 +30,22 @@ class TableSerializer:
 
     @staticmethod
     def serializeAll():
+        """
+        return all tables with their columns
+
+        {
+            "tables": [
+                {"name": "example", "dataDescr": ["columname","anothercolum"]},
+                {"name": "2nd", "dataDescr": ["columname","anothercolum"]}
+            ]
+        }
+        """
         tables = Table.objects.all()
         result = dict()
         result["tables"] = []
 
         for table in tables:
-            dataDescrs = table.dataDescrs()
+            dataDescrs = table.getDataDescrs()
             dataDescrNames = []
 
             for col in dataDescrs:
@@ -56,7 +71,7 @@ class DatasetSerializer:
         datasetList = []
         datasets = Dataset.objects.filter(table=tableRef)
         for dataset in datasets:
-            values = dataset.data().values()
+            values = dataset.getData().values()
             datasetList.append(values)
         result["datasets"] = datasetList
 

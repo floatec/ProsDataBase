@@ -63,21 +63,22 @@ class BoolDataForm(ModelForm):
 # -- data types
 
 
-class DatatypeForm(ModelForm):
-    class Meta:
-        model = Datatype
+#class DatatypeForm(ModelForm):
+#    class Meta:
+#        model = Datatype
+#       fields = ('name',)
 
 
 class TextTypeForm(ModelForm):
     class Meta:
         model = TextType
-        fields = ('name', 'length')
+        fields = ('datatype', 'length')
 
 
 class NumericTypeForm(ModelForm):
     class Meta:
         model = NumericType
-        fields = ('name', 'min', 'max')
+        fields = ('datatype', 'min', 'max')
 
 
 class SelectionValueForm(ModelForm):
@@ -89,13 +90,13 @@ class SelectionValueForm(ModelForm):
 class SelectionTypeForm(ModelForm):
     class Meta:
         model = SelectionType
-        fields = ('name', 'count')
+        fields = ('datatype', 'count')
 
 
 class DateTypeForm(ModelForm):
     class Meta:
         model = DateType
-        fields = ('name', 'min', 'max')
+        fields = ('datatype', 'min', 'max')
 
 
 # -- Permission system
@@ -104,13 +105,13 @@ class DateTypeForm(ModelForm):
 class DBUserForm(ModelForm):
     class Meta:
         model = DBUser
-        fields = ('rights', 'objects')
+        fields = ('rights', )
 
 
 class DBGroupForm(ModelForm):
     class Meta:
         model = DBGroup
-        fields = ('name', 'rights', 'DBUsers')
+        fields = ('name', 'rights', 'users')
 
 
 class RelUserGroupForm(ModelForm):
@@ -121,7 +122,7 @@ class RelUserGroupForm(ModelForm):
 
 class RightListForm(ModelForm):
     class Meta:
-        model = RightListForm
+        model = RightList
         fields = ('table', 'viewLog', 'rightsAdmin')
 
 

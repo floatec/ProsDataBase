@@ -28,5 +28,5 @@ admin.site.register(RightList)
 admin.site.register(RelRightsDataDescr)
 
 
-class TableAdmin(admin.ModelAdmin):
-    list_display = ('name', 'dataDescrs')
+#class TableAdmin(admin.ModelAdmin):
+#    list_display = ('name', 'dataDescrs')
