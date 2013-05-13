@@ -32,8 +32,7 @@ Source code documentation
 .. toctree::
    :maxdepth: 2
 
-   herobase
-   heromessage
+   database
 
 Indices and tables
 ==================
