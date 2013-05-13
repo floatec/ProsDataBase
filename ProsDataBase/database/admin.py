@@ -26,3 +26,7 @@ admin.site.register(DBGroup)
 admin.site.register(RelUserGroup)
 admin.site.register(RightList)
 admin.site.register(RelRightsDataDescr)
+
+
+#class TableAdmin(admin.ModelAdmin):
+#    list_display = ('name', 'dataDescrs')

@@ -1,17 +1,19 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, Group, UserManager
+from django.contrib.auth.models import AbstractUser, UserManager
 
 
 '''
 FYI:
-- Usage of ForeignKey(): first param = name of referenced model X as string.
+about Django:
+- Usage of ForeignKey(): first param = name of referenced model X as string (avoids problem of forward declaration)
                          Second param is required if X is referenced more than once: related_name=[unique String]
 
 - django does not support overwriting of parent field-attributes by child classes
 
 - an id-field is automatically added to each model without primary-key
 
+about our implementation:
 - BoolData does not need BoolType, as range is already clear
 '''
 
@@ -21,47 +23,48 @@ FYI:
 
 class DataDescr(models.Model):
     name = models.CharField(max_length=100)
-    table = models.ForeignKey('Table')
+    table = models.ForeignKey('Table', related_name="dataDescrs")
     type = models.ForeignKey('Datatype')
     required = models.BooleanField()
+
+    created = models.DateTimeField()
+    deleted = models.DateTimeField(blank=True, null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
+    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-deleter', blank=True, null=True)
 
     def __unicode__(self):
         return self.name
 
 
-class Reference(models.Model):
-    column1 = models.ForeignKey('DataDescr', related_name='col1')
-    column2 = models.ForeignKey('DataDescr', related_name='col2')
-
-    def __unicode__(self):
-        return unicode(self.column1) + "-" + unicode(self.column2)
-
-
 class Dataset(models.Model):
-    table = models.ForeignKey('Table')
+    table = models.ForeignKey('Table', related_name="datasets")
     created = models.DateTimeField()
     deleted = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-creator')
     deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-deleter', blank=True, null=True)
 
-    def data(self):
-        Data.objects.filter(dataset=self.id)
+    def getData(self):
+        return self.data.all()
+
+    def getField(self, name):
+        pass
 
     def __unicode__(self):
-        return unicode(self.table)
+        return unicode(self.table) + " id " + unicode(self.id)
 
 
 class Table(models.Model):
     name = models.CharField(max_length=100)
+    created = models.DateTimeField()
+    deleted = models.DateTimeField(blank=True, null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
+    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-deleter', blank=True, null=True)
 
-    def dataDescrs(self):
-        DataDescr.objects.filter(table=self.id)
+    def getDataDescrs(self):
+        return self.dataDescrs.all()
 
-    def datasets(self):
-        Dataset.objects.filter(table=self.id)
-
-    def references(self):
-        Reference.objects.filter(table1=self.id)
+    def getDatasets(self):
+        return self.datasets.all()
 
     def __unicode__(self):  # TODO: does not check for tables without columns
         return self.name
@@ -69,10 +72,10 @@ class Table(models.Model):
 
 # -- Data fields
 
-
+# related-names in base classes must contain '%(class)s' to avoid clashes in inheriting classes
 class Data(models.Model):
-    column = models.ForeignKey('DataDescr')
-    dataset = models.ForeignKey('Dataset')
+    column = models.ForeignKey('DataDescr', related_name="%(class)s-data")
+    dataset = models.ForeignKey('Dataset', related_name="%(class)s-data")
     created = models.DateTimeField()
     deleted = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
@@ -83,6 +86,15 @@ class Data(models.Model):
 
     class Meta:
         abstract = True
+
+
+class TableData(Data):
+    pass
+
+
+class RelTableDataDataset(models.Model):
+    tableData = models.ForeignKey('TableData')
+    dataset = models.ForeignKey('Dataset')
 
 
 class TextData(Data):
@@ -102,7 +114,7 @@ class NumericData(Data):
         return self.content
 
     def __unicode__(self):
-        return self.content
+        return unicode(self.content)
 
 
 class SelectionData(Data):
@@ -122,7 +134,7 @@ class DateData(Data):
         return self.content
 
     def __unicode__(self):
-        return self.content
+        return unicode(self.content)
 
 
 class BoolData(Data):
@@ -132,11 +144,10 @@ class BoolData(Data):
         return self.content
 
     def __unicode__(self):
-        return self.content
+        return unicode(self.content)
 
 
 # -- data types
-
 
 class Datatype(models.Model):
     name = models.CharField(max_length=30)
@@ -146,24 +157,24 @@ class Datatype(models.Model):
 
 
 class TextType(models.Model):
-    name = models.ForeignKey('Datatype')
+    datatype = models.ForeignKey('Datatype')
     length = models.IntegerField()
 
     def __unicode__(self):
-        return unicode(self.name)
+        return self.datatype.name
 
 
 class NumericType(models.Model):
-    name = models.ForeignKey('Datatype')
+    datatype = models.ForeignKey('Datatype')
     min = models.FloatField()
     max = models.FloatField()
 
     def __unicode__(self):
-        return unicode(self.name)
+        return Datatype.objects.filter(datatype=id).name
 
 
 class SelectionValue(models.Model):
-    selectionType = models.ForeignKey('SelectionType')
+    selectionType = models.ForeignKey('SelectionType', to_field='datatype')
     content = models.CharField(max_length=100)
 
     def __unicode__(self):
@@ -171,23 +182,31 @@ class SelectionValue(models.Model):
 
 
 class SelectionType(models.Model):
-    name = models.ForeignKey('Datatype')
+    datatype = models.ForeignKey('Datatype', unique=True)
     count = models.IntegerField()
 
     def values(self):
         SelectionValue.objects.filter(selectionType=self)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return Datatype.objects.filter(datatype=id).name
 
 
 class DateType(models.Model):
-    name = models.ForeignKey('Datatype')
+    datatype = models.ForeignKey('Datatype')
     min = models.DateTimeField()
     max = models.DateTimeField()
 
     def __unicode__(self):
-        return unicode(self.name)
+        return Datatype.objects.filter(datatype=id).name
+
+
+class TableType(models.Model):
+    datatype = models.ForeignKey('Datatype')
+    table = models.ForeignKey('Table')
+
+    def __unicode__(self):
+        return Datatype.objects.filter(datatype=id).name
 
 # -- Permission system
 
@@ -200,7 +219,7 @@ class DBUser(AbstractUser):
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)
     rights = models.ForeignKey('RightList')
-    DBUsers = models.ManyToManyField(settings.AUTH_USER_MODEL, through='RelUserGroup')
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='RelUserGroup')
 
 
 class RelUserGroup(models.Model):
@@ -213,12 +232,12 @@ class RelUserGroup(models.Model):
 
 
 class RightList(models.Model):
-    table = models.ForeignKey('Table')
+    table = models.ForeignKey('Table', related_name="rightlists")
     viewLog = models.BooleanField()
     rightsAdmin = models.BooleanField()
 
     def __unicode__(self):
-        return "list " + str(self.id) + " for " + unicode(self.table)
+        return "list " + unicode(self.id) + " for " + unicode(self.table)
 
 
 class RelRightsDataDescr(models.Model):
