@@ -218,6 +218,7 @@ class TableType(models.Model):
 
 class DBUser(AbstractUser):
     rights = models.ForeignKey('RightList', null=True, blank=True)
+    tableCreator = models.BooleanField()
     objects = UserManager()
 
 
@@ -240,6 +241,7 @@ class RightList(models.Model):
     table = models.ForeignKey('Table', related_name="rightlists")
     viewLog = models.BooleanField()
     rightsAdmin = models.BooleanField()
+    insert = models.BooleanField()
 
     def __unicode__(self):
         return "list " + unicode(self.id) + " for " + unicode(self.table)
@@ -249,7 +251,6 @@ class RelRightsDataDescr(models.Model):
     column = models.ForeignKey('DataDescr')
     rightList = models.ForeignKey('RightList')
     read = models.BooleanField()
-    insert = models.BooleanField()
     modify = models.BooleanField()
     delete = models.BooleanField()
 
