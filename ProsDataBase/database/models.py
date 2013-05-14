@@ -1,9 +1,4 @@
-from django.db import models
-from django.conf import settings
-from django.contrib.auth.models import AbstractUser, UserManager
-
-
-'''
+"""
 FYI:
 about Django:
 - Usage of ForeignKey(): first param = name of referenced model X as string (avoids problem of forward declaration)
@@ -15,7 +10,11 @@ about Django:
 
 about our implementation:
 - BoolData does not need BoolType, as range is already clear
-'''
+"""
+
+from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser, UserManager
 
 
 # -- Table structure
@@ -150,6 +149,12 @@ class BoolData(Data):
 # -- data types
 
 class Datatype(models.Model):
+    TEXT = 0
+    NUMERIC = 1
+    DATE = 2
+    SELECTION = 3
+    TABLE = 4
+
     name = models.CharField(max_length=30)
 
     def __unicode__(self):
