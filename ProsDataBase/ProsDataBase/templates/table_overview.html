@@ -30,7 +30,7 @@
 		// fill Navigation-Bar
 		$("#navigationMenuContent").append("<li><a href='#'>"+tables[key].name+"</a></li>");
 		// create tables
-		$("#content").append("<a href='#'><div class='overViewDiv' id='table"+key+"'>"+tablename+"</div></a>");
+		$("#content").append("<a href='#'><div class='overViewDiv' id='table"+key+"'><div id='overViewHeader'>"+tablename+"</div></div></a>");
 		for (rows in tables[key].dataDescr){
 			$("#table"+key).append("<div class='overViewContentDiv'>"+tables[key].dataDescr[rows]+"</div>");
 

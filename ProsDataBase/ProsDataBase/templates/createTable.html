@@ -1,1 +1,78 @@
 {% extends "base.html" %}
+
+
+
+
+
+
+{% block content %}
+
+        <span>Name:</span><br />
+        <input type="text"><br /><br />
+        <span>Tabellen Administratoren</span><br />
+        <table>
+            <tr>
+       <td><span>User</span></td>
+        <td><span>Gruppen</span></td>
+             </tr>
+
+        <tr>
+        <td><textarea name="user_eingabe" id="userAdmin" cols="50" rows="10"></textarea></td>
+        <td><textarea name="user_eingabe" id="groupAdmin" cols="50" rows="10"></textarea></td>
+        </tr>
+        </table>
+{% endblock %}
+
+{% block javascript %}
+
+     var availableTags = [
+"ActionScript",
+"AppleScript",
+"Asp",
+"BASIC",
+"C",
+"C++",
+"Clojure",
+"COBOL",
+"ColdFusion",
+"Erlang",
+"Fortran",
+"Groovy",
+"Haskell",
+"Java",
+"JavaScript",
+"Lisp",
+"Perl",
+"PHP",
+"Python",
+"Ruby",
+"Scala",
+"Scheme"];
+
+
+
+
+        function split( val ) {
+        return val.split( /,\s*/ );
+        }
+        function extractLast( term ) {
+        return split( term ).pop();
+        }
+
+        $("#userAdmin").autocomplete({source:availableTags,
+                                      select: function(event,ui){
+                                               var terms = split( this.value );
+
+
+
+
+
+});
+
+
+
+
+
+
+
+{% endblock %}

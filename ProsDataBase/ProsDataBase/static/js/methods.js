@@ -5,6 +5,7 @@
 		subMenuList = $("#subMenuList");
 		navigationMenu = $("#navigationMenu");
 		navigationMenuContent = $("#navigationMenuContent");
+
 		navigationMenu.accordion({	collapsible: false,
 									heightStyle: "content"
 														});
@@ -15,7 +16,8 @@
 														});
 		subMenuList.menu();	
 		navigationMenuContent.menu();
-		
+
+
 		
 		
 		
