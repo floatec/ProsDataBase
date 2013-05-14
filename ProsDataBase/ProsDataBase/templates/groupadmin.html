@@ -25,11 +25,11 @@
 		var groupname = groups[key].name;
 
 		// fill Navigation-Bar
-		$("#navigationMenuContent").append("<li>"+groups[key].name+"<li>");
+		$("#navigationMenuContent").append("<li><a href='#'>"+groups[key].name+"</a></li>");
 		// create group content
-		$("#content").append("<a href='#'><div  id='group"+key+"'>"+groupname+"</div></a>");
+		$("#content").append("<a href='#'><div class='overViewDiv' id='group"+key+"'>"+groupname+"</div></a>");
 		for (rows in groups[key].dataDescr){
-			$("#group"+key).append("<div>"+groups[key].dataDescr[rows]+"</div>");
+			$("#group"+key).append("<div class='overViewContentDiv'>"+groups[key].dataDescr[rows]+"</div>");
 
 		}
 
