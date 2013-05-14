@@ -27,7 +27,7 @@
 		// fill Navigation-Bar
 		$("#navigationMenuContent").append("<li><a href='#'>"+groups[key].name+"</a></li>");
 		// create group content
-		$("#content").append("<a href='#'><div class='overViewDiv' id='group"+key+"'>"+groupname+"</div></a>");
+		$("#content").append("<a href='#'><div class='overViewDiv' id='group"+key+"'><div id='overViewHeader'>"+groupname+"</div></div></a>");
 		for (rows in groups[key].dataDescr){
 			$("#group"+key).append("<div class='overViewContentDiv'>"+groups[key].dataDescr[rows]+"</div>");
 
