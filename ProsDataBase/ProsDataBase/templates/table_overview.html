@@ -15,17 +15,24 @@
 
 {% block javascript %}
 
+    // TODO variable um json format zu testen und tabelle mit daten zu füllen
 	var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
-
+    // TODO bezug zur datenbank (befinden sich noch keine Daten in der DB)
+    var table2 = jQuery.getJSON('/api/table');
 	for (key in tables) {
 		var tablename = tables[key].name;
 
+
+
+
+
+
 		// fill Navigation-Bar
-		$("#navigationMenuContent").append("<li>"+tables[key].name+"<li>");
+		$("#navigationMenuContent").append("<li><a href='#'>"+tables[key].name+"</a></li>");
 		// create tables
-		$("#content").append("<a href='#'><div  id='table"+key+"'>"+tablename+"</div></a>");
+		$("#content").append("<a href='#'><div class='overViewDiv' id='table"+key+"'>"+tablename+"</div></a>");
 		for (rows in tables[key].dataDescr){
-			$("#table"+key).append("<a href='#'><div>"+tables[key].dataDescr[rows]+"</div></a>");
+			$("#table"+key).append("<div class='overViewContentDiv'>"+tables[key].dataDescr[rows]+"</div>");
 
 		}
 

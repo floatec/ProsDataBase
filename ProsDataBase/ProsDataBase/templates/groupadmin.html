@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block navigation %}
+        <div>Gruppen</div>
+ <ul id="navigationMenuContent">
+
+			</ul>
+
+{% endblock %}
+{% block content %}
+
+
+{% endblock %}
+
+{% block menu %}
+<a href="/createGroup"><button>Neue Gruppe</button></a>
+
+{% endblock %}
+{% block javascript %}
+
+
+	var groups = jQuery.parseJSON( '{"groups":[{"name":"Arzt","dataDescr":["Paul","Snuggles"]},{"name":"Student","dataDescr":["Egon","Walter"]},{"name":"Hiwi","dataDescr":["Inge","Hans"]}]}' ).groups;
+
+	for (key in groups) {
+		var groupname = groups[key].name;
+
+		// fill Navigation-Bar
+		$("#navigationMenuContent").append("<li><a href='#'>"+groups[key].name+"</a></li>");
+		// create group content
+		$("#content").append("<a href='#'><div class='overViewDiv' id='group"+key+"'>"+groupname+"</div></a>");
+		for (rows in groups[key].dataDescr){
+			$("#group"+key).append("<div class='overViewContentDiv'>"+groups[key].dataDescr[rows]+"</div>");
+
+		}
+
+	}
+
+{% endblock %}
