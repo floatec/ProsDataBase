@@ -17,8 +17,8 @@
 
 {% endblock %}
 {% block javascript %}
-
-
+<script language="JavaScript">
+    //TODO: Mit Ajax alle Gruppen laden
 	var groups = jQuery.parseJSON( '{"groups":[{"name":"Arzt","dataDescr":["Paul","Snuggles"]},{"name":"Student","dataDescr":["Egon","Walter"]},{"name":"Hiwi","dataDescr":["Inge","Hans"]}]}' ).groups;
 
 	for (key in groups) {
@@ -34,5 +34,5 @@
 		}
 
 	}
-
+</script>
 {% endblock %}

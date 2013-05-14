@@ -1,13 +1,21 @@
 {% extends "base.html" %}
 
 
-
+//TODO scrollable results: http://jqueryui.com/autocomplete/#maxheight ( CSS )
 
 
 
 {% block content %}
 
-        <span>Name:</span><br />
+
+        <div id="tabs">
+<ul>
+    <li><a href="#tabs-1">Schritt 1</a></li>
+    <li><a href="#tabs-2">Schritt 2</a></li>
+    <li><a href="#tabs-3">Schritt 3</a></li>
+</ul>
+<div id="tabs-1">
+     <span>Name:</span><br />
         <input type="text"><br /><br />
         <span>Tabellen Administratoren</span><br />
         <table>
@@ -17,15 +25,68 @@
              </tr>
 
         <tr>
-        <td><textarea name="user_eingabe" id="userAdmin" cols="50" rows="10"></textarea></td>
-        <td><textarea name="user_eingabe" id="groupAdmin" cols="50" rows="10"></textarea></td>
+        <td><textarea name="user_eingabe" id="userAdmin" cols="40" rows="8"></textarea></td>
+        <td><textarea name="group_eingabe" id="groupAdmin" cols="40" rows="8"></textarea></td>
         </tr>
         </table>
 
-        <button>speichern</button>
+        <button id="nextButtonPage2">weiter</button>
+
+
+
+</div>
+<div id="tabs-2">
+
+    <table id="columnTable">
+
+        <tr><td></td><td>Bezeichnung</td><td>Datentyp</td></tr>
+        <tr><td><button id="deleteButton1">-</button></td><td><input type="text" id="field1"></td><td><select class="selectDataType"></select></td><td class="enumSelected"></td></tr>
+    </table>
+
+    <button id="addColumn">+</button><br />
+    <button id="nextButtonPage3">weiter</button>
+</div>
+<div id="tabs-3">
+    <!--TODO: Berechtigungen hier-->
+    <button>weiter</button>
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
 {% endblock %}
 
 {% block javascript %}
+<script language="JavaScript" >
+
+
+// FIRST TAB
+
+        // initialize variable
+        columnID = 1;
+
+        // initialize tabs
+         $( "#tabs" ).tabs({
+                collapsible: false,
+                disabled: [1,2]
+         });
+
+
+
+            // function to switch to second tab
+         $("#nextButtonPage2").click(function(){
+            $("#tabs").tabs( "option", "disabled", [ 2 ]);
+            $("#tabs").tabs("option","active",1);
+
+         });
+
 
      var availableTags = [
 "Hans",
@@ -53,7 +114,7 @@
 
 
 
-
+        // functions for auto-complete
         function split( val ) {
             return val.split( /,\s*/ );
         }
@@ -64,7 +125,7 @@
 
 
 
-
+        //auto complete for users
         $("#userAdmin")
 
          .bind( "keydown", function( event ) {
@@ -94,13 +155,13 @@
             this.value = terms.join( ", " );
             return false;
 
-        },
+        }
 
 
 
         });
 
-
+            //auto-complete for groups
  $("#groupAdmin")
 
          .bind( "keydown", function( event ) {
@@ -130,13 +191,38 @@
             this.value = terms.join( ", " );
             return false;
 
-        },
+        }
 
 
 
         });
 
 
+// SECOND TAB
 
+
+    // method to add a column
+     $("#addColumn").click(function(){
+         columnID++;
+         $("#columnTable").append("<tr><td><button id='deleteButton"+columnID+"'>-</button></td><td><input type='text' id='field"+columnID+"'></td><td><select class='selectDataType'></select></td><td class='enumSelected'></td></tr>");
+
+
+     });
+
+
+    // switch to page 3
+       // function to switch to second tab
+         $("#nextButtonPage3").click(function(){
+            $("#tabs").tabs("enable",2);
+            $("#tabs").tabs("option","active",2);
+
+         });
+
+
+//TODO:MINUSBUTTON implementieren
+
+
+
+</script>
 
 {% endblock %}
