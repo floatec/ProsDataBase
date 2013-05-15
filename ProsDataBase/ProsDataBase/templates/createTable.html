@@ -6,22 +6,22 @@
 
 
 {% block content %}
-
+    <div id="deleteAlertBox">Are you sure to delete this item?</div>
 
         <div id="tabs">
 <ul>
-    <li><a href="#tabs-1">Schritt 1</a></li>
-    <li><a href="#tabs-2">Schritt 2</a></li>
-    <li><a href="#tabs-3">Schritt 3</a></li>
+    <li><a href="#tabs-1">step 1</a></li>
+    <li><a href="#tabs-2">step 2</a></li>
+    <li><a href="#tabs-3">step 3</a></li>
 </ul>
 <div id="tabs-1">
      <span>Name:</span><br />
         <input type="text"><br /><br />
-        <span>Tabellen Administratoren</span><br />
+        <span>Table administrators</span><br />
         <table>
             <tr>
        <td><span>User</span></td>
-        <td><span>Gruppen</span></td>
+        <td><span>Groups</span></td>
              </tr>
 
         <tr>
@@ -30,7 +30,7 @@
         </tr>
         </table>
 
-        <button id="nextButtonPage2">weiter</button>
+        <button id="nextButtonPage2">next</button>
 
 
 
@@ -39,16 +39,16 @@
 
     <table id="columnTable">
 
-        <tr><td></td><td>Bezeichnung</td><td>Datentyp</td></tr>
-        <tr><td><button id="deleteButton1">-</button></td><td><input type="text" id="field1"></td><td><select class="selectDataType"></select></td><td class="enumSelected"></td></tr>
+        <tr><td></td><td>name</td><td>datatype</td></tr>
+        <tr id="row_1"><td><button id="deleteButton_1">-</button></td><td><input type="text" id="field_1"></td><td><select id="selectDataType_1"></select></td><td class="enumSelected"></td></tr>
     </table>
 
     <button id="addColumn">+</button><br />
-    <button id="nextButtonPage3">weiter</button>
+    <button id="nextButtonPage3">next</button>
 </div>
 <div id="tabs-3">
     <!--TODO: Berechtigungen hier-->
-    <button>weiter</button>
+    <button>create</button>
 
 </div>
 </div>
@@ -199,12 +199,38 @@
 
 
 // SECOND TAB
+    //array for datatypes
+    datatypes = ["numeric","text","choice","date","boolean"];
+//fill first dropdown menu with datatypes
+for (key in datatypes){
+    $("#selectDataType_1").append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
+};
 
+//TODO:ajax alle tabellen fuer dropdown menu
+
+ //create delete function for the first input
+        $("#deleteButton_1").click(function(){lastID= getNumber(this.id);$("#deleteAlertBox").dialog("open");});
 
     // method to add a column
      $("#addColumn").click(function(){
+
          columnID++;
-         $("#columnTable").append("<tr><td><button id='deleteButton"+columnID+"'>-</button></td><td><input type='text' id='field"+columnID+"'></td><td><select class='selectDataType'></select></td><td class='enumSelected'></td></tr>");
+         $("#columnTable").append("<tr id='row_"+columnID+"'><td><button id='deleteButton_"+columnID+"'>-</button></td><td><input type='text' id='field_"+columnID+"'></td><td><select id='selectDataType_"+columnID+"'></select></td><td class='enumSelected'></td></tr>");
+        //TODO:ajax alle tabellen fuer dropdown menu
+         //fill dropdown menu with datatypes
+        for (key in datatypes){
+         $("#selectDataType_"+columnID).append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
+        };
+
+
+        // create delete-function for every column
+         $("#deleteButton_"+columnID).click(function(){
+
+
+        lastID = getNumber(this.id);
+        $("#deleteAlertBox").dialog( "open" );
+
+    });
 
 
      });
@@ -218,8 +244,32 @@
 
          });
 
+     //function to get the ID
+    function getNumber(number){
 
-//TODO:MINUSBUTTON implementieren
+        return number.substring(number.lastIndexOf("_")+1);
+
+    }
+
+     //minusbutton function
+
+
+
+    // initialize alertbox
+    $( "#deleteAlertBox" ).dialog({
+        autoOpen: false,
+         buttons: {
+            "delete": function() {
+
+                $("#row_"+lastID).remove();
+                $( this ).dialog( "close" );
+
+            },
+            "back": function() {
+            $( this ).dialog( "close" );
+                }
+            }
+         });
 
 
 
