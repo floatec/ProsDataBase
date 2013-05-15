@@ -96,6 +96,45 @@ class UserSerializer:
         return json.dumps(result)
 
 
+class UserSerializer:
+    @staticmethod
+    def serializeOne(id):
+        """
+        return table with specified id
+
+        {"id":"1","name": "example"}
+        """
+        user = AbstractUser.objects.get(pk=id)
+
+
+        result = dict()
+        result["name"] = user.username
+        result["id"] = user.id
+
+        return json.dumps(result)
+
+    @staticmethod
+    def serializeAll():
+        """
+        return all tables with their columns
+
+        {
+            "users": [
+               {"id":"1","name": "example"},
+                {"id":"2","name": "example2"}]}
+            ]
+        }
+        """
+        users = DBUser.objects.all()
+        result = dict()
+        result["users"] = []
+
+        for user in users:
+            result["users"].append( user.username)
+
+        return json.dumps(result)
+
+
 class DatasetSerializer:
 
     def serializeAll(self, tableRef):  # tableRef is an instance of table
