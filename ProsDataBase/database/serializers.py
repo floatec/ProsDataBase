@@ -1,3 +1,5 @@
+from locale import _group
+
 __author__ = 'My-Tien Nguyen'
 
 from models import *
@@ -91,7 +93,46 @@ class UserSerializer:
         result["users"] = []
 
         for user in users:
-            result["users"].append({"name": user.username, "id": user.id})
+            result["users"].append( user.username)
+
+        return json.dumps(result)
+
+
+class GroupSerializer:
+    @staticmethod
+    def serializeOne(id):
+        """
+        return table with specified id
+
+        {"id":"1","name": "example"}
+        """
+        user = AbstractUser.objects.get(pk=id)
+
+
+        result = dict()
+        result["name"] = user.username
+        result["id"] = user.id
+
+        return json.dumps(result)
+
+    @staticmethod
+    def serializeAll():
+        """
+        return all tables with their columns
+
+        {
+            "users": [
+               {"id":"1","name": "example"},
+                {"id":"2","name": "example2"}]}
+            ]
+        }
+        """
+        groups = DBGroup.objects.all()
+        result = dict()
+        result["groups"] = []
+
+        for groups in groups:
+            result["groups"].append(group.name)
 
         return json.dumps(result)
 
