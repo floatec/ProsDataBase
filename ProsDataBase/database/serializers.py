@@ -70,7 +70,6 @@ class UserSerializer:
         """
         user = AbstractUser.objects.get(pk=id)
 
-
         result = dict()
         result["name"] = user.username
         result["id"] = user.id
@@ -84,7 +83,7 @@ class UserSerializer:
 
         {
             "users": [
-               {"id":"1","name": "example"},
+                {"id":"1","name": "example"},
                 {"id":"2","name": "example2"}]}
             ]
         }
@@ -108,7 +107,6 @@ class GroupSerializer:
         {"id":"1","name": "example"}
         """
         user = AbstractUser.objects.get(pk=id)
-
 
         result = dict()
         result["name"] = user.username
