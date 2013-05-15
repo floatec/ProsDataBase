@@ -86,7 +86,7 @@ class UserSerializer:
             ]
         }
         """
-        users = AbstractUser.objects.all()
+        users = DBUser.objects.all()
         result = dict()
         result["users"] = []
 

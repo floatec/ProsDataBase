@@ -179,8 +179,9 @@ class NumericType(models.Model):
 
 
 class SelectionValue(models.Model):
-    selectionType = models.ForeignKey('SelectionType', to_field='datatype')
+    selectionType = models.ForeignKey('SelectionType', to_field='datatype', related_name='selVals')
     content = models.CharField(max_length=100)
+    index = models.IntegerField()
 
     def __unicode__(self):
         return self.content
@@ -190,8 +191,11 @@ class SelectionType(models.Model):
     datatype = models.ForeignKey('Datatype', unique=True)
     count = models.IntegerField()
 
+    def value(self, pos):
+        return self.selVals.get(index=pos)
+
     def values(self):
-        SelectionValue.objects.filter(selectionType=self)
+        return self.selVals.all()
 
     def __unicode__(self):
         return Datatype.objects.filter(datatype=id).name
@@ -217,14 +221,12 @@ class TableType(models.Model):
 
 
 class DBUser(AbstractUser):
-    rights = models.ForeignKey('RightList', null=True, blank=True)
     tableCreator = models.BooleanField()
     objects = UserManager()
 
 
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)
-    rights = models.ForeignKey('RightList')
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='RelUserGroup')
 
 
@@ -238,6 +240,8 @@ class RelUserGroup(models.Model):
 
 
 class RightList(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rights", blank=True, null=True)
+    group = models.ForeignKey('DBGroup', related_name="rights", blank=True, null=True)
     table = models.ForeignKey('Table', related_name="rightlists")
     viewLog = models.BooleanField()
     rightsAdmin = models.BooleanField()

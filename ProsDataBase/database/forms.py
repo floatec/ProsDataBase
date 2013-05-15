@@ -84,7 +84,7 @@ class NumericTypeForm(ModelForm):
 class SelectionValueForm(ModelForm):
     class Meta:
         model = SelectionValue
-        fields = ('selectionType', 'content')
+        fields = ('index', 'content')
 
 
 class SelectionTypeForm(ModelForm):
@@ -98,25 +98,19 @@ class DateTypeForm(ModelForm):
         model = DateType
         fields = ('datatype', 'min', 'max')
 
-
-class TableTypeForm(ModelForm):
-    class Meta:
-        model = TableType
-        fields = ('datatype', 'table')
-
 # -- Permission system
 
 
 class DBUserForm(ModelForm):
     class Meta:
         model = DBUser
-        fields = ('rights', 'tableCreator')
+        fields = ('tableCreator', )
 
 
 class DBGroupForm(ModelForm):
     class Meta:
         model = DBGroup
-        fields = ('name', 'rights', 'users')
+        fields = ('name', 'users')
 
 
 class RelUserGroupForm(ModelForm):
@@ -128,7 +122,7 @@ class RelUserGroupForm(ModelForm):
 class RightListForm(ModelForm):
     class Meta:
         model = RightList
-        fields = ('table', 'viewLog', 'rightsAdmin', 'insert')
+        fields = ('viewLog', 'rightsAdmin', 'insert')
 
 
 class RelRightsDataDescrForm(ModelForm):
