@@ -26,7 +26,8 @@ urlpatterns = patterns('',
     (r'^login/$', TemplateView.as_view(template_name="login.html")),
 
     (r'^api/table/$', "database.views.showAllTables"),
-
+    (r'^api/table/all$', "database.views.showAllTables"),
+    (r'^api/newtable', "database.views.addTable"),
     (r'^api/user/$', "database.views.showAllUser"),
     (r'^api/group/$', "database.views.showAllGroup"),
 
