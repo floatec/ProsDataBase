@@ -15,10 +15,20 @@
 
 {% block javascript %}
 <script language="JavaScript" >
-    // TODO variable um json format zu testen und tabelle mit daten zu füllen
-	var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
-    // TODO bezug zur datenbank (befinden sich noch keine Daten in der DB)
-    var table2 = jQuery.getJSON('/api/table');
+    //TODO variable um json format zu testen und tabelle mit daten zu füllen
+	//var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
+
+    jQuery.getJSON('/api/table',function(data){
+
+
+        createTables(data.tables);
+
+
+    });
+
+
+    //function to create and fill tables
+    function createTables(tables){
 	for (key in tables) {
 		var tablename = tables[key].name;
 
@@ -35,7 +45,7 @@
 			$("#table"+key).append("<div class='overViewContentDiv'>"+tables[key].dataDescr[rows]+"</div>");
 
 		}
-
+    }
 	}
 </script>
 {% endblock %}

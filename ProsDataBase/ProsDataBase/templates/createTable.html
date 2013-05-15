@@ -112,7 +112,13 @@
 "Bud Spencer",
 "Mario Balotelli"];
 
+jQuery.getJSON('/api/user/',function(data){
 
+    allUsers = data.users;
+
+
+
+});
 
         // functions for auto-complete
         function split( val ) {
@@ -142,7 +148,7 @@
           source: function( request, response ) {
 
         response( $.ui.autocomplete.filter(
-        availableTags, extractLast( request.term ) ) );
+        allUsers, extractLast( request.term ) ) );
         },
         select: function(event,ui){
         var terms = split( this.value );
@@ -174,7 +180,7 @@
 
 
 
-        //TODO: Hier mit AJAX die USER ziehen
+        //TODO: Hier mit AJAX die Gruppen ziehen
           source: function( request, response ) {
 
         response( $.ui.autocomplete.filter(

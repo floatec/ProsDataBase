@@ -91,7 +91,7 @@ class UserSerializer:
         result["users"] = []
 
         for user in users:
-            result["users"].append({"name": user.username, "id": user.id})
+            result["users"].append(user.username)
 
         return json.dumps(result)
 
