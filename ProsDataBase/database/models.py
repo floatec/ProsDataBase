@@ -9,7 +9,7 @@ about Django:
 - an id-field is automatically added to each model without primary-key
 
 about our implementation:
-- BoolData does not need BoolType, as range is already clear
+- DataBool does not need TypeBool, as range is already clear
 """
 
 from django.db import models
@@ -20,10 +20,10 @@ from django.contrib.auth.models import AbstractUser, UserManager
 # -- Table structure
 
 
-class DataDescr(models.Model):
+class Column(models.Model):
     name = models.CharField(max_length=100)
-    table = models.ForeignKey('Table', related_name="dataDescrs")
-    type = models.ForeignKey('Datatype')
+    table = models.ForeignKey('Table', related_name="columns")
+    type = models.ForeignKey('Type')
     required = models.BooleanField()
 
     created = models.DateTimeField()
@@ -59,8 +59,8 @@ class Table(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
     deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-deleter', blank=True, null=True)
 
-    def getDataDescrs(self):
-        return self.dataDescrs.all()
+    def getColumns(self):
+        return self.columns.all()
 
     def getDatasets(self):
         return self.datasets.all()
@@ -73,7 +73,7 @@ class Table(models.Model):
 
 # related-names in base classes must contain '%(class)s' to avoid clashes in inheriting classes
 class Data(models.Model):
-    column = models.ForeignKey('DataDescr', related_name="%(class)s-data")
+    column = models.ForeignKey('Column', related_name="%(class)s-data")
     dataset = models.ForeignKey('Dataset', related_name="%(class)s-data")
     created = models.DateTimeField()
     deleted = models.DateTimeField(blank=True, null=True)
@@ -87,16 +87,16 @@ class Data(models.Model):
         abstract = True
 
 
-class TableData(Data):
+class DataTable(Data):
     pass
 
 
-class RelTableDataDataset(models.Model):
-    tableData = models.ForeignKey('TableData')
+class DataTableToDataset(models.Model):
+    DataTable = models.ForeignKey('DataTable')
     dataset = models.ForeignKey('Dataset')
 
 
-class TextData(Data):
+class DataText(Data):
     content = models.CharField(max_length=200)
 
     def getContent(self):
@@ -106,7 +106,7 @@ class TextData(Data):
         return self.content
 
 
-class NumericData(Data):
+class DataNumeric(Data):
     content = models.FloatField()
 
     def getContent(self):
@@ -116,7 +116,7 @@ class NumericData(Data):
         return unicode(self.content)
 
 
-class SelectionData(Data):
+class DataSelection(Data):
     content = models.ForeignKey('SelectionValue')
 
     def getContent(self):
@@ -126,7 +126,7 @@ class SelectionData(Data):
         return unicode(self.content)
 
 
-class DateData(Data):
+class DataDate(Data):
     content = models.DateTimeField()
 
     def getContent(self):
@@ -136,7 +136,7 @@ class DateData(Data):
         return unicode(self.content)
 
 
-class BoolData(Data):
+class DataBool(Data):
     content = models.BooleanField()
 
     def getContent(self):
@@ -148,7 +148,7 @@ class BoolData(Data):
 
 # -- data types
 
-class Datatype(models.Model):
+class Type(models.Model):
     TEXT = 0
     NUMERIC = 1
     DATE = 2
@@ -161,25 +161,25 @@ class Datatype(models.Model):
         return self.name
 
 
-class TextType(models.Model):
-    datatype = models.ForeignKey('Datatype')
+class TypeText(models.Model):
+    type = models.ForeignKey('Type')
     length = models.IntegerField()
 
     def __unicode__(self):
-        return self.datatype.name
+        return self.type.name
 
 
-class NumericType(models.Model):
-    datatype = models.ForeignKey('Datatype')
+class TypeNumeric(models.Model):
+    type = models.ForeignKey('Type')
     min = models.FloatField()
     max = models.FloatField()
 
     def __unicode__(self):
-        return Datatype.objects.filter(datatype=id).name
+        return Type.objects.filter(type=id).name
 
 
 class SelectionValue(models.Model):
-    selectionType = models.ForeignKey('SelectionType', to_field='datatype', related_name='selVals')
+    typeSelection = models.ForeignKey('TypeSelection', to_field='type', related_name='selVals')
     content = models.CharField(max_length=100)
     index = models.IntegerField()
 
@@ -187,8 +187,8 @@ class SelectionValue(models.Model):
         return self.content
 
 
-class SelectionType(models.Model):
-    datatype = models.ForeignKey('Datatype', unique=True)
+class TypeSelection(models.Model):
+    type = models.ForeignKey('Type', unique=True)
     count = models.IntegerField()
 
     def value(self, pos):
@@ -198,30 +198,29 @@ class SelectionType(models.Model):
         return self.selVals.all()
 
     def __unicode__(self):
-        return Datatype.objects.filter(datatype=id).name
+        return Type.objects.filter(type=id).name
 
 
-class DateType(models.Model):
-    datatype = models.ForeignKey('Datatype')
+class TypeDate(models.Model):
+    type = models.ForeignKey('Type')
     min = models.DateTimeField()
     max = models.DateTimeField()
 
     def __unicode__(self):
-        return Datatype.objects.filter(datatype=id).name
+        return Type.objects.filter(type=id).name
 
 
-class TableType(models.Model):
-    datatype = models.ForeignKey('Datatype')
+class TypeTable(models.Model):
+    type = models.ForeignKey('Type')
     table = models.ForeignKey('Table')
 
     def __unicode__(self):
-        return Datatype.objects.filter(datatype=id).name
+        return Type.objects.filter(type=id).name
 
 # -- Permission system
 
 
 class DBUser(AbstractUser):
-    tableCreator = models.BooleanField()
     objects = UserManager()
 
 
@@ -252,11 +251,11 @@ class RightListForTable(models.Model):
         return "list " + unicode(self.id) + " for " + unicode(self.table)
 
 
-class RightListForDataDescr(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="datadescr-rights")
-    group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="datatdescr-rights")
+class RightListForColumn(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="column-rights")
+    group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="column-rights")
 
-    column = models.ForeignKey('DataDescr')
+    column = models.ForeignKey('Column')
     read = models.BooleanField()
     modify = models.BooleanField()
     delete = models.BooleanField()

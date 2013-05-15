@@ -6,79 +6,79 @@ from django.forms import ModelForm
 # -- Table structure
 
 
-class DataDescrForm(ModelForm):
+class ColumnForm(ModelForm):
     class Meta:
-        model = DataDescr
-        fields = ('name', 'table', 'type', 'required', 'created', 'creator')
+        model = Column
+        fields = ('name', 'type', 'required', 'created', 'creator')
 
 
 class DatasetForm(ModelForm):
     class Meta:
         model = Dataset
-        fields = ('table', 'created', 'creator', 'deleted', 'deleter')
+        fields = ('created', 'creator')
 
 
 class TableForm(ModelForm):
     class Meta:
         model = Table
-        fields = ('name', 'created', 'creator', 'deleted', 'deleter')
+        fields = ('name', 'created', 'creator')
 
 
 class DataForm(ModelForm):  # TODO: Needed?
     class Meta:
         model = Data
-        fields = ('column', 'dataset', 'created', 'creator', 'deleted', 'deleter')
+        fields = ('created', 'creator')
 
 
-class TextDataForm(ModelForm):
+class DataTextForm(ModelForm):
     class Meta:
-        model = TextData
-        fields = ('column', 'dataset', 'created', 'creator', 'deleted', 'deleter', 'content')
+        model = DataText
+        fields = ('created', 'creator', 'content')
 
 
-class NumericDataForm(ModelForm):
+class DataNumericForm(ModelForm):
     class Meta:
-        model = NumericData
-        fields = ('column', 'dataset', 'created', 'creator', 'deleted', 'deleter', 'content')
+        model = DataNumeric
+        fields = ('created', 'creator', 'content')
 
 
-class SelectionDataForm(ModelForm):
+class DataSelectionForm(ModelForm):
     class Meta:
-        model = SelectionData
-        fields = ('column', 'dataset', 'created', 'creator', 'deleted', 'deleter', 'content')
+        model = DataSelection
+        fields = ('created', 'creator', 'content')
 
 
-class DateDataForm(ModelForm):
+class DataDateForm(ModelForm):
     class Meta:
-        model = DateData
-        fields = ('column', 'dataset', 'created', 'creator', 'deleted', 'deleter', 'content')
+        model = DataDate
+        fields = ('created', 'creator', 'content')
 
 
-class BoolDataForm(ModelForm):
+class DataBoolForm(ModelForm):
     class Meta:
-        model = BoolData
-        fields = ('column', 'dataset', 'created', 'creator', 'deleted', 'deleter', 'content')
+        model = DataBool
+        fields = ('created', 'creator', 'content')
 
 
 # -- data types
 
 
-class DatatypeForm(ModelForm):
+class TypeForm(ModelForm):
     class Meta:
-        model = Datatype
+        model = Type
         fields = ('name',)
 
 
-class TextTypeForm(ModelForm):
+class TypeTextForm(ModelForm):
     class Meta:
-        model = TextType
-        fields = ('datatype', 'length')
+        model = TypeText
+        fields = ('length', )
 
 
-class NumericTypeForm(ModelForm):
+class TypeNumericForm(ModelForm):
     class Meta:
-        model = NumericType
-        fields = ('datatype', 'min', 'max')
+        model = TypeNumeric
+        fields = ('min', 'max')
 
 
 class SelectionValueForm(ModelForm):
@@ -87,24 +87,18 @@ class SelectionValueForm(ModelForm):
         fields = ('index', 'content')
 
 
-class SelectionTypeForm(ModelForm):
+class TypeSelectionForm(ModelForm):
     class Meta:
-        model = SelectionType
-        fields = ('datatype', 'count')
+        model = TypeSelection
+        fields = ('count', )
 
 
-class DateTypeForm(ModelForm):
+class TypeDateForm(ModelForm):
     class Meta:
-        model = DateType
-        fields = ('datatype', 'min', 'max')
+        model = TypeDate
+        fields = ('min', 'max')
 
 # -- Permission system
-
-
-class DBUserForm(ModelForm):
-    class Meta:
-        model = DBUser
-        fields = ('tableCreator', )
 
 
 class DBGroupForm(ModelForm):
@@ -125,7 +119,7 @@ class RightListForTableForm(ModelForm):
         fields = ('viewLog', 'rightsAdmin', 'insert')
 
 
-class RightListForDataDescrForm(ModelForm):
+class RightListForColumnForm(ModelForm):
     class Meta:
-        model = RightListForDataDescr
+        model = RightListForColumn
         fields = ('read', 'modify', 'delete')

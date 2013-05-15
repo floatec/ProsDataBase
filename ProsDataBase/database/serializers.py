@@ -17,18 +17,18 @@ class TableSerializer:
         """
         return table with specified id
 
-        {"name": "example", "dataDescr": ["columname","anothercolum"]}
+        {"name": "example", "column": ["columname","anothercolum"]}
         """
         table = Table.objects.get(pk=id)
-        dataDescrs = table.getDataDescrs()
-        dataDescrNames = []
+        columns = table.getColumns()
+        columnNames = []
 
-        for col in dataDescrs:
-            dataDescrNames.append(col.name)
+        for col in columns:
+            columnNames.append(col.name)
 
         result = dict()
         result["name"] = table.name
-        result["dataDescr"] = dataDescrNames
+        result["column"] = columnNames
 
         return json.dumps(result)
 
@@ -39,8 +39,8 @@ class TableSerializer:
 
         {
             "tables": [
-                {"name": "example", "dataDescr": ["columname","anothercolum"]},
-                {"name": "2nd", "dataDescr": ["columname","anothercolum"]}
+                {"name": "example", "columns": ["columname","anothercolum"]},
+                {"name": "2nd", "columns": ["columname","anothercolum"]}
             ]
         }
         """
@@ -49,15 +49,16 @@ class TableSerializer:
         result["tables"] = []
 
         for table in tables:
-            dataDescrs = table.getDataDescrs()
-            dataDescrNames = []
+            columns = table.getColumns()
+            columnNames = []
 
-            for col in dataDescrs:
-                dataDescrNames.append(col.name)
+            for col in columns:
+                columnNames.append(col.name)
 
-            result["tables"].append({"name": table.name, "dataDescr": dataDescrNames})
+            result["tables"].append({"name": table.name, "column": columnNames})
 
         return json.dumps(result)
+
 
 class UserSerializer:
     @staticmethod
@@ -143,11 +144,11 @@ class DatasetSerializer:
         result = dict()
         result["name"] = tableRef.name
 
-        dataDescrs = DataDescr.objects.filter(table=tableRef)
-        dataDescrNames = []
-        for col in dataDescrs:
-            dataDescrNames.append(col.name)
-        result["dataDescr"] = dataDescrNames
+        columns = Column.objects.filter(table=tableRef)
+        columnNames = []
+        for col in columns:
+            columnNames.append(col.name)
+        result["column"] = columnNames
 
         datasetList = []
         datasets = Dataset.objects.filter(table=tableRef)
@@ -162,11 +163,11 @@ class DatasetSerializer:
         result = dict()
         result["name"] = tableRef.name
 
-        dataDescrs = DataDescr.objects.filter(table=tableRef)
-        dataDescrNames = []
-        for col in dataDescrs:
-            dataDescrNames.append(col.name)
-        result["dataDescr"] = dataDescrNames
+        columns = Column.objects.filter(table=tableRef)
+        columnNames = []
+        for col in columns:
+            columnNames.append(col.name)
+        result["column"] = columnNames
 
         datasetList = []
         datasets = Dataset.objects.filter(table=tableRef)
