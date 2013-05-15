@@ -3,14 +3,10 @@
 	
 		
 		#header{
-            position: fixed;
+
             z-index: 1;
-            background-image: url("../img/header_bg.png");
+            background-color: #67A3DB;
             height: 30px;
-            color: #1e3d68;
-            text-align: center;
-            font-size: 30px;
-            font-weight: bolder;
             padding: 10px;
             width: 100%;
 
@@ -30,25 +26,35 @@
 
         #navigationMenu{
             background-color: DFEFFC;
-            width: 150px;
-            padding-bottom: 5px;
-            margin-top:10px;
+                margin-top: -25%;
+                float: left;
         }
 
         #buttonMenu{
-            position: relative;
+             margin-left: 180px;
+             margin-top: -80px;
+             position: relative;
 
         }
-
-#search{
-    width: 150px;
+#search {
+    margin-top: 1px;
+    padding-left: 15px;
+    width: 139px;
+    height: 23px;
+    margin-left: 1px;
 }
+
+
 		#loginNameMenu{
-			z-index:2;
-			font-size:14px;
-			position:fixed;
-			top:5px;
-			right:5px;
+		z-index:2;
+	    font-size:14px;
+		right: 9px;
+    top: 11px;
+    height: 15px;
+    margin-left: 1px;
+    margin-top: -34px;
+    padding-left: 83%;
+    width: 170px;
 
 		}
 		
@@ -62,54 +68,47 @@
 			background-color:blue;
 		}
 
-		#navigationMenu{
 
-		}
 	
 		#content{
 			font-family: 'Arbutus Slab', serif;
             position: relative;
-            margin-top: 10px;
+            margin-top: -10px;
             width: 850px;
 		}
 
         .overViewDiv{
-            font-family: 'Arbutus Slab', serif;
+
             float: left;
-            margin-bottom: 5px;
-            margin-right: 5px;
+            margin-right: 15px ;
             text-align: center;
             position: relative;
-            color:#071418 ;
+            color:##03588C ;
             height: 140px;
-            background-color: #1e3d68;
-            border: 4px solid #071418;
+            background-color: #D6EEFF;
+            border: 4px solid #03588C;
             border-style:solid;
             width: 200px;
             text-decoration: none;
+            top: -35px;
         }
 
         .overViewContentDiv{
-            background-color: #2E6E9E;
-            border-color: #0055CC;
+            background-color: #D6EEFF;
+            border-color: ##03588C;
             border-radius: 19px 19px 19px 19px;
-            border-style: ridge;
+            border-style: inherit;
             display: inline;
-            font-family: 'Arbutus Slab',serif;
             margin-right: 5px;
             padding: 0 10px;
             position: relative;
-            text-align: left;
             top: 35px;
         }
 
         #overViewHeader{
-           background-color: cornflowerblue;
-           border-color: #0055CC;
-           font-family: 'Arbutus Slab',serif;
-           margin-bottom: 5px;
+           background-color: #67A3DB;
+           border-color: ##03588C;
            position: absolute;
-           text-align: center;
            width: 100%;
         }
 

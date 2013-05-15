@@ -131,7 +131,7 @@ class GroupSerializer:
         result = dict()
         result["groups"] = []
 
-        for groups in groups:
+        for group in groups:
             result["groups"].append(group.name)
 
         return json.dumps(result)
