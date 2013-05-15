@@ -35,8 +35,7 @@ def addTable(request):
 
 {
   "name": "example",
-  "admin": [4, 23, 10003],  //group ids have an offset of say 10000, to distinguish from user ids
-  "column": [
+  "columns": [
         {"name": "columname", "required": 1, "type": 1,
             "options": {"0": "yes", "1": "no", "2": "maybe"},
             "rights": {
@@ -53,7 +52,7 @@ def addTable(request):
         }
     ],
   "rights": {
-      "users": {"1": ["rightAdmin", "viewLog"], "2": ["insert"]},
+      "users": {"1": ["rightsAdmin", "viewLog"], "2": ["insert"]},
       "groups": {"1001": ["rightsAdmin", "insert"]}
   }
 }
