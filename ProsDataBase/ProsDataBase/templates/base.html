@@ -17,9 +17,12 @@
 
 
 
-	<body style="margin: 0px;padding: 0px">
+	<body style="margin: -2px;top: 2px;padding: 2px;">
     {% block body %}
-        <div id=header><img id="logo" src="/static/img/logo.png" height="40px">{% block header %}ProsDataBase{% endblock %}
+        <div id=header>{% block header %}{% endblock %}
+            <div id="searchDiv">
+                    <input id="search" type="text" placeholder="suche">
+                </div>
         <div id="loginNameMenu">
 			<p>Max Mustermann</p>
 
@@ -35,11 +38,9 @@
 
 		</div>
         </div>
-        <div style="padding: 15px; position: relative; top: 75px;">
-            <div style="float: left; position: relative; margin-right: 25px;">
-                <div id="searchDiv">
-                    <input id="search" type="text" placeholder="suche">
-                </div>
+        <div style="padding: 15px; position: relative; top: 80px;">
+            <div style="float: left; position: relative; margin-right: 30px; top:-42px;">
+
                 <div id="navigationMenu">
 
 
@@ -47,7 +48,7 @@
                     {% endblock %}
                 </div>
             </div>
-            <div style="float: left; position: relative;">
+            <div>
                 <div id="buttonMenu">
                     {% block menu %}
                     {% endblock %}
