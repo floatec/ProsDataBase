@@ -12,6 +12,11 @@ def showAllTables(request):
         tables = TableSerializer.serializeAll()
         return HttpResponse(tables, content_type="application/json")
 
+def showAllUser(request):
+    if request.method == 'GET':
+        user = UserSerializer.serializeAll()
+        return HttpResponse(user, content_type="application/json")
+
 
 def AddTable(request):
     """

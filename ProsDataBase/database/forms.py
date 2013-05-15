@@ -132,16 +132,6 @@ class RightListForm(ModelForm):
 
 
 class RelRightsDataDescrForm(ModelForm):
-    column = models.ForeignKey('DataDescr')
-    rightList = models.ForeignKey('RightList')
-    read = models.BooleanField()
-    insert = models.BooleanField()
-    modify = models.BooleanField()
-    delete = models.BooleanField()
-
-    def __unicode__(self):
-        return unicode(self.rightList) + ":" + unicode(self.column)
-
     class Meta:
         model = RelRightsDataDescr
-        fields = ('column', 'rightList', 'read', 'insert', 'modify', 'delete')
+        fields = ('column', 'rightList', 'read', 'modify', 'delete')

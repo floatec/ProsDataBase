@@ -53,21 +53,13 @@
 			font-family: 'Arbutus Slab', serif;
 			text-align:left;
 			position:absolute;
-			top:150px;
-			left:200px;
+			top:90px;
+			left:150px;
+            padding 20px;
 
 			
 		
 		}
-        #buttonMenu{
-
-            position:absolute;
-            top:100px;
-            left:200px;
-            height:50px;
-
-        }
-
 		
 		
 		/*
