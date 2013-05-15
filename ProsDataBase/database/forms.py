@@ -9,7 +9,7 @@ from django.forms import ModelForm
 class DataDescrForm(ModelForm):
     class Meta:
         model = DataDescr
-        fields = ('name', 'table', 'type', 'required', 'created', 'creator', 'deleted', 'deleter')
+        fields = ('name', 'table', 'type', 'required', 'created', 'creator')
 
 
 class DatasetForm(ModelForm):
@@ -63,10 +63,10 @@ class BoolDataForm(ModelForm):
 # -- data types
 
 
-#class DatatypeForm(ModelForm):
-#    class Meta:
-#        model = Datatype
-#       fields = ('name',)
+class DatatypeForm(ModelForm):
+    class Meta:
+        model = Datatype
+        fields = ('name',)
 
 
 class TextTypeForm(ModelForm):
@@ -84,7 +84,7 @@ class NumericTypeForm(ModelForm):
 class SelectionValueForm(ModelForm):
     class Meta:
         model = SelectionValue
-        fields = ('selectionType', 'content')
+        fields = ('index', 'content')
 
 
 class SelectionTypeForm(ModelForm):
@@ -98,20 +98,19 @@ class DateTypeForm(ModelForm):
         model = DateType
         fields = ('datatype', 'min', 'max')
 
-
 # -- Permission system
 
 
 class DBUserForm(ModelForm):
     class Meta:
         model = DBUser
-        fields = ('rights', )
+        fields = ('tableCreator', )
 
 
 class DBGroupForm(ModelForm):
     class Meta:
         model = DBGroup
-        fields = ('name', 'rights', 'users')
+        fields = ('name', 'users')
 
 
 class RelUserGroupForm(ModelForm):
@@ -123,20 +122,10 @@ class RelUserGroupForm(ModelForm):
 class RightListForm(ModelForm):
     class Meta:
         model = RightList
-        fields = ('table', 'viewLog', 'rightsAdmin')
+        fields = ('viewLog', 'rightsAdmin', 'insert')
 
 
 class RelRightsDataDescrForm(ModelForm):
-    column = models.ForeignKey('DataDescr')
-    rightList = models.ForeignKey('RightList')
-    read = models.BooleanField()
-    insert = models.BooleanField()
-    modify = models.BooleanField()
-    delete = models.BooleanField()
-
-    def __unicode__(self):
-        return unicode(self.rightList) + ":" + unicode(self.column)
-
     class Meta:
         model = RelRightsDataDescr
-        fields = ('column', 'rightList', 'read', 'insert', 'modify', 'delete')
+        fields = ('column', 'rightList', 'read', 'modify', 'delete')
