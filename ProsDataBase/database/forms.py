@@ -9,7 +9,7 @@ from django.forms import ModelForm
 class DataDescrForm(ModelForm):
     class Meta:
         model = DataDescr
-        fields = ('name', 'table', 'type', 'required', 'created', 'creator', 'deleted', 'deleter')
+        fields = ('name', 'table', 'type', 'required', 'created', 'creator')
 
 
 class DatasetForm(ModelForm):
@@ -63,10 +63,10 @@ class BoolDataForm(ModelForm):
 # -- data types
 
 
-#class DatatypeForm(ModelForm):
-#    class Meta:
-#        model = Datatype
-#       fields = ('name',)
+class DatatypeForm(ModelForm):
+    class Meta:
+        model = Datatype
+        fields = ('name',)
 
 
 class TextTypeForm(ModelForm):
@@ -99,13 +99,18 @@ class DateTypeForm(ModelForm):
         fields = ('datatype', 'min', 'max')
 
 
+class TableTypeForm(ModelForm):
+    class Meta:
+        model = TableType
+        fields = ('datatype', 'table')
+
 # -- Permission system
 
 
 class DBUserForm(ModelForm):
     class Meta:
         model = DBUser
-        fields = ('rights', )
+        fields = ('rights', 'tableCreator')
 
 
 class DBGroupForm(ModelForm):
@@ -123,7 +128,7 @@ class RelUserGroupForm(ModelForm):
 class RightListForm(ModelForm):
     class Meta:
         model = RightList
-        fields = ('table', 'viewLog', 'rightsAdmin')
+        fields = ('table', 'viewLog', 'rightsAdmin', 'insert')
 
 
 class RelRightsDataDescrForm(ModelForm):
