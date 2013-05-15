@@ -17,6 +17,12 @@ def showAllUser(request):
         user = UserSerializer.serializeAll()
         return HttpResponse(user, content_type="application/json")
 
+def showAllGroup(request):
+    if request.method == 'GET':
+        user = GroupSerializer.serializeAll()
+        return HttpResponse(user, content_type="application/json")
+
+
 
 def AddTable(request):
     """

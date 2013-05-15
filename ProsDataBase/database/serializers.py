@@ -1,3 +1,5 @@
+from locale import _group
+
 __author__ = 'My-Tien Nguyen'
 
 from models import *
@@ -96,7 +98,7 @@ class UserSerializer:
         return json.dumps(result)
 
 
-class UserSerializer:
+class GroupSerializer:
     @staticmethod
     def serializeOne(id):
         """
@@ -125,12 +127,12 @@ class UserSerializer:
             ]
         }
         """
-        users = DBUser.objects.all()
+        groups = DBGroup.objects.all()
         result = dict()
-        result["users"] = []
+        result["groups"] = []
 
-        for user in users:
-            result["users"].append( user.username)
+        for groups in groups:
+            result["groups"].append(group.name)
 
         return json.dumps(result)
 
