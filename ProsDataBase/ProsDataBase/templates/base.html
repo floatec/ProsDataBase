@@ -19,7 +19,7 @@
 
 	<body style="margin: 0px;padding: 0px">
     {% block body %}
-        <div id=header><img id="logo" src="/static/img/logo.png" height="80px">{% block header %}ProsDataBase{% endblock %}
+        <div id=header><img id="logo" src="/static/img/logo.png" height="40px">{% block header %}ProsDataBase{% endblock %}
         <div id="loginNameMenu">
 			<p>Max Mustermann</p>
 
@@ -35,30 +35,30 @@
 
 		</div>
         </div>
-        <div id="searchDiv">
-            <input id="search" type="text" placeholder="suche">
+        <div style="padding: 15px; position: relative; top: 75px;">
+            <div style="float: left; position: relative; margin-right: 25px;">
+                <div id="searchDiv">
+                    <input id="search" type="text" placeholder="suche">
+                </div>
+                <div id="navigationMenu">
 
 
+                        {% block navigation %}
+                    {% endblock %}
+                </div>
+            </div>
+            <div style="float: left; position: relative;">
+                <div id="buttonMenu">
+                    {% block menu %}
+                    {% endblock %}
+
+                </div>
+                <div id="content">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
         </div>
-        <div id="navigationMenu">
-
-
-			    {% block navigation %}
-			{% endblock %}
-
-
-		</div>
-
-        <div id="buttonMenu">
-            {% block menu %}
-            {% endblock %}
-
-        </div>
-		<div id="content">
-			{% block content %}
-			{% endblock %}
-		</div>
-
     {% endblock %}
 	</body>
 <script language="JavaScript" src="/static/js/methods.js"></script>
