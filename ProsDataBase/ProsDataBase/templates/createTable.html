@@ -119,6 +119,14 @@ jQuery.getJSON('/api/user/',function(data){
 
 
 });
+jQuery.getJSON('/api/group/',function(data){
+
+    allGroups = data.groups;
+
+
+
+});
+
 
         // functions for auto-complete
         function split( val ) {
@@ -144,7 +152,7 @@ jQuery.getJSON('/api/user/',function(data){
 
 
 
-        //TODO: Hier mit AJAX die USER ziehen
+
           source: function( request, response ) {
 
         response( $.ui.autocomplete.filter(
@@ -180,11 +188,11 @@ jQuery.getJSON('/api/user/',function(data){
 
 
 
-        //TODO: Hier mit AJAX die Gruppen ziehen
+
           source: function( request, response ) {
 
         response( $.ui.autocomplete.filter(
-        availableTags, extractLast( request.term ) ) );
+        allGroups, extractLast( request.term ) ) );
         },
         select: function(event,ui){
         var terms = split( this.value );
