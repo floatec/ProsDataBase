@@ -23,9 +23,9 @@ admin.site.register(DateType)
 
 admin.site.register(DBUser)
 admin.site.register(DBGroup)
-admin.site.register(RelUserGroup)
-admin.site.register(RightList)
-admin.site.register(RelRightsDataDescr)
+admin.site.register(Membership)
+admin.site.register(RightListForTable)
+admin.site.register(RightListForDataDescr)
 
 
 #class TableAdmin(admin.ModelAdmin):
