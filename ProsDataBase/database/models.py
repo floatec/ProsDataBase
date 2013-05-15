@@ -227,10 +227,10 @@ class DBUser(AbstractUser):
 
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='RelUserGroup')
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Membership')
 
 
-class RelUserGroup(models.Model):
+class Membership(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     group = models.ForeignKey('DBGroup')
     isAdmin = models.BooleanField()
@@ -239,9 +239,10 @@ class RelUserGroup(models.Model):
         return unicode(self.user) + " - " + unicode(self.group)
 
 
-class RightList(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rights", blank=True, null=True)
-    group = models.ForeignKey('DBGroup', related_name="rights", blank=True, null=True)
+class RightListForTable(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="table-rights")
+    group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="table-rights")
+
     table = models.ForeignKey('Table', related_name="rightlists")
     viewLog = models.BooleanField()
     rightsAdmin = models.BooleanField()
@@ -251,9 +252,11 @@ class RightList(models.Model):
         return "list " + unicode(self.id) + " for " + unicode(self.table)
 
 
-class RelRightsDataDescr(models.Model):
+class RightListForDataDescr(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="datadescr-rights")
+    group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="datatdescr-rights")
+
     column = models.ForeignKey('DataDescr')
-    rightList = models.ForeignKey('RightList')
     read = models.BooleanField()
     modify = models.BooleanField()
     delete = models.BooleanField()

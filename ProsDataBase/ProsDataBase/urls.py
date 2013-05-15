@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     (r'^api/table/$', "database.views.showAllTables"),
 
     (r'^api/user/$', "database.views.showAllUser"),
-
+    (r'^api/group/$', "database.views.showAllGroup"),
 
 
 )

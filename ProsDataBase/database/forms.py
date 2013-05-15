@@ -110,22 +110,22 @@ class DBUserForm(ModelForm):
 class DBGroupForm(ModelForm):
     class Meta:
         model = DBGroup
-        fields = ('name', 'users')
+        fields = ('name', )
 
 
-class RelUserGroupForm(ModelForm):
+class MembershipForm(ModelForm):
     class Meta:
-        model = RelUserGroup
-        fields = ('user', 'group', 'isAdmin')
+        model = Membership
+        fields = ('isAdmin', )
 
 
-class RightListForm(ModelForm):
+class RightListForTableForm(ModelForm):
     class Meta:
-        model = RightList
+        model = RightListForTable
         fields = ('viewLog', 'rightsAdmin', 'insert')
 
 
-class RelRightsDataDescrForm(ModelForm):
+class RightListForDataDescrForm(ModelForm):
     class Meta:
-        model = RelRightsDataDescr
-        fields = ('column', 'rightList', 'read', 'modify', 'delete')
+        model = RightListForDataDescr
+        fields = ('read', 'modify', 'delete')

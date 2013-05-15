@@ -17,6 +17,12 @@ def showAllUser(request):
         user = UserSerializer.serializeAll()
         return HttpResponse(user, content_type="application/json")
 
+def showAllGroup(request):
+    if request.method == 'GET':
+        user = GroupSerializer.serializeAll()
+        return HttpResponse(user, content_type="application/json")
+
+
 
 def AddTable(request):
     """
@@ -26,21 +32,30 @@ def AddTable(request):
     and corresponding datatype tables (e.g. 'NumericType').
     If the datatype is 'SelectionType', the selection options are also added to the table 'SelectionValue'
 
-    {
-        "name": "example",
-        "admin": [4, 23, 10003],  //group ids have an offset of say 10000, to distinguish from user ids
-        "dataDescr": [
-            {"name": "columname", "required": 1, "type": 1,
-                "options": {"0": "yes", "1": "no", "2": "maybe"},
-                "rights": { "8": ["read"], "17": ["modify", "read"], "1001": ["modify", "delete", "read"]}
-            },
-            {"name": "anothercolum", "required": 0, "type": 1,
-                "options": {"0": "yes", "1": "no", "2": "maybe"},
-                "rights": { "8": ["read"], "17": ["modify", "read"], "1001": ["modify", "delete", "read"]}
+{
+  "name": "example",
+  "admin": [4, 23, 10003],  //group ids have an offset of say 10000, to distinguish from user ids
+  "dataDescr": [
+        {"name": "columname", "required": 1, "type": 1,
+            "options": {"0": "yes", "1": "no", "2": "maybe"},
+            "rights": {
+                "users" : { "8": ["read"], "17": ["modify", "read"]},
+                "groups": {"1001": ["modify", "delete", "read"]}
             }
-        ],
-        "rights": {"1": ["rightAdmin", "viewLog"], "1001": ["rightsAdmin", "insert"], "2": ["insert"]}
-    }
+        },
+        {"name": "anothercolum", "required": 0, "type": 1,
+            "options": {"0": "yes", "1": "no", "2": "maybe"},
+            "rights": {
+                "users" : { "8": ["read"], "17": ["modify", "read"]},
+                "groups": {"1001": ["modify", "delete", "read"]}
+            }
+        }
+    ],
+  "rights": {
+      "users": {"1": ["rightAdmin", "viewLog"], "2": ["insert"]},
+      "groups": {"1001": ["rightsAdmin", "insert"]}
+  }
+}
     """
     if request.method == "POST":
         # add to table 'Table'
@@ -54,8 +69,36 @@ def AddTable(request):
             newTable = tableF.save()
             newTable.save()
 
-        # add to table 'Datadescr'
+        # add to table 'Rightlist' for user
+        for userID, rights in request["rights"]["users"]:
+            user = DBUser.objects.get(id=userID)
+            rightList = dict()
+            rightList["viewLog"] = 1 if "viewLog" in rights else 0
+            rightList["rightsAdmin"] = 1 if "rightsAdmin" in rights else 0
+            rightList["insert"] = 1 if "insert" in rights else 0
+            rightListF = RightListForm(rightList)
+            if rightListF.is_valid():
+                newRightList = rightListF.save()
+                newRightList.table = newTable
+                newRightList.user = user
+                newRightList.save()
+
+         # add to table 'Rightlist' for group
+        for groupID, rights in request["rights"]["groups"]:
+            group = DBGroup.objects.get(id=groupID)
+            rightList = dict()
+            rightList["viewLog"] = 1 if "viewLog" in rights else 0
+            rightList["rightsAdmin"] = 1 if "rightsAdmin" in rights else 0
+            rightList["insert"] = 1 if "insert" in rights else 0
+            rightListF = RightListForm(rightList)
+            if rightListF.is_valid():
+                newRightList = rightListF.save()
+                newRightList.table = newTable
+                newRightList.group = group
+                newRightList.save()
+
         for col in request["dataDescrs"]:
+            # add to table 'Datadescr'
             dataDescr = dict()
             dataDescr["name"] = col["name"]
             dataDescr["type"] = col["type"]
@@ -67,10 +110,14 @@ def AddTable(request):
                 newDataDescr.created = datetime.now()
                 newDataDescr.table = Table.objects.get(request["name"])
                 newDataDescr.save()
-            # add to table datatype
+
+            # add to table 'RelRightListDataDescr'
+
+            # add to table 'Datatype'
             newDatatype = DatatypeForm({col["name"], })
             if newDatatype.is_valid():
                 newDatatype.save()
+
             # add to corresponding datatype table
             type = dict()
             if col["type"] == Datatype.TEXT:
@@ -108,20 +155,5 @@ def AddTable(request):
                     if selValF.is_valid():
                         selVal = selValF.save()
                         selVal.selectionType = selType
-
-        # add to Rightlist and RelRightListDataDescr
-        for newID, rights in request["rights"]:
-            user = DBUser.objects.get(id=newID)
-            if user.rightList_id is None:  # User does not have a list of rights yet
-                rightList = dict()
-                rightList["viewLog"] = 1 if "viewLog" in rights else 0
-                rightList["rightsAdmin"] = 1 if "rightsAdmin" in rights else 0
-                rightList["insert"] = 1 if "insert" in rights else 0
-                rightListF = RightListForm(rightList)
-                if rightListF.is_valid():
-                    newRightList = rightListF.save()
-                    newRightList.table = newTable
-                    newRightList.user = user
-                    user.rightList = newRightList
 
         return HttpResponse(status=200)
