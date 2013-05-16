@@ -7,6 +7,12 @@ from forms import *
 from datetime import datetime
 
 
+def table(request):
+    if request.method == 'GET':
+        showAllTables(request)
+    if request.method == 'POST':
+        addTable(request)
+
 def showAllTables(request):
     if request.method == 'GET':
         tables = TableSerializer.serializeAll()

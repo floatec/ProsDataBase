@@ -175,7 +175,7 @@ class TypeNumeric(models.Model):
     max = models.FloatField()
 
     def __unicode__(self):
-        return Type.objects.filter(type=id).name
+        return self.type.name
 
 
 class SelectionValue(models.Model):
@@ -198,8 +198,7 @@ class TypeSelection(models.Model):
         return self.selVals.all()
 
     def __unicode__(self):
-        return Type.objects.filter(type=id).name
-
+        return self.type.name
 
 class TypeDate(models.Model):
     type = models.ForeignKey('Type')
@@ -207,7 +206,7 @@ class TypeDate(models.Model):
     max = models.DateTimeField()
 
     def __unicode__(self):
-        return Type.objects.filter(type=id).name
+        return self.type.name
 
 
 class TypeTable(models.Model):
@@ -215,7 +214,7 @@ class TypeTable(models.Model):
     table = models.ForeignKey('Table')
 
     def __unicode__(self):
-        return Type.objects.filter(type=id).name
+        return self.type.name
 
 # -- Permission system
 
