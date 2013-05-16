@@ -71,7 +71,7 @@
 
         // initialize variable
         columnID = 1;
-
+        countChoiceInputs = 1;
         // initialize tabs
          $( "#tabs" ).tabs({
                 collapsible: false,
@@ -92,14 +92,10 @@ jQuery.getJSON('/api/user/',function(data){
 
     allUsers = data.users;
 
-
-
 });
 jQuery.getJSON('/api/group/',function(data){
 
     allGroups = data.groups;
-
-
 
 });
 
@@ -112,9 +108,6 @@ jQuery.getJSON('/api/group/',function(data){
             return split( term ).pop();
         }
 
-
-
-
         //auto complete for users
         $("#userAdmin")
 
@@ -125,9 +118,6 @@ jQuery.getJSON('/api/group/',function(data){
             }
             })
         .autocomplete({
-
-
-
 
           source: function( request, response ) {
 
@@ -162,9 +152,6 @@ jQuery.getJSON('/api/group/',function(data){
             })
         .autocomplete({
 
-
-
-
           source: function( request, response ) {
 
         response( $.ui.autocomplete.filter(
@@ -183,20 +170,46 @@ jQuery.getJSON('/api/group/',function(data){
 
         }
 
-
-
         });
-
 
 // SECOND TAB
 
-    //array for datatypes
+     //array for datatypes
     datatypes = ["boolean","choice","date","numeric","text"];
-   //fill first dropdown menu with datatypes
 
-    for (key in datatypes){
+    // function to get all table names
+
+    function getTables(tables){
+	for (key in tables) {
+
+		var tablename = tables[key].name;
+
+        datatypes.push(tablename);
+    }
+	}
+
+
+ jQuery.getJSON('/api/table',function(data){
+
+        getTables(data.tables);
+
+      //fill first dropdown menu with datatypes
+     for (key in datatypes){
        $("#selectDataType_1").append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
     };
+
+    });
+
+
+
+
+
+
+
+
+
+
+
 
     //append different inputs for datatypes for the first input
 
@@ -206,14 +219,14 @@ jQuery.getJSON('/api/group/',function(data){
 
     if($("#selectDataType_1").val()=="numeric"){
         $("#selectDataTypeCell_1").remove();
-        $("#row_1").append("<td id='selectDataTypeCell_1'>min:<input type='text' id='min'>max:<input type='text' id='max'></td>")
+        $("#row_1").append("<td id='selectDataTypeCell_1'>min:<input type='text' id='min' size='10'>max:<input type='text' id='max' size='10'></td>")
 
     }
     //size for text datatype
     if($("#selectDataType_1").val()=="text"){
 
         $("#selectDataTypeCell_1").remove();
-        $("#row_1").append("<td id='selectDataTypeCell_1'>size:<input type='text' id='size'></td>")
+        $("#row_1").append("<td id='selectDataTypeCell_1'>size:<input type='text' id='size'></td>");
 
     }
     if($("#selectDataType_1").val()=="boolean"){
@@ -232,41 +245,48 @@ jQuery.getJSON('/api/group/',function(data){
 
 
         $("#selectDataTypeCell_1").remove();
-        $("#row_1").append("<td id='selectDataTypeCell_1'><button id='addChoiceButton_1'>+</button></td>");
+        $("#row_1").append("<td id='selectDataTypeCell_1'><span id='choiceInputContent_1'></span><button id='addChoiceButton_1'>+</button></td>");
 
 
 
 
         // click event for button to add new choice inputs for the first row
         $("#addChoiceButton_1").click(function(){
-        $("<input type='text'>").insertBefore("#selectDataTypeCell_1");
+            countChoiceInputs++;
+            $("#choiceInputContent_1").append("<input size='10' type='text' id='choiceInput_"+countChoiceInputs+"'>");
+
+
+            // to delete the input fields with escape and delete
+            $("#choiceInput_"+countChoiceInputs).keyup(function(e){
+             if(e.keyCode == 46 || e.keyCode == 27){
+                   $(this).remove();
+                  }
+
+         })
+
+
         });
-
-
-
-        //TODO: delete empty inputs
-
-
-
 
     }
 
       });
 
 
-    // TODO: datatypes inputs dynamisch fuer alle rows
-
-    //TODO:ajax alle tabellen fuer dropdown menu
 
     //create delete function for the first input
         $("#deleteButton_1").click(function(){lastID= getNumber(this.id);$("#deleteAlertBox").dialog("open");});
 
     // method to add a column
+
+
+
     $("#addColumn").click(function(){
 
          columnID++;
-         $("#columnTable").append("<tr id='row_"+columnID+"'><td><button id='deleteButton_"+columnID+"'>-</button></td><td><input type='text' id='field_"+columnID+"'></td><td><select id='selectDataType_"+columnID+"'></select></td><td class='enumSelected'></td></tr>");
-        //TODO:ajax alle tabellen fuer dropdown menu
+         $("#columnTable").append("<tr id='row_"+columnID+"'><td><button id='deleteButton_"+columnID+"'>-</button></td><td><input type='text' id='field_"+columnID+"'></td><td><select id='selectDataType_"+columnID+"'></select></td></tr>");
+
+
+
          //fill dropdown menu with datatypes
         for (key in datatypes){
          $("#selectDataType_"+columnID).append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
@@ -283,7 +303,75 @@ jQuery.getJSON('/api/group/',function(data){
     });
 
 
-     });
+     //append different inputs for datatypes for every row
+
+    //min and max input for numeric datatype
+    $("#selectDataType_"+columnID).change(function() {
+
+
+    if($("#selectDataType_"+columnID).val()=="numeric"){
+        $("#selectDataTypeCell_"+columnID).remove();
+        $("#row_"+columnID).append("<td id='selectDataTypeCell_"+columnID+"'>min:<input type='text' id='min' size='10'>max:<input type='text' id='max' size='10'></td>")
+
+    }
+    //size for text datatype
+    if($("#selectDataType_"+columnID).val()=="text"){
+
+        $("#selectDataTypeCell_"+columnID).remove();
+        $("#row_"+columnID).append("<td id='selectDataTypeCell_"+columnID+"'>size:<input type='text' id='size'></td>");
+
+    }
+    if($("#selectDataType_"+columnID).val()=="boolean"){
+
+        $("#selectDataTypeCell_"+columnID).remove();
+
+    }
+    if($("#selectDataType_"+columnID).val()=="date"){
+
+        $("#selectDataTypeCell_"+columnID).remove();
+
+    }
+
+  if($("#selectDataType_"+columnID).val()=="choice"){
+
+
+
+
+        $("#selectDataTypeCell_"+columnID).remove();
+        $("#row_"+columnID).append("<td id='selectDataTypeCell_"+columnID+"'><span id='choiceInputContent_"+columnID+"'></span><button id='addChoiceButton_"+columnID+"'>+</button></td>");
+
+
+
+
+        // click event for button to add new choice inputs for the first row
+        $("#addChoiceButton_"+columnID).click(function(){
+            countChoiceInputs++;
+            $("#choiceInputContent_"+columnID).append("<input size='10' type='text' id='choiceInput_"+countChoiceInputs+"'>");
+
+
+            // to delete the input fields with escape and delete
+            $("#choiceInput_"+countChoiceInputs).keyup(function(e){
+             if(e.keyCode == 46 || e.keyCode == 27){
+                   $(this).remove();
+                  }
+
+         })
+
+
+        });
+
+
+
+
+
+
+
+    }
+
+      });
+
+
+    });
 
 
     // switch to page 3
@@ -301,7 +389,6 @@ jQuery.getJSON('/api/group/',function(data){
 
     }
 
-     //minusbutton function
 
 
 
