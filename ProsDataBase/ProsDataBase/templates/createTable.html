@@ -40,10 +40,10 @@
     <table id="columnTable">
 
         <tr><td></td><td>name</td><td>datatype</td></tr>
-        <tr id="row_1"><td><button id="deleteButton_1">-</button></td><td><input type="text" id="field_1"></td><td><select id="selectDataType_1"></select></td><td class="enumSelected"></td></tr>
+        <tr id="row_1"><td><button id="deleteButton_1">-</button></td><td><input type="text" id="field_1"></td><td><select id="selectDataType_1"></select></td></tr>
     </table>
 
-    <button id="addColumn">+</button><br />
+    <button id="addColumn">+</button><br /><br />
     <button id="nextButtonPage3">next</button>
 </div>
 <div id="tabs-3">
@@ -76,6 +76,7 @@
          $( "#tabs" ).tabs({
                 collapsible: false,
                 disabled: [1,2]
+
          });
 
 
@@ -86,31 +87,6 @@
             $("#tabs").tabs("option","active",1);
 
          });
-
-
-     var availableTags = [
-"Hans",
-"Peter",
-"Aaron",
-"Beatrice",
-"Christine",
-"Dora",
-"Elise",
-"Figo",
-"Gabor",
-"Heinrich Hubel",
-"Igor",
-"Jamal",
-"Kira",
-"Lena",
-"Manni",
-"Nani",
-"Olaf",
-"Peter Lustig",
-"Rita",
-"Superman",
-"Bud Spencer",
-"Mario Balotelli"];
 
 jQuery.getJSON('/api/user/',function(data){
 
@@ -176,7 +152,7 @@ jQuery.getJSON('/api/group/',function(data){
         });
 
             //auto-complete for groups
- $("#groupAdmin")
+        $("#groupAdmin")
 
          .bind( "keydown", function( event ) {
             if ( event.keyCode === $.ui.keyCode.TAB &&
@@ -213,20 +189,80 @@ jQuery.getJSON('/api/group/',function(data){
 
 
 // SECOND TAB
+
     //array for datatypes
-    datatypes = ["numeric","text","choice","date","boolean"];
-//fill first dropdown menu with datatypes
-for (key in datatypes){
-    $("#selectDataType_1").append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
-};
+    datatypes = ["boolean","choice","date","numeric","text"];
+   //fill first dropdown menu with datatypes
 
-//TODO:ajax alle tabellen fuer dropdown menu
+    for (key in datatypes){
+       $("#selectDataType_1").append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
+    };
 
- //create delete function for the first input
+    //append different inputs for datatypes for the first input
+
+    //min and max input for numeric datatype
+    $('#selectDataType_1').change(function() {
+
+
+    if($("#selectDataType_1").val()=="numeric"){
+        $("#selectDataTypeCell_1").remove();
+        $("#row_1").append("<td id='selectDataTypeCell_1'>min:<input type='text' id='min'>max:<input type='text' id='max'></td>")
+
+    }
+    //size for text datatype
+    if($("#selectDataType_1").val()=="text"){
+
+        $("#selectDataTypeCell_1").remove();
+        $("#row_1").append("<td id='selectDataTypeCell_1'>size:<input type='text' id='size'></td>")
+
+    }
+    if($("#selectDataType_1").val()=="boolean"){
+
+        $("#selectDataTypeCell_1").remove();
+
+    }
+    if($("#selectDataType_1").val()=="date"){
+
+        $("#selectDataTypeCell_1").remove();
+
+    }
+    if($("#selectDataType_1").val()=="choice"){
+
+
+
+
+        $("#selectDataTypeCell_1").remove();
+        $("#row_1").append("<td id='selectDataTypeCell_1'><button id='addChoiceButton_1'>+</button></td>");
+
+
+
+
+        // click event for button to add new choice inputs for the first row
+        $("#addChoiceButton_1").click(function(){
+        $("<input type='text'>").insertBefore("#selectDataTypeCell_1");
+        });
+
+
+
+        //TODO: delete empty inputs
+
+
+
+
+    }
+
+      });
+
+
+    // TODO: datatypes inputs dynamisch fuer alle rows
+
+    //TODO:ajax alle tabellen fuer dropdown menu
+
+    //create delete function for the first input
         $("#deleteButton_1").click(function(){lastID= getNumber(this.id);$("#deleteAlertBox").dialog("open");});
 
     // method to add a column
-     $("#addColumn").click(function(){
+    $("#addColumn").click(function(){
 
          columnID++;
          $("#columnTable").append("<tr id='row_"+columnID+"'><td><button id='deleteButton_"+columnID+"'>-</button></td><td><input type='text' id='field_"+columnID+"'></td><td><select id='selectDataType_"+columnID+"'></select></td><td class='enumSelected'></td></tr>");
