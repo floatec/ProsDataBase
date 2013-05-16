@@ -128,7 +128,7 @@ class GroupSerializer:
         """
         groups = DBGroup.objects.all()
         result = dict()
-        result["groups"] = []
+        result["groups"]  = []
 
         for group in groups:
             result["groups"].append(group.name)
