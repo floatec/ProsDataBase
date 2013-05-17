@@ -2,17 +2,20 @@
 
 
 //TODO scrollable results: http://jqueryui.com/autocomplete/#maxheight ( CSS )
+{% block navigation %}
+        <div id="naviHeadline">help</div>
 
-
+        <span id="naviContentSpan">On the first step...</span>
+{% endblock %}
 
 {% block content %}
     <div id="deleteAlertBox">Are you sure to delete this item?</div>
 
         <div id="tabs">
 <ul>
-    <li><a href="#tabs-1">step 1</a></li>
-    <li><a href="#tabs-2">step 2</a></li>
-    <li><a href="#tabs-3">step 3</a></li>
+    <li><a href="#tabs-1" id="tab_1">step 1</a></li>
+    <li><a href="#tabs-2" id="tab_2">step 2</a></li>
+    <li><a href="#tabs-3" id="tab_3">step 3</a></li>
 </ul>
 <div id="tabs-1">
      <span>Name:</span><br />
@@ -67,17 +70,34 @@
 <script language="JavaScript" >
 
 
+
+
+
 // FIRST TAB
 
         // initialize variable
         columnID = 1;
-
+        countChoiceInputs = 1;
         // initialize tabs
          $( "#tabs" ).tabs({
                 collapsible: false,
                 disabled: [1,2]
 
          });
+//switch navi-content function
+//click event for the first tab
+   $("#tab_1").click(function(){
+            $("#naviContentList").remove();
+            $("#naviHeadline").remove();
+            $("#naviContentSpan").remove();
+            $("#navigationMenu").append("<div id='naviHeadline'>help</div>");
+            $("#navigationMenu").append("<span id='naviContentSpan'>On the first step..</span>");
+
+
+
+
+
+                });
 
 
 
@@ -85,21 +105,33 @@
          $("#nextButtonPage2").click(function(){
             $("#tabs").tabs( "option", "disabled", [ 2 ]);
             $("#tabs").tabs("option","active",1);
+            $("#naviContentList").remove();
+             $("#naviHeadline").remove();
+            $("#naviContentSpan").remove();
+             $("#navigationMenu").append("<div id='naviHeadline'>help</div>");
+            $("#navigationMenu").append("<span id='naviContentSpan'>On the second step..</span>");
 
+
+              //click event for the second tab
+                $("#tab_2").click(function(){
+                $("#naviHeadline").remove();
+                $("#naviContentSpan").remove();
+                $("#naviContentList").remove();
+                $("#navigationMenu").append("<div id='naviHeadline'>help</div>");
+                $("#navigationMenu").append("<span id='naviContentSpan'>On the second step..</span>");
+
+
+                });
          });
 
 jQuery.getJSON('/api/user/',function(data){
 
     allUsers = data.users;
 
-
-
 });
 jQuery.getJSON('/api/group/',function(data){
 
     allGroups = data.groups;
-
-
 
 });
 
@@ -112,9 +144,6 @@ jQuery.getJSON('/api/group/',function(data){
             return split( term ).pop();
         }
 
-
-
-
         //auto complete for users
         $("#userAdmin")
 
@@ -125,9 +154,6 @@ jQuery.getJSON('/api/group/',function(data){
             }
             })
         .autocomplete({
-
-
-
 
           source: function( request, response ) {
 
@@ -162,9 +188,6 @@ jQuery.getJSON('/api/group/',function(data){
             })
         .autocomplete({
 
-
-
-
           source: function( request, response ) {
 
         response( $.ui.autocomplete.filter(
@@ -183,20 +206,46 @@ jQuery.getJSON('/api/group/',function(data){
 
         }
 
-
-
         });
-
 
 // SECOND TAB
 
-    //array for datatypes
+     //array for datatypes
     datatypes = ["boolean","choice","date","numeric","text"];
-   //fill first dropdown menu with datatypes
 
-    for (key in datatypes){
+    // function to get all table names
+
+    function getTables(tables){
+	for (key in tables) {
+
+		var tablename = tables[key].name;
+
+        datatypes.push(tablename);
+    }
+	}
+
+
+ jQuery.getJSON('/api/table',function(data){
+
+        getTables(data.tables);
+
+      //fill first dropdown menu with datatypes
+     for (key in datatypes){
        $("#selectDataType_1").append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
     };
+
+    });
+
+
+
+
+
+
+
+
+
+
+
 
     //append different inputs for datatypes for the first input
 
@@ -206,14 +255,14 @@ jQuery.getJSON('/api/group/',function(data){
 
     if($("#selectDataType_1").val()=="numeric"){
         $("#selectDataTypeCell_1").remove();
-        $("#row_1").append("<td id='selectDataTypeCell_1'>min:<input type='text' id='min'>max:<input type='text' id='max'></td>")
+        $("#row_1").append("<td id='selectDataTypeCell_1'>min:<input type='text' id='min' size='10'>max:<input type='text' id='max' size='10'></td>");
 
     }
     //size for text datatype
     if($("#selectDataType_1").val()=="text"){
 
         $("#selectDataTypeCell_1").remove();
-        $("#row_1").append("<td id='selectDataTypeCell_1'>size:<input type='text' id='size'></td>")
+        $("#row_1").append("<td id='selectDataTypeCell_1'>size:<input type='text' id='size'></td>");
 
     }
     if($("#selectDataType_1").val()=="boolean"){
@@ -232,41 +281,48 @@ jQuery.getJSON('/api/group/',function(data){
 
 
         $("#selectDataTypeCell_1").remove();
-        $("#row_1").append("<td id='selectDataTypeCell_1'><button id='addChoiceButton_1'>+</button></td>");
+        $("#row_1").append("<td id='selectDataTypeCell_1'><span id='choiceInputContent_1'></span><button id='addChoiceButton_1'>+</button></td>");
 
 
 
 
         // click event for button to add new choice inputs for the first row
         $("#addChoiceButton_1").click(function(){
-        $("<input type='text'>").insertBefore("#selectDataTypeCell_1");
+            countChoiceInputs++;
+            $("#choiceInputContent_1").append("<input size='10' type='text' id='choiceInput_"+countChoiceInputs+"'>");
+
+
+            // to delete the input fields with escape and delete
+            $("#choiceInput_"+countChoiceInputs).keyup(function(e){
+             if(e.keyCode == 46 || e.keyCode == 27){
+                   $(this).remove();
+                  }
+
+         })
+
+
         });
-
-
-
-        //TODO: delete empty inputs
-
-
-
 
     }
 
       });
 
 
-    // TODO: datatypes inputs dynamisch fuer alle rows
-
-    //TODO:ajax alle tabellen fuer dropdown menu
 
     //create delete function for the first input
         $("#deleteButton_1").click(function(){lastID= getNumber(this.id);$("#deleteAlertBox").dialog("open");});
 
     // method to add a column
+
+
+
     $("#addColumn").click(function(){
 
          columnID++;
-         $("#columnTable").append("<tr id='row_"+columnID+"'><td><button id='deleteButton_"+columnID+"'>-</button></td><td><input type='text' id='field_"+columnID+"'></td><td><select id='selectDataType_"+columnID+"'></select></td><td class='enumSelected'></td></tr>");
-        //TODO:ajax alle tabellen fuer dropdown menu
+         $("#columnTable").append("<tr id='row_"+columnID+"'><td><button id='deleteButton_"+columnID+"'>-</button></td><td><input type='text' id='field_"+columnID+"'></td><td><select id='selectDataType_"+columnID+"'></select></td></tr>");
+
+
+
          //fill dropdown menu with datatypes
         for (key in datatypes){
          $("#selectDataType_"+columnID).append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
@@ -280,10 +336,84 @@ jQuery.getJSON('/api/group/',function(data){
         lastID = getNumber(this.id);
         $("#deleteAlertBox").dialog( "open" );
 
+
     });
 
 
-     });
+
+     //append different inputs for datatypes for every row
+
+    //min and max input for numeric datatype
+
+
+
+    $("#selectDataType_"+columnID).change(function() {
+    lastID = getNumber(this.id);
+
+    $("#selectDataTypeCell_"+lastID).remove();
+    if($("#selectDataType_"+lastID).val()=="numeric"){
+        $("#selectDataTypeCell_"+lastID).remove();
+        $("#row_"+lastID).append("<td id='selectDataTypeCell_"+lastID+"'>min:<input type='text' id='min' size='10'>max:<input type='text' id='max' size='10'></td>");
+
+    }
+    //size for text datatype
+    if($("#selectDataType_"+lastID).val()=="text"){
+
+        $("#selectDataTypeCell_"+lastID).remove();
+        $("#row_"+lastID).append("<td id='selectDataTypeCell_"+lastID+"'>size:<input type='text' id='size'></td>");
+
+    }
+    if($("#selectDataType_"+lastID).val()=="boolean"){
+
+        $("#selectDataTypeCell_"+lastID).remove();
+
+    }
+    if($("#selectDataType_"+lastID).val()=="date"){
+
+        $("#selectDataTypeCell_"+lastID).remove();
+
+    }
+
+  if($("#selectDataType_"+lastID).val()=="choice"){
+
+
+
+
+        $("#selectDataTypeCell_"+lastID).remove();
+        $("#row_"+lastID).append("<td id='selectDataTypeCell_"+lastID+"'><span id='choiceInputContent_"+lastID+"'></span><button id='addChoiceButton_"+lastID+"'>+</button></td>");
+
+
+
+
+        // click event for button to add new choice inputs for the first row
+        $("#addChoiceButton_"+lastID).click(function(){
+            countChoiceInputs++;
+            $("#choiceInputContent_"+lastID).append("<input size='10' type='text' id='choiceInput_"+countChoiceInputs+"'>");
+
+
+            // to delete the input fields with escape and delete
+            $("#choiceInput_"+countChoiceInputs).keyup(function(e){
+             if(e.keyCode == 46 || e.keyCode == 27){
+                   $(this).remove();
+                  }
+
+         })
+
+
+        });
+
+
+
+
+
+
+
+    }
+
+      });
+
+
+    });
 
 
     // switch to page 3
@@ -291,7 +421,25 @@ jQuery.getJSON('/api/group/',function(data){
          $("#nextButtonPage3").click(function(){
             $("#tabs").tabs("enable",2);
             $("#tabs").tabs("option","active",2);
+             $("#naviContentList").remove();
+             $("#naviHeadline").remove();
+             $("#naviContentSpan").remove();
 
+
+             $("#navigationMenu").append("<div id='naviHeadline'>add Groups</div>");
+            $("#navigationMenu").append("<ul id='naviContentList'><li>step3</li></ul>");
+            //click event for the third tab
+            $("#tab_3").click(function(){
+
+                $("#naviHeadline").remove();
+                $("#naviContentList").remove();
+                $("#naviContentSpan").remove();
+                 $("#navigationMenu").append("<div id='naviHeadline'>add Groups</div>");
+                $("#navigationMenu").append("<ul id='naviContentList'><li>step3</li></ul>");
+
+
+
+                });
          });
 
      //function to get the ID
@@ -301,7 +449,6 @@ jQuery.getJSON('/api/group/',function(data){
 
     }
 
-     //minusbutton function
 
 
 

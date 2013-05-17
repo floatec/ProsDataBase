@@ -15,7 +15,7 @@
 
 {% block javascript %}
 <script language="JavaScript" >
-    //TODO variable um json format zu testen und tabelle mit daten zu füllen
+    // variable um json format zu testen und tabelle mit daten zu füllen
 	//var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
 
     jQuery.getJSON('/api/table',function(data){
