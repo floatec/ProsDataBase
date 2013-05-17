@@ -9,55 +9,55 @@ from django.forms import ModelForm
 class ColumnForm(ModelForm):
     class Meta:
         model = Column
-        fields = ('name', 'type', 'required', 'created', 'creator')
+        fields = ('name', 'required', 'created')
 
 
 class DatasetForm(ModelForm):
     class Meta:
         model = Dataset
-        fields = ('created', 'creator')
+        fields = ('created', )
 
 
 class TableForm(ModelForm):
     class Meta:
         model = Table
-        fields = ('name', 'created', 'creator')
+        fields = ('name', 'created')
 
 
 class DataForm(ModelForm):  # TODO: Needed?
     class Meta:
         model = Data
-        fields = ('created', 'creator')
+        fields = ('created', )
 
 
 class DataTextForm(ModelForm):
     class Meta:
         model = DataText
-        fields = ('created', 'creator', 'content')
+        fields = ('created', 'content')
 
 
 class DataNumericForm(ModelForm):
     class Meta:
         model = DataNumeric
-        fields = ('created', 'creator', 'content')
+        fields = ('created', 'content')
 
 
 class DataSelectionForm(ModelForm):
     class Meta:
         model = DataSelection
-        fields = ('created', 'creator', 'content')
+        fields = ('created', 'content')
 
 
 class DataDateForm(ModelForm):
     class Meta:
         model = DataDate
-        fields = ('created', 'creator', 'content')
+        fields = ('created', 'content')
 
 
 class DataBoolForm(ModelForm):
     class Meta:
         model = DataBool
-        fields = ('created', 'creator', 'content')
+        fields = ('created', 'content')
 
 
 # -- data types
@@ -122,4 +122,4 @@ class RightListForTableForm(ModelForm):
 class RightListForColumnForm(ModelForm):
     class Meta:
         model = RightListForColumn
-        fields = ('read', 'modify', 'delete')
+        fields = ('read', 'modify')
