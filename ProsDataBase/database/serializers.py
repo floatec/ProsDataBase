@@ -93,7 +93,7 @@ class UserSerializer:
         result["users"] = []
 
         for user in users:
-            result["users"].append( user.username)
+            result["users"].append(user.username)
 
         return json.dumps(result)
 
@@ -128,7 +128,7 @@ class GroupSerializer:
         """
         groups = DBGroup.objects.all()
         result = dict()
-        result["groups"]  = []
+        result["groups"] = []
 
         for group in groups:
             result["groups"].append(group.name)
@@ -138,7 +138,19 @@ class GroupSerializer:
 
 class DatasetSerializer:
 
-    def serializeAll(self, tableRef):  # tableRef is an instance of table
+    def serializeAll(self, tableRef):
+        """
+        return all datasets of table tableRef
+
+        {
+            "name": "example",
+            "columns": ["columname", "anothercolum"],
+            "datasets": [
+                [value, value],
+                [value, value]
+            ]
+        }
+        """
         result = dict()
         result["name"] = tableRef.name
 
@@ -146,7 +158,7 @@ class DatasetSerializer:
         columnNames = []
         for col in columns:
             columnNames.append(col.name)
-        result["column"] = columnNames
+        result["columns"] = columnNames
 
         datasetList = []
         datasets = Dataset.objects.filter(table=tableRef)

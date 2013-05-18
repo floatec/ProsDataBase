@@ -14,6 +14,7 @@ about our implementation:
 
 from django.db import models
 from django.conf import settings
+from datetime import datetime
 from django.contrib.auth.models import AbstractUser, UserManager
 
 
@@ -24,12 +25,12 @@ class Column(models.Model):
     name = models.CharField(max_length=100)
     table = models.ForeignKey('Table', related_name="columns")
     type = models.ForeignKey('Type')
-    required = models.BooleanField()
+    required = models.BooleanField(default=False)
 
-    created = models.DateTimeField()
-    deleted = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(default=datetime.now)
+    modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
-    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-deleter', blank=True, null=True)
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-modifier', blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -37,10 +38,10 @@ class Column(models.Model):
 
 class Dataset(models.Model):
     table = models.ForeignKey('Table', related_name="datasets")
-    created = models.DateTimeField()
-    deleted = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(default=datetime.now)
+    modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-creator')
-    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-deleter', blank=True, null=True)
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-modifier', blank=True, null=True)
 
     def getData(self):
         return self.data.all()
@@ -53,11 +54,11 @@ class Dataset(models.Model):
 
 
 class Table(models.Model):
-    name = models.CharField(max_length=100)
-    created = models.DateTimeField()
-    deleted = models.DateTimeField(blank=True, null=True)
+    name = models.CharField(primary_key=True, max_length=100)
+    created = models.DateTimeField(default=datetime.now)
+    modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
-    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-deleter', blank=True, null=True)
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-modifier', blank=True, null=True)
 
     def getColumns(self):
         return self.columns.all()
@@ -75,10 +76,10 @@ class Table(models.Model):
 class Data(models.Model):
     column = models.ForeignKey('Column', related_name="%(class)s-data")
     dataset = models.ForeignKey('Dataset', related_name="%(class)s-data")
-    created = models.DateTimeField()
-    deleted = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(default=datetime.now)
+    modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
-    deleter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-deleter', blank=True, null=True)
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-modifier', blank=True, null=True)
 
     def getContent(self):  # workaround for overwriting parent field attribute
         pass
@@ -180,8 +181,8 @@ class TypeNumeric(models.Model):
 
 class SelectionValue(models.Model):
     typeSelection = models.ForeignKey('TypeSelection', to_field='type', related_name='selVals')
-    content = models.CharField(max_length=100)
     index = models.IntegerField()
+    content = models.CharField(max_length=100)
 
     def __unicode__(self):
         return self.content
@@ -199,6 +200,7 @@ class TypeSelection(models.Model):
 
     def __unicode__(self):
         return self.type.name
+
 
 class TypeDate(models.Model):
     type = models.ForeignKey('Type')
@@ -226,6 +228,9 @@ class DBUser(AbstractUser):
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Membership')
+
+    def __unicode__(self):
+        return self.name
 
 
 class Membership(models.Model):
@@ -257,7 +262,6 @@ class RightListForColumn(models.Model):
     column = models.ForeignKey('Column')
     read = models.BooleanField()
     modify = models.BooleanField()
-    delete = models.BooleanField()
 
     def __unicode__(self):
-        return unicode(self.rightList) + ":" + unicode(self.column)
+        return "list" + unicode(self.id) + ":" + unicode(self.column)
