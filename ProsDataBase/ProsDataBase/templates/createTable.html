@@ -18,6 +18,7 @@
     <li><a href="#tabs-3" id="tab_3">step 3</a></li>
 </ul>
 <div id="tabs-1">
+
      <span>Name:</span><br />
         <input type="text"><br /><br />
         <span>Table administrators</span><br />
@@ -51,7 +52,10 @@
 </div>
 <div id="tabs-3">
     <!--TODO: Berechtigungen hier-->
-    <button>create</button>
+    <input type="text" id="inputUserGroup">
+    <button id="addUserToRights">+</button><br />
+    <div id="allUserRights"></div>
+    <button id='createTableButton'>create</button>
 
 </div>
 </div>
@@ -78,6 +82,8 @@
         // initialize variable
         columnID = 1;
         countChoiceInputs = 1;
+        rightColumnID = 1;
+        takenUserGroups = [];
         // initialize tabs
          $( "#tabs" ).tabs({
                 collapsible: false,
@@ -92,17 +98,13 @@
             $("#naviContentSpan").remove();
             $("#navigationMenu").append("<div id='naviHeadline'>help</div>");
             $("#navigationMenu").append("<span id='naviContentSpan'>On the first step..</span>");
-
-
-
-
-
-                });
+            });
 
 
 
             // function to switch to second tab
          $("#nextButtonPage2").click(function(){
+
             $("#tabs").tabs( "option", "disabled", [ 2 ]);
             $("#tabs").tabs("option","active",1);
             $("#naviContentList").remove();
@@ -110,6 +112,7 @@
             $("#naviContentSpan").remove();
              $("#navigationMenu").append("<div id='naviHeadline'>help</div>");
             $("#navigationMenu").append("<span id='naviContentSpan'>On the second step..</span>");
+
 
 
               //click event for the second tab
@@ -124,14 +127,24 @@
                 });
          });
 
+
+
 jQuery.getJSON('/api/user/',function(data){
 
     allUsers = data.users;
+    allUserGroups = [];
+   for (key in allUsers){
+    allUserGroups.push(allUsers[key]);
+       }
+
 
 });
 jQuery.getJSON('/api/group/',function(data){
 
     allGroups = data.groups;
+    for(key in allGroups){
+    allUserGroups.push(allGroups[key]);
+    }
 
 });
 
@@ -170,6 +183,7 @@ jQuery.getJSON('/api/group/',function(data){
             terms.push( "" );
             this.value = terms.join( ", " );
             return false;
+
 
         }
 
@@ -213,6 +227,8 @@ jQuery.getJSON('/api/group/',function(data){
      //array for datatypes
     datatypes = ["boolean","choice","date","numeric","text"];
 
+    //arrays to get all column names and check if a name is already taken
+    allColumnNames = [];
     // function to get all table names
 
     function getTables(tables){
@@ -288,6 +304,7 @@ jQuery.getJSON('/api/group/',function(data){
 
         // click event for button to add new choice inputs for the first row
         $("#addChoiceButton_1").click(function(){
+            lastID = getNumber(this.id);
             countChoiceInputs++;
             $("#choiceInputContent_1").append("<input size='10' type='text' id='choiceInput_"+countChoiceInputs+"'>");
 
@@ -318,6 +335,13 @@ jQuery.getJSON('/api/group/',function(data){
 
     $("#addColumn").click(function(){
 
+        var lastField = $("#field_"+columnID).val();
+
+
+        if(lastField != '' && !(jQuery.isInArray(lastField,allColumnNames))){
+
+
+        allColumnNames.push(lastField);
          columnID++;
          $("#columnTable").append("<tr id='row_"+columnID+"'><td><button id='deleteButton_"+columnID+"'>-</button></td><td><input type='text' id='field_"+columnID+"'></td><td><select id='selectDataType_"+columnID+"'></select></td></tr>");
 
@@ -328,7 +352,7 @@ jQuery.getJSON('/api/group/',function(data){
          $("#selectDataType_"+columnID).append("<option value='"+datatypes[key]+"'>"+datatypes[key]+"</option>");
         };
 
-
+        }
         // create delete-function for every column
          $("#deleteButton_"+columnID).click(function(){
 
@@ -387,6 +411,8 @@ jQuery.getJSON('/api/group/',function(data){
 
         // click event for button to add new choice inputs for the first row
         $("#addChoiceButton_"+lastID).click(function(){
+
+            lastID = getNumber(this.id);
             countChoiceInputs++;
             $("#choiceInputContent_"+lastID).append("<input size='10' type='text' id='choiceInput_"+countChoiceInputs+"'>");
 
@@ -401,12 +427,6 @@ jQuery.getJSON('/api/group/',function(data){
 
 
         });
-
-
-
-
-
-
 
     }
 
@@ -425,7 +445,12 @@ jQuery.getJSON('/api/group/',function(data){
              $("#naviHeadline").remove();
              $("#naviContentSpan").remove();
 
+               var lastField = $("#field_"+columnID).val();
+             if(lastField != '' && !(jQuery.isInArray(lastField,allColumnNames))){
 
+
+                allColumnNames.push(lastField);
+             }
              $("#navigationMenu").append("<div id='naviHeadline'>add Groups</div>");
             $("#navigationMenu").append("<ul id='naviContentList'><li>step3</li></ul>");
             //click event for the third tab
@@ -458,7 +483,12 @@ jQuery.getJSON('/api/group/',function(data){
          buttons: {
             "delete": function() {
 
+                var idx = jQuery.inArray($("#field_"+lastID).val(),allColumnNames);
+                if(idx != -1){
+               allColumnNames.splice(idx,1);
+                }
                 $("#row_"+lastID).remove();
+
                 $( this ).dialog( "close" );
 
             },
@@ -467,8 +497,82 @@ jQuery.getJSON('/api/group/',function(data){
                 }
             }
          });
+    //initialize auto-complete input field to add users / groups to rightlists
 
 
+    $("#inputUserGroup")
+        .autocomplete({
+
+          source: function( request, response ) {
+
+        response( $.ui.autocomplete.filter(
+        allUserGroups, extractLast( request.term ) ) );
+        }
+
+        });
+
+// function to check if an element is in an array
+jQuery.isInArray = function(value, array) {
+  return -1 != jQuery.inArray(value, array);
+}
+
+
+
+    $("#addUserToRights").click(function(){
+
+        var inputValue = $("#inputUserGroup").val()
+
+        //check that the input is really correct
+    if(inputValue != '' && !(jQuery.isInArray(inputValue,takenUserGroups)) && (jQuery.isInArray(inputValue,allUserGroups)) ){
+
+     takenUserGroups.push(inputValue);
+
+        // BETA Bereich: Nur zum zeigen
+
+    var userName = $("#inputUserGroup").val();
+        //create rights-table
+      $("#allUserRights").append("<table border='1' id='rightTable_"+rightColumnID+"'><tr id='descriptionRow_"+rightColumnID+"'></tr><tr id='iconsRow_"+rightColumnID+"'></tr></table>");
+
+        $("#descriptionRow_"+rightColumnID).append("<td>all</td>");
+
+     $("#iconsRow_"+rightColumnID).append("<td><input type='hidden' value=''><img src='/static/img/view-icon.png' class='icn'><input type='hidden' value=''><img src='/static/img/trash-icon.png' class='icn'><input type='hidden' value=''><img src='/static/img/pencil-icon.png' class='icn'><input type='hidden' value=''><img src='/static/img/setting-icon.png' class='icn'></td>");
+
+          for(i in allColumnNames){
+
+            $("#descriptionRow_"+rightColumnID).append("<td>"+allColumnNames[i]+"</td>");
+            $("#iconsRow_"+rightColumnID).append("<td><input type='hidden' value=''><img src='/static/img/view-icon.png' class='icn'><input type='hidden' value=''><img src='/static/img/setting-icon.png' class='icn'></td>");
+
+        }
+
+
+
+  $("#rightTable_").append("<th>"+userName+"</th>");
+
+    rightColumnID++;
+    }
+    //TODO: wenn nachtraeglich spalten geloescht werden
+
+
+         //method to toggle img background
+    $(".icn").click(function(){
+        var color = $(this).css('background-color');
+
+        if(color != "rgb(51, 204, 51)"){
+            $(this).css('background-color','rgb(51, 204, 51)');
+        }
+        else{
+            $(this).css('background-color','rgb(256, 256, 256)');
+        }
+
+    });
+    });
+    $("#createTableButton").click(function(){
+
+        alert($("#inputUserGroup").val());
+
+    });
+
+//TODO: pruefen beim create ob jede spalte einzigartig ist
 
 </script>
 
