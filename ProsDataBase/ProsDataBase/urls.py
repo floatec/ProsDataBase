@@ -24,12 +24,13 @@ urlpatterns = patterns('',
     (r'^table/$', TemplateView.as_view(template_name="table_overview.html")),
     (r'^register/$', TemplateView.as_view(template_name="register.html")),
     (r'^login/$', TemplateView.as_view(template_name="login.html")),
+    (r'^dataset/$', TemplateView.as_view(template_name="insertDataset.html")),
 
-    (r'^api/table/$', "database.views.table"),
-    (r'^api/table/all$', "database.views.showAllTables"),
+    (r'^api/table/$', "database.views.api.table"),
+    (r'^api/table/all$', "database.views.api.showAllTables"),
 
-    (r'^api/user/$', "database.views.showAllUsers"),
-    (r'^api/group/$', "database.views.showAllGroups"),
+    (r'^api/user/$', "database.views.api.showAllUsers"),
+    (r'^api/group/$', "database.views.api.showAllGroups"),
 
 
 )
