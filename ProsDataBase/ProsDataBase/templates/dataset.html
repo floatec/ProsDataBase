@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{%  block content %}
+     {% for field in strcuture %}
+      <div>{% field.name %}</div>
+       {% empty %}
+
+                    <div>{% trans "No Fields for thsi Table" %}</div>
+
+      {% endfor %}
+{% endblock %}

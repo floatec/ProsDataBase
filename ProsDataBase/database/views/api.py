@@ -3,8 +3,8 @@
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 
-from serializers import *
-from forms import *
+from ..serializers import *
+from ..forms import *
 from datetime import datetime
 
 @csrf_exempt
