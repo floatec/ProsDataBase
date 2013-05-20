@@ -311,7 +311,7 @@ jQuery.getJSON('/api/group/',function(data){
 
 
             allColumnChoiceInputs.push(columnNameID);
-            alert(columnNameID);
+
             // to delete the input fields with escape and delete
             $("#choiceInput_"+countChoiceInputs).keyup(function(e){
              if(e.keyCode == 46 || e.keyCode == 27){
@@ -584,7 +584,7 @@ jQuery.isInArray = function(value, array) {
           for(i in allColumnNames){
 
             $("#descriptionRow_"+rightColumnID).append("<td>"+allColumnNames[i]+"</td>");
-            $("#iconsRow_"+rightColumnID).append("<td><input type='hidden' value='' id='"+userName+"-"+allColumnNames[i]+"_read'><img onClick='toggle(this.id)' src='/static/img/view-icon.png' class='icn' id='"+userName+"-"+allColumnNames[i]+"_read-img'><input type='hidden' value='' id='"+userName+"-"+allColumnNames[i]+"_modify'><img src='/static/img/setting-icon.png' class='icn' id='"+userName+"-"+allColumnNames[i]+"_modify-img'></td>");
+            $("#iconsRow_"+rightColumnID).append("<td><input type='hidden' value='' id='"+userName+"-"+allColumnNames[i]+"_read'><img onClick='' src='/static/img/view-icon.png' class='icn' id='"+userName+"-"+allColumnNames[i]+"_read-img'><input type='hidden' value='' id='"+userName+"-"+allColumnNames[i]+"_modify'><img src='/static/img/setting-icon.png' class='icn' id='"+userName+"-"+allColumnNames[i]+"_modify-img'></td>");
 
         }
 
@@ -786,7 +786,7 @@ $.ajax({
 
 
 
-   // window.location.href = '/table/';
+   window.location.href = '/table/';
 
     });
 
