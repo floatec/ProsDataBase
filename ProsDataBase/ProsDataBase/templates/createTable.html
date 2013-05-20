@@ -20,7 +20,7 @@
 <div id="tabs-1">
 
      <span>Name:</span><br />
-        <input type="text"><br /><br />
+        <input type="text" id="tblName"><br /><br />
         <span>Table administrators</span><br />
         <table>
             <tr>
@@ -75,8 +75,6 @@
 
 
 
-
-
 // FIRST TAB
 
         // initialize variable
@@ -84,6 +82,7 @@
         countChoiceInputs = 1;
         rightColumnID = 1;
         takenUserGroups = [];
+
         // initialize tabs
          $( "#tabs" ).tabs({
                 collapsible: false,
@@ -251,16 +250,6 @@ jQuery.getJSON('/api/group/',function(data){
     };
 
     });
-
-
-
-
-
-
-
-
-
-
 
 
     //append different inputs for datatypes for the first input
@@ -473,8 +462,25 @@ jQuery.getJSON('/api/group/',function(data){
         return number.substring(number.lastIndexOf("_")+1);
 
     }
+//function to get the username for rightstable
+    function getUsernameForRights(username){
 
+        return username.substring(0,username.indexOf("-"));
 
+    }
+//function to get the column for rightstable
+    function getColumnNameForRights(column){
+
+        return column.substring(column.indexOf("-")+1,column.indexOf("_"));
+
+    }
+
+//function to get the Right for rightstable
+    function getRightNameForRights(column){
+
+        return column.substring(column.indexOf("_")+1,column.lastIndexOf("-"));
+
+    }
 
 
     // initialize alertbox
@@ -516,8 +522,6 @@ jQuery.isInArray = function(value, array) {
   return -1 != jQuery.inArray(value, array);
 }
 
-
-
     $("#addUserToRights").click(function(){
 
         var inputValue = $("#inputUserGroup").val()
@@ -529,46 +533,217 @@ jQuery.isInArray = function(value, array) {
 
         // BETA Bereich: Nur zum zeigen
 
-    var userName = $("#inputUserGroup").val();
+    userName = $("#inputUserGroup").val();
         //create rights-table
       $("#allUserRights").append("<table border='1' id='rightTable_"+rightColumnID+"'><tr id='descriptionRow_"+rightColumnID+"'></tr><tr id='iconsRow_"+rightColumnID+"'></tr></table>");
 
         $("#descriptionRow_"+rightColumnID).append("<td>all</td>");
 
-     $("#iconsRow_"+rightColumnID).append("<td><input type='hidden' value=''><img src='/static/img/view-icon.png' class='icn'><input type='hidden' value=''><img src='/static/img/trash-icon.png' class='icn'><input type='hidden' value=''><img src='/static/img/pencil-icon.png' class='icn'><input type='hidden' value=''><img src='/static/img/setting-icon.png' class='icn'></td>");
+     $("#iconsRow_"+rightColumnID).append("<td><input type='hidden' value='' id='"+userName+"-all_read'><img src='/static/img/view-icon.png' class='icn' id='"+userName+"-all_read-img'><input type='hidden' value='' id='"+userName+"-all_delete'><img src='/static/img/trash-icon.png' class='icn' id='"+userName+"-all_delete-img'><input type='hidden' value='' id='"+userName+"-all_write'><img src='/static/img/pencil-icon.png' class='icn' id='"+userName+"-all_write-img'><input type='hidden' value='' id='"+userName+"-all_modify'><img src='/static/img/setting-icon.png' class='icn' id='"+userName+"-all_modify-img'></td>");
 
           for(i in allColumnNames){
 
             $("#descriptionRow_"+rightColumnID).append("<td>"+allColumnNames[i]+"</td>");
-            $("#iconsRow_"+rightColumnID).append("<td><input type='hidden' value=''><img src='/static/img/view-icon.png' class='icn'><input type='hidden' value=''><img src='/static/img/setting-icon.png' class='icn'></td>");
+            $("#iconsRow_"+rightColumnID).append("<td><input type='hidden' value='' id='"+userName+"-"+allColumnNames[i]+"_read'><img onClick='toggle(this.id)' src='/static/img/view-icon.png' class='icn' id='"+userName+"-"+allColumnNames[i]+"_read-img'><input type='hidden' value='' id='"+userName+"-"+allColumnNames[i]+"_modify'><img src='/static/img/setting-icon.png' class='icn' id='"+userName+"-"+allColumnNames[i]+"_modify-img'></td>");
 
         }
 
 
 
-  $("#rightTable_").append("<th>"+userName+"</th>");
+  $("#rightTable_"+rightColumnID).prepend("<th>"+userName+"</th>");
 
     rightColumnID++;
     }
     //TODO: wenn nachtraeglich spalten geloescht werden
 
 
-         //method to toggle img background
-    $(".icn").click(function(){
-        var color = $(this).css('background-color');
+    $(".icn").unbind('click');
 
-        if(color != "rgb(51, 204, 51)"){
-            $(this).css('background-color','rgb(51, 204, 51)');
+
+      //method to toggle img background and write the right into a hiddenfield
+    $(".icn").click(function(){
+       actUserName = getUsernameForRights(this.id);
+       actColumnName = getColumnNameForRights(this.id);
+       actRightName = getRightNameForRights(this.id);
+
+    if(actColumnName == 'all' && actRightName == 'read' || actColumnName == 'all' && actRightName == 'modify'){
+         if($("#"+actUserName+"-"+actColumnName+"_"+actRightName).val() == ''){
+              $("#"+actUserName+"-"+actColumnName+"_"+actRightName).val(actRightName);
+             $("#"+actUserName+"-"+actColumnName+"_"+actRightName+"-img").css('background-color','rgb(51, 204, 51)');
+
+             for(var j in allColumnNames){
+
+                   $("#"+actUserName+"-"+allColumnNames[j]+"_"+actRightName).val(actRightName);
+                  $("#"+actUserName+"-"+allColumnNames[j]+"_"+actRightName+"-img").css('background-color','rgb(51, 204, 51)');
+
+             }
+
+         }
+        else{
+               $("#"+actUserName+"-"+actColumnName+"_"+actRightName).val('');
+              $("#"+actUserName+"-"+actColumnName+"_"+actRightName+"-img").css('background-color','rgb(256, 256, 256)');
+
+             for(var p in allColumnNames){
+
+
+                   $("#"+actUserName+"-"+allColumnNames[p]+"_"+actRightName).val('');
+                  $("#"+actUserName+"-"+allColumnNames[p]+"_"+actRightName+"-img").css('background-color','rgb(256, 256, 256)');
+
+             }
+
+         }
+
+    }
+
+
+    else{
+        if($("#"+actUserName+"-"+actColumnName+"_"+actRightName).val() == ''){
+
+
+            $("#"+actUserName+"-"+actColumnName+"_"+actRightName).val(actRightName);
+             $("#"+actUserName+"-"+actColumnName+"_"+actRightName+"-img").css('background-color','rgb(51, 204, 51)');
+
         }
         else{
-            $(this).css('background-color','rgb(256, 256, 256)');
+
+
+             $("#"+actUserName+"-"+actColumnName+"_"+actRightName).val('');
+             $("#"+actUserName+"-"+actColumnName+"_"+actRightName+"-img").css('background-color','rgb(256, 256, 256)');
+
         }
+    }
 
     });
+
+
+
+
+
+
     });
+
     $("#createTableButton").click(function(){
 
-        alert($("#inputUserGroup").val());
+       //object to send
+        /*
+var jsonTbl = new Object(
+        {
+  "name": "",
+  "columns": [
+        {"name": "columname", "required": 1, "type": 1,
+            "options": {"0": "yes", "1": "no", "2": "maybe"},  // for other datatypes replace options by "max", "min" (numeric and date), "length" (text), "table" (table)
+            "rights": {
+                "users" : { "max": ["read"], "frida": ["modify", "read"]},
+                "groups": {"chefs": ["modify", "read"]}
+            }
+        },
+        {"name": "anothercolum", "required": 0, "type": 1,
+            "options": {"0": "yes", "1": "no", "2": "maybe"},
+            "rights": {
+                "users" : { "max": ["read"], "frida": ["modify", "read"]},
+                "groups": {"chefs": ["modify", "read"]}
+            }
+        }
+    ],
+  "rights": {
+      "users": {"max": ["rightsAdmin", "viewLog"], "frida": ["insert"]},
+      "groups": {"chefs": ["rightsAdmin", "insert"]}
+  }
+}
+);
+*/
+
+
+
+
+        var jsonTbl = {};
+
+
+
+
+        //fill json object with name of the table
+        jsonTbl.name = $("#tblName").val();
+
+          //fill it with all columns
+        jsonTbl.columns = {};
+        jsonTbl.columns.name = {};
+         jsonTbl.columns.required = {};
+         jsonTbl.columns.type = {};
+
+
+
+
+
+         jsonTbl.columns.rights = {};
+
+        for(var p in allColumnNames){
+
+            jsonTbl.columns[p].name = allColumnNames(p);
+            jsonTbl.columns[p].required = 1;
+
+
+            if( $('#selectDataType_'+p).val() == "numeric"){
+                jsonTbl.columns.type = 1;
+                jsonTbl.columns.min = {};
+                 jsonTbl.columns.max = {};
+                //TODO:min max
+            }
+            else if( $('#selectDataType_'+p).val() == "text"){
+                     jsonTbl.columns.type = 0;
+                     jsonTbl.columns.length = {};
+                //TODO length
+
+            }
+            else if( $('#selectDataType_'+p).val() == "choice"){
+                     jsonTbl.columns.type = 3;
+                    jsonTbl.columns.options = {};
+                //TODO: options
+
+            }
+            else if( $('#selectDataType_'+p).val() == "boolean"){
+                      jsonTbl.columns.type = 5;
+
+            }
+            else if( $('#selectDataType_'+p).val() == "date"){
+                         jsonTbl.columns.type = 2;
+
+            }
+            else{
+                     jsonTbl.columns.type = 4;
+                     jsonTbl.columns.table = {};
+                    jsonTbl.columns.table = $('#selectDataType_'+p).val();
+
+            }
+
+
+        }
+
+        //fill it with rights for the whole table
+
+        jsonTbl.rights = {};
+        jsonTbl.rights.users = {};
+        jsonTbl.rights.groups = {};
+
+
+        for(var i in takenUserGroups){
+             var actualUser = takenUserGroups[i];
+             if(takenUserGroups[i].isInArray(allUsers)){
+                jsonTbl.rights.users.push(takenUserGroups[i]);
+                // jsonTbl.rights.users.actualUser = {};
+                if($("#"+takenUserGroups[i]+"-all_modify").val()=="modify"){
+
+                }
+                if($("#"+takenUserGroups[i]+"-all_modify").val()=="insert"){
+
+                }
+
+
+
+             }
+
+
+        }
+
 
     });
 
