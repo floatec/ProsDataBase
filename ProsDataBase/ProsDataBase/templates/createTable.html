@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% block header %}
+<a id="tab_header_1" href="#tabs-1" class="headerTab">Schritt 1<a><a id="tab_header_2" href="#tabs-2" class="headerTab headerTabDeactive">Schritt 2</a><a id="tab_header_3" href="#tabs-1" class="headerTab headerTabDeactive">Schritt 3</a>
+{% endblock %}
 
 //TODO scrollable results: http://jqueryui.com/autocomplete/#maxheight ( CSS )
 {% block navigation %}
@@ -29,8 +32,8 @@
              </tr>
 
         <tr>
-        <td><textarea name="user_eingabe" id="userAdmin" cols="40" rows="8"></textarea></td>
-        <td><textarea name="group_eingabe" id="groupAdmin" cols="40" rows="8"></textarea></td>
+        <td><textarea name="user_eingabe" id="userAdmin" cols="30" rows="8"></textarea></td>
+        <td><textarea name="group_eingabe" id="groupAdmin" cols="30" rows="8"></textarea></td>
         </tr>
         </table>
 
@@ -82,6 +85,9 @@
         countChoiceInputs = 1;
         rightColumnID = 1;
         takenUserGroups = [];
+        allColumnChoiceInputs = [];
+        ColumnNameChoiceInputs = [];
+
 
         // initialize tabs
          $( "#tabs" ).tabs({
@@ -103,7 +109,9 @@
 
             // function to switch to second tab
          $("#nextButtonPage2").click(function(){
+                     $("#tab_header_1").addClass("headerTabIanctive")
 
+             $("#tab_header_2").removeClass("headerTabDeactive")
             $("#tabs").tabs( "option", "disabled", [ 2 ]);
             $("#tabs").tabs("option","active",1);
             $("#naviContentList").remove();
@@ -293,15 +301,24 @@ jQuery.getJSON('/api/group/',function(data){
 
         // click event for button to add new choice inputs for the first row
         $("#addChoiceButton_1").click(function(){
+
+
+
             lastID = getNumber(this.id);
             countChoiceInputs++;
-            $("#choiceInputContent_1").append("<input size='10' type='text' id='choiceInput_"+countChoiceInputs+"'>");
+            $("#choiceInputContent_1").append("<input size='10' type='text' class='rowClass_1' id='choiceInput_"+countChoiceInputs+"'>");
+            var columnNameID = lastID + "-" + "choiceInput_"+countChoiceInputs;
 
 
+            allColumnChoiceInputs.push(columnNameID);
+            alert(columnNameID);
             // to delete the input fields with escape and delete
             $("#choiceInput_"+countChoiceInputs).keyup(function(e){
              if(e.keyCode == 46 || e.keyCode == 27){
-                   $(this).remove();
+                 var idx = jQuery.inArray($(columnNameID,allColumnChoiceInputs));
+                 allColumnChoiceInputs.splice(idx,1);
+                 $(this).remove();
+
                   }
 
          })
@@ -404,12 +421,16 @@ jQuery.getJSON('/api/group/',function(data){
             lastID = getNumber(this.id);
             countChoiceInputs++;
             $("#choiceInputContent_"+lastID).append("<input size='10' type='text' id='choiceInput_"+countChoiceInputs+"'>");
-
-
+            lastID = getNumber(this.id);
+           var columnNameID = lastID + "-" + "choiceInput_"+countChoiceInputs;
+            allColumnChoiceInputs.push(columnNameID);
             // to delete the input fields with escape and delete
             $("#choiceInput_"+countChoiceInputs).keyup(function(e){
              if(e.keyCode == 46 || e.keyCode == 27){
-                   $(this).remove();
+                 var idx = jQuery.inArray($(columnNameID,allColumnChoiceInputs));
+                 allColumnChoiceInputs.splice(idx,1);
+                 $(this).remove();
+
                   }
 
          })
@@ -426,8 +447,11 @@ jQuery.getJSON('/api/group/',function(data){
 
 
     // switch to page 3
-       // function to switch to second tab
+       // function to switch to third tab
          $("#nextButtonPage3").click(function(){
+             $("#tab_header_1").addClass("headerTabIanctive")
+             $("#tab_header_2").addClass("headerTabIanctive")
+             $("#tab_header_3").removeClass("headerTabDeactive")
             $("#tabs").tabs("enable",2);
             $("#tabs").tabs("option","active",2);
              $("#naviContentList").remove();
@@ -439,6 +463,17 @@ jQuery.getJSON('/api/group/',function(data){
 
 
                 allColumnNames.push(lastField);
+                  for(var key in allColumnChoiceInputs){
+                       var idx = allColumnChoiceInputs[key].indexOf("-");
+                       ColumnNameChoiceInputs[key] =  allColumnChoiceInputs[key].replace( allColumnChoiceInputs[key].substring(0,idx), $("#field_"+getIDtoCompareColumnName(allColumnChoiceInputs[key])).val());
+
+                      var idxForDelete =  allColumnChoiceInputs.indexOf(key);
+                        //TODO: allColumnChoiceInputs jeweiliger array eintrag loeschen!
+                     // allColumnChoiceInputs.splice(idxForDelete,1);
+
+
+
+                    }
              }
              $("#navigationMenu").append("<div id='naviHeadline'>add Groups</div>");
             $("#navigationMenu").append("<ul id='naviContentList'><li>step3</li></ul>");
@@ -479,6 +514,11 @@ jQuery.getJSON('/api/group/',function(data){
     function getRightNameForRights(column){
 
         return column.substring(column.indexOf("_")+1,column.lastIndexOf("-"));
+
+    }
+
+    function getIDtoCompareColumnName(column){
+          return column.substring(0,column.indexOf("-"));
 
     }
 
@@ -625,127 +665,131 @@ jQuery.isInArray = function(value, array) {
     $("#createTableButton").click(function(){
 
        //object to send
-        /*
-var jsonTbl = new Object(
-        {
-  "name": "",
-  "columns": [
-        {"name": "columname", "required": 1, "type": 1,
-            "options": {"0": "yes", "1": "no", "2": "maybe"},  // for other datatypes replace options by "max", "min" (numeric and date), "length" (text), "table" (table)
-            "rights": {
-                "users" : { "max": ["read"], "frida": ["modify", "read"]},
-                "groups": {"chefs": ["modify", "read"]}
-            }
-        },
-        {"name": "anothercolum", "required": 0, "type": 1,
-            "options": {"0": "yes", "1": "no", "2": "maybe"},
-            "rights": {
-                "users" : { "max": ["read"], "frida": ["modify", "read"]},
-                "groups": {"chefs": ["modify", "read"]}
-            }
-        }
-    ],
-  "rights": {
-      "users": {"max": ["rightsAdmin", "viewLog"], "frida": ["insert"]},
-      "groups": {"chefs": ["rightsAdmin", "insert"]}
-  }
-}
-);
-*/
-
-
-
-
         var jsonTbl = {};
-
-
-
-
         //fill json object with name of the table
         jsonTbl.name = $("#tblName").val();
 
           //fill it with all columns
-        jsonTbl.columns = {};
-        jsonTbl.columns.name = {};
-         jsonTbl.columns.required = {};
-         jsonTbl.columns.type = {};
+        jsonTbl.columns = [];
 
-
-
-
-
+        jsonTbl.columns.name;
+         jsonTbl.columns.required;
+         jsonTbl.columns.type;
          jsonTbl.columns.rights = {};
 
         for(var p in allColumnNames){
+            columnObj = {};
+            columnObj.name = allColumnNames[p];
 
-            jsonTbl.columns[p].name = allColumnNames(p);
-            jsonTbl.columns[p].required = 1;
+            columnObj.name = allColumnNames[p];
+            columnObj.required = 1;
+            columnObj.type = 5;
+            /*
+            if( $('#selectDataType_'+getNumber()).val() == "numeric"){
+                columnObj.type = 1;
 
-
-            if( $('#selectDataType_'+p).val() == "numeric"){
-                jsonTbl.columns.type = 1;
-                jsonTbl.columns.min = {};
-                 jsonTbl.columns.max = {};
                 //TODO:min max
             }
             else if( $('#selectDataType_'+p).val() == "text"){
-                     jsonTbl.columns.type = 0;
-                     jsonTbl.columns.length = {};
+                columnObj.type = 0;
+
                 //TODO length
 
             }
             else if( $('#selectDataType_'+p).val() == "choice"){
-                     jsonTbl.columns.type = 3;
-                    jsonTbl.columns.options = {};
-                //TODO: options
+
+               columnObj.type = 3;
+                    columnObj.options ={};
+
+                for(var key in allColumnNames){
+                    var counter = 0;
+                    for(var p in ColumnNameChoiceInputs){
+                        if(allColumnNames[key]==ColumnNameChoiceInputs[p]){
+
+                            columnObj.option.push({key:counter,value:$("#"+ColumnNameChoiceInputs[p]).val()});
+
+                            counter++
+
+
+                        }
+
+                    }
+
+                }
+
 
             }
             else if( $('#selectDataType_'+p).val() == "boolean"){
-                      jsonTbl.columns.type = 5;
+                      columnObj.type = 5;
 
             }
             else if( $('#selectDataType_'+p).val() == "date"){
-                         jsonTbl.columns.type = 2;
+                        columnObj.type = 2;
 
             }
             else{
-                     jsonTbl.columns.type = 4;
-                     jsonTbl.columns.table = {};
-                    jsonTbl.columns.table = $('#selectDataType_'+p).val();
+                     columnObj.type = 4;
+                     columnObj.table= $('#selectDataType_'+p).val();
+
 
             }
-
+*/
+            jsonTbl.columns.push(columnObj);
 
         }
 
         //fill it with rights for the whole table
 
+
+/*
         jsonTbl.rights = {};
         jsonTbl.rights.users = {};
         jsonTbl.rights.groups = {};
 
 
         for(var i in takenUserGroups){
-             var actualUser = takenUserGroups[i];
-             if(takenUserGroups[i].isInArray(allUsers)){
-                jsonTbl.rights.users.push(takenUserGroups[i]);
-                // jsonTbl.rights.users.actualUser = {};
+
+             if(jQuery.isInArray(takenUserGroups[i],allUsers)){
+
                 if($("#"+takenUserGroups[i]+"-all_modify").val()=="modify"){
+                    jsonTbl.rights.users.push({key:takenUserGroups[i],value:"rightsAdmin"});
 
                 }
                 if($("#"+takenUserGroups[i]+"-all_modify").val()=="insert"){
-
+                     jsonTbl.rights.users.push({key:takenUserGroups[i],value:"insert"});
                 }
 
+             }
+            else if(jQuery.isInArray(takenUserGroups[i],allGroups)){
 
+                   if($("#"+takenUserGroups[i]+"-all_modify").val()=="modify"){
+                    jsonTbl.rights.users.push({key:takenUserGroups[i],value:"rightsAdmin"});
+
+                }
+                if($("#"+takenUserGroups[i]+"-all_modify").val()=="insert"){
+                     jsonTbl.rights.users.push({key:takenUserGroups[i],value:"insert"});
+                }
 
              }
 
 
         }
+*/
 
+$.ajax({
+     url: '/api/table/',
+    type: 'post',
+    data: JSON.stringify(jsonTbl),
+    contentType: 'application/json',
+    dataType: 'json'
+});
+
+
+
+   // window.location.href = '/table/';
 
     });
+
 
 //TODO: pruefen beim create ob jede spalte einzigartig ist
 

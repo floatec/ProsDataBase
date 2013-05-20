@@ -1,13 +1,12 @@
 # Create your views here.
 
-from datetime import datetime
-import sys
-
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 
 from ..serializers import *
 from ..forms import *
+
+from datetime import datetime
 
 @csrf_exempt
 def table(request):
@@ -77,12 +76,12 @@ def addTable(request):
         tableF = TableForm(table)
         if tableF.is_valid():
             newTable = tableF.save(commit=False)
-            newTable.creator = DBUser.objects.get(username="tieni")
+            newTable.creator = DBUser.objects.get(username="test")
             newTable.save()
         else:
             return HttpResponse("Could not create table.")
 
-            # add to table 'RightlistForTable' for user
+        # add to table 'RightlistForTable' for user
         if "rights" in request:
             for userKey, rights in request["rights"]["users"].items():
                 rightList = dict()
@@ -102,7 +101,7 @@ def addTable(request):
                 else:
                     return HttpResponse("Could not create user's rightlist for table.")
 
-            # add to table 'RightlistForTable' for group
+             # add to table 'RightlistForTable' for group
             for groupKey, rights in request["rights"]["groups"].items():
                 rightList = dict()
                 rightList["viewLog"] = True if "viewLog" in rights else False
@@ -137,8 +136,8 @@ def addTable(request):
                     return HttpResponse("Could not create text type")
 
             elif col["type"] == Type.NUMERIC or col["type"] == Type.DATE:
-                type["min"] = col["min"] if "min" in col else -(sys.maxint - 1)
-                type["max"] = col["max"] if "max" in col else sys.maxint - 1
+                type["min"] = col["min"]
+                type["max"] = col["max"]
                 typeNumericF = TypeNumericForm(type)
                 if typeNumericF.is_valid():
                     newNumeric = typeNumericF.save(commit=False)
@@ -179,13 +178,12 @@ def addTable(request):
             columnF = ColumnForm(column)
             if columnF.is_valid():
                 newColumn = columnF.save(commit=False)
-                newColumn.creator = DBUser.objects.get(username="tieni")
+                newColumn.creator = DBUser.objects.get(username="test")
                 newColumn.type = newDatatype
                 newColumn.table = newTable
                 newColumn.save()
             else:
                 return HttpResponse("Could not create new column " + col["name"])
-
             if "rights" in col:
                 # add to table "RightListForColumn" for users
                 for userKey, rights in col["rights"]["users"].items():
