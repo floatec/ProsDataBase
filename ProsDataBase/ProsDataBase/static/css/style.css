@@ -159,15 +159,17 @@ border-right-width: 5px;
 }
 .overViewContentDiv {
     background-color: #D6EFFF;
-
-    padding: 8px 0px;
-    display: -moz-inline-box;
+    display: -moz-grid-line;
     margin-right: 13px;
     margin-top: 13px;
+    padding: 8px 0;
     position: relative;
-    top: 24px;
-
-    }
+    top: 44px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: #265FAB;
+    border-width: 1px;
+}
 
 
 #overViewHeader {
