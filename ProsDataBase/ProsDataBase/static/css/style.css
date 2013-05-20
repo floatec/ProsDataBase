@@ -92,11 +92,10 @@ border-right-width: 5px;
 
         #content {
             font-family: 'Arbutus Slab',serif;
-            left: 200px;
-            margin-top: 48px;
-            padding-left: 65px;
+            left: 265px;
+            top: -15px;
             position: absolute;
-            width: 850px;
+
             }
 
 .overViewDiv {
