@@ -20,10 +20,10 @@
 
 	<body style="margin: -2px;top: 2px;padding: 2px;">
     {% block body %}
-        <div id=header>{% block header %}{% endblock %}
-            <div id="searchDiv">
+        <div id=header><div id="searchDiv">
                     <input id="search" type="text" placeholder="suche">
-                </div>
+                </div>{% block header %}{% endblock %}
+
         <div id="loginNameMenu">
 			<p>Max Mustermann</p>
 

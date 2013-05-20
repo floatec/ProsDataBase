@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% block header %}
+<a id="tab_header_1" href="#tabs-1" class="headerTab">Schritt 1<a><a id="tab_header_2" href="#tabs-2" class="headerTab headerTabDeactive">Schritt 2</a><a id="tab_header_3" href="#tabs-1" class="headerTab headerTabDeactive">Schritt 3</a>
+{% endblock %}
 
 //TODO scrollable results: http://jqueryui.com/autocomplete/#maxheight ( CSS )
 {% block navigation %}
@@ -106,7 +109,9 @@
 
             // function to switch to second tab
          $("#nextButtonPage2").click(function(){
+                     $("#tab_header_1").addClass("headerTabIanctive")
 
+             $("#tab_header_2").removeClass("headerTabDeactive")
             $("#tabs").tabs( "option", "disabled", [ 2 ]);
             $("#tabs").tabs("option","active",1);
             $("#naviContentList").remove();
@@ -444,6 +449,9 @@ jQuery.getJSON('/api/group/',function(data){
     // switch to page 3
        // function to switch to third tab
          $("#nextButtonPage3").click(function(){
+             $("#tab_header_1").addClass("headerTabIanctive")
+             $("#tab_header_2").addClass("headerTabIanctive")
+             $("#tab_header_3").removeClass("headerTabDeactive")
             $("#tabs").tabs("enable",2);
             $("#tabs").tabs("option","active",2);
              $("#naviContentList").remove();
@@ -778,7 +786,7 @@ $.ajax({
 
 
 
-    window.location.href = '/table/';
+   // window.location.href = '/table/';
 
     });
 
