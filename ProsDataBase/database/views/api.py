@@ -1,11 +1,13 @@
 # Create your views here.
 
+from datetime import datetime
+import sys
+
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 
 from ..serializers import *
 from ..forms import *
-from datetime import datetime
 
 @csrf_exempt
 def table(request):
@@ -80,41 +82,42 @@ def addTable(request):
         else:
             return HttpResponse("Could not create table.")
 
-        # add to table 'RightlistForTable' for user
-        for userKey, rights in request["rights"]["users"].items():
-            rightList = dict()
-            rightList["viewLog"] = True if "viewLog" in rights else False
-            rightList["rightsAdmin"] = True if "rightsAdmin" in rights else False
-            rightList["insert"] = True if "insert" in rights else False
-            rightListF = RightListForTableForm(rightList)
+            # add to table 'RightlistForTable' for user
+        if "rights" in request:
+            for userKey, rights in request["rights"]["users"].items():
+                rightList = dict()
+                rightList["viewLog"] = True if "viewLog" in rights else False
+                rightList["rightsAdmin"] = True if "rightsAdmin" in rights else False
+                rightList["insert"] = True if "insert" in rights else False
+                rightListF = RightListForTableForm(rightList)
 
-            if rightListF.is_valid():
-                newRightList = rightListF.save(commit=False)
-                newRightList.table = newTable
+                if rightListF.is_valid():
+                    newRightList = rightListF.save(commit=False)
+                    newRightList.table = newTable
 
-                user = DBUser.objects.get(username=userKey)
-                newRightList.user = user
-                newRightList.save()
+                    user = DBUser.objects.get(username=userKey)
+                    newRightList.user = user
+                    newRightList.save()
 
-            else:
-                return HttpResponse("Could not create user's rightlist for table.")
+                else:
+                    return HttpResponse("Could not create user's rightlist for table.")
 
-         # add to table 'RightlistForTable' for group
-        for groupKey, rights in request["rights"]["groups"].items():
-            rightList = dict()
-            rightList["viewLog"] = True if "viewLog" in rights else False
-            rightList["rightsAdmin"] = True if "rightsAdmin" in rights else False
-            rightList["insert"] = True if "insert" in rights else False
-            rightListF = RightListForTableForm(rightList)
-            if rightListF.is_valid():
-                newRightList = rightListF.save(commit=False)
-                newRightList.table = newTable
+            # add to table 'RightlistForTable' for group
+            for groupKey, rights in request["rights"]["groups"].items():
+                rightList = dict()
+                rightList["viewLog"] = True if "viewLog" in rights else False
+                rightList["rightsAdmin"] = True if "rightsAdmin" in rights else False
+                rightList["insert"] = True if "insert" in rights else False
+                rightListF = RightListForTableForm(rightList)
+                if rightListF.is_valid():
+                    newRightList = rightListF.save(commit=False)
+                    newRightList.table = newTable
 
-                group = DBGroup.objects.get(name=groupKey)
-                newRightList.group = group
-                newRightList.save()
-            else:
-                return HttpResponse("Could not create group's rightlist for table")
+                    group = DBGroup.objects.get(name=groupKey)
+                    newRightList.group = group
+                    newRightList.save()
+                else:
+                    return HttpResponse("Could not create group's rightlist for table")
 
         for col in request["columns"]:
             # add to table 'Datatype'
@@ -134,8 +137,8 @@ def addTable(request):
                     return HttpResponse("Could not create text type")
 
             elif col["type"] == Type.NUMERIC or col["type"] == Type.DATE:
-                type["min"] = col["min"]
-                type["max"] = col["max"]
+                type["min"] = col["min"] if "min" in col else -(sys.maxint - 1)
+                type["max"] = col["max"] if "max" in col else sys.maxint - 1
                 typeNumericF = TypeNumericForm(type)
                 if typeNumericF.is_valid():
                     newNumeric = typeNumericF.save(commit=False)
@@ -183,35 +186,36 @@ def addTable(request):
             else:
                 return HttpResponse("Could not create new column " + col["name"])
 
-            # add to table "RightListForColumn" for users
-            for userKey, rights in col["rights"]["users"].items():
-                rightList = dict()
-                rightList["read"] = 1 if "read" in rights else 0
-                rightList["modify"] = 1 if "modify" in rights else 0
-                rightListF = RightListForColumnForm(rightList)
-                if rightListF.is_valid():
-                    newRightList = rightListF.save(commit=False)
-                    newRightList.column = newColumn
+            if "rights" in col:
+                # add to table "RightListForColumn" for users
+                for userKey, rights in col["rights"]["users"].items():
+                    rightList = dict()
+                    rightList["read"] = 1 if "read" in rights else 0
+                    rightList["modify"] = 1 if "modify" in rights else 0
+                    rightListF = RightListForColumnForm(rightList)
+                    if rightListF.is_valid():
+                        newRightList = rightListF.save(commit=False)
+                        newRightList.column = newColumn
 
-                    user = DBUser.objects.get(username=userKey)
-                    newRightList.user = user
-                    newRightList.save()
-                else:
-                    return HttpResponse("could not create column right list for user")
-            # add to table 'RightListForColumn' for groups
-            for groupKey, rights in col["rights"]["groups"].items():
-                rightList = dict()
-                rightList["read"] = 1 if "read" in rights else 0
-                rightList["modify"] = 1 if "modify" in rights else 0
-                rightListF = RightListForColumnForm(rightList)
-                if rightListF.is_valid():
-                    newRightList = rightListF.save(commit=False)
-                    newRightList.column = newColumn
+                        user = DBUser.objects.get(username=userKey)
+                        newRightList.user = user
+                        newRightList.save()
+                    else:
+                        return HttpResponse("could not create column right list for user")
+                # add to table 'RightListForColumn' for groups
+                for groupKey, rights in col["rights"]["groups"].items():
+                    rightList = dict()
+                    rightList["read"] = 1 if "read" in rights else 0
+                    rightList["modify"] = 1 if "modify" in rights else 0
+                    rightListF = RightListForColumnForm(rightList)
+                    if rightListF.is_valid():
+                        newRightList = rightListF.save(commit=False)
+                        newRightList.column = newColumn
 
-                    group = DBGroup.objects.get(name=groupKey)
-                    newRightList.group = group
-                    newRightList.save()
-                else:
-                    return HttpResponse("Could not create column right list for group")
+                        group = DBGroup.objects.get(name=groupKey)
+                        newRightList.group = group
+                        newRightList.save()
+                    else:
+                        return HttpResponse("Could not create column right list for group")
 
         return HttpResponse(status=200)
