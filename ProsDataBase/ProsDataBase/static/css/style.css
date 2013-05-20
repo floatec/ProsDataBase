@@ -5,7 +5,7 @@
 		#header{
 
             z-index: 1;
-            background-color: #67A3DB;
+            background-color: #9AD490;
             height: 30px;
             padding: 10px;
             width: 100%;
@@ -32,14 +32,15 @@
 
 
 
+
         #buttonMenu {
-            background-color: #0088cc;
-            left: 251px;
-            top:45px;
-            position: absolute;
-    padding-top: 5px;
+          background-color: #9AD490;
             height: 30px;
-        }
+             left: 251px;
+            padding-top: 5px;
+             position: absolute;
+            top: 47px;
+}
         .buttonMenuButton{
             font-size: 20px;
             margin-top: 15px;
@@ -48,12 +49,12 @@
             padding-left: 5px;
             padding-right: 5px;
             color: #ffffff;
-         border-left-style: solid;
-border-left-color: yellow;
-border-left-width: 5px;
+             border-left-style: solid;
+             border-left-color: #D6EEFF;
+             border-left-width: 5px;
             border-right-style: solid;
-border-right-color: yellow;
-border-right-width: 5px;
+            border-right-color: #D6EEFF;
+            border-right-width: 5px;
         }
 
         #search {
@@ -92,8 +93,7 @@ border-right-width: 5px;
 
         #content {
             font-family: 'Arbutus Slab',serif;
-            left: 265px;
-            top: -15px;
+            left: 250px;
             position: absolute;
 
             }
