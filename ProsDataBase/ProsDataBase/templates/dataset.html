@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
 {%  block content %}
+<table border="0">
+
      {% for field in strcuture %}
-      <div>{% field.name %}</div>
+      <tr><td>{{ field.name }}  </td><td><input type="text"></td><td></td></tr>
        {% empty %}
 
-                    <div>{% trans "No Fields for thsi Table" %}</div>
+                    <div>No Fields for this Table</div>
 
       {% endfor %}
+       </table>
+       <input type="button" value="Save">
 {% endblock %}
