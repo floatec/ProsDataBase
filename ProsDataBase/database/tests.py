@@ -36,6 +36,8 @@ class DBGroupTest(TestCase):
         self.m3 = Membership(user=self.mark, group=self.group2)
         self.m3.save()
 
+        for m
+
     def test_group(self):
 
         self.assertEquals(self.group1.name, "bambam")
