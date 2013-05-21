@@ -87,7 +87,7 @@
         takenUserGroups = [];
         allColumnChoiceInputs = [];
         ColumnNameChoiceInputs = [];
-
+        allUserGroups = [];
 
         // initialize tabs
          $( "#tabs" ).tabs({
@@ -139,7 +139,7 @@
 jQuery.getJSON('/api/user/',function(data){
 
     allUsers = data.users;
-    allUserGroups = [];
+
    for (key in allUsers){
     allUserGroups.push(allUsers[key]);
        }
