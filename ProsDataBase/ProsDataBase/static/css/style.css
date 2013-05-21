@@ -28,6 +28,7 @@
             background-color:#DFEFFC;
             margin-top: -25%;
             float: left;
+            min-width: 190px;
         }
 
 
@@ -60,11 +61,16 @@
         #search {
              margin-top: 1px;
              padding-left: 15px;
-             width: 140px;
+            padding-right: 15px;
+             width: 200px;
              height: 23px;
              margin-left: 1px;
+            margin-right: 20px;
 }
+    #searchDiv{
 
+        display: inline;
+    }
 
 
         #loginNameMenu {
@@ -89,6 +95,45 @@
 			background-color:blue;
 		}
 
+        .headerTab{
+            margin-right: 10px;
+            margin-left: 1px;
+            padding-right: 10px;
+            padding-left: 10px;
+            font-size: 26px;
+        display: inline;
+         color: #ffffff;
+         border-left-style: solid;
+border-left-color: yellow;
+border-left-width: 5px;
+            border-right-style: solid;
+border-right-color: yellow;
+border-right-width: 5px;
+        }
+        .headerTabIanctive{
+
+         color: #ffffff;
+         border-left-style: solid;
+border-left-color: #ffffff;
+border-left-width: 5px;
+            border-right-style: solid;
+border-right-color: #ffffff;
+border-right-width: 5px;
+        }
+        .headerTabDeactive{
+
+         color: gray;
+         border-left-style: solid;
+border-left-color: grey;
+border-left-width: 5px;
+            border-right-style: solid;
+border-right-color: grey;
+border-right-width: 5px;
+        }
+        .ui-tabs-nav{
+            display: none;
+        }
+
 
 
         #content {
@@ -110,6 +155,7 @@
     text-align: center;
     text-decoration: none;
     width: 280px;
+    overflow: hidden;
 }
 .overViewContentDiv {
     background-color: #D6EFFF;

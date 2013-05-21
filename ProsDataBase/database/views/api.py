@@ -76,7 +76,7 @@ def addTable(request):
         tableF = TableForm(table)
         if tableF.is_valid():
             newTable = tableF.save(commit=False)
-            newTable.creator = DBUser.objects.get(username="tieni")
+            newTable.creator = DBUser.objects.get(username="test")
             newTable.save()
         else:
             return HttpResponse("Could not create table.")
@@ -178,7 +178,7 @@ def addTable(request):
             columnF = ColumnForm(column)
             if columnF.is_valid():
                 newColumn = columnF.save(commit=False)
-                newColumn.creator = DBUser.objects.get(username="tieni")
+                newColumn.creator = DBUser.objects.get(username="test")
                 newColumn.type = newDatatype
                 newColumn.table = newTable
                 newColumn.save()
