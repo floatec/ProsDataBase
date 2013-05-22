@@ -7,6 +7,9 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 from database.models import *
+import base64
+import unittest
+from django.test.client import Client
 
 class DBUserTest(TestCase):
     def setUp(self):
@@ -36,7 +39,6 @@ class DBGroupTest(TestCase):
         self.m3 = Membership(user=self.mark, group=self.group2)
         self.m3.save()
 
-        for m
 
     def test_group(self):
 
