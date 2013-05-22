@@ -10,16 +10,77 @@ from datetime import datetime
 
 @csrf_exempt
 def table(request):
-    if request.method == 'GET':
-        return showAllTables(request)
     if request.method == 'POST':
         return addTable(request)
-
-
-def showAllTables(request):
     if request.method == 'GET':
-        tables = TableSerializer.serializeAll()
-        return HttpResponse(tables, content_type="application/json")
+        return showAllTables(request)
+
+
+def showTable(request, name):
+    if request.method == 'GET':
+        return HttpResponse(TableSerializer.serializeOne(name), content_type="application/json")
+
+
+def tableStructure(request, name):
+    if request.method == 'GET':
+        structure = TableSerializer.serializeStructure(name)
+        return HttpResponse(structure, content_type="application/json") if structure is not None \
+            else HttpResponse(status=500)
+
+
+def insertData(request):
+    """
+    insert a dataset into a table.
+
+    {
+        "table": "tablename",
+        "data": [
+            {"column": "colname1", "value": val1},
+            {"column": "colname2", "value": [0, 1, 2], "table": "referencedTableName"}
+        ]
+    }
+    """
+    if request.method == 'POST':
+        request = json.loads(request.raw_post_data)
+        theTable = Table.objects.get(name=request["tablename"])
+        if table is None:
+            return HttpResponse(content="table with name" + request["name"] + " not found.", status=400)
+
+        for row in request["data"]:
+            column = Column.objects.get(name=row["column"], table=theTable)
+            if column is None:
+                return HttpResponse(content="Column " + row["column"] + " not found in table " + request["table"] + ".", status=400)
+
+            if column.type.getType().isValid(row["value"]):
+                if column.type.type == Type.TEXT:
+                    textF = DataTextForm({"created": datetime.now, "content": row["value"]})
+                    if textF.is_valid():
+                        newData = textF.save()
+
+                if column.type.type == Type.NUMERIC:
+                    numF = DataNumericForm({"created": datetime.now, "content": row["value"]})
+                    if numF.is_valid():
+                        newData = numF.save()
+
+                if column.type.type == Type.DATE:
+                    dateF = DataDateForm({"created": datetime.now, "content": row["value"]})
+                    if dateF.is_valid():
+                        newData = dateF.save()
+
+                if column.type.type == Type.SELECTION:
+                    selF = DataSelectionForm({"created": datetime.now, "content": row["value"]})
+                    if selF.is_valid():
+                        newData = selF.save()
+
+                if column.type.type == Type.BOOL:
+                    boolF = DataBoolForm({"created": datetime.now, "content": row["value"]})
+                    if boolF.is_valid():
+                        newData = boolF.save()
+
+                if column.type.type == Type.TABLE:
+                    newData = DataTable()
+
+                newData.column = column
 
 
 def showAllUsers(request):
@@ -32,6 +93,13 @@ def showAllGroups(request):
     if request.method == 'GET':
         user = GroupSerializer.serializeAll()
         return HttpResponse(user, content_type="application/json")
+
+
+def showAllTables(request):
+    if request.method == 'GET':
+        tables = TableSerializer.serializeAll()
+        return HttpResponse(tables, content_type="application/json") if tables is not None \
+            else HttpResponse(status=500)
 
 
 def addTable(request):
@@ -146,12 +214,6 @@ def addTable(request):
                 else:
                     return HttpResponse("Could not create date type")
 
-            elif col["type"] == Type.TABLE:
-                newTypeTable = TypeTable()
-                newTypeTable.table = Table.objects.get(name=col["table"])
-                newTypeTable.type = newDatatype
-                newTypeTable.save()
-
             elif col["type"] == Type.SELECTION:
                 typeSelF = TypeSelectionForm({"count": len(col["options"]), })
                 if typeSelF.is_valid():
@@ -169,6 +231,17 @@ def addTable(request):
                         selVal.save()
                     else:
                         return HttpResponse("Could not create Selection value")
+
+            elif col["type"] == Type.BOOL:
+                typeBool = TypeBool()
+                typeBool.type = newDatatype
+                typeBool.save()
+
+            elif col["type"] == Type.TABLE:
+                newTypeTable = TypeTable()
+                newTypeTable.table = Table.objects.get(name=col["table"])
+                newTypeTable.type = newDatatype
+                newTypeTable.save()
 
             # add to table 'Column'
             column = dict()

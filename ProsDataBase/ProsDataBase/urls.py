@@ -27,8 +27,12 @@ urlpatterns = patterns('',
     url(regex=r'^dataset/(?P<table_id>\w+)/$',
         view='database.views.frontend.insertDataset'),
 
+    # APIs for table requests
     (r'^api/table/$', "database.views.api.table"),
-    (r'^api/table/all$', "database.views.api.showAllTables"),
+    (r'^api/table/all/$', "database.views.api.showAllTables"),
+    (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.showTable"),
+    (r'^api/table/(?P<name>[\w]+)/structure/$', "database.views.api.tableStructure"),
+    (r'^api/table/dataset/$', "database.views.api.insertData"),
 
     (r'^api/user/$', "database.views.api.showAllUsers"),
     (r'^api/group/$', "database.views.api.showAllGroups"),

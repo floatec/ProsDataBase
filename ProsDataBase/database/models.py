@@ -26,11 +26,12 @@ class Column(models.Model):
     table = models.ForeignKey('Table', related_name="columns")
     type = models.ForeignKey('Type')
     required = models.BooleanField(default=False)
+    comment = models.TextField(blank=True, null=True)
 
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
-    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-modifier', blank=True, null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='columncreator')
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='columnmodifier', blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -40,11 +41,23 @@ class Dataset(models.Model):
     table = models.ForeignKey('Table', related_name="datasets")
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-creator')
-    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='set-modifier', blank=True, null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setcreator')
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setmodifier', blank=True, null=True)
 
     def getData(self):
-        return self.data.all()
+        """
+        returns an array of querysets of different types of datas.
+
+        Order is text, numeric, date, selection, table, bool
+        """
+        data = []
+        data.insert(type.TEXT, self.datatext.all())
+        data.insert(type.NUMERIC - 1, self.datanumeric.all())
+        data.insert(type.DATE - 1, self.datadate.all())
+        data.insert(type.SELECTION - 1, self.dataselection.all())
+        data.insert(type.BOOL - 1, self.datatable.all())
+        data.insert(type.TABLE - 1, self.databool.all())
+        return data
 
     def getField(self, name):
         pass
@@ -57,8 +70,8 @@ class Table(models.Model):
     name = models.CharField(primary_key=True, max_length=100)
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
-    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-modifier', blank=True, null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablecreator')
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablemodifier', blank=True, null=True)
 
     def getColumns(self):
         return self.columns.all()
@@ -74,27 +87,18 @@ class Table(models.Model):
 
 # related-names in base classes must contain '%(class)s' to avoid clashes in inheriting classes
 class Data(models.Model):
-    column = models.ForeignKey('Column', related_name="%(class)s-data")
-    dataset = models.ForeignKey('Dataset', related_name="%(class)s-data")
+    column = models.ForeignKey('Column', related_name="%(class)s")
+    dataset = models.ForeignKey('Dataset', related_name="%(class)s")
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-creator')
-    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s-modifier', blank=True, null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_creator')
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_modifier', blank=True, null=True)
 
     def getContent(self):  # workaround for overwriting parent field attribute
         pass
 
     class Meta:
         abstract = True
-
-
-class DataTable(Data):
-    pass
-
-
-class DataTableToDataset(models.Model):
-    DataTable = models.ForeignKey('DataTable')
-    dataset = models.ForeignKey('Dataset')
 
 
 class DataText(Data):
@@ -147,33 +151,76 @@ class DataBool(Data):
         return unicode(self.content)
 
 
+class DataTable(Data):
+    pass
+
+
+class DataTableToDataset(models.Model):
+    DataTable = models.ForeignKey('DataTable')
+    dataset = models.ForeignKey('Dataset')
+
 # -- data types
+
 
 class Type(models.Model):
     TEXT = 0
     NUMERIC = 1
     DATE = 2
     SELECTION = 3
-    TABLE = 4
+    BOOL = 4
+    TABLE = 5
 
+    type = models.IntegerField()
     name = models.CharField(max_length=30)
+
+    def getType(self):
+        if hasattr(self, 'typetext') and self.typetext is not None:
+            return self.typetext
+        if hasattr(self, 'typenumeric') and self.typenumeric is not None:
+            return self.typenumeric
+        if hasattr(self, 'typedate') and self.typedate is not None:
+            return self.typedate
+        if hasattr(self, 'typeselection') and self.typeselection is not None:
+            return self.typeselection
+        if hasattr(self, 'typebool') and self.typebool is not None:
+            return self.typebool
+        if hasattr(self, 'typetable') and self.typetable is not None:
+            return self.typetable
 
     def __unicode__(self):
         return self.name
 
 
 class TypeText(models.Model):
-    type = models.ForeignKey('Type')
+    type = models.OneToOneField('Type')
     length = models.IntegerField()
+
+    def isValid(self, input):
+        return input.len <= self.length
 
     def __unicode__(self):
         return self.type.name
 
 
 class TypeNumeric(models.Model):
-    type = models.ForeignKey('Type')
+    type = models.OneToOneField('Type')
     min = models.FloatField()
     max = models.FloatField()
+
+    def isValid(self, input):
+        return min <= input <= max
+
+    def __unicode__(self):
+        return self.type.name
+
+
+class TypeDate(models.Model):
+    type = models.OneToOneField('Type')
+    min = models.DateTimeField()
+    max = models.DateTimeField()
+
+    def isValid(self, input):
+        return min <= input <= max
 
     def __unicode__(self):
         return self.type.name
@@ -189,7 +236,7 @@ class SelectionValue(models.Model):
 
 
 class TypeSelection(models.Model):
-    type = models.ForeignKey('Type', unique=True)
+    type = models.OneToOneField('Type')
     count = models.IntegerField()
 
     def value(self, pos):
@@ -198,21 +245,28 @@ class TypeSelection(models.Model):
     def values(self):
         return self.selVals.all()
 
+    def isValid(self, input):
+        selValContents = []
+        for val in self.selVals:
+            selValContents.append(val)
+
+        return input in selValContents
+
+
+
     def __unicode__(self):
         return self.type.name
 
 
-class TypeDate(models.Model):
-    type = models.ForeignKey('Type')
-    min = models.DateTimeField()
-    max = models.DateTimeField()
+class TypeBool(models.Model):
+    type = models.OneToOneField('Type')
 
     def __unicode__(self):
         return self.type.name
 
 
 class TypeTable(models.Model):
-    type = models.ForeignKey('Type')
+    type = models.OneToOneField('Type')
     table = models.ForeignKey('Table')
 
     def __unicode__(self):
