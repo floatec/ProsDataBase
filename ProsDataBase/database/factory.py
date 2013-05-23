@@ -69,6 +69,8 @@ def create_table(**kwargs):
         newDataTextSecondname.dataSet = newDataSetSecondname
         newDataTextSecondname.save()
 
+    return table
+
 def create_Group(**kwargs):
     """
     creates a group with two members
