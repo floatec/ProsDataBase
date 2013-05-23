@@ -27,7 +27,7 @@ class TableForm(ModelForm):
 class DataForm(ModelForm):  # TODO: Needed?
     class Meta:
         model = Data
-        fields = ('created', )
+        fields = ('created',)
 
 
 class DataTextForm(ModelForm):
@@ -42,15 +42,15 @@ class DataNumericForm(ModelForm):
         fields = ('created', 'content')
 
 
-class DataSelectionForm(ModelForm):
-    class Meta:
-        model = DataSelection
-        fields = ('created', 'content')
-
-
 class DataDateForm(ModelForm):
     class Meta:
         model = DataDate
+        fields = ('created', 'content')
+
+
+class DataSelectionForm(ModelForm):
+    class Meta:
+        model = DataSelection
         fields = ('created', 'content')
 
 
@@ -81,6 +81,12 @@ class TypeNumericForm(ModelForm):
         fields = ('min', 'max')
 
 
+class TypeDateForm(ModelForm):
+    class Meta:
+        model = TypeDate
+        fields = ('min', 'max')
+
+
 class SelectionValueForm(ModelForm):
     class Meta:
         model = SelectionValue
@@ -91,12 +97,6 @@ class TypeSelectionForm(ModelForm):
     class Meta:
         model = TypeSelection
         fields = ('count', )
-
-
-class TypeDateForm(ModelForm):
-    class Meta:
-        model = TypeDate
-        fields = ('min', 'max')
 
 # -- Permission system
 

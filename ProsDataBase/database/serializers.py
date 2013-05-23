@@ -1,5 +1,4 @@
-from locale import _group
-
+# -*- coding: utf-8 -*-
 __author__ = 'My-Tien Nguyen'
 
 from models import *
@@ -13,19 +12,44 @@ import json
 
 class TableSerializer:
     @staticmethod
-    def serializeOne(id):
+    def serializeOne(tableName):
         """
-        return table with specified id
+        return the table with specified name, along with its columns and datasets.
 
-        {"name": "example", "column": ["columname","anothercolum"]}
+        {
+            "name": "example",
+            "columns": ["columname", "anothercolum"],
+            "datasets": [
+                [value, value],
+                [value, value]
+            ]
+        }
         """
-        table = Table.objects.get(pk=id)
+        table = Table.objects.get(name=tableName)
+
+        if table is None:  # table does not exist!
+            return False
+
         columns = table.getColumns()
         columnNames = []
 
         for col in columns:
             columnNames.append(col.name)
 
+        datasets = table.getDatasets()
+        for dataset in datasets:
+            row = []
+            data = dataset.getData()
+
+            for primitiveData in data[0:Type.BOOL]:
+                for item in primitiveData:
+                    dataObj = dict()
+                    dataObj["column"] = item.column.name
+                    dataObj["value"] = item.content
+                    row.push(dataObj)
+
+            for tableData in data[Type.TABLE]:
+                pass
         result = dict()
         result["name"] = table.name
         result["column"] = columnNames
@@ -57,6 +81,51 @@ class TableSerializer:
 
             result["tables"].append({"name": table.name, "column": columnNames})
 
+        return json.dumps(result)
+
+    @staticmethod
+    def serializeStructure(tableName):
+        """
+        return the table with its columns and the column's datatypes as well as ranges
+
+        {
+          "columns": [
+            {"name": "columnname0", "type": 0, "length": 100},
+            {"name": "columnname1", "type": 1, "min": "a decimal", "max": "a decimal"},
+            {"name": "columnname2", "type": 2, "min": "a date", "max": "a date"},
+            {"name": "columnname3", "type": 3, "options": {"0": "opt1", "1": "opt2", "2": "opt3"},
+            {"name": "columnname4", "type": 4, "table": "tablename"},
+          ]
+        }
+        """
+        table = Table.objects.get(name=tableName)
+        if table is None:
+            return None
+
+        columns = table.getColumns()
+        colStructs = []
+        for col in columns:
+            type = col.type.type
+            if type is Type.TEXT:
+                colStructs.append({"name": col.name, "type": Type.TEXT, "legnth": col.type.getType().length})
+
+            elif type is Type.NUMERIC or type is Type.DATE:
+                colStructs.append({"name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max})
+
+            elif type is Type.SELECTION:
+                options = dict()
+                for value in col.type.getType().values():
+                    options[unicode(value.index)] = value.content
+                colStructs.append({"name": col.name, "type": Type.SELECTION, "options": options})
+            elif type is Type.BOOL:
+                colStructs.append({"name": col.name, "type": Type.BOOL})
+            elif type is Type.TABLE:
+                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name})
+            else:
+                return None
+
+        result = dict()
+        result["columns"] = colStructs
         return json.dumps(result)
 
 
