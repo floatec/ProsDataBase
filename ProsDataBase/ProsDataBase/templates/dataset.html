@@ -1,15 +1,46 @@
 {% extends "base.html" %}
 
 {%  block content %}
-<table border="0">
-
-     {% for field in strcuture %}
-      <tr><td>{{ field.name }}  </td><td><input type="text"></td><td></td></tr>
-       {% empty %}
-
-                    <div>No Fields for this Table</div>
-
-      {% endfor %}
+<table id="fields" border="0">
        </table>
        <input type="button" value="Save">
+{% endblock %}
+
+
+{% block javascript %}
+<script language="JavaScript" >
+  table=JSON.parse('  {' +
+          ' "columns": [' +
+          '{"name": "columnname0", "type": 0, "length": 100},' +
+          '{"name": "columnname1", "type": 1, "min": "0", "max": "100"},' +
+          '{"name": "columnname2", "type": 2, "min": "", "max": ""},' +
+          '{"name": "columnname3", "type": 3, "options": {"0": "opt1", "1": "opt2", "2": "opt3"}},' +
+          '{"name": "columnname4", "type": 4, "table": "tablename"}' +
+          ']' +
+          '}').columns;
+  for(var i in table){
+      var row="<tr><td>"+table[i].name+"</td><td>"
+          if(table[i].type==0){
+            row+='<input name="'+table[i].name+'" type="text" length="'+table[i].length+'">'
+          }
+         if(table[i].type==1){
+            row+='<input name="'+table[i].name+'" type="number" min="'+table[i].min+'" max="'+table[i].max+'">'
+          }
+            if(table[i].type==2){
+            row+='<input name="'+table[i].name+'" type="datetime-local" min="'+table[i].min+'" max="'+table[i].max+'">'
+          }
+           if(table[i].type==3){
+            row+='<select name="'+table[i].name+'" limit="1">'
+            for(var v in table[i].options){
+                row+='<option value="'+v+'" limit="1">'+table[i].options[v]+'</option>'
+            }
+            row+='</select>'
+          }
+            if(table[i].type==4){
+            row+='<span id="'+table[i].name+'"></span><span onClick="fenster = window.open(\'/dataset/Patient\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
+          }
+            row+="</td></tr>"
+      $("#fields").append(row)
+  }
+</script>
 {% endblock %}
