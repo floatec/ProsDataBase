@@ -8,7 +8,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     # Examples:
     # url(r'^$', 'ProsDataBase.views.home', name='home'),
     # url(r'^ProsDataBase/', include('ProsDataBase.foo.urls')),
@@ -30,9 +31,11 @@ urlpatterns = patterns('',
     # APIs for table requests
     (r'^api/table/$', "database.views.api.table"),
     (r'^api/table/all/$', "database.views.api.showAllTables"),
+    (r'^api/table/dataset/$', "database.views.api.insertData"),
+
+    # must come after other uris of the form api/table/[string], or they will match
     (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.showTable"),
     (r'^api/table/(?P<name>[\w]+)/structure/$', "database.views.api.tableStructure"),
-    (r'^api/table/dataset/$', "database.views.api.insertData"),
 
     (r'^api/user/$', "database.views.api.showAllUsers"),
     (r'^api/group/$', "database.views.api.showAllGroups"),

@@ -60,13 +60,18 @@ class DataBoolForm(ModelForm):
         fields = ('created', 'content')
 
 
+class DataTableForm(ModelForm):
+    class Meta:
+        model = DataTable
+        fields = ('created',)
+
 # -- data types
 
 
 class TypeForm(ModelForm):
     class Meta:
         model = Type
-        fields = ('name',)
+        fields = ('name', 'type')
 
 
 class TypeTextForm(ModelForm):
