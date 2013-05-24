@@ -18,10 +18,9 @@ class TableSerializer:
 
         {
             "name": "example",
-            "columns": ["columname", "anothercolum"],
             "datasets": [
-                [value, value],
-                [value, value]
+                [ {"column": "id", "value": 0}, "column": "column", "value": val1}, {"column": "anothercolumn", "value": val2} ],  //row 1
+                [ {"column": "id", "value": 1}, "column": "column", "value": val3}, {"column": "anothercolumn", "value": val4} ]   //row 2
             ]
         }
         """
@@ -30,29 +29,36 @@ class TableSerializer:
         if table is None:  # table does not exist!
             return False
 
-        columns = table.getColumns()
-        columnNames = []
-
-        for col in columns:
-            columnNames.append(col.name)
+        result = dict()
+        result["name"] = table.name
+        result["datasets"] = list()
 
         datasets = table.getDatasets()
         for dataset in datasets:
             row = []
             data = dataset.getData()
 
-            for primitiveData in data[0:Type.BOOL]:
+            for primitiveData in data:
                 for item in primitiveData:
                     dataObj = dict()
                     dataObj["column"] = item.column.name
-                    dataObj["value"] = item.content
-                    row.push(dataObj)
 
-            for tableData in data[Type.TABLE]:
-                pass
-        result = dict()
-        result["name"] = table.name
-        result["column"] = columnNames
+                    if item.column.type.type == Type.TABLE:
+                        dataObj["value"] = list()
+                        for link in DataTableToDataset.objects.filter(DataTable=item):
+                            dataObj["value"].append(link.dataset_id)
+
+                    elif item.column.type.type == Type.DATE:
+                        dataObj["value"] = item.content.isoformat()
+                    else:
+                        try:
+                            dataObj["value"] = str(item.content)
+                        except UnicodeEncodeError:
+                            dataObj["value"] = unicode(item.content)
+
+                    row.append(dataObj)
+
+            result["datasets"].append(row)
 
         return json.dumps(result)
 
