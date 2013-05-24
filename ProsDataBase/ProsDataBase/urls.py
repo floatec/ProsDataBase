@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.conf import settings
@@ -32,7 +34,7 @@ urlpatterns = patterns(
     (r'^api/table/$', "database.views.api.table"),
     (r'^api/table/all/$', "database.views.api.showAllTables"),
     (r'^api/table/dataset/$', "database.views.api.insertData"),
-
+    (r'^api/table/dataset/(?P<datasetID>[\d]+)/$', "database.views.api.modifyData"),
     # must come after other uris of the form api/table/[string], or they will match
     (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.showTable"),
     (r'^api/table/(?P<name>[\w]+)/structure/$', "database.views.api.tableStructure"),
