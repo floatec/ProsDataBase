@@ -7,7 +7,7 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 from database.models import *
-from factory import *
+from database.testing.factory import *
 
 class GroupTest(TestCase):
     def test_user_exist(self):
