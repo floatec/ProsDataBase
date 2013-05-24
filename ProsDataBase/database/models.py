@@ -316,6 +316,7 @@ class RightListForTable(models.Model):
     viewLog = models.BooleanField()
     rightsAdmin = models.BooleanField()
     insert = models.BooleanField()
+    delete = models.BooleanField()
 
     def __unicode__(self):
         return "list " + unicode(self.id) + " for " + unicode(self.table)

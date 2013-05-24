@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 __author__ = 'My-Tien Nguyen'
 
 from models import *
@@ -121,7 +123,7 @@ class MembershipForm(ModelForm):
 class RightListForTableForm(ModelForm):
     class Meta:
         model = RightListForTable
-        fields = ('viewLog', 'rightsAdmin', 'insert')
+        fields = ('viewLog', 'rightsAdmin', 'insert', 'delete')
 
 
 class RightListForColumnForm(ModelForm):
