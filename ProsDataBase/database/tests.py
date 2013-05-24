@@ -16,14 +16,21 @@ class GroupTest(TestCase):
         """
         group = create_Group()
 
-        self.assertTrue(group.users.get(username = "hans"))
-        self.assertTrue(group.users.get(username = "mark"))
+        self.assertTrue(group.users.get(username = 1))
+        self.assertTrue(group.users.get(username = 50))
+        self.assertTrue(group.users.get(username = 100))
+        self.assertTrue(group.users.get(username = 1000))
 
         with self.assertRaises(DBUser.DoesNotExist):
-            group.users.get(username="hans")
+            group.users.get(username=1001)
+            group.users.get(username=-100)
+            group.users.get(username=0)
 
+class TableTest(TestCase):
     def test_table(self):
         """
-
+        testet eine tabelle
         """
+
         table = create_table()
+        self.assertTrue(table.getDataSets.all())

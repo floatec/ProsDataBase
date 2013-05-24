@@ -1,19 +1,19 @@
 from database.models import *
 from database.forms import *
 
+
 def create_table(**kwargs):
     """
     creates a simple table with two columns with
     two datasets filed with two values
     """
-
     table = dict()
     table["name"] = "Test"
     table["created"] = datetime.now()
     tabF = TableForm(table)
     if tabF.is_valid():
-        newTable = tabF.save()
-        table.save()
+        newTable = tabF.save(commit=False)
+
 
     columnFirstname= dict()
     columnFirstname["name"] = "Vorname"
@@ -21,9 +21,9 @@ def create_table(**kwargs):
     columnFirstname["created"] = datetime.now()
     colFirstnameF = ColumnForm(columnFirstname)
     if colFirstnameF.is_valid():
-        newColumnFirstname = colFirstnameF.save()
+        newColumnFirstname = colFirstnameF.save(commit=False)
         newColumnFirstname.table = newTable
-        newColumnFirstname.save()
+
 
     columnSecondname = dict()
     columnSecondname["name"] = "Nachname"
@@ -31,7 +31,7 @@ def create_table(**kwargs):
     columnSecondname["created"] = datetime.now()
     colSecondnameF = ColumnForm(columnSecondname)
     if colSecondnameF.is_valid():
-        newColumnSecondname = colSecondnameF.save()
+        newColumnSecondname = colSecondnameF.save(commit=False)
         newColumnSecondname.table = newTable
         newColumnSecondname.save()
 
@@ -39,7 +39,7 @@ def create_table(**kwargs):
     dataSetFirstname["created"] = datetime.now()
     dataSetFirstnameF = DatasetForm(dataSetFirstname)
     if dataSetFirstnameF.is_valid():
-        newDataSetFirstname = dataSetFirstnameF.save()
+        newDataSetFirstname = dataSetFirstnameF.save(commit=False)
         newDataSetFirstname.column = newColumnFirstname
         newDataSetFirstname.save()
 
@@ -47,7 +47,7 @@ def create_table(**kwargs):
     dataSetSecondname["created"] = datetime.now()
     dataSetSecondnameF = DatasetForm(dataSetSecondname)
     if dataSetSecondnameF.is_valid():
-        newDataSetSecondname = dataSetSecondnameF.save()
+        newDataSetSecondname = dataSetSecondnameF.save(commit=False)
         newDataSetSecondname.column = newColumnSecondname
         newDataSetSecondname.save()
 
@@ -56,7 +56,7 @@ def create_table(**kwargs):
     dataTextFirstname["content"] = "Hasret"
     dataTextFirstnameF = DataTextForm(dataTextFirstname)
     if dataTextFirstnameF.is_valid():
-        newDataTextFirstname = dataTextFirstnameF.save()
+        newDataTextFirstname = dataTextFirstnameF.save(commit=False)
         newDataTextFirstname.dataSet = newDataSetFirstname
         newDataTextFirstname.save()
 
@@ -65,21 +65,18 @@ def create_table(**kwargs):
     dataTextSecondname["content"] = "Demirci"
     dataTextSecondnameF = DataTextForm(dataTextSecondname)
     if dataTextSecondnameF.is_valid():
-        newDataTextSecondname = dataTextSecondnameF.save()
+        newDataTextSecondname = dataTextSecondnameF.save(commit=False)
         newDataTextSecondname.dataSet = newDataSetSecondname
         newDataTextSecondname.save()
 
+    newTable.save()
     return table
+
 
 def create_Group(**kwargs):
     """
     creates a group with two members
     """
-    hans = DBUser.objects.create_user(username="hans")
-    hans.save()
-    mark = DBUser.objects.create_user(username="mark")
-    mark.save()
-
     groupA = dict()
     groupA["name"] = "Student"
     groupF = DBGroupForm(groupA)
@@ -87,22 +84,16 @@ def create_Group(**kwargs):
         newDBGroup = groupF.save()
         newDBGroup.save()
 
-    m1 = dict()
-    m1["isAdmin"] = True
-    m1F = MembershipForm(m1)
-    if m1F.is_valid():
-        m1new = m1F.save(commit=False)
-        m1new.user = hans
-        m1new.group = newDBGroup
-        m1new.save()
-
-    m2 = dict()
-    m2["isAdmin"] = False
-    m2F = MembershipForm(m2)
-    if m2F.is_valid():
-        m2new = m2F.save(commit=False)
-        m2new.user = mark
-        m2new.group = newDBGroup
-        m2F.save()
+    for i in range(1,1001):
+        user = DBUser.objects.create_user(username=i)
+        user.save()
+        m = dict()
+        m["isAdmin"] = False
+        mF = MembershipForm(m)
+        if mF.is_valid():
+            newm = mF.save(commit=False)
+            newm.user = user
+            newm.group = newDBGroup
+            newm.save()
 
     return newDBGroup
