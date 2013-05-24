@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 __author__ = 'My-Tien Nguyen'
 
 from models import *
@@ -60,13 +62,18 @@ class DataBoolForm(ModelForm):
         fields = ('created', 'content')
 
 
+class DataTableForm(ModelForm):
+    class Meta:
+        model = DataTable
+        fields = ('created',)
+
 # -- data types
 
 
 class TypeForm(ModelForm):
     class Meta:
         model = Type
-        fields = ('name',)
+        fields = ('name', 'type')
 
 
 class TypeTextForm(ModelForm):
@@ -116,7 +123,7 @@ class MembershipForm(ModelForm):
 class RightListForTableForm(ModelForm):
     class Meta:
         model = RightListForTable
-        fields = ('viewLog', 'rightsAdmin', 'insert')
+        fields = ('viewLog', 'rightsAdmin', 'insert', 'delete')
 
 
 class RightListForColumnForm(ModelForm):

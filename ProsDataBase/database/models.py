@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 """
 FYI:
 about Django:
@@ -50,13 +52,13 @@ class Dataset(models.Model):
 
         Order is text, numeric, date, selection, table, bool
         """
-        data = []
-        data.insert(type.TEXT, self.datatext.all())
-        data.insert(type.NUMERIC - 1, self.datanumeric.all())
-        data.insert(type.DATE - 1, self.datadate.all())
-        data.insert(type.SELECTION - 1, self.dataselection.all())
-        data.insert(type.BOOL - 1, self.datatable.all())
-        data.insert(type.TABLE - 1, self.databool.all())
+        data = list()
+        data.append(self.datatext.all())
+        data.append(self.datanumeric.all())
+        data.append(self.datadate.all())
+        data.append(self.dataselection.all())
+        data.append(self.databool.all())
+        data.append(self.datatable.all())
         return data
 
     def getField(self, name):
@@ -89,7 +91,7 @@ class Table(models.Model):
 class Data(models.Model):
     column = models.ForeignKey('Column', related_name="%(class)s")
     dataset = models.ForeignKey('Dataset', related_name="%(class)s")
-    created = models.DateTimeField(default=datetime.now)
+    created = models.DateTimeField(default=datetime.now())
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_creator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_modifier', blank=True, null=True)
@@ -122,7 +124,7 @@ class DataNumeric(Data):
 
 
 class DataSelection(Data):
-    content = models.ForeignKey('SelectionValue')
+    content = models.CharField(max_length=100)
 
     def getContent(self):
         return self.content
@@ -152,11 +154,12 @@ class DataBool(Data):
 
 
 class DataTable(Data):
-    pass
+    def getContent(self):
+        return self.linkToDatasets.all()
 
 
 class DataTableToDataset(models.Model):
-    DataTable = models.ForeignKey('DataTable')
+    DataTable = models.ForeignKey('DataTable', related_name="linkToDatasets")
     dataset = models.ForeignKey('Dataset')
 
 # -- data types
@@ -196,7 +199,7 @@ class TypeText(models.Model):
     length = models.IntegerField()
 
     def isValid(self, input):
-        return input.len <= self.length
+        return len(input) <= self.length
 
     def __unicode__(self):
         return self.type.name
@@ -208,7 +211,7 @@ class TypeNumeric(models.Model):
     max = models.FloatField()
 
     def isValid(self, input):
-        return min <= input <= max
+        return self.min <= input <= self.max
 
     def __unicode__(self):
         return self.type.name
@@ -216,11 +219,11 @@ class TypeNumeric(models.Model):
 
 class TypeDate(models.Model):
     type = models.OneToOneField('Type')
-    min = models.DateTimeField()
-    max = models.DateTimeField()
+    min = models.DateTimeField(blank=True, null=True)
+    max = models.DateTimeField(blank=True, null=True)
 
     def isValid(self, input):
-        return min <= input <= max
+        return True
 
     def __unicode__(self):
         return self.type.name
@@ -247,12 +250,10 @@ class TypeSelection(models.Model):
 
     def isValid(self, input):
         selValContents = []
-        for val in self.selVals:
-            selValContents.append(val)
+        for val in self.selVals.all():
+            selValContents.append(val.content)
 
         return input in selValContents
-
-
 
     def __unicode__(self):
         return self.type.name
@@ -261,6 +262,9 @@ class TypeSelection(models.Model):
 class TypeBool(models.Model):
     type = models.OneToOneField('Type')
 
+    def isValid(self, input):
+        return input in [True, False]
+
     def __unicode__(self):
         return self.type.name
 
@@ -268,6 +272,14 @@ class TypeBool(models.Model):
 class TypeTable(models.Model):
     type = models.OneToOneField('Type')
     table = models.ForeignKey('Table')
+
+    def isValid(self, input):
+        datasets = self.table.datasets.all()
+        datasetIDs = []
+        for dataset in datasets:
+            datasetIDs.append(dataset.id)
+
+        return set(input).issubset(set(datasetIDs))
 
     def __unicode__(self):
         return self.type.name
@@ -304,6 +316,7 @@ class RightListForTable(models.Model):
     viewLog = models.BooleanField()
     rightsAdmin = models.BooleanField()
     insert = models.BooleanField()
+    delete = models.BooleanField()
 
     def __unicode__(self):
         return "list " + unicode(self.id) + " for " + unicode(self.table)

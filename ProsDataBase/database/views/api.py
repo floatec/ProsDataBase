@@ -1,14 +1,15 @@
 # Create your views here.
+# -*- coding: UTF-8 -*-
 
 from django.http import HttpResponse, HttpRequest
-from django.views.decorators.csrf import csrf_exempt
+import sys
 
 from ..serializers import *
 from ..forms import *
 
 from datetime import datetime
 
-@csrf_exempt
+
 def table(request):
     if request.method == 'POST':
         return addTable(request)
@@ -30,57 +31,265 @@ def tableStructure(request, name):
 
 def insertData(request):
     """
-    insert a dataset into a table.
+    Insert a dataset into a table.
 
+    Receives data in json format:
     {
         "table": "tablename",
-        "data": [
-            {"column": "colname1", "value": val1},
-            {"column": "colname2", "value": [0, 1, 2], "table": "referencedTableName"}
+        "columns": [
+            {"name": "colname1", "value": val1},
+            {"name": "colname2", "value": [0, 1, 2], "table": "referencedTableName"} // for TypeTable columns
         ]
     }
+
+    Tries to add as much data as possible as long as the table exists. Invalid columns, that is nonexistent columns
+    or columns with invalid type, are skipped, but a note will be returned.
+    Also, invalid datasets for global object columns are skipped, but a note will be returned.
     """
     if request.method == 'POST':
         request = json.loads(request.raw_post_data)
-        theTable = Table.objects.get(name=request["tablename"])
-        if table is None:
-            return HttpResponse(content="table with name" + request["name"] + " not found.", status=400)
+        theTable = Table.objects.get(name=request["table"])
+        if theTable is None:
+            return HttpResponse(content="table with name" + request["table"] + " not found.", status=400)
 
-        for row in request["data"]:
-            column = Column.objects.get(name=row["column"], table=theTable)
+        datasetF = DatasetForm({"created": datetime.now()})
+        if not datasetF.is_valid():
+            return HttpResponse(content="Error creating a new dataset.", status=500)
+
+        newDataset = datasetF.save(commit=False)
+        newDataset.table = theTable
+        newDataset.creator = DBUser.objects.get(username="test")
+        newDataset.save()
+
+        dataFails = []  # collects all columns by name for wich data could not be saved
+        missingDatasets = []  # collects all datasets which could not be found in the global object
+        for col in request["columns"]:
+            column = Column.objects.get(name=col["name"], table=theTable)
             if column is None:
-                return HttpResponse(content="Column " + row["column"] + " not found in table " + request["table"] + ".", status=400)
+                dataFails.append(col["name"])
+                continue
 
-            if column.type.getType().isValid(row["value"]):
-                if column.type.type == Type.TEXT:
-                    textF = DataTextForm({"created": datetime.now, "content": row["value"]})
-                    if textF.is_valid():
-                        newData = textF.save()
+            if not column.type.getType().isValid(col["value"]):
+                return HttpResponse(content="input " + unicode(col["value"]) + " for column " + column.name + " is not valid.", status=400)
 
-                if column.type.type == Type.NUMERIC:
-                    numF = DataNumericForm({"created": datetime.now, "content": row["value"]})
-                    if numF.is_valid():
-                        newData = numF.save()
+            if column.type.type == Type.TEXT:
+                textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
+                if textF.is_valid():
+                    newData = textF.save(commit=False)
 
-                if column.type.type == Type.DATE:
-                    dateF = DataDateForm({"created": datetime.now, "content": row["value"]})
-                    if dateF.is_valid():
-                        newData = dateF.save()
+            elif column.type.type == Type.NUMERIC:
+                numF = DataNumericForm({"created": datetime.now(), "content": col["value"]})
+                if numF.is_valid():
+                    newData = numF.save(commit=False)
 
-                if column.type.type == Type.SELECTION:
-                    selF = DataSelectionForm({"created": datetime.now, "content": row["value"]})
-                    if selF.is_valid():
-                        newData = selF.save()
+            elif column.type.type == Type.DATE:
+                dateF = DataDateForm({"created": datetime.now(), "content": col["value"]})
+                if dateF.is_valid():
+                    newData = dateF.save(commit=False)
 
-                if column.type.type == Type.BOOL:
-                    boolF = DataBoolForm({"created": datetime.now, "content": row["value"]})
-                    if boolF.is_valid():
-                        newData = boolF.save()
+            elif column.type.type == Type.SELECTION:
+                selF = DataSelectionForm({"created": datetime.now(), "content": col["value"]})
+                if selF.is_valid():
+                    newData = selF.save(commit=False)
 
-                if column.type.type == Type.TABLE:
-                    newData = DataTable()
+            elif column.type.type == Type.BOOL:
+                boolF = DataBoolForm({"created": datetime.now(), "content": col["value"]})
+                if boolF.is_valid():
+                    newData = boolF.save(commit=False)
 
+            elif column.type.type == Type.TABLE:
+                table = Table.objects.get(name=col["table"])
+                if table is None:
+                    return HttpResponse(content="Global object " + col["table"] + " could not be found", status=400)
+
+                dataTblF = DataTableForm({"created": datetime.now()})
+                if dataTblF.is_valid():
+                    newData = dataTblF.save(commit=False)
+
+            if newData is None:
+                dataFails.append(col["name"])
+
+            else:
+                newData.creator = DBUser.objects.get(username="test")
                 newData.column = column
+                newData.dataset = newDataset
+                newData.save()
+
+            if column.type.type == Type.TABLE and newData is not None:
+                for index in col["value"]:  # find all datasets for this
+                    dataset = Dataset.objects.get(pk=index)
+                    if dataset is None:
+                        missingDatasets.append(index)
+                    else:
+                        link = DataTableToDataset()
+                        link.DataTable = newData
+                        link.dataset = dataset
+                        link.save()
+
+        if len(dataFails) > 0:
+            if len(missingDatasets) > 0:
+                return HttpResponse(content="Note: Failed to add data to following columns: " + unicode(dataFails) +
+                                            ". For the global object datasets with following indices could not be found: " + unicode(missingDatasets) + ".", status=200)
+            return HttpResponse(content="Note: Failed to add data to following columns: " + unicode(dataFails) + ".", status=200)
+
+        if len(missingDatasets) > 0:
+            return HttpResponse(content="Note: For the global object datasets with following indices could not be found: " + unicode(missingDatasets) + ".", status=200)
+
+        return HttpResponse(content="Saved dataset successfully.", status=200)
+
+
+def modifyData(request, datasetID):
+    """
+    Modify a table's dataset.
+
+    Receives data in json format:
+    {
+        "table": "tablename",
+        "dataset": [ {"column": "id", "value": 0}, "column": "columnname", "value": val1}, {"column": "anothercolumn", "value": val2} ]
+    }
+
+    Tries to write as much data as possible as long as the table and specified dataset exist. Invalid columns, that is nonexistent columns
+    or columns with invalid type, are skipped, but a note will be returned.
+    Also, invalid datasets for global object columns are skipped, but a note will be returned.
+    """
+    if request.method == 'POST':
+        request = json.loads(request.raw_post_data)
+        theTable = Table.objects.get(name=request["table"])
+        if theTable is None:
+            return HttpResponse(content="table with name" + request["table"] + " not found.", status=400)
+
+        dataset = Dataset.objects.get(pk=datasetID)
+        if dataset is None:
+            return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + request["table"] + ".", status=400)
+
+        dataFails = []  # collects all columns by name for wich data could not be saved
+        missingDatasets = []  # collects all datasets which could not be found in the global object
+        dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
+        for col in request["dataset"]:
+            column = Column.objects.get(name=col["column"], table=theTable)
+            if column is None:
+                dataFails.append(col["column"])
+                continue
+
+            if not column.type.getType().isValid(col["value"]):
+                return HttpResponse(content="input " + unicode(col["value"]) + " for column " + column.name + " is not valid.", status=400)
+
+            if column.type.type == Type.TEXT:
+                text = dataset.datatext.get(column=Column.objects.get(column))
+                if text is None:
+                    dataCreatedNewly = True
+                    textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
+                    if textF.is_valid():
+                        newData = textF.save(commit=False)
+                else:
+                    DataTextForm({"created": datetime.now(), "content": col["value"]}, instance=text)
+                    text.save()
+
+            elif column.type.type == Type.NUMERIC:
+                num = dataset.datanumeric.get(column=Column.objects.get(column))
+                if num is None:
+                    dataCreatedNewly = True
+                    numF = DataNumericForm({"created": datetime.now(), "content": col["value"]})
+                if numF.is_valid():
+                    newData = numF.save(commit=False)
+                else:
+                    DataNumericForm({"created": datetime.now(), "content": col["value"]}, instance=num)
+                    num.save()
+
+            elif column.type.type == Type.DATE:
+                date = dataset.datadate.get(column=Column.objects.get(column))
+                if date is None:
+                    dataCreatedNewly = True
+                    dateF = DataDateForm({"created": datetime.now(), "content": col["value"]})
+                    if dateF.is_valid():
+                        newData = dateF.save(commit=False)
+                else:
+                    DataDateForm({"created": datetime.now(), "content": col["value"]}, instance=date)
+                    date.save()
+
+            elif column.type.type == Type.SELECTION:
+                sel = dataset.dataselection.get(column=Column.objects.get(column))
+                if sel is None:
+                    dataCreatedNewly = True
+                    selF = DataSelectionForm({"created": datetime.now(), "content": col["value"]})
+                    if selF.is_valid():
+                        newData = selF.save(commit=False)
+                else:
+                    DataSelectionForm({"created": datetime.now(), "content": col["value"]}, instance=sel)
+                    sel.save()
+
+            elif column.type.type == Type.BOOL:
+                bool = dataset.databool.get(column=Column.objects.get(column))
+                if bool is None:
+                    dataCreatedNewly = True
+                    boolF = DataBoolForm({"created": datetime.now(), "content": col["value"]})
+                    if boolF.is_valid():
+                        newData = boolF.save(commit=False)
+                else:
+                    DataBoolForm({"created": datetime.now(), "content": col["value"]}, instance=bool)
+                    bool.save()
+
+            elif column.type.type == Type.TABLE:
+                table = Table.objects.get(name=col["table"])
+                if table is None:
+                    return HttpResponse(content="Global object " + col["table"] + " could not be found", status=400)
+
+                dataTbl = dataset.datatable.get(column=Column.objects.get(column))
+                if dataTbl is None:  # element did not exist before
+                    dataCreatedNewly = True
+                    dataTblF = DataTableForm({"created": datetime.now()})
+                    if dataTblF.is_valid():
+                        newData = dataTblF.save(commit=False)
+                else:  # element already existent. Modify it
+                    links = DataTableToDataset.objects.filter(DataTable=dataTbl)
+                    setIDs = list()
+                    #  remove all links between dataTable and datasets which are not listed in col["value"]
+                    for link in links:
+                        setIDs.append(link.dataset_id)
+                        if link.dataset_id not in col["value"]:
+                            link.delete()
+
+                    #  now add any link that does not exist yet
+                    for id in [index for index in col["value"] if index not in setIDs]:
+                        newDataset = Dataset.objects.get(pk=id)
+                        if newDataset is None:
+                            missingDatasets.append(id)
+                        else:
+                            newLink = DataTableToDataset()
+                            newLink.DataTable = dataTbl
+                            newLink.dataset = newDataset
+                            newLink.save()
+
+            if newData is None and dataCreatedNewly:
+                dataFails.append(col["name"])
+
+            elif dataCreatedNewly:
+                newData.creator = DBUser.objects.get(username="test")
+                newData.column = column
+                newData.dataset = newDataset
+                newData.save()
+
+                if column.type.type == Type.TABLE and newData is not None:
+                    for index in col["value"]:  # find all datasets for this
+                        dataset = Dataset.objects.get(pk=index)
+                        if dataset is None:
+                            missingDatasets.append(index)
+                        else:
+                            link = DataTableToDataset()
+                            link.DataTable = newData
+                            link.dataset = dataset
+                            link.save()
+
+        if len(dataFails) > 0:
+            if len(missingDatasets) > 0:
+                return HttpResponse(content="Note: Failed to add data to following columns: " + unicode(dataFails) +
+                                            ". For the global object datasets with following indices could not be found: " + unicode(missingDatasets) + ".", status=200)
+            return HttpResponse(content="Note: Failed to add data to following columns: " + unicode(dataFails) + ".", status=200)
+
+        if len(missingDatasets) > 0:
+            return HttpResponse(content="Note: For the global object datasets with following indices could not be found: " + unicode(missingDatasets) + ".", status=200)
+
+        return HttpResponse(content="Saved dataset successfully.", status=200)
 
 
 def showAllUsers(request):
@@ -151,18 +360,19 @@ def addTable(request):
 
         # add to table 'RightlistForTable' for user
         if "rights" in request:
-            for userKey, rights in request["rights"]["users"].items():
+            for item in request["rights"]["users"]:
                 rightList = dict()
-                rightList["viewLog"] = True if "viewLog" in rights else False
-                rightList["rightsAdmin"] = True if "rightsAdmin" in rights else False
-                rightList["insert"] = True if "insert" in rights else False
+                rightList["viewLog"] = True if "viewLog" in item["rights"] else False
+                rightList["rightsAdmin"] = True if "rightsAdmin" in item["rights"] else False
+                rightList["insert"] = True if "insert" in item["rights"] else False
+                rightList["delete"] = True if "delete" in item["delete"] else False
                 rightListF = RightListForTableForm(rightList)
 
                 if rightListF.is_valid():
                     newRightList = rightListF.save(commit=False)
                     newRightList.table = newTable
 
-                    user = DBUser.objects.get(username=userKey)
+                    user = DBUser.objects.get(username=item["name"])
                     newRightList.user = user
                     newRightList.save()
 
@@ -170,17 +380,18 @@ def addTable(request):
                     return HttpResponse("Could not create user's rightlist for table.")
 
              # add to table 'RightlistForTable' for group
-            for groupKey, rights in request["rights"]["groups"].items():
+            for item in request["rights"]["groups"]:
                 rightList = dict()
-                rightList["viewLog"] = True if "viewLog" in rights else False
-                rightList["rightsAdmin"] = True if "rightsAdmin" in rights else False
-                rightList["insert"] = True if "insert" in rights else False
+                rightList["viewLog"] = True if "viewLog" in item["rights"] else False
+                rightList["rightsAdmin"] = True if "rightsAdmin" in item["rights"] else False
+                rightList["insert"] = True if "insert" in item["rights"] else False
+                rightList["delete"] = True if "delete" in item["rights"] else False
                 rightListF = RightListForTableForm(rightList)
                 if rightListF.is_valid():
                     newRightList = rightListF.save(commit=False)
                     newRightList.table = newTable
 
-                    group = DBGroup.objects.get(name=groupKey)
+                    group = DBGroup.objects.get(name=item["name"])
                     newRightList.group = group
                     newRightList.save()
                 else:
@@ -188,7 +399,7 @@ def addTable(request):
 
         for col in request["columns"]:
             # add to table 'Datatype'
-            newDatatype = Type(name=col["name"])
+            newDatatype = Type(name=col["name"], type=col["type"])
             newDatatype.save()
 
             # add to corresponding datatype table
@@ -203,16 +414,36 @@ def addTable(request):
                 else:
                     return HttpResponse("Could not create text type")
 
-            elif col["type"] == Type.NUMERIC or col["type"] == Type.DATE:
-                type["min"] = col["min"]
-                type["max"] = col["max"]
+            elif col["type"] == Type.NUMERIC:
+                type["min"] = col["min"] if "min" in col else -sys.maxint
+                type["max"] = col["max"] if "max" in col else sys.maxint
+
                 typeNumericF = TypeNumericForm(type)
                 if typeNumericF.is_valid():
                     newNumeric = typeNumericF.save(commit=False)
                     newNumeric.type = newDatatype
                     newNumeric.save()
                 else:
-                    return HttpResponse("Could not create date type")
+                    return HttpResponse("Could not create numeric type")
+
+            elif col["type"] == Type.DATE:
+                if "min" in col:
+                    type["min"] = col["min"]
+                if "max" in col:
+                    type["max"] = col["max"]
+
+                if "min" in type and "max" in type:
+                    typeDateF = TypeDateForm(type)
+                    if typeDateF.is_valid():
+                        typeDate = typeDateF.save()
+                        typeDate.type = newDatatype
+                        typeDate.save()
+                    else:
+                        return HttpResponse("Could not create date type")
+                else:
+                    typeDate = TypeDate()
+                    typeDate.type = newDatatype
+                    typeDate.save()
 
             elif col["type"] == Type.SELECTION:
                 typeSelF = TypeSelectionForm({"count": len(col["options"]), })
@@ -223,8 +454,8 @@ def addTable(request):
                 else:
                     return HttpResponse("Could not create Selection")
 
-                for index, content in col["options"].items():
-                    selValF = SelectionValueForm({"index": index, "content": content})
+                for option in col["options"]:
+                    selValF = SelectionValueForm({"index": option["id"], "content": option["value"]})
                     if selValF.is_valid():
                         selVal = selValF.save(commit=False)
                         selVal.typeSelection = typeSel
@@ -259,31 +490,31 @@ def addTable(request):
                 return HttpResponse("Could not create new column " + col["name"])
             if "rights" in col:
                 # add to table "RightListForColumn" for users
-                for userKey, rights in col["rights"]["users"].items():
+                for item in col["rights"]["users"]:
                     rightList = dict()
-                    rightList["read"] = 1 if "read" in rights else 0
-                    rightList["modify"] = 1 if "modify" in rights else 0
+                    rightList["read"] = 1 if "read" in item["rights"] else 0
+                    rightList["modify"] = 1 if "modify" in item["rights"] else 0
                     rightListF = RightListForColumnForm(rightList)
                     if rightListF.is_valid():
                         newRightList = rightListF.save(commit=False)
                         newRightList.column = newColumn
 
-                        user = DBUser.objects.get(username=userKey)
+                        user = DBUser.objects.get(username=item["name"])
                         newRightList.user = user
                         newRightList.save()
                     else:
                         return HttpResponse("could not create column right list for user")
                 # add to table 'RightListForColumn' for groups
-                for groupKey, rights in col["rights"]["groups"].items():
+                for item in col["rights"]["groups"]:
                     rightList = dict()
-                    rightList["read"] = 1 if "read" in rights else 0
-                    rightList["modify"] = 1 if "modify" in rights else 0
+                    rightList["read"] = 1 if "read" in item["rights"] else 0
+                    rightList["modify"] = 1 if "modify" in item["rights"] else 0
                     rightListF = RightListForColumnForm(rightList)
                     if rightListF.is_valid():
                         newRightList = rightListF.save(commit=False)
                         newRightList.column = newColumn
 
-                        group = DBGroup.objects.get(name=groupKey)
+                        group = DBGroup.objects.get(name=item["name"])
                         newRightList.group = group
                         newRightList.save()
                     else:

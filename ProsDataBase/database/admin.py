@@ -10,10 +10,12 @@ admin.site.register(Dataset)
 
 admin.site.register(DataText)
 admin.site.register(DataNumeric)
+admin.site.register(DataDate)
 admin.site.register(DataSelection)
 admin.site.register(SelectionValue)
-admin.site.register(DataDate)
 admin.site.register(DataBool)
+admin.site.register(DataTable)
+admin.site.register(DataTableToDataset)
 
 admin.site.register(Type)
 admin.site.register(TypeText)
