@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 """
 FYI:
 about Django:
@@ -50,13 +52,13 @@ class Dataset(models.Model):
 
         Order is text, numeric, date, selection, table, bool
         """
-        data = []
-        data.insert(type.TEXT, self.datatext.all())
-        data.insert(type.NUMERIC - 1, self.datanumeric.all())
-        data.insert(type.DATE - 1, self.datadate.all())
-        data.insert(type.SELECTION - 1, self.dataselection.all())
-        data.insert(type.BOOL - 1, self.datatable.all())
-        data.insert(type.TABLE - 1, self.databool.all())
+        data = list()
+        data.append(self.datatext.all())
+        data.append(self.datanumeric.all())
+        data.append(self.datadate.all())
+        data.append(self.dataselection.all())
+        data.append(self.databool.all())
+        data.append(self.datatable.all())
         return data
 
     def getField(self, name):
@@ -153,11 +155,11 @@ class DataBool(Data):
 
 class DataTable(Data):
     def getContent(self):
-        return DataTableToDataset.objects.filter(DataTable)
+        return self.linkToDatasets.all()
 
 
 class DataTableToDataset(models.Model):
-    DataTable = models.ForeignKey('DataTable')
+    DataTable = models.ForeignKey('DataTable', related_name="linkToDatasets")
     dataset = models.ForeignKey('Dataset')
 
 # -- data types
