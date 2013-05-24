@@ -194,12 +194,10 @@ border-right-width: 5px;
     margin:0px;
 
 }
-.icn:hover{
-    background-color: #e7eff1;
 
 
 
-}
+
 
 
         .customChList li input[type='checkbox']{
@@ -218,7 +216,6 @@ border-right-width: 5px;
 .customChList li label.checked{
     background-position: 0px -64px;
 }
-
 
 
 

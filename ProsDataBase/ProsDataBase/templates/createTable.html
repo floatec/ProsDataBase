@@ -106,6 +106,7 @@ function init() {
     columnNames = [];
     tables = [];
     datatypes = [];
+    countCheckboxes = 0;
     datatypes[0] = "text";
     datatypes[1] = "number";
     datatypes[2] = "date";
@@ -490,18 +491,39 @@ $("#addUserToRights").click(function () {
 
         // BETA Bereich: Nur zum zeigen
 
-        userName = $("#inputUserGroup").val();
+        var userName = $("#inputUserGroup").val();
+
         //create rights-table
-        $("#allUserRights").append("<table border='1' id='" +userName + "'><tr id='descriptionRow_" + rightColumnID + "'></tr><tr id='iconsRow_" + userName + "'></tr></table>");
-
+        $("#allUserRights").append("<table border='1' class='rightsTable' id='" +userName + "'><tr id='descriptionRow_" + rightColumnID + "'></tr><tr id='iconsRow_" + userName +"'></tr></table>");
+        var inputsToappend ="";
         $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
+         countCheckboxes++;
+        inputsToappend+= "<td class='all'><input type='checkbox' class='insert' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+        countCheckboxes++;
+        inputsToappend+= "<input type='checkbox' class='delete' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/trash-icon.png'></label>";
+        countCheckboxes++;
+        inputsToappend+="<input onClick='toggleAll(this,\"read\")'"+" type='checkbox' id='check"+countCheckboxes+"'  /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
+        $("#iconsRow_" + userName).append("");
+        countCheckboxes++;
+        inputsToappend+="<input  onClick='toggleAll(this,\"modify\")'"+" type='checkbox' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+        $("#iconsRow_" + userName).append(inputsToappend);
+        countCheckboxes++;
 
-        $("#iconsRow_" + rightColumnID).append("<td><input type='hidden' value='' id='" + userName + "-all_read'><img src='/static/img/view-icon.png' class='icn' id='" + userName + "-all_read-img'><input type='hidden' value='' class='"+userName+" delete' id='" + userName + "-all_delete'><img src='/static/img/trash-icon.png' class='icn' id='" + userName + "-all_delete-img'><input type='hidden' class='"+userName+" write' value='' id='" + userName + "-all_write'><img src='/static/img/pencil-icon.png' class='icn' id='" + userName + "-all_write-img'><input type='hidden' value='' id='" + userName + "-all_modify'><img src='/static/img/setting-icon.png' class='icn' id='" + userName + "-all_modify-img'></td>");
+
+
         var columnNames = getAllColumnNames();
         for (i in columnNames) {
-
+            var base64ColumnName = Base64.encode(columnNames[i]);
+            var stringToappend = "";
             $("#descriptionRow_" + rightColumnID).append("<td>" + columnNames[i] + "</td>");
-            $("#iconsRow_" + rightColumnID).append("<td><input type='hidden' value='' class='"+userName+"' id='" + userName + "-" + columnNames[i] + "_read'><img onClick='' src='/static/img/view-icon.png' class='icn' id='" + userName + "-" + columnNames[i] + "_read-img'><input type='hidden' value='' id='" + userName + "-" + columnNames[i] + "_modify'><img src='/static/img/setting-icon.png' class='icn' id='" + userName + "-" + columnNames[i] + "_modify-img'></td>");
+            countCheckboxes++;
+            stringToappend+="<td class='"+base64ColumnName+"'><input type='checkbox' class='read' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
+
+            countCheckboxes++;
+              stringToappend+="<input type='checkbox' class='modify' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+
+            $("#iconsRow_" + userName).append(stringToappend);
+            countCheckboxes++;
 
         }
         $("#"+userName).prepend("<th>" + userName + "</th>");
@@ -509,44 +531,32 @@ $("#addUserToRights").click(function () {
         rightColumnID++;
     }
 
-    $(".icn").unbind('click');
-    //method to toggle img background and write the right into a hiddenfield
-    $(".icn").click(function () {
-        actUserName = getUsernameForRights(this.id);
-        actColumnName = getColumnNameForRights(this.id);
-        actRightName = getRightNameForRights(this.id);
-        if (actColumnName == 'all' && actRightName == 'read' || actColumnName == 'all' && actRightName == 'modify') {
-            if ($("#" + actUserName + "-" + actColumnName + "_" + actRightName).val() == '') {
-                $("#" + actUserName + "-" + actColumnName + "_" + actRightName).val(actRightName);
-                $("#" + actUserName + "-" + actColumnName + "_" + actRightName + "-img").css('background-color', 'rgb(51, 204, 51)');
-                for (var j in columnNames) {
-                    $("#" + actUserName + "-" + columnNames[j] + "_" + actRightName).val(actRightName);
-                    $("#" + actUserName + "-" + columnNames[j] + "_" + actRightName + "-img").css('background-color', 'rgb(51, 204, 51)');
-                }
-            }
-            else {
-                $("#" + actUserName + "-" + actColumnName + "_" + actRightName).val('');
-                $("#" + actUserName + "-" + actColumnName + "_" + actRightName + "-img").css('background-color', 'rgb(256, 256, 256)');
-                for (var p in columnNames) {
-                    $("#" + actUserName + "-" + columnNames[p] + "_" + actRightName).val('');
-                    $("#" + actUserName + "-" + columnNames[p] + "_" + actRightName + "-img").css('background-color', 'rgb(256, 256, 256)');
-                }
-            }
-        }
 
-        else {
-            if ($("#" + actUserName + "-" + actColumnName + "_" + actRightName).val() == '') {
-                $("#" + actUserName + "-" + actColumnName + "_" + actRightName).val(actRightName);
-                $("#" + actUserName + "-" + actColumnName + "_" + actRightName + "-img").css('background-color', 'rgb(51, 204, 51)');
-            }
-            else {
-                $("#" + actUserName + "-" + actColumnName + "_" + actRightName).val('');
-                $("#" + actUserName + "-" + actColumnName + "_" + actRightName + "-img").css('background-color', 'rgb(256, 256, 256)');
+    $("input:checkbox").button();
 
-            }
-        }
-    });
 });
+
+
+function toggleAll(element,type){
+    var row = $(element).parent();
+    row = row.parent();
+    var temp = [];
+   if(type=='read'){
+      temp =  row.find(".read");
+
+
+   }
+    else if(type=='modify'){
+        temp =  row.find(".modify");
+
+    }
+
+        $(temp).each(function(){
+            this.checked=element.checked;
+            //$(this).button("option","label").css('background-color', 'rgb(255, 0, 0)');
+        }
+);
+}
 
 $("#createTableButton").click(function () {
 
@@ -557,15 +567,13 @@ $("#createTableButton").click(function () {
 
     //fill it with all columns
     jsonTbl.columns = [];
-
-
     $(".columnNameClass").each(function () {
+        var columnNames = $(this).val();
         columnObj = {};
-        columnObj.name = columnNames;
         columnObj.name = columnNames;
         columnObj.required = 1;
         columnObj.options = [];
-        columnObj.rights = {};
+        columnObj.rights = [];
 
         var row = $(this).parent();
         row = row.parent();
@@ -606,7 +614,59 @@ $("#createTableButton").click(function () {
         else {
             columnObj.table = $(row.find(".dataType")).find(":selected").text();
         }
+        var users = [];
+        var groups = [];
         console.log(columnObj);
+        $("."+Base64.encode(columnNames)).each(function(){
+
+            var par = $(this).parent();
+            var name = par.val();
+            var userObj = {};
+            userObj.name = name;
+            var tempRights = [];
+            if($(this).find(".read").checked){
+                tempRights.push('read');
+            }
+             if($(this).find(".modify").checked){
+                tempRights.push('modify');
+            }
+            userObj.rights = tempRights;
+            if($.isInArray(name,allUsers)){
+                users.push(userObj);
+            }
+            else if($.isInArray(name,allGroups)){
+                groups.push(userObj);
+
+            }
+        });
+
+    });
+
+    jsonTbl.rights = [];
+    var users = [];
+    var groups = [];
+
+    $(".rightsTable").each(function(){
+    var userObj = {};
+    userObj.name = this.id;
+    userObj.rights = [];
+    if($("#insert").checked){
+        userObj.rights.push('insert');
+    }
+    else if($("#delete").checked){
+         userObj.rights.push('delete');
+    }
+
+
+
+    if($.isInArray(userGroupName,allUsers)){
+                users.push(userObj);
+            }
+    else if($.isInArray(userGroupName,allGroups)){
+                groups.push(userObj);
+
+            }
+
     });
 
 
@@ -614,42 +674,6 @@ $("#createTableButton").click(function () {
 
 
     //fill it with rights for the whole table
-
-
-    /*
-     jsonTbl.rights = {};
-     jsonTbl.rights.users = {};
-     jsonTbl.rights.groups = {};
-
-
-     for(var i in takenUserGroups){
-
-     if(jQuery.isInArray(takenUserGroups[i],allUsers)){
-
-     if($("#"+takenUserGroups[i]+"-all_modify").val()=="modify"){
-     jsonTbl.rights.users.push({key:takenUserGroups[i],value:"rightsAdmin"});
-
-     }
-     if($("#"+takenUserGroups[i]+"-all_modify").val()=="insert"){
-     jsonTbl.rights.users.push({key:takenUserGroups[i],value:"insert"});
-     }
-
-     }
-     else if(jQuery.isInArray(takenUserGroups[i],allGroups)){
-
-     if($("#"+takenUserGroups[i]+"-all_modify").val()=="modify"){
-     jsonTbl.rights.users.push({key:takenUserGroups[i],value:"rightsAdmin"});
-
-     }
-     if($("#"+takenUserGroups[i]+"-all_modify").val()=="insert"){
-     jsonTbl.rights.users.push({key:takenUserGroups[i],value:"insert"});
-     }
-
-     }
-
-
-     }
-     */
 
     $.ajax({
         url: '/api/table/',
@@ -664,6 +688,142 @@ $("#createTableButton").click(function () {
 
 });
 
+// Class for Base64 Encoding
+ Base64 = {
+
+	// private property
+	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+	// public method for encoding
+	encode : function (input) {
+		var output = "";
+		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+		var i = 0;
+
+		input = Base64._utf8_encode(input);
+
+		while (i < input.length) {
+
+			chr1 = input.charCodeAt(i++);
+			chr2 = input.charCodeAt(i++);
+			chr3 = input.charCodeAt(i++);
+
+			enc1 = chr1 >> 2;
+			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+			enc4 = chr3 & 63;
+
+			if (isNaN(chr2)) {
+				enc3 = enc4 = 64;
+			} else if (isNaN(chr3)) {
+				enc4 = 64;
+			}
+
+			output = output +
+			this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+			this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+
+		}
+
+		return output;
+	},
+
+	// public method for decoding
+	decode : function (input) {
+		var output = "";
+		var chr1, chr2, chr3;
+		var enc1, enc2, enc3, enc4;
+		var i = 0;
+
+		input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+		while (i < input.length) {
+
+			enc1 = this._keyStr.indexOf(input.charAt(i++));
+			enc2 = this._keyStr.indexOf(input.charAt(i++));
+			enc3 = this._keyStr.indexOf(input.charAt(i++));
+			enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+			chr1 = (enc1 << 2) | (enc2 >> 4);
+			chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+			chr3 = ((enc3 & 3) << 6) | enc4;
+
+			output = output + String.fromCharCode(chr1);
+
+			if (enc3 != 64) {
+				output = output + String.fromCharCode(chr2);
+			}
+			if (enc4 != 64) {
+				output = output + String.fromCharCode(chr3);
+			}
+
+		}
+
+		output = Base64._utf8_decode(output);
+
+		return output;
+
+	},
+
+	// private method for UTF-8 encoding
+	_utf8_encode : function (string) {
+		string = string.replace(/\r\n/g,"\n");
+		var utftext = "";
+
+		for (var n = 0; n < string.length; n++) {
+
+			var c = string.charCodeAt(n);
+
+			if (c < 128) {
+				utftext += String.fromCharCode(c);
+			}
+			else if((c > 127) && (c < 2048)) {
+				utftext += String.fromCharCode((c >> 6) | 192);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+			else {
+				utftext += String.fromCharCode((c >> 12) | 224);
+				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+
+		}
+
+		return utftext;
+	},
+
+	// private method for UTF-8 decoding
+	_utf8_decode : function (utftext) {
+		var string = "";
+		var i = 0;
+		var c = c1 = c2 = 0;
+
+		while ( i < utftext.length ) {
+
+			c = utftext.charCodeAt(i);
+
+			if (c < 128) {
+				string += String.fromCharCode(c);
+				i++;
+			}
+			else if((c > 191) && (c < 224)) {
+				c2 = utftext.charCodeAt(i+1);
+				string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+				i += 2;
+			}
+			else {
+				c2 = utftext.charCodeAt(i+1);
+				c3 = utftext.charCodeAt(i+2);
+				string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+				i += 3;
+			}
+
+		}
+
+		return string;
+	}
+
+}
 
 </script>
 
