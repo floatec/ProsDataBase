@@ -7,12 +7,12 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 from database.models import *
-from database.testing.factory import *
+from database.factory import *
 
 class GroupTest(TestCase):
     def test_user_exist(self):
         """
-        testet ob ein user in einer Gruppe ist
+        if a user is in a group the test goes right
         """
         group = create_Group()
 
@@ -29,8 +29,6 @@ class GroupTest(TestCase):
 class TableTest(TestCase):
     def test_table(self):
         """
-        testet eine tabelle
+        tests a table
         """
-
         table = create_table()
-        self.assertTrue(table.getDataSets.all())
