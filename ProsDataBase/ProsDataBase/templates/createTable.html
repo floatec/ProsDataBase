@@ -512,10 +512,10 @@ $("#createTableButton").click(function () {
             var userObj = {};
             userObj.name = name;
             var tempRights = [];
-            if($(this).find(".read").is(':checked')){
+            if($(this).find("."+encode(columnNames)).find(".read").is(':checked')){
                 tempRights.push('read');
             }
-             if($(this).find(".modify").is(':checked')){
+             if($(this).find("."+encode(columnNames)).find(".modify").is(':checked')){
                 tempRights.push('modify');
             }
             userObj.rights = tempRights;

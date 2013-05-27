@@ -44,7 +44,7 @@
 		// fill Navigation-Bar
 		$("#navigationMenuContent").append("<li><a href='/dataset/"+tables[key].name+"'>"+tables[key].name+"</a></li>");
 		// create tables
-		$("#content").append("<a href='/dataset/"+tables[key].name+"'><div class='overViewDiv' id='table"+key+"'><div id='overViewHeader'>"+tablename+"</div></div></a>");
+		$("#content").append("<a href='/detailview/"+tables[key].name+"'><div class='overViewDiv' id='table"+key+"'><div id='overViewHeader'>"+tablename+"</div></div></a>");
 		for (rows in tables[key].column){
 			$("#table"+key).append("<div class='overViewContentDiv'>"+tables[key].column[rows]+"</div>");
 
