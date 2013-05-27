@@ -19,35 +19,19 @@
 
 {% block javascript %}
 <script language="JavaScript" >
-    // variable um json format zu testen und tabelle mit daten zu füllen
-	//var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
-
-    $.getJSON('/api/table',function(data){
-
-
+       $.getJSON('/api/table',function(data){
         createTables(data.tables);
-
-
     });
-
-
     //function to create and fill tables
     function createTables(tables){
 	for (key in tables) {
 		var tablename = tables[key].name;
-
-
-
-
-
-
 		// fill Navigation-Bar
-		$("#navigationMenuContent").append("<li><a href='/dataset/"+tables[key].name+"'>"+tables[key].name+"</a></li>");
+		$("#navigationMenuContent").append("<li><a href='/detailview/"+tables[key].name+"'>"+tables[key].name+"</a></li>");
 		// create tables
 		$("#content").append("<a href='/detailview/"+tables[key].name+"'><div class='overViewDiv' id='table"+key+"'><div id='overViewHeader'>"+tablename+"</div></div></a>");
 		for (rows in tables[key].column){
 			$("#table"+key).append("<div class='overViewContentDiv'>"+tables[key].column[rows]+"</div>");
-
 		}
     }
 	}

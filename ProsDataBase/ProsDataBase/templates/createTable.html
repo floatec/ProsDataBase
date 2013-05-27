@@ -466,15 +466,15 @@ $("#createTableButton").click(function () {
         columnObj.rights = {};
         var row = $(this).parent();
         row = row.parent();
-        var thisDataType = $(row.find(".dataType")[0]).val();
+        var thisDataType = parseInt($(row.find(".dataType")[0]).val());
 
         columnObj.type = thisDataType;
         if (thisDataType == 0) {
-            columnObj.length = $(row.find(".length")[0]).val();
+            columnObj.length = parseInt($(row.find(".length")[0]).val());
         }
         else if (thisDataType == 1) {
-            columnObj.min = $(row.find(".min")[0]).val();
-            columnObj.max = $(row.find(".max")[0]).val();
+            columnObj.min = parseInt($(row.find(".min")[0]).val());
+            columnObj.max = parseInt($(row.find(".max")[0]).val());
         }
         else if (thisDataType == 2) {
         }
