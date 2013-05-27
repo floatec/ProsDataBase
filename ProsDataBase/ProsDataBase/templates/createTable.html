@@ -5,7 +5,7 @@
                                                                                          href="#tabs-2"
                                                                                          class="headerTab headerTabDeactive"
                                                                                          onClick='changeTo(1)'>step
-    2</a><a id="tab_header_3" href="#tabs-3" class="headerTab headerTabDeactive" onClick='changeTo(2)'>step 3</a>
+    2</a>
 {% endblock %}
 
 //TODO scrollable results: http://jqueryui.com/autocomplete/#maxheight ( CSS )
@@ -22,30 +22,12 @@
     <ul>
         <li><a href="#tabs-1" id="tab_1">step 1</a></li>
         <li><a href="#tabs-2" id="tab_2">step 2</a></li>
-        <li><a href="#tabs-3" id="tab_3">step 3</a></li>
+
     </ul>
     <div id="tabs-1">
 
         <span>Name:</span><br/>
         <input type="text" id="tblName"><br/><br/>
-        <span>Table administrators</span><br/>
-        <table>
-            <tr>
-                <td><span>User</span></td>
-                <td><span>Groups</span></td>
-            </tr>
-
-            <tr>
-                <td><textarea name="user_eingabe" id="userAdmin" cols="30" rows="8"></textarea></td>
-                <td><textarea name="group_eingabe" id="groupAdmin" cols="30" rows="8"></textarea></td>
-            </tr>
-        </table>
-
-        <button id="nextButtonPage2">next</button>
-
-
-    </div>
-    <div id="tabs-2">
 
         <table id="columnTable">
 
@@ -59,10 +41,11 @@
 
         <button id="addColumn">+</button>
         <br/><br/>
-        <button id="nextButtonPage3">next</button>
+        <button id="nextButtonPage2">next</button>
+
+
     </div>
-    <div id="tabs-3">
-        <!--TODO: Berechtigungen hier-->
+    <div id="tabs-2">
         <input type="text" id="inputUserGroup">
         <button id="addUserToRights">+</button>
         <br/>
@@ -70,7 +53,9 @@
         <div id="allUserRights"></div>
         <button id='createTableButton'>create</button>
 
+
     </div>
+
 </div>
 
 {% endblock %}
@@ -85,11 +70,7 @@ function changeTo(number) {
 
 }
 // FIRST TAB
-
-
 //switch navi-content function
-
-
 function init() {
     $.ajaxSetup({
         async: false
@@ -112,11 +93,10 @@ function init() {
     datatypes[2] = "date";
     datatypes[3] = "selection";
     datatypes[4] = "yes or no";
-
     // initialize tabs
     $("#tabs").tabs({
         collapsible: false,
-        disabled: [1, 2],
+        disabled: 1,
         beforeActivate: function (event, ui) {
             if(!valid && ui.newPanel.attr('id') != 'tabs-2'){
                return false;
@@ -136,7 +116,6 @@ function init() {
             else if (ui.newPanel.attr('id') == 'tabs-2') {
                 $("#tab_header_1").addClass("headerTabIanctive")
                 $("#tab_header_2").removeClass("headerTabDeactive")
-
                 $("#naviHeadline").remove();
                 $("#naviContentSpan").remove();
                 $("#naviContentList").remove();
@@ -144,41 +123,23 @@ function init() {
                 $("#navigationMenu").append("<span id='naviContentSpan'>On the second step..</span>");
 
             }
-            else if (ui.newPanel.attr('id') == 'tabs-3') {
 
-                $("#tab_header_1").addClass("headerTabIanctive");
-                $("#tab_header_2").addClass("headerTabIanctive");
-                $("#tab_header_3").removeClass("headerTabDeactive");
-                $("#naviHeadline").remove();
-                $("#naviContentList").remove();
-                $("#naviContentSpan").remove();
-                $("#navigationMenu").append("<div id='naviHeadline'>add Groups</div>");
-                $("#navigationMenu").append("<ul id='naviContentList'><li>step 3</li></ul>");
-
-            }
              removeEmptyColumns();
         }
     });
 
+
     // function to switch to second tab
     $("#nextButtonPage2").click(function () {
 
-        $("#tabs").tabs("option", "disabled", [ 2 ]);
+
+
         changeTo(1);
 
 
     });
-    // switch to page 3
-    // function to switch to third tab
-    $("#nextButtonPage3").click(function () {
 
-        $("#tabs").tabs("enable", 2);
-        columnNames = getAllColumnNames();
-        changeTo(2);
 
-        //click event for the third tab
-
-    });
     $.getJSON('/api/user/', function (data) {
 
         allUsers = data.users;
@@ -204,54 +165,6 @@ function init() {
         tables = data.tables;
 
     });
-    //auto complete for users
-    $("#userAdmin")
-
-            .bind("keydown", function (event) {
-                if (event.keyCode === $.ui.keyCode.TAB &&
-                        $(this).data("ui-autocomplete").menu.active) {
-                    event.preventDefault();
-                }
-            })
-            .autocomplete({
-
-                source: function (request, response) {
-
-                    response($.ui.autocomplete.filter(
-                            allUsers, extractLast(request.term)));
-                },
-                select: function (event, ui) {
-                    var terms = split(this.value);
-                    terms.pop();
-                    terms.push(ui.item.value);
-                    terms.push("");
-                    this.value = terms.join(", ");
-                    return false;
-                }
-            });
-    //auto-complete for groups
-    $("#groupAdmin")
-
-            .bind("keydown", function (event) {
-                if (event.keyCode === $.ui.keyCode.TAB &&
-                        $(this).data("ui-autocomplete").menu.active) {
-                    event.preventDefault();
-                }
-            })
-            .autocomplete({
-                source: function (request, response) {
-                    response($.ui.autocomplete.filter(
-                            allGroups, extractLast(request.term)));
-                },
-                select: function (event, ui) {
-                    var terms = split(this.value);
-                    terms.pop();
-                    terms.push(ui.item.value);
-                    terms.push("");
-                    this.value = terms.join(", ");
-                    return false;
-                }
-            });
 
     // initialize alertbox
     $("#deleteAlertBox").dialog({
@@ -362,11 +275,7 @@ function createNewColumnsRow() {
 
         lastID = getNumber(this.id);
         $("#deleteAlertBox").dialog("open");
-
-
     });
-
-
     //append different inputs for datatypes for every row
 
     //min and max input for numeric datatype
@@ -383,20 +292,14 @@ function createNewColumnsRow() {
         }
         //size for text datatype
         if ($("#selectDataType_" + lastID).val() == "0") {
-
             $("#selectDataTypeCell_" + lastID).remove();
             $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>length:<input type='text' class='length'></td>");
-
         }
         if ($("#selectDataType_" + lastID).val() == "4") {
-
             $("#selectDataTypeCell_" + lastID).remove();
-
         }
         if ($("#selectDataType_" + lastID).val() == "2") {
-
             $("#selectDataTypeCell_" + lastID).remove();
-
         }
 
         if ($("#selectDataType_" + lastID).val() == "3") {
@@ -425,7 +328,6 @@ function createNewColumnsRow() {
 
 }
 // function to get all table names
-
 function getTables() {
     var temp = [];
     for (var key in tables) {
@@ -436,14 +338,10 @@ function getTables() {
     }
     return temp;
 }
-
-
 // click event for the add column button
 $("#addColumn").click(function () {
     createNewColumnsRow();
 });
-
-
 //function to get the ID
 function getNumber(number) {
 
@@ -498,19 +396,19 @@ $("#addUserToRights").click(function () {
         var inputsToappend ="";
         $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
          countCheckboxes++;
-        inputsToappend+= "<td class='all'><input type='checkbox' class='insert' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+        inputsToappend+= "<td class='all'><input type='checkbox' class='rightsAdmin' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/key-icon.png'></label>";
+        countCheckboxes++;
+         inputsToappend+= "<input type='checkbox' class='insert' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/pencil-icon.png'></label>";
         countCheckboxes++;
         inputsToappend+= "<input type='checkbox' class='delete' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/trash-icon.png'></label>";
         countCheckboxes++;
+        inputsToappend+= "<input type='checkbox' class='viewLog' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/paper-icon.png'></label>";
+        countCheckboxes++;
         inputsToappend+="<input onClick='toggleAll(this,\"read\")'"+" type='checkbox' id='check"+countCheckboxes+"'  /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
-        $("#iconsRow_" + userName).append("");
         countCheckboxes++;
         inputsToappend+="<input  onClick='toggleAll(this,\"modify\")'"+" type='checkbox' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
         $("#iconsRow_" + userName).append(inputsToappend);
         countCheckboxes++;
-
-
-
         var columnNames = getAllColumnNames();
         for (i in columnNames) {
             var ClassColumnName = encode(columnNames[i]);
@@ -530,10 +428,7 @@ $("#addUserToRights").click(function () {
 
         rightColumnID++;
     }
-
-
     $("input:checkbox").button();
-
 });
 
 
@@ -543,14 +438,10 @@ function toggleAll(element,type){
     var temp = [];
    if(type=='read'){
       temp =  row.find(".read");
-
-
    }
     else if(type=='modify'){
         temp =  row.find(".modify");
-
     }
-
         $(temp).each(function(){
             this.checked=element.checked;
             //$(this).button("option","label").css('background-color', 'rgb(255, 0, 0)');
@@ -572,9 +463,7 @@ $("#createTableButton").click(function () {
         columnObj = {};
         columnObj.name = columnNames;
         columnObj.required = 1;
-
-        columnObj.rights = [];
-
+        columnObj.rights = {};
         var row = $(this).parent();
         row = row.parent();
         var thisDataType = $(row.find(".dataType")[0]).val();
@@ -582,16 +471,12 @@ $("#createTableButton").click(function () {
         columnObj.type = thisDataType;
         if (thisDataType == 0) {
             columnObj.length = $(row.find(".length")[0]).val();
-
         }
         else if (thisDataType == 1) {
             columnObj.min = $(row.find(".min")[0]).val();
             columnObj.max = $(row.find(".max")[0]).val();
-
         }
         else if (thisDataType == 2) {
-
-
         }
         else if (thisDataType == 3) {
             columnObj.options = [];
@@ -616,18 +501,21 @@ $("#createTableButton").click(function () {
         }
         var users = [];
         var groups = [];
-        console.log(columnObj);
-        $("."+encode(columnNames)).each(function(){
 
-            var par = $(this).parent();
-            var name = par.val();
+        console.log(columnObj);
+         $(".rightsTable").each(function(){
+
+
+
+            var name =this.id;
+
             var userObj = {};
             userObj.name = name;
             var tempRights = [];
-            if($(this).find(".read").checked){
+            if($(this).find(".read").is(':checked')){
                 tempRights.push('read');
             }
-             if($(this).find(".modify").checked){
+             if($(this).find(".modify").is(':checked')){
                 tempRights.push('modify');
             }
             userObj.rights = tempRights;
@@ -638,11 +526,14 @@ $("#createTableButton").click(function () {
                 groups.push(userObj);
 
             }
-        });
 
+        });
+        columnObj.rights.users = users;
+         columnObj.rights.groups = groups;
+         jsonTbl.columns.push(columnObj);
     });
 
-    jsonTbl.rights = [];
+    jsonTbl.rights = {};
     var users = [];
     var groups = [];
 
@@ -652,29 +543,29 @@ $("#createTableButton").click(function () {
     userObj.name = this.id;
 
     userObj.rights = [];
-    if($("#insert").checked){
+
+    if(($(this).find((".rightsAdmin")).is(':checked'))){
+        userObj.rights.push('rightsAdmin');
+    }
+    if(($(this).find((".insert")).is(':checked'))){
         userObj.rights.push('insert');
     }
-    else if($("#delete").checked){
+    if(($(this).find((".delete")).is(':checked'))){
          userObj.rights.push('delete');
     }
-
-
-
+    if(($(this).find((".viewLog")).is(':checked'))){
+         userObj.rights.push('viewLog');
+    }
     if($.isInArray(userGroupName,allUsers)){
                 users.push(userObj);
             }
     else if($.isInArray(userGroupName,allGroups)){
                 groups.push(userObj);
-
             }
-
     });
-
+    jsonTbl.rights.users = users;
+    jsonTbl.rights.groups = groups;
     console.log(jsonTbl);
-    jsonTbl.columns.push(columnObj);
-
-
     //fill it with rights for the whole table
 
     $.ajax({
