@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
-{% block header %}
+{% block menu %}
 <a id="tab_header_1" href="#tabs-1" class="headerTab" onClick='changeTo(0)'>step 1</a><a id="tab_header_2"
                                                                                          href="#tabs-2"
                                                                                          class="headerTab headerTabDeactive"
                                                                                          onClick='changeTo(1)'>step
     2</a>
+{% endblock %}
+
+{% block header %}
+    <a href="/createTable/" class="crumb">erstellen <span>></span></a>
 {% endblock %}
 
 //TODO scrollable results: http://jqueryui.com/autocomplete/#maxheight ( CSS )
