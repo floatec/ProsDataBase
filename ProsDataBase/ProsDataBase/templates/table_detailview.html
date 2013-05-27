@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+
+{% block javascript %}
+<script language="JavaScript">
+
+
+   var tableName = getTableName();
+
+   var columns = [];
+   var rights = {};
+    $.getJSON('/api/table/'+tableName+'/',function(data){
+       columns.push(data.columns);
+
+    });
+   $.getJSON('/api/table/'+tableName+'/structure/',function(data){
+
+   });
+
+function getTableName(){
+    var tableName = window.location.href;
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(0,lastIndex);
+    var lastIndex = tableName.lastIndexOf('/');
+      var tableName = tableName.substr(lastIndex+1);
+    return tableName;
+}
+
+
+
+
+
+
+</script>
+{% endblock %}

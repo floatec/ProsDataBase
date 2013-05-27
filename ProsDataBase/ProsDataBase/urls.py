@@ -21,7 +21,7 @@ urlpatterns = patterns(
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    (r'^detailview/$', TemplateView.as_view(template_name="table_detailview.html")),
+    (r'^detailview/(?P<table_id>\w+)/$', TemplateView.as_view(template_name="table_detailview.html")),
     (r'^createTable/$', TemplateView.as_view(template_name="createTable.html")),
     (r'^createGroup/$', TemplateView.as_view(template_name="createGroup.html")),
     (r'^groupadmin/$', TemplateView.as_view(template_name="groupadmin.html")),
