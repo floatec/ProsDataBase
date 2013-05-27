@@ -22,7 +22,7 @@
     // variable um json format zu testen und tabelle mit daten zu füllen
 	//var tables = jQuery.parseJSON( '{"tables":[{"name":"labor","dataDescr":["pid","laborid"]},{"name":"patient","dataDescr":["pid","name"]},{"name":"studie1","dataDescr":["studienID","value"]}]}' ).tables;
 
-    jQuery.getJSON('/api/table',function(data){
+    $.getJSON('/api/table',function(data){
 
 
         createTables(data.tables);
