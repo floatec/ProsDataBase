@@ -14,15 +14,11 @@
     <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
 {% endblock %}
 {% block menu %}
-
         <a class='buttonMenuButton' id='insertData' href='#'>Insert Data</a>
         <a class='buttonMenuButton'>Delete Data</a>
         <a class='buttonMenuButton'>Export</a>
         <a class='buttonMenuButton'>Modify Structure</a>
-
-
 {% endblock %}
-
 
 {% block content %}
    <table id='detailTable' class='datasets' border='1'><thead id='descrRow'></thead></table>
@@ -36,23 +32,14 @@ init();
 
 
 
-/*
-    $.getJSON('/api/table/'+tableName+'/',function(data){
 
-
-    });
-
-    */
 function init(){
     var tableName = getTableName();
     $("#naviheader").append(tableName)
      var columns = [];
     $.getJSON('/api/table/'+tableName+'/structure/',function(data){
-
          columns = data.columns;
          createTable(columns);
-
-
     });
     $("#tableCrumb").prepend(tableName);
     $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
@@ -65,10 +52,13 @@ function createTable(columns){
     //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
     for(var key in columns){
         $("#descrRow").append("<th>"+columns[key].name+"</th>");
-
         $("#navigationMenuContent").append("<li><a href='#"+columns[key].name+"'>"+columns[key].name+"</a></li>");
 
+
     }
+
+createDatasets();
+
 }
 
 function getTableName(){
@@ -80,7 +70,30 @@ function getTableName(){
     return tableName;
 }
 
+function createDatasets(){
+    var tableName = getTableName();
+    $.getJSON('/api/table/'+tableName+'/',function(data){
+        var allDatasets = data.datasets;
+         var counter = 0;
+        for(var key in allDatasets){
 
+          $("#detailTable").append("<tr id='datasetRow"+counter+"'></tr>");
+          for(var i in allDatasets[key]){
+
+              $("#datasetRow"+counter).append("<td>"+allDatasets[key][i].value+"</td>")
+
+          }
+          counter++;
+
+
+
+
+        }
+
+
+    });
+
+}
 
 
 
