@@ -1,46 +1,105 @@
 {% extends "base.html" %}
 
+{% block header %}
+    <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
+         <a class="crumb" href='#' id='insertCrumb'> <span>></span></a>
+{% endblock %}
 {%  block content %}
 <table id="fields" border="0">
        </table>
-       <input type="button" value="Save">
+       <input type="button" id='saveInsert' value="Save">
 {% endblock %}
 
 
 {% block javascript %}
 <script language="JavaScript" >
-  table=JSON.parse('  {' +
-          ' "columns": [' +
-          '{"name": "columnname0", "type": 0, "length": 100},' +
-          '{"name": "columnname1", "type": 1, "min": "0", "max": "100"},' +
-          '{"name": "columnname2", "type": 2, "min": "", "max": ""},' +
-          '{"name": "columnname3", "type": 3, "options": {"0": "opt1", "1": "opt2", "2": "opt3"}},' +
-          '{"name": "columnname4", "type": 4, "table": "tablename"}' +
-          ']' +
-          '}').columns;
-  for(var i in table){
-      var row="<tr><td>"+table[i].name+"</td><td>"
-          if(table[i].type==0){
-            row+='<input name="'+table[i].name+'" type="text" length="'+table[i].length+'">'
+  $.getJSON('/api/table/'+getTableName()+'/structure/',function(data){
+        var tableName = getTableName();
+        var columns = data.columns;
+
+ for(var i in columns){
+      var row="<tr class='allColumns'><td class='nameCell'>"+columns[i].name+"</td><td>"
+          if(columns[i].type==0){
+            row+='<input class="inputField" name="'+columns[i].name+'" type="text" length="'+columns[i].length+'">'
           }
-         if(table[i].type==1){
-            row+='<input name="'+table[i].name+'" type="number" min="'+table[i].min+'" max="'+table[i].max+'">'
+         if(columns[i].type==1){
+            row+='<input class="inputField" name="'+columns[i].name+'" type="number" min="'+columns[i].min+'" max="'+columns[i].max+'">'
           }
-            if(table[i].type==2){
-            row+='<input name="'+table[i].name+'" type="datetime-local" min="'+table[i].min+'" max="'+table[i].max+'">'
+            if(columns[i].type==2){
+            row+='<input class="inputField" name="'+columns[i].name+'" type="datetime-local" min="'+columns[i].min+'" max="'+columns[i].max+'">'
           }
-           if(table[i].type==3){
-            row+='<select name="'+table[i].name+'" limit="1">'
-            for(var v in table[i].options){
-                row+='<option value="'+v+'" limit="1">'+table[i].options[v]+'</option>'
+           if(columns[i].type==3){
+            row+='<select class="inputField" name="'+columns[i].name+'" limit="1">'
+            for(var v in columns[i].options){
+                row+='<option value="'+v+'" limit="1">'+columns[i].options[v]+'</option>'
             }
             row+='</select>'
           }
-            if(table[i].type==4){
-            row+='<span id="'+table[i].name+'"></span><span onClick="fenster = window.open(\'/dataset/Patient\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
+            if(columns[i].type==4){
+            row+='<span id="'+columns[i].name+'"></span><span onClick="fenster = window.open(\'/dataset/Patient\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
           }
             row+="</td></tr>"
       $("#fields").append(row)
   }
+
+    $("#tableCrumb").prepend(tableName);
+    $("#insertCrumb").prepend("insert");
+    $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
+
+    $("#insertCrumb").attr('href', '/dataset/'+tableName+'/');
+
+    });
+
+$("#saveInsert").click(function(){
+
+    var jsonDataset = {};
+    jsonDataset.table = getTableName();
+    jsonDataset.columns = [];
+    $(".allColumns").each(function(){
+       columnObj = {};
+        columnObj.name = $(this).find(".nameCell").text();
+        if($(this).find("input").length == 0){
+             if($(this).find("select").length== 0){
+
+
+             }
+            else{
+
+                 columnObj.value = $(this).find(":selected").text();
+
+             }
+
+        }
+        else{
+           columnObj.value = $(this).find("input").val();
+
+        }
+
+     jsonDataset.columns.push(columnObj);
+
+
+    });
+
+  $.ajax({
+        url: '/api/dataset/',
+        type: 'post',
+        data: JSON.stringify(jsonDataset),
+        contentType: 'application/json',
+        dataType: 'json'
+    });
+
+
+
+});
+
+
+function getTableName(){
+    var tableName = window.location.href;
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(0,lastIndex);
+    var lastIndex = tableName.lastIndexOf('/');
+      var tableName = tableName.substr(lastIndex+1);
+    return tableName;
+}
 </script>
 {% endblock %}
