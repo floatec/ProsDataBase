@@ -1,21 +1,61 @@
 {% extends "base.html" %}
 
+{% block header %}
+    <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
+{% endblock %}
+{% block menu %}
 
+        <a class='buttonMenuButton' id='insertData' href='#'>Insert Data</a>
+        <a class='buttonMenuButton'>Delete Data</a>
+        <a class='buttonMenuButton'>Export</a>
+        <a class='buttonMenuButton'>Modify Structure</a>
+
+
+{% endblock %}
+
+
+{% block content %}
+   <table id='detailTable' border='1'><tr id='descrRow'></tr></table>
+
+{% endblock %}
 {% block javascript %}
 <script language="JavaScript">
 
 
-   var tableName = getTableName();
+init();
 
-   var columns = [];
-   var rights = {};
+
+
+/*
     $.getJSON('/api/table/'+tableName+'/',function(data){
-       columns.push(data.columns);
+
 
     });
-   $.getJSON('/api/table/'+tableName+'/structure/',function(data){
 
-   });
+    */
+function init(){
+    var tableName = getTableName();
+     var columns = [];
+    $.getJSON('/api/table/'+tableName+'/structure/',function(data){
+
+         columns = data.columns;
+         createTable(columns);
+    });
+    $("#tableCrumb").prepend(tableName);
+    $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
+    $("#insertData").attr('href', '/dataset/'+tableName+'/');
+}
+function createTable(columns){
+    var tableName = getTableName();
+    var columns = columns;
+    $("#detailTable").prepend("<th>"+tableName+"</th>");
+    for(var key in columns){
+        $("#descrRow").append("<td>"+columns[key].name+"</td>");
+
+
+
+    }
+}
 
 function getTableName(){
     var tableName = window.location.href;
@@ -25,7 +65,6 @@ function getTableName(){
       var tableName = tableName.substr(lastIndex+1);
     return tableName;
 }
-
 
 
 

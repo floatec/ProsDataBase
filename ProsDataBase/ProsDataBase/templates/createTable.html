@@ -9,15 +9,13 @@
 {% endblock %}
 
 {% block header %}
-    <a href="/createTable/" class="crumb">erstellen <span>></span></a>
+    <a href="/createTable/" class="crumb">create <span>></span></a>
 {% endblock %}
 
-//TODO scrollable results: http://jqueryui.com/autocomplete/#maxheight ( CSS )
-{% block navigation %}
-<div id="naviHeadline">help</div>
+     {% block help %}
+        <div class='helpTextDiv'>Please specify the table name. Note, that it should be unique in the database.Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.</div>
+     {% endblock %}
 
-<span id="naviContentSpan">On the first step...</span>
-{% endblock %}
 
 {% block content %}
 <div id="deleteAlertBox">Are you sure to delete this item?</div>
@@ -26,19 +24,16 @@
     <ul>
         <li><a href="#tabs-1" id="tab_1">step 1</a></li>
         <li><a href="#tabs-2" id="tab_2">step 2</a></li>
-
     </ul>
     <div id="tabs-1">
-
-        <span>Name:</span><br/>
+        <span>tablename:</span><br/>
         <input type="text" id="tblName"><br/><br/>
-
         <table id="columnTable">
 
             <tr>
                 <td></td>
-                <td>name</td>
-                <td>datatype</td>
+                <td>column</td>
+                <td>content type</td>
             </tr>
 
         </table>
@@ -105,8 +100,6 @@ function init() {
             if(!valid && ui.newPanel.attr('id') != 'tabs-2'){
                return false;
             }
-
-
         },
         activate: function (event, ui) {
             if (ui.newPanel.attr('id') == 'tabs-1') {
@@ -114,8 +107,8 @@ function init() {
                 $("#naviContentList").remove();
                 $("#naviHeadline").remove();
                 $("#naviContentSpan").remove();
-                $("#navigationMenu").append("<div id='naviHeadline'>help</div>");
-                $("#navigationMenu").append("<span id='naviContentSpan'>On the first step..</span>");
+                $(".helpTextDiv").empty();
+                $(".helpTextDiv").html('Please specify the table name. Note, that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.');
             }
             else if (ui.newPanel.attr('id') == 'tabs-2') {
                 $("#tab_header_1").addClass("headerTabIanctive")
@@ -123,8 +116,8 @@ function init() {
                 $("#naviHeadline").remove();
                 $("#naviContentSpan").remove();
                 $("#naviContentList").remove();
-                $("#navigationMenu").append("<div id='naviHeadline'>help</div>");
-                $("#navigationMenu").append("<span id='naviContentSpan'>On the second step..</span>");
+                $(".helpTextDiv").empty();
+                $(".helpTextDiv").html('Finally, assign read, insert, modify and delete rights to users and groups:Search for users or groups in the input field and toggle their rights for each column.The "All"-section allows fast rights assignment for all columns.');
 
             }
 
@@ -135,12 +128,7 @@ function init() {
 
     // function to switch to second tab
     $("#nextButtonPage2").click(function () {
-
-
-
         changeTo(1);
-
-
     });
 
 
@@ -233,14 +221,12 @@ function getAllColumnNames() {
     $(".columnNameClass").each(function () {
         allColumnNames.push($(this).val());
     });
-
-
     return allColumnNames;
 
 }
 function createNewColumnsRow() {
     columnID++;
-    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length'></td></tr>");
+    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'></td></tr>");
 
     $("#field_" + columnID).change(function () {
         valid = true;
@@ -291,13 +277,13 @@ function createNewColumnsRow() {
         $("#selectDataTypeCell_" + lastID).remove();
         if ($("#selectDataType_" + lastID).val() == "1") {
             $("#selectDataTypeCell_" + lastID).remove();
-            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>min:<input type='text' class='min' size='10'>max:<input type='text' class='max' size='10'></td>");
+            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>min:<input type='text' value='0.0' class='min' size='10'>max:<input type='text' value='100.0' class='max' size='10'></td>");
 
         }
         //size for text datatype
         if ($("#selectDataType_" + lastID).val() == "0") {
             $("#selectDataTypeCell_" + lastID).remove();
-            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>length:<input type='text' class='length'></td>");
+            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>length:<input type='text' class='length' value='100'></td>");
         }
         if ($("#selectDataType_" + lastID).val() == "4") {
             $("#selectDataTypeCell_" + lastID).remove();
@@ -400,7 +386,7 @@ $("#addUserToRights").click(function () {
         var inputsToappend ="";
         $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
          countCheckboxes++;
-        inputsToappend+= "<td class='all'><input type='checkbox' class='rightsAdmin' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/key-icon.png'></label>";
+        inputsToappend+= "<td class='all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/key-icon.png'></label>";
         countCheckboxes++;
          inputsToappend+= "<input type='checkbox' class='insert' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/pencil-icon.png'></label>";
         countCheckboxes++;
@@ -419,20 +405,18 @@ $("#addUserToRights").click(function () {
             var stringToappend = "";
             $("#descriptionRow_" + rightColumnID).append("<td>" + columnNames[i] + "</td>");
             countCheckboxes++;
-            stringToappend+="<td class='"+ClassColumnName+"'><input type='checkbox' class='read' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
-
+            stringToappend+="<td nowrap='true' class='"+ClassColumnName+"'><input type='checkbox' class='read' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
             countCheckboxes++;
               stringToappend+="<input type='checkbox' class='modify' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
-
             $("#iconsRow_" + userName).append(stringToappend);
             countCheckboxes++;
-
         }
         $("#"+userName).prepend("<th>" + userName + "</th>");
 
         rightColumnID++;
     }
     $("input:checkbox").button();
+    $("#inputUserGroup").val("");
 });
 
 
@@ -475,6 +459,7 @@ $("#createTableButton").click(function () {
         columnObj.type = thisDataType;
         if (thisDataType == 0) {
             columnObj.length = parseInt($(row.find(".length")[0]).val());
+
         }
         else if (thisDataType == 1) {
             columnObj.min = parseInt($(row.find(".min")[0]).val());
