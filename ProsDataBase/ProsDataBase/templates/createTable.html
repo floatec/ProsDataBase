@@ -13,7 +13,7 @@
 {% endblock %}
 
      {% block help %}
-        <div class='helpTextDiv'>Please specify the table name. Note, that it should be unique in the database.Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.</div>
+        <div class='helpTextDiv'><h1>Help</h1>Please specify the table name. Note, that it should be unique in the database.Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.</div>
      {% endblock %}
 
 
@@ -104,11 +104,12 @@ function init() {
         activate: function (event, ui) {
             if (ui.newPanel.attr('id') == 'tabs-1') {
                 $("#tab_header_1").removeClass("headerTabIanctive");
+                $("#tab_header_2").addClass("headerTabIanctive")
                 $("#naviContentList").remove();
                 $("#naviHeadline").remove();
                 $("#naviContentSpan").remove();
                 $(".helpTextDiv").empty();
-                $(".helpTextDiv").html('Please specify the table name. Note, that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.');
+                $(".helpTextDiv").html('<h1>Help</h1>Please specify the table name. Note, that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.');
             }
             else if (ui.newPanel.attr('id') == 'tabs-2') {
                 $("#tab_header_1").addClass("headerTabIanctive")
@@ -117,7 +118,7 @@ function init() {
                 $("#naviContentSpan").remove();
                 $("#naviContentList").remove();
                 $(".helpTextDiv").empty();
-                $(".helpTextDiv").html('Finally, assign read, insert, modify and delete rights to users and groups:Search for users or groups in the input field and toggle their rights for each column.The "All"-section allows fast rights assignment for all columns.');
+                $(".helpTextDiv").html('<h1>Help</h1>Finally, assign read, insert, modify and delete rights to users and groups:Search for users or groups in the input field and toggle their rights for each column.The "All"-section allows fast rights assignment for all columns.');
 
             }
 

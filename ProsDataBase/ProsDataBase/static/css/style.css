@@ -73,11 +73,16 @@
         display: inline;
     }
 .helpTextDiv{
-
-
-
-
-
+            background-color:#EEE;
+            position: absolute;
+            top: 50px;
+            width: 230px;
+            padding: 7px;
+}
+.helpTextDiv h1{
+    color:#00458A;
+    font-size: 20px;
+    text-align: center;
 }
 
         #loginNameMenu {
@@ -118,7 +123,7 @@
             padding-left: 10px;
             font-size: 20px;
         display: inline;
-         color: #ffffff;
+         color: #B9181E;
          border-left-style: solid;
 border-left-color: #B9181E;
 border-left-width: 5px;
@@ -128,12 +133,12 @@ border-right-width: 5px;
         }
         .headerTabIanctive{
 
-         color: #ffffff;
+         color: #00458A;
          border-left-style: solid;
-border-left-color: #ffffff;
+border-left-color: #B9181E;
 border-left-width: 5px;
             border-right-style: solid;
-border-right-color: #ffffff;
+border-right-color: #B9181E;
 border-right-width: 5px;
         }
         .headerTabDeactive{
@@ -160,9 +165,9 @@ border-right-width: 5px;
             }
 
 .overViewDiv {
-    background-color: #D6EEFF;
-    border: 4px double #03588C;
-    color: #03588C;
+    background-color: #EEE;
+    border: 4px solid #BBB;
+    color: #00458A;
     float: left;
     height: 300px;
     margin-bottom: 20px;
@@ -174,11 +179,11 @@ border-right-width: 5px;
     overflow: hidden;
 }
 .overViewContentDiv {
-    background-color: #D6EFFF;
-    display: -moz-grid-line;
+    background-color: #FFF;
+    display: inline-block;
     margin-right: 13px;
     margin-top: 13px;
-    padding: 8px 0;
+    padding: 8px;
     position: relative;
     top: 44px;
     border-style: solid;
@@ -186,11 +191,14 @@ border-right-width: 5px;
     border-color: #265FAB;
     border-width: 1px;
 }
+.helpTextDiv{
+
+}
 
 
 #overViewHeader {
-    background-color: #67A3DB;
-    border-bottom-right-radius: 50px;
+    background-color: #BBB;
+    border-bottom-right-radius: 10px;
     border-color: #03588C;
     font-size: 23px;
     height: 35px;
