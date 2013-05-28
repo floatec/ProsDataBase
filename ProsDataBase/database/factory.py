@@ -179,16 +179,17 @@ def create_table(**kwargs):
                             newDataBoolean.dataset = newDataSets
                             newDataBoolean.creator = testUser
                             newDataBoolean.save()
-
+                # -- the 5th column have a table datatype
                 if i == 5:
                     op = dict()
-                    op["name"] = "BungaBunga"
+                    op["name"] = "BlaBla"
                     op["created"] = datetime.now()
                     opF = TableForm(op)
                     if opF.is_valid():
                         newOP = opF.save(commit=False)
                         newOP.creator = testUser
                         newOP.save()
+
                         columnsOP = dict()
                         columnsOP["name"] = i
                         columnsOP["required"] = True
@@ -196,7 +197,9 @@ def create_table(**kwargs):
                         columnsOPF = ColumnForm(columnsOP)
                         if columnsOPF.is_valid():
                             newColumnsOP = columnsOPF.save(commit=False)
+                            newColumnsOP.table = newOP
                             newColumnsOP.type = texttype
+                            newColumnsOP.creator = testUser
                             newColumnsOP.save()
                             dataSetsOP = dict()
                             dataSetsOP["created"] = datetime.now()
@@ -207,12 +210,67 @@ def create_table(**kwargs):
                                 newDataSetsOP.creator = testUser
                                 newDataSetsOP.table = newOP
                                 newDataSetsOP.save()
+                                dataText2 = dict()
+                                dataText2["created"] = datetime.now()
+                                dataText2["content"] = "HalloWelt!!!"
+                                dataText2F = DataTextForm(dataText2)
+                                if dataText2F.is_valid():
+                                    newDataText2 = dataText2F.save(commit=False)
+                                    newDataText2.column = newColumnsOP
+                                    newDataText2.dataset = newDataSetsOP
+                                    newDataText2.creator = testUser
+                                    newDataText2.save()
+
+                        columnsOP2 = dict()
+                        columnsOP2["name"] = i
+                        columnsOP2["required"] = True
+                        columnsOP2["created"] = datetime.now()
+                        columnsOP2F = ColumnForm(columnsOP2)
+                        if columnsOP2F.is_valid():
+                            newColumnsOP2 = columnsOP2F.save(commit=False)
+                            newColumnsOP2.table = newOP
+                            newColumnsOP2.type = texttype
+                            newColumnsOP2.creator = testUser
+                            newColumnsOP2.save()
+                            dataSetsOP2 = dict()
+                            dataSetsOP2["created"] = datetime.now()
+                            dataSetsOP2F = DatasetForm(dataSetsOP2)
+                            if dataSetsOP2F.is_valid():
+                                newDataSetsOP2 = dataSetsOP2F.save(commit=False)
+                                newDataSetsOP2.column = newColumnsOP2
+                                newDataSetsOP2.creator = testUser
+                                newDataSetsOP2.table = newOP
+                                newDataSetsOP2.save()
+                                dataText3 = dict()
+                                dataText3["created"] = datetime.now()
+                                dataText3["content"] = "HalloWelt!!!"
+                                dataText3F = DataTextForm(dataText3)
+                                if dataText3F.is_valid():
+                                    newDataText3 = dataText3F.save(commit=False)
+                                    newDataText3.column = newColumnsOP2
+                                    newDataText3.dataset = newDataSetsOP2
+                                    newDataText3.creator = testUser
+                                    newDataText3.save()
 
 
 
+                    dataTable = dict()
+                    dataTable["created"] = datetime.now()
+                    dataTableF = DataTableForm(dataTable)
+                    if dataTableF.is_valid():
+                        newDataTable = dataTableF.save(commit=False)
+                        newDataTable.column = newColumns
+                        newDataTable.dataset = newDataSets
+                        newDataTable.creator = testUser
+                        newDataTable.save()
 
+                    dataTableToDataSets = DataTableToDataset(DataTable=newDataTable, dataset=newDataSetsOP)
+                    dataTableToDataSets.save()
 
-    print TableSerializer.serializeOne("Test")
+                    dataTableToDataSets2 = DataTableToDataset(DataTable=newDataTable, dataset=newDataSetsOP2)
+                    dataTableToDataSets2.save()
+
+    print TableSerializer.serializeOne("BungaBunga")
     return table
 
 def create_Group(**kwargs):
