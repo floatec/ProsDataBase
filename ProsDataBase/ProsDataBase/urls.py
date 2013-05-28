@@ -32,13 +32,11 @@ urlpatterns = patterns(
         view='database.views.frontend.insertDataset'),
 
     # APIs for table requests
-    (r'^api/table/$', "database.views.api.table"),
+    (r'^api/table/$', "database.views.api.tables"),
     (r'^api/table/all/$', "database.views.api.showAllTables"),
-    (r'^api/table/dataset/$', "database.views.api.insertData"),
-    (r'^api/table/dataset/(?P<datasetID>[\d]+)/$', "database.views.api.modifyData"),
-    # must come after other uris of the form api/table/[string], or they will match
-    (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.showTable"),
+    (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.table"),
     (r'^api/table/(?P<name>[\w]+)/structure/$', "database.views.api.tableStructure"),
+    (r'^api/table/dataset/(?P<datasetID>[\d]+)/$', "database.views.api.modifyData"),
 
     (r'^api/user/$', "database.views.api.showAllUsers"),
     (r'^api/group/$', "database.views.api.showAllGroups"),

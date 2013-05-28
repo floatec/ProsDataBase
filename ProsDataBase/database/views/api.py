@@ -10,11 +10,18 @@ from ..forms import *
 from datetime import datetime
 
 
-def table(request):
-    if request.method == 'POST':
-        return addTable(request)
+def tables(request):
     if request.method == 'GET':
         return showAllTables(request)
+    if request.method == 'POST':
+        return addTable(request)
+
+
+def table(request, name):
+    if request.method == 'GET':
+        return showTable(request, name)
+    if request.method == 'POST':
+        return insertData(request, name)
 
 
 def showTable(request, name):
@@ -29,7 +36,7 @@ def tableStructure(request, name):
             else HttpResponse(status=500)
 
 
-def insertData(request):
+def insertData(request, tableName):
     """
     Insert a dataset into a table.
 
@@ -49,7 +56,7 @@ def insertData(request):
     if request.method == 'POST':
         request = json.loads(request.raw_post_data)
         try:
-            theTable = Table.objects.get(name=request["table"])
+            theTable = Table.objects.get(name=tableName)
         except Table.DoesNotExist:
             return HttpResponse(content="table with name" + request["table"] + " not found.", status=400)
 

@@ -114,8 +114,9 @@ class TableSerializer:
             type = col.type.type
             if type is Type.TEXT:
                 colStructs.append({"name": col.name, "type": Type.TEXT, "legnth": col.type.getType().length})
-
-            elif type is Type.NUMERIC or type is Type.DATE:
+            elif type is Type.NUMERIC:
+                colStructs.append({"name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max})
+            elif type is Type.DATE:
                 colStructs.append({"name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max})
 
             elif type is Type.SELECTION:
