@@ -62,7 +62,9 @@ class Dataset(models.Model):
         return data
 
     def getField(self, name):
-        pass
+        for field in self.getData(self):
+            if field.name == name:
+                return field
 
     def __unicode__(self):
         return unicode(self.table) + " id " + unicode(self.id)
@@ -96,18 +98,12 @@ class Data(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_creator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_modifier', blank=True, null=True)
 
-    def getContent(self):  # workaround for overwriting parent field attribute
-        pass
-
     class Meta:
         abstract = True
 
 
 class DataText(Data):
     content = models.CharField(max_length=200)
-
-    def getContent(self):
-        return self.content
 
     def __unicode__(self):
         return self.content
@@ -116,18 +112,12 @@ class DataText(Data):
 class DataNumeric(Data):
     content = models.FloatField()
 
-    def getContent(self):
-        return self.content
-
     def __unicode__(self):
         return unicode(self.content)
 
 
 class DataSelection(Data):
     content = models.CharField(max_length=100)
-
-    def getContent(self):
-        return self.content
 
     def __unicode__(self):
         return unicode(self.content)
@@ -136,9 +126,6 @@ class DataSelection(Data):
 class DataDate(Data):
     content = models.DateTimeField()
 
-    def getContent(self):
-        return self.content
-
     def __unicode__(self):
         return unicode(self.content)
 
@@ -146,15 +133,12 @@ class DataDate(Data):
 class DataBool(Data):
     content = models.BooleanField()
 
-    def getContent(self):
-        return self.content
-
     def __unicode__(self):
         return unicode(self.content)
 
 
 class DataTable(Data):
-    def getContent(self):
+    def content(self):
         return self.linkToDatasets.all()
 
 
