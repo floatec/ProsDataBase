@@ -42,6 +42,7 @@ class Column(models.Model):
 
 
 class Dataset(models.Model):
+    datasetID = models.CharField(max_length=200)
     table = models.ForeignKey('Table', related_name="datasets")
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
@@ -62,6 +63,25 @@ class Dataset(models.Model):
         data.append(self.databool.all())
         data.append(self.datatable.all())
         return data
+
+    def getCount(self):
+        if len(self.datasetID) > 0:
+            delim1 = self.datasetID.index('_')
+            delim2 = self.datasetID[delim1 + 1:].index('_') + delim1 + 1
+
+            return int(self.datasetID[delim1 + 1:delim2])
+        else:
+            return 0
+
+    def checksum(self):
+        """
+        returns an upper-case letter as checksum based on the primary key and the creation date.
+        """
+        result = self.pk * 7 + self.created.year * 7 + self.created.month * 7 + self.created.day * 7
+        chars = list()
+        for i in range(65, 91):
+            chars.append(chr(i))
+        return chars[result % len(chars)]
 
     def getField(self, name):
         for field in self.getData(self):
@@ -84,6 +104,25 @@ class Table(models.Model):
 
     def getDatasets(self):
         return self.datasets.all()
+
+    def generateDatasetID(self, dataset):
+        """
+        returns a semantical id of the form tableID.YYYY_No_Checksum.
+
+        tableID is the unique id from the table's AutoField,
+        YYYY is the year the dataset was created in,
+        No is a counter for datasets in a specific year,
+        Checksum is a letter in range ['A', 'Z'].
+        E.g. 3_2013_23_C means: this is the 23rd dataset which was created  in 2013 for the table with id 3.
+        """
+        datasets = self.datasets.filter(created__year=dataset.created.year)
+
+        counts = list()
+        counts.append(0)
+        for dataset in datasets:
+            counts.append(dataset.getCount())
+
+        return str(self.pk) + "." + str(dataset.created.year) + "_" + str(max(counts) + 1) + "_" + dataset.checksum()
 
     def __unicode__(self):  # TODO: does not check for tables without columns
         return self.name

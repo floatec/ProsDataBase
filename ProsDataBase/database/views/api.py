@@ -65,6 +65,8 @@ def insertData(request, tableName):
         newDataset.table = theTable
         newDataset.creator = DBUser.objects.get(username="test")
         newDataset.save()
+        newDataset.datasetID = theTable.generateDatasetID(newDataset)
+        newDataset.save()
 
         for col in request["columns"]:
             try:
@@ -131,7 +133,7 @@ def insertData(request, tableName):
                         link.dataset = dataset
                         link.save()
 
-        return HttpResponse({"id": newDataset.pk}, content_type="application/json", status=200)
+        return HttpResponse(json.dumps({"id": newDataset.datasetID}), content_type="application/json", status=200)
 
 
 def modifyData(request, datasetID):
@@ -282,7 +284,7 @@ def modifyData(request, datasetID):
                         except Dataset.DoesNotExist:
                             return HttpResponse(content="Could not find dataset with id " + index + ".", status=400)
 
-        return HttpResponse({"id": dataset.id}, status=200)
+        return HttpResponse(json.dumps({"id": dataset.datasetID}), status=200)
 
 
 def showAllUsers(request):
