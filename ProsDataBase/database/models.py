@@ -14,6 +14,8 @@ about our implementation:
 - DataBool does not need TypeBool, as range is already clear
 """
 
+import sys
+
 from django.db import models
 from django.conf import settings
 from datetime import datetime
@@ -71,7 +73,7 @@ class Dataset(models.Model):
 
 
 class Table(models.Model):
-    name = models.CharField(primary_key=True, max_length=100)
+    name = models.CharField(max_length=100)
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablecreator')
@@ -180,7 +182,7 @@ class Type(models.Model):
 
 class TypeText(models.Model):
     type = models.OneToOneField('Type')
-    length = models.IntegerField()
+    length = models.IntegerField(default=200)
 
     def isValid(self, input):
         return len(input) <= self.length
@@ -191,8 +193,8 @@ class TypeText(models.Model):
 
 class TypeNumeric(models.Model):
     type = models.OneToOneField('Type')
-    min = models.FloatField()
-    max = models.FloatField()
+    min = models.FloatField(default=-sys.maxint)
+    max = models.FloatField(default=sys.maxint)
 
     def isValid(self, input):
         return self.min <= input <= self.max
@@ -272,11 +274,15 @@ class TypeTable(models.Model):
 
 
 class DBUser(AbstractUser):
+    tableCreator = models.BooleanField(default=False)
+    groupCreator = models.BooleanField(default=False)
     objects = UserManager()
 
 
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)
+    tableCreator = models.BooleanField(default=False)
+    groupCreator = models.BooleanField(default=False)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Membership')
 
     def __unicode__(self):
@@ -286,7 +292,7 @@ class DBGroup(models.Model):
 class Membership(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     group = models.ForeignKey('DBGroup')
-    isAdmin = models.BooleanField()
+    isAdmin = models.BooleanField(default=False)
 
     def __unicode__(self):
         return unicode(self.user) + " - " + unicode(self.group)
@@ -297,10 +303,10 @@ class RightListForTable(models.Model):
     group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="table-rights")
 
     table = models.ForeignKey('Table', related_name="rightlists")
-    viewLog = models.BooleanField()
-    rightsAdmin = models.BooleanField()
-    insert = models.BooleanField()
-    delete = models.BooleanField()
+    viewLog = models.BooleanField(default=False)
+    rightsAdmin = models.BooleanField(default=False)
+    insert = models.BooleanField(default=False)
+    delete = models.BooleanField(default=False)
 
     def __unicode__(self):
         return "list " + unicode(self.id) + " for " + unicode(self.table)
@@ -311,8 +317,8 @@ class RightListForColumn(models.Model):
     group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="column-rights")
 
     column = models.ForeignKey('Column')
-    read = models.BooleanField()
-    modify = models.BooleanField()
+    read = models.BooleanField(default=False)
+    modify = models.BooleanField(default=False)
 
     def __unicode__(self):
         return "list" + unicode(self.id) + ":" + unicode(self.column)
