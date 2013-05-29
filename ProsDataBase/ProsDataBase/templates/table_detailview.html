@@ -81,9 +81,9 @@ function createDatasets(){
         for(var key in allDatasets){
 
           $("#detailTable").append("<tr id='datasetRow"+counter+"'><td><input type='checkbox' class='selectDataset'></td></tr>");
-          for(var i in allDatasets[key]){
+          for(var i in allDatasets[key].data){
 
-              $("#datasetRow"+counter).append("<td>"+allDatasets[key][i].value+"</td>")
+              $("#datasetRow"+counter).append("<td>"+allDatasets[key].data[i].value+"</td>")
 
           }
           counter++;
