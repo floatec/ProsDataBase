@@ -2,115 +2,125 @@
 
 {% block header %}
     <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
-         <a class="crumb" href='#' id='insertCrumb'> <span>></span></a>
+    <a class="crumb" href='#' id='insertCrumb'> <span>></span></a>
 {% endblock %}
-{%  block content %}
-<table id="fields" border="0">
-       </table>
-       <input type="button" id='saveInsert' value="Save">
+{% block content %}
+    <input type="hidden" id="newID value="42">
+    <table id="fields" border="0">
+    </table>
+    <input type="button" id='saveInsert' value="Save">
 {% endblock %}
 
 
 {% block javascript %}
-<script language="JavaScript" >
-  $.getJSON('/api/table/'+getTableName()+'/structure/',function(data){
-        var tableName = getTableName();
-        var columns = data.columns;
+    <script language="JavaScript">
+        $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
+            var tableName = getTableName();
+            var columns = data.columns;
 
- for(var i in columns){
-      var row="<tr class='allColumns'><td class='nameCell'>"+columns[i].name+"</td><td>"
-          if(columns[i].type==0){
-            row+='<input class="inputText" name="'+columns[i].name+'" type="text">'
-          }
-         if(columns[i].type==1){
-            row+='<input class="inputNumber" name="'+columns[i].name+'" type="text">'
-          }
-            if(columns[i].type==2){
-            row+='<input class="dateClass" name="'+columns[i].name+'" type="text">'
-          }
-           if(columns[i].type==3){
-            row+='<select class="inputField" name="'+columns[i].name+'" limit="1">'
-            for(var v in columns[i].options){
-                row+='<option value="'+v+'" limit="1">'+columns[i].options[v]+'</option>'
+            for (var i in columns) {
+                var row = "<tr class='allColumns'><td class='nameCell'>" + columns[i].name + "</td><td>"
+                if (columns[i].type == 0) {
+                    row += '<input class="inputText" name="' + columns[i].name + '" type="text">'
+                }
+                if (columns[i].type == 1) {
+                    row += '<input class="inputNumber" name="' + columns[i].name + '" type="text">'
+                }
+                if (columns[i].type == 2) {
+                    row += '<input class="dateClass" name="' + columns[i].name + '" type="text">'
+                }
+                if (columns[i].type == 3) {
+                    row += '<select class="inputField" name="' + columns[i].name + '" limit="1">'
+                    for (var v in columns[i].options) {
+                        row += '<option value="' + v + '" limit="1">' + columns[i].options[v] + '</option>'
+                    }
+                    row += '</select>'
+                }
+                if (columns[i].type == 5) {
+                    row += '<span id="' + columns[i].name + '"></span><span onClick="newElement(\'' + columns[i].table + '\',\'' + columns[i].name + '\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
+                }
+                row += "</td></tr>"
+                $("#fields").append(row)
             }
-            row+='</select>'
-          }
-            if(columns[i].type==4){
-            row+='<span id="'+columns[i].name+'"></span><span onClick="fenster = window.open(\'/dataset/Patient\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
-          }
-            row+="</td></tr>"
-      $("#fields").append(row)
-  }
-    $(".dateClass").datetimepicker( {dateFormat: "yy-mm-dd" });
-    $("#tableCrumb").prepend(tableName);
-    $("#insertCrumb").prepend("insert");
-    $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
+            $(".dateClass").datepicker({dateFormat: "yy-mm-dd" });
+            $("#tableCrumb").prepend(tableName);
+            $("#insertCrumb").prepend("insert");
+            $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
 
-    $("#insertCrumb").attr('href', '/dataset/'+tableName+'/');
+            $("#insertCrumb").attr('href', '/dataset/' + tableName + '/');
 
-    });
+        });
 
-$("#saveInsert").click(function(){
+        $("#saveInsert").click(function () {
 
-    var jsonDataset = {};
-    jsonDataset.table = getTableName();
-    jsonDataset.columns = [];
-    $(".allColumns").each(function(){
-       columnObj = {};
-        columnObj.name = $(this).find(".nameCell").text();
-        if($(this).find("input").length == 0){
-             if($(this).find("select").length== 0){
+            var jsonDataset = {};
+            jsonDataset.table = getTableName();
+            jsonDataset.columns = [];
+            $(".allColumns").each(function () {
+                columnObj = {};
+                columnObj.name = $(this).find(".nameCell").text();
+                if ($(this).find("input").length == 0) {
+                    if ($(this).find("select").length == 0) {
 
 
-             }
-            else{
+                    }
+                    else {
 
-                 columnObj.value = $(this).find(":selected").text();
+                        columnObj.value = $(this).find(":selected").text();
 
-             }
+                    }
+
+                }
+                else {
+                    if ($(this).find(".dateClass").length != 0) {
+                        columnObj.value = $(this).find("input").val() + " 11:00:00";
+
+                    }
+                    else if ($(this).find(".inputNumber").length != 0) {
+                        columnObj.value = parseFloat($(this).find("input").val());
+                    }
+                    else if ($(this).find(".inputText").length != 0) {
+                        columnObj.value = $(this).find("input").val();
+                    }
+                }
+
+                jsonDataset.columns.push(columnObj);
+
+
+            });
+            console.log(jsonDataset);
+            $.ajax({
+                url: '/api/table/' + getTableName() + '/',
+                type: 'post',
+                data: JSON.stringify(jsonDataset),
+                contentType: 'application/json',
+                dataType: 'json',
+                success:function(data){
+                        if(popup){
+                         $(window.opener.document).find('#'+field).append(data.id);
+                        }
+                }
+            });
+
+
+        });
+
+
+        function getTableName() {
+            var tableName = window.location.href;
+            var lastIndex = tableName.lastIndexOf('/');
+            var tableName = tableName.substr(0, lastIndex);
+            var lastIndex = tableName.lastIndexOf('/');
+            var tableName = tableName.substr(lastIndex + 1);
+            return tableName;
+        }
+        function newElement(table,field) {
+            myWindow = window.open('/dataset/' + table);
+            myWindow.field=field;
+            myWindow.popup=true;
 
         }
-        else{
-           if($(this).find(".dateClass").length != 0){
-                columnObj.value = $(this).find("input").val();
-
-           }
-            else if($(this).find(".inputNumber").length != 0){
-           columnObj.value =parseFloat($(this).find("input").val());
-           }
-           else if($(this).find(".inputText").length != 0){
-           columnObj.value = $(this).find("input").val();
-           }
-        }
-
-     jsonDataset.columns.push(columnObj);
 
 
-    });
-console.log(jsonDataset);
-  $.ajax({
-        url: '/api/table/'+getTableName()+'/',
-        type: 'post',
-        data: JSON.stringify(jsonDataset),
-        contentType: 'application/json',
-        dataType: 'json'
-    });
-
-
-
-});
-
-
-function getTableName(){
-    var tableName = window.location.href;
-    var lastIndex = tableName.lastIndexOf('/');
-    var tableName = tableName.substr(0,lastIndex);
-    var lastIndex = tableName.lastIndexOf('/');
-      var tableName = tableName.substr(lastIndex+1);
-    return tableName;
-}
-
-
-
-</script>
+    </script>
 {% endblock %}
