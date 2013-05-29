@@ -20,13 +20,13 @@
  for(var i in columns){
       var row="<tr class='allColumns'><td class='nameCell'>"+columns[i].name+"</td><td>"
           if(columns[i].type==0){
-            row+='<input class="inputField" name="'+columns[i].name+'" type="text" length="'+columns[i].length+'">'
+            row+='<input class="inputText" name="'+columns[i].name+'" type="text">'
           }
          if(columns[i].type==1){
-            row+='<input class="inputField" name="'+columns[i].name+'" type="number" min="'+columns[i].min+'" max="'+columns[i].max+'">'
+            row+='<input class="inputNumber" name="'+columns[i].name+'" type="text">'
           }
             if(columns[i].type==2){
-            row+='<input class="inputField" name="'+columns[i].name+'" type="datetime-local" min="'+columns[i].min+'" max="'+columns[i].max+'">'
+            row+='<input class="dateClass" name="'+columns[i].name+'" type="text">'
           }
            if(columns[i].type==3){
             row+='<select class="inputField" name="'+columns[i].name+'" limit="1">'
@@ -41,7 +41,7 @@
             row+="</td></tr>"
       $("#fields").append(row)
   }
-
+    $(".dateClass").datepicker( {dateFormat: "yy-mm-dd" });
     $("#tableCrumb").prepend(tableName);
     $("#insertCrumb").prepend("insert");
     $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
@@ -71,17 +71,25 @@ $("#saveInsert").click(function(){
 
         }
         else{
-           columnObj.value = $(this).find("input").val();
+           if($(this).find(".dateClass").length != 0){
+                columnObj.value = $(this).find("input").val() + " 11:00:00";
 
+           }
+            else if($(this).find(".inputNumber").length != 0){
+           columnObj.value =parseFloat($(this).find("input").val());
+           }
+           else if($(this).find(".inputText").length != 0){
+           columnObj.value = $(this).find("input").val();
+           }
         }
 
      jsonDataset.columns.push(columnObj);
 
 
     });
-
+console.log(jsonDataset);
   $.ajax({
-        url: '/api/dataset/',
+        url: '/api/table/'+getTableName()+'/',
         type: 'post',
         data: JSON.stringify(jsonDataset),
         contentType: 'application/json',
@@ -101,5 +109,8 @@ function getTableName(){
       var tableName = tableName.substr(lastIndex+1);
     return tableName;
 }
+
+
+
 </script>
 {% endblock %}

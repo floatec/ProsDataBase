@@ -78,6 +78,7 @@
     padding: 7px;
 }
 
+
 .helpTextDiv h1 {
     color: #00458A;
     font-size: 20px;
@@ -302,4 +303,7 @@ Only for Login and Register Page
     border: 1px solid #FFFFFF;
     line-height: 130%;
     text-align: center;
+}
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
+    background: greenyellow;
 }
