@@ -433,6 +433,7 @@ function toggleAll(element,type){
     }
         $(temp).each(function(){
             this.checked=element.checked;
+            $(this).button("refresh")
             //$(this).button("option","label").css('background-color', 'rgb(255, 0, 0)');
         }
 );
