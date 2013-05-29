@@ -49,16 +49,13 @@ def insertData(request, tableName):
         ]
     }
 
-    Tries to add as much data as possible as long as the table exists. Invalid columns, that is nonexistent columns
-    or columns with invalid type, are skipped, but a note will be returned.
-    Also, invalid datasets for global object columns are skipped, but a note will be returned.
     """
     if request.method == 'POST':
         request = json.loads(request.raw_post_data)
         try:
             theTable = Table.objects.get(name=tableName)
         except Table.DoesNotExist:
-            return HttpResponse(content="table with name" + request["table"] + " not found.", status=400)
+            return HttpResponse(content="table with name " + tableName + " not found.", status=400)
 
         datasetF = DatasetForm({"created": datetime.now()})
         if not datasetF.is_valid():
@@ -69,15 +66,13 @@ def insertData(request, tableName):
         newDataset.creator = DBUser.objects.get(username="test")
         newDataset.save()
 
-        dataFails = []  # collects all columns by name for wich data could not be saved
-        missingDatasets = []  # collects all datasets which could not be found in the global object
         for col in request["columns"]:
             try:
                 column = Column.objects.get(name=col["name"], table=theTable)
             except Column.DoesNotExist:
-                dataFails.append(col["name"])
+                HttpResponse(content="Could not find a column with name " + col["name"] + "in table " + tableName + ".", status=400)
                 continue
-
+            print "col " + col["name"]
             if not column.type.getType().isValid(col["value"]):
                 return HttpResponse(content="input " + unicode(col["value"]) + " for column " + column.name + " is not valid.", status=400)
 
@@ -116,7 +111,7 @@ def insertData(request, tableName):
                     newData = dataTblF.save(commit=False)
 
             if newData is None:
-                dataFails.append(col["name"])
+                return HttpResponse(content="Could not add data for column + " + col["name"] + ". The content type was not valid.", status=400)
 
             else:
                 newData.creator = DBUser.objects.get(username="test")
@@ -129,23 +124,14 @@ def insertData(request, tableName):
                     try:
                         dataset = Dataset.objects.get(pk=index)
                     except Dataset.DoesNotExist:
-                        missingDatasets.append(index)
+                        return HttpResponse(content="dataset with id " + index + " could not be found in specified table " + col["table"] + ".", status=400)
                     else:
                         link = DataTableToDataset()
                         link.DataTable = newData
                         link.dataset = dataset
                         link.save()
 
-        if len(dataFails) > 0:
-            if len(missingDatasets) > 0:
-                return HttpResponse(content="Note: Failed to add data to following columns: " + unicode(dataFails) +
-                                            ". For the global object datasets with following indices could not be found: " + unicode(missingDatasets) + ".", status=200)
-            return HttpResponse(content="Note: Failed to add data to following columns: " + unicode(dataFails) + ".", status=200)
-
-        if len(missingDatasets) > 0:
-            return HttpResponse(content="Note: For the global object datasets with following indices could not be found: " + unicode(missingDatasets) + ".", status=200)
-
-        return HttpResponse(content="Saved dataset successfully.", status=200)
+        return HttpResponse({"id": newDataset.pk}, content_type="application/json", status=200)
 
 
 def modifyData(request, datasetID):
@@ -157,10 +143,6 @@ def modifyData(request, datasetID):
         "table": "tablename",
         "dataset": [ {"column": "name", "value": 0}, {"column": "columnname", "value": val1}, {"column": "anothercolumn", "value": val2} ]
     }
-
-    Tries to write as much data as possible as long as the table and specified dataset exist. Invalid columns, that is nonexistent columns
-    or columns with invalid type, are skipped, but a note will be returned.
-    Also, invalid datasets for global object columns are skipped, but a note will be returned.
     """
     if request.method == 'POST':
         request = json.loads(request.raw_post_data)
@@ -173,15 +155,13 @@ def modifyData(request, datasetID):
         except Dataset.DoesNotExist:
             return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + request["table"] + ".", status=400)
 
-        dataFails = []  # collects all columns by name for wich data could not be saved
-        missingDatasets = []  # collects all datasets which could not be found in the global object
         dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
         newData = None
         for col in request["dataset"]:
             try:
                 column = Column.objects.get(name=col["column"], table=theTable)
             except Column.DoesNotExist:
-                dataFails.append(col["column"])
+                return HttpResponse("Could not find column with name " + col["name"] + ".", status=400)
                 continue
 
             if not column.type.getType().isValid(col["value"]):
@@ -272,7 +252,7 @@ def modifyData(request, datasetID):
                             newLink.dataset = newDataset
                             newLink.save()
                         except Dataset.DoesNotExist:
-                            missingDatasets.append(id)
+                            return HttpResponse(content="Could not find dataset with id " + id + ".", status=400)
 
                 except DataTable.DoesNotExist:
                     dataCreatedNewly = True
@@ -282,7 +262,7 @@ def modifyData(request, datasetID):
 
             if dataCreatedNewly:
                 if newData is None:
-                    dataFails.append(col["name"])
+                    return HttpResponse(content="Could not add data to column " + col["name"] + ". The content type was invalid.", status=400)
 
                 else:
                     newData.creator = DBUser.objects.get(username="test")
@@ -300,18 +280,9 @@ def modifyData(request, datasetID):
                             link.dataset = dataset
                             link.save()
                         except Dataset.DoesNotExist:
-                            missingDatasets.append(index)
+                            return HttpResponse(content="Could not find dataset with id " + index + ".", status=400)
 
-        if len(dataFails) > 0:
-            if len(missingDatasets) > 0:
-                return HttpResponse(content="Note: Failed to add data to following columns: " + unicode(dataFails) +
-                                            ". For the global object datasets with following indices could not be found: " + unicode(missingDatasets) + ".", status=200)
-            return HttpResponse(content="Note: Failed to add data to following columns: " + unicode(dataFails) + ".", status=200)
-
-        if len(missingDatasets) > 0:
-            return HttpResponse(content="Note: For the global object datasets with following indices could not be found: " + unicode(missingDatasets) + ".", status=200)
-
-        return HttpResponse(content="Saved dataset successfully.", status=200)
+        return HttpResponse({"id": dataset.id}, status=200)
 
 
 def showAllUsers(request):
