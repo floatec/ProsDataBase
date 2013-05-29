@@ -42,7 +42,7 @@
                 row += "</td></tr>"
                 $("#fields").append(row)
             }
-            $(".dateClass").datepicker({dateFormat: "yy-mm-dd" });
+            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd" });
             $("#tableCrumb").prepend(tableName);
             $("#insertCrumb").prepend("insert");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
