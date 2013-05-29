@@ -19,8 +19,8 @@ class TableSerializer:
         {
             "name": "example",
             "datasets": [
-                [ {"column": "id", "value": 0}, "column": "column", "value": val1}, {"column": "anothercolumn", "value": val2} ],  //row 1
-                [ {"column": "id", "value": 1}, "column": "column", "value": val3}, {"column": "anothercolumn", "value": val4} ]   //row 2
+                {"id": 38, "data": [ {"column": "id", "type": 1, "value": 0}, "column": "columnname", "type": 0, "value": "aString"}, {"column": "anothercolumn", "type": 5, "value": [1, 2], "table": "aTableName"} ]},  //row 1
+                {"id": 18, "data": [ {"column": "id", "type": 1, "value": 17}, "column": "columnname", "type": 0, "value": "aString"}, {"column": "anothercolumn", "type": 5, "value": [13, 14], "table": "aTableName"} ]}   //row 2
             ]
         }
         """
@@ -32,31 +32,33 @@ class TableSerializer:
         result = dict()
         result["name"] = table.name
         result["datasets"] = list()
+        try:
+            datasets = table.getDatasets()
+        except Dataset.DoesNotExist:
+            pass
 
-        datasets = table.getDatasets()
         for dataset in datasets:
-            row = []
-            data = dataset.getData()
+            row = dict()
+            row["id"] = dataset.pk
+            row["data"] = list()
 
+            data = dataset.getData()
             for primitiveData in data:
                 for item in primitiveData:
                     dataObj = dict()
                     dataObj["column"] = item.column.name
-
-                    if item.column.type.type == Type.TABLE:
+                    dataObj["type"] = item.column.type.type
+                    if dataObj["type"] == Type.TABLE:
                         dataObj["value"] = list()
                         for link in DataTableToDataset.objects.filter(DataTable=item):
                             dataObj["value"].append(link.dataset_id)
-
-                    elif item.column.type.type == Type.DATE:
-                        dataObj["value"] = item.content.isoformat()
                     else:
                         try:
                             dataObj["value"] = str(item.content)
                         except UnicodeEncodeError:
                             dataObj["value"] = unicode(item.content)
 
-                    row.append(dataObj)
+                    row["data"].append(dataObj)
 
             result["datasets"].append(row)
 
