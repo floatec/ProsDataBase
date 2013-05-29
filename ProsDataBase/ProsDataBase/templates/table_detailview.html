@@ -15,12 +15,13 @@
 {% endblock %}
 {% block menu %}
         <a class='buttonMenuButton' id='insertData' href='#'>Insert Data</a>
-        <a class='buttonMenuButton'>Delete Data</a>
+        <a class='buttonMenuButton' id='deleteData' href='#'>Delete Data</a>
         <a class='buttonMenuButton'>Export</a>
         <a class='buttonMenuButton'>Modify Structure</a>
 {% endblock %}
 
 {% block content %}
+        <div id="deleteAlertBox">Are you sure to delete this item?</div>
    <table id='detailTable' class='datasets' border='1'><thead id='descrRow'></thead></table>
 
 {% endblock %}
@@ -34,6 +35,7 @@ init();
 
 
 function init(){
+
     var tableName = getTableName();
     $("#naviheader").append(tableName)
      var columns = [];
@@ -50,6 +52,7 @@ function createTable(columns){
     var columns = columns;
     $("#detailTable").prepend("<caption>"+tableName+"</capton>");
     //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
+     $("#descrRow").append("<th>select</th>");
     for(var key in columns){
         $("#descrRow").append("<th>"+columns[key].name+"</th>");
         $("#navigationMenuContent").append("<li><a href='#"+columns[key].name+"'>"+columns[key].name+"</a></li>");
@@ -73,11 +76,11 @@ function getTableName(){
 function createDatasets(){
     var tableName = getTableName();
     $.getJSON('/api/table/'+tableName+'/',function(data){
-        var allDatasets = data.datasets;
+         allDatasets = data.datasets;
          var counter = 0;
         for(var key in allDatasets){
 
-          $("#detailTable").append("<tr id='datasetRow"+counter+"'></tr>");
+          $("#detailTable").append("<tr id='datasetRow"+counter+"'><td><input type='checkbox' class='selectDataset'></td></tr>");
           for(var i in allDatasets[key]){
 
               $("#datasetRow"+counter).append("<td>"+allDatasets[key][i].value+"</td>")
@@ -94,8 +97,34 @@ function createDatasets(){
     });
 
 }
+function deleteDataSet(){
 
 
+
+}
+
+    $("#deleteData").click(function(){
+         $("#deleteAlertBox").dialog("open");
+
+
+
+
+
+    });
+
+  // initialize alertbox
+    $("#deleteAlertBox").dialog({
+        autoOpen: false,
+        buttons: {
+            "delete": function () {
+                deleteDataSet();
+                $(this).dialog("close");
+            },
+            "back": function () {
+                $(this).dialog("close");
+            }
+        }
+    });
 
 </script>
 {% endblock %}

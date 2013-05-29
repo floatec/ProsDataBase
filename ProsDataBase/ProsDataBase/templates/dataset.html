@@ -41,7 +41,7 @@
             row+="</td></tr>"
       $("#fields").append(row)
   }
-    $(".dateClass").datepicker( {dateFormat: "yy-mm-dd" });
+    $(".dateClass").datetimepicker( {dateFormat: "yy-mm-dd" });
     $("#tableCrumb").prepend(tableName);
     $("#insertCrumb").prepend("insert");
     $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
@@ -72,7 +72,7 @@ $("#saveInsert").click(function(){
         }
         else{
            if($(this).find(".dateClass").length != 0){
-                columnObj.value = $(this).find("input").val() + " 11:00:00";
+                columnObj.value = $(this).find("input").val();
 
            }
             else if($(this).find(".inputNumber").length != 0){

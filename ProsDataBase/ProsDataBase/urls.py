@@ -27,7 +27,7 @@ urlpatterns = patterns(
     (r'^groupadmin/$', TemplateView.as_view(template_name="groupadmin.html")),
     (r'^table/$', TemplateView.as_view(template_name="table_overview.html")),
     (r'^register/$', TemplateView.as_view(template_name="register.html")),
-    (r'^/$', TemplateView.as_view(template_name="login.html")),
+    (r'^login/$', TemplateView.as_view(template_name="login.html")),
     url(regex=r'^dataset/(?P<table_id>\w+)/$',
         view='database.views.frontend.insertDataset'),
 
