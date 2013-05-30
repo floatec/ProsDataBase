@@ -5,7 +5,7 @@
     <a class="crumb" href='#' id='insertCrumb'> <span>></span></a>
 {% endblock %}
 {% block content %}
-    <input type="hidden" id="newID value="42">
+    <input type="hidden" id="newID" value="42">
     <table id="fields" border="0">
     </table>
     <input type="button" id='saveInsert' value="Save">
@@ -32,7 +32,7 @@
                 if (columns[i].type == 3) {
                     row += '<select class="inputField" name="' + columns[i].name + '" limit="1">'
                     for (var v in columns[i].options) {
-                        row += '<option value="' + v + '" limit="1">' + columns[i].options[v] + '</option>'
+                        row += '<option value="' + columns[i].options[v].key + '" limit="1">' + columns[i].options[v].value + '</option>'
                     }
                     row += '</select>'
                 }
@@ -73,7 +73,7 @@
                 }
                 else {
                     if ($(this).find(".dateClass").length != 0) {
-                        columnObj.value = $(this).find("input").val() + " 11:00:00";
+                        columnObj.value = $(this).find("input").val();
 
                     }
                     else if ($(this).find(".inputNumber").length != 0) {
@@ -85,7 +85,7 @@
                 }
 
                 jsonDataset.columns.push(columnObj);
-
+                console.log(jsonDataset);
 
             });
             console.log(jsonDataset);
@@ -94,12 +94,14 @@
                 type: 'post',
                 data: JSON.stringify(jsonDataset),
                 contentType: 'application/json',
-                dataType: 'json',
+                dataType: 'json'
+               /*
                 success:function(data){
                         if(popup){
                          $(window.opener.document).find('#'+field).append(data.id);
                         }
                 }
+                */
             });
 
 

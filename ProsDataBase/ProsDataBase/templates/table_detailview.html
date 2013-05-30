@@ -17,7 +17,7 @@
         <a class='buttonMenuButton' id='insertData' href='#'>Insert Data</a>
         <a class='buttonMenuButton' id='deleteData' href='#'>Delete Data</a>
         <a class='buttonMenuButton'>Export</a>
-        <a class='buttonMenuButton'>Modify Structure</a>
+        <a class='buttonMenuButton' id='modifyStructure'>Modify Structure</a>
 {% endblock %}
 
 {% block content %}
@@ -46,6 +46,7 @@ function init(){
     $("#tableCrumb").prepend(tableName);
     $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
     $("#insertData").attr('href', '/dataset/'+tableName+'/');
+    $("#modifyStructure").attr('href','/modify/'+tableName+'/');
 }
 function createTable(columns){
     var tableName = getTableName();
@@ -74,9 +75,11 @@ function getTableName(){
 }
 
 function createDatasets(){
+
     var tableName = getTableName();
     $.getJSON('/api/table/'+tableName+'/',function(data){
          allDatasets = data.datasets;
+         console.log(allDatasets);
          var counter = 0;
         for(var key in allDatasets){
 
@@ -95,6 +98,7 @@ function createDatasets(){
 
 
     });
+
 
 }
 function deleteDataSet(){

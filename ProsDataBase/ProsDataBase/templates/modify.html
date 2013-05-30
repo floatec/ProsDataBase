@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+
 {% block menu %}
 <a id="tab_header_1" href="#tabs-1" class="headerTab" onClick='changeTo(0)'>step 1</a><a id="tab_header_2"
                                                                                          href="#tabs-2"
@@ -9,12 +10,23 @@
 {% endblock %}
 
 {% block header %}
-    <a href="/createTable/" class="crumb">create <span>></span></a>
+
+<a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
+<a class="crumb" href='#' id='modifyCrumb'> <span>></span></a>
 {% endblock %}
 
-     {% block help %}
-        <div class='helpTextDiv'><h1>Help</h1>Please specify the table name. Note, that it should be unique in the database.Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.</div>
-     {% endblock %}
+{% block help %}
+<div class='helpTextDiv'><h1>Help</h1>Please specify the table name. Note, that it should be unique in the database.Now
+    specify the table\'s columns, their content types and additional information. <br/>Following content types
+    exist:<br/>Text: accepts any text and numbers. Is optionally restricted by length.<br/>Numeric: accepts floating
+    point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br/>Date: accepts date and
+    time input. Is optionally restricted by a minimum and maximum date.<br/>Yes/No: accepts either yes or no.<br/>Choice:
+    accepts any value from a list of options specified by you. Values can contain any text and numbers.<br/>[a table]:
+    additionally to the above content types you can choose an already existing table. In this column users can select
+    datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for
+    the selected table.
+</div>
+{% endblock %}
 
 
 {% block content %}
@@ -40,7 +52,6 @@
 
         <button id="addColumn">+</button>
         <br/><br/>
-        <button id="nextButtonPage2">next</button>
 
 
     </div>
@@ -71,6 +82,13 @@ function changeTo(number) {
 // FIRST TAB
 //switch navi-content function
 function init() {
+    tableName = getTableName();
+    $("#tableCrumb").prepend(tableName);
+    $("#modifyCrumb").prepend("modify");
+    $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
+    $("#modifyCrumb").attr('href', '/modify/' + tableName + '/');
+    $("#tblName").val(tableName);
+
     $.ajaxSetup({
         async: false
 
@@ -97,8 +115,8 @@ function init() {
         collapsible: false,
         disabled: 1,
         beforeActivate: function (event, ui) {
-            if(!valid && ui.newPanel.attr('id') != 'tabs-2'){
-               return false;
+            if (!valid && ui.newPanel.attr('id') != 'tabs-2') {
+                return false;
             }
         },
         activate: function (event, ui) {
@@ -122,14 +140,8 @@ function init() {
 
             }
 
-             removeEmptyColumns();
+            removeEmptyColumns();
         }
-    });
-
-
-    // function to switch to second tab
-    $("#nextButtonPage2").click(function () {
-        changeTo(1);
     });
 
 
@@ -188,22 +200,64 @@ function init() {
         async: true
 
     });
+    $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+        var columns = data.columns;
+
+        for (var key in columns) {
+            createExistedColumnsRow();
+            $("#field_" + columnID).val(columns[key].name);
+
+            if (columns[key].type == 0) {
+                $("#selectDataType_" + columnID).val(0);
+                 $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'>");
+                $("#row_"+columnID).find(".length").val(columns[key].length);
+
+
+            }
+            else if (columns[key].type == 1) {
+                $("#selectDataType_" + columnID).val(1);
+                 $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>min:<input type='text' value='0.0' class='min' size='10'>max:<input type='text' value='100.0' class='max' size='10'></td>");
+                $("#row_"+columnID).find(".min").val(columns[key].min);
+                  $("#row_"+columnID).find(".max").val(columns[key].max);
+
+
+            }
+            else if (columns[key].type == 2) {
+                $("#selectDataType_" + columnID).val(2);
+            }
+            else if (columns[key].type == 3) {
+                $("#selectDataType_" + columnID).val(3);
+            }
+            else if (columns[key].type == 4) {
+                $("#selectDataType_" + columnID).val(4);
+            }
+            else if (columns[key].type == 5) {
+                var tbl = columns[key].table;
+                $("#selectDataType_"+columnID+" option").filter(function() {return this.text == tbl; }).attr('selected', true);
+            }
+
+
+        }
+
+
+    });
+
+
 }
 
 
-function removeEmptyColumns(){
+function removeEmptyColumns() {
 
-  $(".columnNameClass").each(function (){
-       var row = $(this).parent();
+    $(".columnNameClass").each(function () {
+        var row = $(this).parent();
         row = row.parent();
 
-      if($(this).val() == ''){
-          row.remove();
-      }
+        if ($(this).val() == '') {
+            row.remove();
+        }
 
 
-      });
-
+    });
 
 
 }
@@ -225,6 +279,60 @@ function getAllColumnNames() {
     return allColumnNames;
 
 }
+function createExistedColumnsRow() {
+    columnID++;
+    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td></tr>");
+
+    $("#field_" + columnID).change(function () {
+        valid = true;
+        var columns = getAllColumnNames();
+
+        $(".columnNameClass").each(function () {
+
+
+            if (columns.lastIndexOf($(this).val()) != columns.indexOf($(this).val())) {
+
+                $(this).css('background-color', 'rgb(255, 0, 0)');
+                valid = false;
+            }
+            else {
+                $(this).css('background-color', 'rgb(255, 255, 255)');
+
+            }
+        });
+    });
+
+
+    //fill dropdown menu with datatypes
+    for (var key in datatypes) {
+        $("#selectDataType_" + columnID).append("<option value='" + key + "'>" + datatypes[key] + "</option>");
+    }
+
+    var tables = getTables();
+    for (var key in tables) {
+        $("#selectDataType_" + columnID).append("<option value='5'>" + tables[key] + "</option>");
+    }
+
+
+    // create delete-function for every column
+    $("#deleteButton_" + columnID).click(function () {
+
+
+        lastID = getNumber(this.id);
+        $("#deleteAlertBox").dialog("open");
+    });
+    //append different inputs for datatypes for every row
+
+    //min and max input for numeric datatype
+
+
+    $("#selectDataType_" + columnID).attr('disabled',true);
+
+
+
+}
+
+
 function createNewColumnsRow() {
     columnID++;
     $("#columnTable").append("<tr id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'></td></tr>");
@@ -332,6 +440,7 @@ function getTables() {
 // click event for the add column button
 $("#addColumn").click(function () {
     createNewColumnsRow();
+
 });
 //function to get the ID
 function getNumber(number) {
@@ -383,21 +492,21 @@ $("#addUserToRights").click(function () {
         var userName = $("#inputUserGroup").val();
 
         //create rights-table
-        $("#allUserRights").append("<table border='1' class='rightsTable' id='" +userName + "'><tr id='descriptionRow_" + rightColumnID + "'></tr><tr id='iconsRow_" + userName +"'></tr></table>");
-        var inputsToappend ="";
+        $("#allUserRights").append("<table border='1' class='rightsTable' id='" + userName + "'><tr id='descriptionRow_" + rightColumnID + "'></tr><tr id='iconsRow_" + userName + "'></tr></table>");
+        var inputsToappend = "";
         $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
-         countCheckboxes++;
-        inputsToappend+= "<td class='all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/key-icon.png'></label>";
         countCheckboxes++;
-         inputsToappend+= "<input type='checkbox' class='insert' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+        inputsToappend += "<td class='all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend+= "<input type='checkbox' class='delete' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/trash-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend+= "<input type='checkbox' class='viewLog' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/paper-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend+="<input onClick='toggleAll(this,\"read\")'"+" type='checkbox' id='check"+countCheckboxes+"'  /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend+="<input  onClick='toggleAll(this,\"modify\")'"+" type='checkbox' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+        inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+        countCheckboxes++;
+        inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
         $("#iconsRow_" + userName).append(inputsToappend);
         countCheckboxes++;
         var columnNames = getAllColumnNames();
@@ -406,13 +515,13 @@ $("#addUserToRights").click(function () {
             var stringToappend = "";
             $("#descriptionRow_" + rightColumnID).append("<td>" + columnNames[i] + "</td>");
             countCheckboxes++;
-            stringToappend+="<td nowrap='true' class='"+ClassColumnName+"'><input type='checkbox' class='read' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
+            stringToappend += "<td nowrap='true' class='" + ClassColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
             countCheckboxes++;
-              stringToappend+="<input type='checkbox' class='modify' id='check"+countCheckboxes+"' /><label for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+            stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
             $("#iconsRow_" + userName).append(stringToappend);
             countCheckboxes++;
         }
-        $("#"+userName).prepend("<th>" + userName + "</th>");
+        $("#" + userName).prepend("<th>" + userName + "</th>");
 
         rightColumnID++;
     }
@@ -421,22 +530,22 @@ $("#addUserToRights").click(function () {
 });
 
 
-function toggleAll(element,type){
+function toggleAll(element, type) {
     var row = $(element).parent();
     row = row.parent();
     var temp = [];
-   if(type=='read'){
-      temp =  row.find(".read");
-   }
-    else if(type=='modify'){
-        temp =  row.find(".modify");
+    if (type == 'read') {
+        temp = row.find(".read");
     }
-        $(temp).each(function(){
-            this.checked=element.checked;
-            $(this).button("refresh")
-            //$(this).button("option","label").css('background-color', 'rgb(255, 0, 0)');
-        }
-);
+    else if (type == 'modify') {
+        temp = row.find(".modify");
+    }
+    $(temp).each(function () {
+                this.checked = element.checked;
+                $(this).button("refresh")
+                //$(this).button("option","label").css('background-color', 'rgb(255, 0, 0)');
+            }
+    );
 }
 
 $("#createTableButton").click(function () {
@@ -452,7 +561,7 @@ $("#createTableButton").click(function () {
         var columnNames = $(this).val();
         columnObj = {};
         columnObj.name = columnNames;
-        columnObj.required = true;
+        columnObj.required = 1;
         columnObj.rights = {};
         var row = $(this).parent();
         row = row.parent();
@@ -475,10 +584,9 @@ $("#createTableButton").click(function () {
             $(row.find(".option")).each(function () {
 
                 var inputObj = {};
-                inputObj.key = parseInt(getNumber(this.id));
+                inputObj.id = getNumber(this.id);
                 inputObj.value = $(this).val();
-                 columnObj.options.push(inputObj);
-
+                columnObj.options.push(inputObj);
 
 
             });
@@ -495,65 +603,64 @@ $("#createTableButton").click(function () {
         var groups = [];
 
         console.log(columnObj);
-         $(".rightsTable").each(function(){
+        $(".rightsTable").each(function () {
 
 
-
-            var name =this.id;
+            var name = this.id;
 
             var userObj = {};
             userObj.name = name;
             var tempRights = [];
-            if($(this).find("."+encode(columnNames)).find(".read").is(':checked')){
+            if ($(this).find("." + encode(columnNames)).find(".read").is(':checked')) {
                 tempRights.push('read');
             }
-             if($(this).find("."+encode(columnNames)).find(".modify").is(':checked')){
+            if ($(this).find("." + encode(columnNames)).find(".modify").is(':checked')) {
                 tempRights.push('modify');
             }
             userObj.rights = tempRights;
-            if($.isInArray(name,allUsers)){
+            if ($.isInArray(name, allUsers)) {
                 users.push(userObj);
             }
-            else if($.isInArray(name,allGroups)){
+            else if ($.isInArray(name, allGroups)) {
                 groups.push(userObj);
 
             }
 
         });
         columnObj.rights.users = users;
-         columnObj.rights.groups = groups;
-         jsonTbl.columns.push(columnObj);
+        columnObj.rights.groups = groups;
+        jsonTbl.columns.push(columnObj);
     });
 
     jsonTbl.rights = {};
     var users = [];
     var groups = [];
 
-    $(".rightsTable").each(function(){
-    var userObj = {};
-    var userGroupName = this.id;
-    userObj.name = this.id;
+    $(".rightsTable").each(function () {
+        var userObj = {};
+        var userGroupName = this.id;
+        userObj.name = this.id;
 
-    userObj.rights = [];
+        userObj.rights = [];
 
-    if(($(this).find((".rightsAdmin")).is(':checked'))){
-        userObj.rights.push('rightsAdmin');
-    }
-    if(($(this).find((".insert")).is(':checked'))){
-        userObj.rights.push('insert');
-    }
-    if(($(this).find((".delete")).is(':checked'))){
-         userObj.rights.push('delete');
-    }
-    if(($(this).find((".viewLog")).is(':checked'))){
-         userObj.rights.push('viewLog');
-    }
-    if($.isInArray(userGroupName,allUsers)){
-                users.push(userObj);
-            }
-    else if($.isInArray(userGroupName,allGroups)){
-                groups.push(userObj);
-            }
+        if (($(this).find((".rightsAdmin")).is(':checked'))) {
+            userObj.rights.push('rightsAdmin');
+        }
+        if (($(this).find((".insert")).is(':checked'))) {
+            userObj.rights.push('insert');
+        }
+        if (($(this).find((".delete")).is(':checked'))) {
+            userObj.rights.push('delete');
+        }
+        if (($(this).find((".viewLog")).is(':checked'))) {
+            userObj.rights.push('viewLog');
+        }
+        if ($.isInArray(userGroupName, allUsers)) {
+            users.push(userObj);
+        }
+        else if ($.isInArray(userGroupName, allGroups)) {
+            groups.push(userObj);
+        }
     });
     jsonTbl.rights.users = users;
     jsonTbl.rights.groups = groups;
@@ -573,18 +680,25 @@ $("#createTableButton").click(function () {
 
 });
 //TODO:encode function
-function encode(string){
+function encode(string) {
 
     return string;
 
 }
-
+function getTableName() {
+    var tableName = window.location.href;
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(0, lastIndex);
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(lastIndex + 1);
+    return tableName;
+}
 </script>
 
 {% endblock %}
 
 {% block css %}
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
-    background: greenyellow;
+background: greenyellow;
 }
 {% endblock %}
