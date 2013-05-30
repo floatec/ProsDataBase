@@ -116,21 +116,21 @@ class TableSerializer:
             comment = col.comment if col.comment is not None else ""
             type = col.type.type
             if type is Type.TEXT:
-                colStructs.append({"name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment})
+                colStructs.append({"name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment, "required": col.required})
             elif type is Type.NUMERIC:
-                colStructs.append({"name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+                colStructs.append({"name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "required": col.required})
             elif type is Type.DATE:
-                colStructs.append({"name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+                colStructs.append({"name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "required": col.required})
 
             elif type is Type.SELECTION:
-                options = dict()
+                options = list()
                 for value in col.type.getType().values():
-                    options[unicode(value.index)] = value.content
-                colStructs.append({"name": col.name, "type": Type.SELECTION, "options": options, "comment": comment})
+                    options.append({"key": value.index, "value": value.content})
+                colStructs.append({"name": col.name, "type": Type.SELECTION, "options": options, "comment": comment, "required": col.required})
             elif type is Type.BOOL:
-                colStructs.append({"name": col.name, "type": Type.BOOL, "comment": comment})
+                colStructs.append({"name": col.name, "type": Type.BOOL, "comment": comment, "required": col.required})
             elif type is Type.TABLE:
-                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
+                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment, "required": col.required})
             else:
                 return None
 
