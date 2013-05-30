@@ -27,7 +27,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 
 class Column(models.Model):
     name = models.CharField(max_length=100)
-    table = models.ForeignKey('Table', related_name="columns")
+    table = models.ForeignKey('Table', related_name="columns", to_field='name')
     type = models.ForeignKey('Type')
     required = models.BooleanField(default=False)
     comment = models.TextField(blank=True, null=True)
@@ -43,7 +43,7 @@ class Column(models.Model):
 
 class Dataset(models.Model):
     datasetID = models.CharField(max_length=200)
-    table = models.ForeignKey('Table', related_name="datasets")
+    table = models.ForeignKey('Table', related_name="datasets", to_field='name')
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setcreator')
@@ -93,7 +93,7 @@ class Dataset(models.Model):
 
 
 class Table(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(unique=True, max_length=100)
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablecreator')
