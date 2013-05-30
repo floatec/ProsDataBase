@@ -227,6 +227,34 @@ function init() {
             }
             else if (columns[key].type == 3) {
                 $("#selectDataType_" + columnID).val(3);
+                $("#row_"+columnID).append("<td id='selectDataTypeCell_" + columnID + "'><span id='choiceInputContent_" + columnID + "'></span></td>");
+                for(var i in columns[key].options){
+
+                countChoiceInputs++;
+                $("#choiceInputContent_" + columnID).append("<input size='10' type='text' class='option' id='choiceInput_" + countChoiceInputs + "'>");
+                $("#choiceInput_"+countChoiceInputs).val(columns[key].options[i].value);
+                // to delete the input fields with escape and delete
+                $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
+                    if (e.keyCode == 46 || e.keyCode == 27) {
+                        $(this).remove();
+                    }
+                })
+            }
+                $("#selectDataTypeCell_"+columnID).append("<button id='addChoiceButton_" + columnID + "'>+</button>");
+
+                 $("#addChoiceButton_" + columnID).click(function () {
+
+                lastID = getNumber(this.id);
+                countChoiceInputs++;
+                $("#choiceInputContent_" + lastID).append("<input size='10' type='text' class='option' id='choiceInput_" + countChoiceInputs + "'>");
+                lastID = getNumber(this.id);
+                // to delete the input fields with escape and delete
+                $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
+                    if (e.keyCode == 46 || e.keyCode == 27) {
+                        $(this).remove();
+                    }
+                })
+            });
             }
             else if (columns[key].type == 4) {
                 $("#selectDataType_" + columnID).val(4);
