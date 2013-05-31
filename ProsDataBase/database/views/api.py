@@ -124,7 +124,7 @@ def insertData(request, tableName):
             if column.type.type == Type.TABLE and newData is not None:
                 for index in col["value"]:  # find all datasets for this
                     try:
-                        dataset = Dataset.objects.get(pk=index)
+                        dataset = Dataset.objects.get(datasetID=index)
                     except Dataset.DoesNotExist:
                         return HttpResponse(content="dataset with id " + index + " could not be found in specified table " + col["table"] + ".", status=400)
                     else:
@@ -153,7 +153,7 @@ def modifyData(request, datasetID):
         except Table.DoesNotExist:
             return HttpResponse(content="table with name" + request["table"] + " not found.", status=400)
         try:
-            dataset = Dataset.objects.get(pk=datasetID)
+            dataset = Dataset.objects.get(datasetID=datasetID)
         except Dataset.DoesNotExist:
             return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + request["table"] + ".", status=400)
 
@@ -248,7 +248,7 @@ def modifyData(request, datasetID):
                     #  now add any link that does not exist yet
                     for id in [index for index in col["value"] if index not in setIDs]:  # this list comprehension returns the difference col["value"] - setIDs
                         try:
-                            newDataset = Dataset.objects.get(pk=id)
+                            newDataset = Dataset.objects.get(datasetID=id)
                             newLink = DataTableToDataset()
                             newLink.DataTable = dataTbl
                             newLink.dataset = newDataset
