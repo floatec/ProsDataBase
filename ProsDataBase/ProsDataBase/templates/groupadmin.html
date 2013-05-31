@@ -7,32 +7,45 @@
 			</ul>
 
 {% endblock %}
+{% block header %}
+        <a class="crumb" href='/groupadmin/' id='groupAdmin'> <span>></span></a>
+{% endblock %}
 {% block content %}
 
 
 {% endblock %}
 
 {% block menu %}
-<a href="/createGroup"><button>Neue Gruppe</button></a>
+<a class='buttonMenuButton' href="/createGroup">create Gruppe</a>
 
 {% endblock %}
 {% block javascript %}
 <script language="JavaScript">
-    //TODO: Mit Ajax alle Gruppen laden
-	var groups = jQuery.parseJSON( '{"groups":[{"name":"Arzt","dataDescr":["Paul","Snuggles"]},{"name":"Student","dataDescr":["Egon","Walter"]},{"name":"Hiwi","dataDescr":["Inge","Hans"]}]}' ).groups;
 
-	for (key in groups) {
-		var groupname = groups[key].name;
+    init();
+    function init(){
+	var groups = jQuery.parseJSON( '{"groups":[{"name":"Arzt","dataDescr":["Paul","Snuggles"]},{"name":"Student","dataDescr":["Egon","Walter"]},{"name":"Hiwi","dataDescr":["Inge","Hans"]}]}' ).groups;
+    $.getJSON('/api/group/', function (data) {
+
+        allGroups = data.groups;
+       for (var key in allGroups) {
+		var groupname = allGroups[key].name;
 
 		// fill Navigation-Bar
-		$("#navigationMenuContent").append("<li><a href='#'>"+groups[key].name+"</a></li>");
+		$("#navigationMenuContent").append("<li><a href='#'>"+allGroups[key].name+"</a></li>");
 		// create group content
 		$("#content").append("<a href='#'><div class='overViewDiv' id='group"+key+"'><div id='overViewHeader'>"+groupname+"</div></div></a>");
-		for (rows in groups[key].dataDescr){
-			$("#group"+key).append("<div class='overViewContentDiv'>"+groups[key].dataDescr[rows]+"</div>");
+		for (var users in allGroups[key].dataDescr){
+			$("#group"+key).append("<div class='overViewContentDiv'>"+allGroups[key].dataDescr[users]+"</div>");
 
 		}
 
 	}
+
+    });
+    $("#groupAdmin").prepend("admin");
+
+}
+
 </script>
 {% endblock %}
