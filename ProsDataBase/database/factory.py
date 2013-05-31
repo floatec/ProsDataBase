@@ -252,8 +252,6 @@ def create_table(**kwargs):
                                     newDataText3.creator = testUser
                                     newDataText3.save()
 
-
-
                     dataTable = dict()
                     dataTable["created"] = datetime.now()
                     dataTableF = DataTableForm(dataTable)
