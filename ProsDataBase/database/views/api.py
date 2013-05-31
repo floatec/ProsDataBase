@@ -61,16 +61,6 @@ def insertData(request, tableName):
         if not datasetF.is_valid():
             return HttpResponse(content="Error creating a new dataset.", status=500)
 
-        # check, if all required columns are filled
-        colnames = [col["name"] for col in request["columns"]]
-        required = theTable.columns.filter(required=True)
-        missing = list()
-        for req in required:
-            if req.name not in colnames:
-                missing.append(req.name)
-        if len(missing) > 0:
-            HttpResponse(content="Please add data to following required columns: " + missing + ".", status=400)
-
         newDataset = datasetF.save(commit=False)
         newDataset.table = theTable
         newDataset.creator = DBUser.objects.get(username="test")
@@ -482,7 +472,6 @@ def addTable(request):
             # add to table 'Column'
             column = dict()
             column["name"] = col["name"]
-            column["required"] = col["required"]
             column["created"] = datetime.now()
             columnF = ColumnForm(column)
             if columnF.is_valid():

@@ -29,7 +29,6 @@ class Column(models.Model):
     name = models.CharField(max_length=100)
     table = models.ForeignKey('Table', related_name="columns", to_field='name')
     type = models.ForeignKey('Type')
-    required = models.BooleanField(default=False)
     comment = models.TextField(blank=True, null=True)
 
     created = models.DateTimeField(default=datetime.now)
@@ -100,7 +99,7 @@ class Table(models.Model):
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablemodifier', blank=True, null=True)
 
     def getColumns(self):
-        return self.columns.all()
+        return Column.objects.filter(table=self)
 
     def getDatasets(self):
         return self.datasets.all()
