@@ -22,23 +22,22 @@ urlpatterns = patterns(
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     (r'^detailview/(?P<table_id>\w+)/$', TemplateView.as_view(template_name="table_detailview.html")),
+    (r'^modify/(?P<table_id>\w+)/$', TemplateView.as_view(template_name="modify.html")),
     (r'^createTable/$', TemplateView.as_view(template_name="createTable.html")),
     (r'^createGroup/$', TemplateView.as_view(template_name="createGroup.html")),
     (r'^groupadmin/$', TemplateView.as_view(template_name="groupadmin.html")),
     (r'^table/$', TemplateView.as_view(template_name="table_overview.html")),
     (r'^register/$', TemplateView.as_view(template_name="register.html")),
-    (r'^/$', TemplateView.as_view(template_name="login.html")),
+    (r'^login/$', TemplateView.as_view(template_name="login.html")),
     url(regex=r'^dataset/(?P<table_id>\w+)/$',
         view='database.views.frontend.insertDataset'),
 
     # APIs for table requests
-    (r'^api/table/$', "database.views.api.table"),
+    (r'^api/table/$', "database.views.api.tables"),
     (r'^api/table/all/$', "database.views.api.showAllTables"),
-    (r'^api/table/dataset/$', "database.views.api.insertData"),
-    (r'^api/table/dataset/(?P<datasetID>[\d]+)/$', "database.views.api.modifyData"),
-    # must come after other uris of the form api/table/[string], or they will match
-    (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.showTable"),
+    (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.table"),
     (r'^api/table/(?P<name>[\w]+)/structure/$', "database.views.api.tableStructure"),
+    (r'^api/table/dataset/(?P<datasetID>[\d]+)/$', "database.views.api.modifyData"),
 
     (r'^api/user/$', "database.views.api.showAllUsers"),
     (r'^api/group/$', "database.views.api.showAllGroups"),

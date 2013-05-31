@@ -19,8 +19,8 @@ class TableSerializer:
         {
             "name": "example",
             "datasets": [
-                [ {"column": "id", "value": 0}, "column": "column", "value": val1}, {"column": "anothercolumn", "value": val2} ],  //row 1
-                [ {"column": "id", "value": 1}, "column": "column", "value": val3}, {"column": "anothercolumn", "value": val4} ]   //row 2
+                {"id": 38, "data": [ {"column": "id", "type": 1, "value": 0}, "column": "columnname", "type": 0, "value": "aString"}, {"column": "anothercolumn", "type": 5, "value": [1, 2], "table": "aTableName"} ]},  //row 1
+                {"id": 18, "data": [ {"column": "id", "type": 1, "value": 17}, "column": "columnname", "type": 0, "value": "aString"}, {"column": "anothercolumn", "type": 5, "value": [13, 14], "table": "aTableName"} ]}   //row 2
             ]
         }
         """
@@ -32,31 +32,33 @@ class TableSerializer:
         result = dict()
         result["name"] = table.name
         result["datasets"] = list()
+        try:
+            datasets = table.getDatasets()
+        except Dataset.DoesNotExist:
+            pass
 
-        datasets = table.getDatasets()
         for dataset in datasets:
-            row = []
-            data = dataset.getData()
+            row = dict()
+            row["id"] = dataset.pk
+            row["data"] = list()
 
+            data = dataset.getData()
             for primitiveData in data:
                 for item in primitiveData:
                     dataObj = dict()
                     dataObj["column"] = item.column.name
-
-                    if item.column.type.type == Type.TABLE:
+                    dataObj["type"] = item.column.type.type
+                    if dataObj["type"] == Type.TABLE:
                         dataObj["value"] = list()
                         for link in DataTableToDataset.objects.filter(DataTable=item):
                             dataObj["value"].append(link.dataset_id)
-
-                    elif item.column.type.type == Type.DATE:
-                        dataObj["value"] = item.content.isoformat()
                     else:
                         try:
                             dataObj["value"] = str(item.content)
                         except UnicodeEncodeError:
                             dataObj["value"] = unicode(item.content)
 
-                    row.append(dataObj)
+                    row["data"].append(dataObj)
 
             result["datasets"].append(row)
 
@@ -81,8 +83,9 @@ class TableSerializer:
         for table in tables:
             columns = table.getColumns()
             columnNames = []
-
+            print columns
             for col in columns:
+                print "hi"
                 columnNames.append(col.name)
 
             result["tables"].append({"name": table.name, "column": columnNames})
@@ -111,22 +114,24 @@ class TableSerializer:
         columns = table.getColumns()
         colStructs = []
         for col in columns:
+            comment = col.comment if col.comment is not None else ""
             type = col.type.type
             if type is Type.TEXT:
-                colStructs.append({"name": col.name, "type": Type.TEXT, "legnth": col.type.getType().length})
-
-            elif type is Type.NUMERIC or type is Type.DATE:
-                colStructs.append({"name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max})
+                colStructs.append({"name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment})
+            elif type is Type.NUMERIC:
+                colStructs.append({"name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+            elif type is Type.DATE:
+                colStructs.append({"name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
 
             elif type is Type.SELECTION:
-                options = dict()
+                options = list()
                 for value in col.type.getType().values():
-                    options[unicode(value.index)] = value.content
-                colStructs.append({"name": col.name, "type": Type.SELECTION, "options": options})
+                    options.append({"key": value.index, "value": value.content})
+                colStructs.append({"name": col.name, "type": Type.SELECTION, "options": options, "comment": comment})
             elif type is Type.BOOL:
-                colStructs.append({"name": col.name, "type": Type.BOOL})
+                colStructs.append({"name": col.name, "type": Type.BOOL, "comment": comment})
             elif type is Type.TABLE:
-                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name})
+                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
             else:
                 return None
 

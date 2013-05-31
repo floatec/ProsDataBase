@@ -14,6 +14,8 @@ about our implementation:
 - DataBool does not need TypeBool, as range is already clear
 """
 
+import sys
+
 from django.db import models
 from django.conf import settings
 from datetime import datetime
@@ -25,9 +27,8 @@ from django.contrib.auth.models import AbstractUser, UserManager
 
 class Column(models.Model):
     name = models.CharField(max_length=100)
-    table = models.ForeignKey('Table', related_name="columns")
+    table = models.ForeignKey('Table', related_name="columns", to_field='name')
     type = models.ForeignKey('Type')
-    required = models.BooleanField(default=False)
     comment = models.TextField(blank=True, null=True)
 
     created = models.DateTimeField(default=datetime.now)
@@ -40,7 +41,8 @@ class Column(models.Model):
 
 
 class Dataset(models.Model):
-    table = models.ForeignKey('Table', related_name="datasets")
+    datasetID = models.CharField(max_length=200)
+    table = models.ForeignKey('Table', related_name="datasets", to_field='name')
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setcreator')
@@ -61,25 +63,65 @@ class Dataset(models.Model):
         data.append(self.datatable.all())
         return data
 
+    def getCount(self):
+        if len(self.datasetID) > 0:
+            delim1 = self.datasetID.index('_')
+            delim2 = self.datasetID[delim1 + 1:].index('_') + delim1 + 1
+
+            return int(self.datasetID[delim1 + 1:delim2])
+        else:
+            return 0
+
+    def checksum(self):
+        """
+        returns an upper-case letter as checksum based on the primary key and the creation date.
+        """
+        result = self.pk * 7 + self.created.year * 7 + self.created.month * 7 + self.created.day * 7
+        chars = list()
+        for i in range(65, 91):
+            chars.append(chr(i))
+        return chars[result % len(chars)]
+
     def getField(self, name):
-        pass
+        for field in self.getData(self):
+            if field.name == name:
+                return field
 
     def __unicode__(self):
         return unicode(self.table) + " id " + unicode(self.id)
 
 
 class Table(models.Model):
-    name = models.CharField(primary_key=True, max_length=100)
+    name = models.CharField(unique=True, max_length=100)
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablecreator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablemodifier', blank=True, null=True)
 
     def getColumns(self):
-        return self.columns.all()
+        return Column.objects.filter(table=self)
 
     def getDatasets(self):
         return self.datasets.all()
+
+    def generateDatasetID(self, dataset):
+        """
+        returns a semantical id of the form tableID.YYYY_No_Checksum.
+
+        tableID is the unique id from the table's AutoField,
+        YYYY is the year the dataset was created in,
+        No is a counter for datasets in a specific year,
+        Checksum is a letter in range ['A', 'Z'].
+        E.g. 3_2013_23_C means: this is the 23rd dataset which was created  in 2013 for the table with id 3.
+        """
+        datasets = self.datasets.filter(created__year=dataset.created.year)
+
+        counts = list()
+        counts.append(0)
+        for dataset in datasets:
+            counts.append(dataset.getCount())
+
+        return str(self.pk) + "." + str(dataset.created.year) + "_" + str(max(counts) + 1) + "_" + dataset.checksum()
 
     def __unicode__(self):  # TODO: does not check for tables without columns
         return self.name
@@ -96,18 +138,12 @@ class Data(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_creator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_modifier', blank=True, null=True)
 
-    def getContent(self):  # workaround for overwriting parent field attribute
-        pass
-
     class Meta:
         abstract = True
 
 
 class DataText(Data):
     content = models.CharField(max_length=200)
-
-    def getContent(self):
-        return self.content
 
     def __unicode__(self):
         return self.content
@@ -116,18 +152,12 @@ class DataText(Data):
 class DataNumeric(Data):
     content = models.FloatField()
 
-    def getContent(self):
-        return self.content
-
     def __unicode__(self):
         return unicode(self.content)
 
 
 class DataSelection(Data):
     content = models.CharField(max_length=100)
-
-    def getContent(self):
-        return self.content
 
     def __unicode__(self):
         return unicode(self.content)
@@ -136,9 +166,6 @@ class DataSelection(Data):
 class DataDate(Data):
     content = models.DateTimeField()
 
-    def getContent(self):
-        return self.content
-
     def __unicode__(self):
         return unicode(self.content)
 
@@ -146,15 +173,12 @@ class DataDate(Data):
 class DataBool(Data):
     content = models.BooleanField()
 
-    def getContent(self):
-        return self.content
-
     def __unicode__(self):
         return unicode(self.content)
 
 
 class DataTable(Data):
-    def getContent(self):
+    def content(self):
         return self.linkToDatasets.all()
 
 
@@ -196,7 +220,7 @@ class Type(models.Model):
 
 class TypeText(models.Model):
     type = models.OneToOneField('Type')
-    length = models.IntegerField()
+    length = models.IntegerField(default=200)
 
     def isValid(self, input):
         return len(input) <= self.length
@@ -207,8 +231,8 @@ class TypeText(models.Model):
 
 class TypeNumeric(models.Model):
     type = models.OneToOneField('Type')
-    min = models.FloatField()
-    max = models.FloatField()
+    min = models.FloatField(default=-sys.maxint)
+    max = models.FloatField(default=sys.maxint)
 
     def isValid(self, input):
         return self.min <= input <= self.max
@@ -288,11 +312,15 @@ class TypeTable(models.Model):
 
 
 class DBUser(AbstractUser):
+    tableCreator = models.BooleanField(default=False)
+    groupCreator = models.BooleanField(default=False)
     objects = UserManager()
 
 
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)
+    tableCreator = models.BooleanField(default=False)
+    groupCreator = models.BooleanField(default=False)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Membership')
 
     def __unicode__(self):
@@ -302,7 +330,7 @@ class DBGroup(models.Model):
 class Membership(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     group = models.ForeignKey('DBGroup')
-    isAdmin = models.BooleanField()
+    isAdmin = models.BooleanField(default=False)
 
     def __unicode__(self):
         return unicode(self.user) + " - " + unicode(self.group)
@@ -313,10 +341,10 @@ class RightListForTable(models.Model):
     group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="table-rights")
 
     table = models.ForeignKey('Table', related_name="rightlists")
-    viewLog = models.BooleanField()
-    rightsAdmin = models.BooleanField()
-    insert = models.BooleanField()
-    delete = models.BooleanField()
+    viewLog = models.BooleanField(default=False)
+    rightsAdmin = models.BooleanField(default=False)
+    insert = models.BooleanField(default=False)
+    delete = models.BooleanField(default=False)
 
     def __unicode__(self):
         return "list " + unicode(self.id) + " for " + unicode(self.table)
@@ -327,8 +355,8 @@ class RightListForColumn(models.Model):
     group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="column-rights")
 
     column = models.ForeignKey('Column')
-    read = models.BooleanField()
-    modify = models.BooleanField()
+    read = models.BooleanField(default=False)
+    modify = models.BooleanField(default=False)
 
     def __unicode__(self):
         return "list" + unicode(self.id) + ":" + unicode(self.column)

@@ -1,168 +1,176 @@
-		@import url(http://fonts.googleapis.com/css?family=Mr+Dafoe);
-		@import url(http://fonts.googleapis.com/css?family=Arbutus+Slab);
-	
-		
-		#header{
-            font-weight: bold;
-            z-index: 1;
-            background-color: #DDD;
-            height: 30px;
-            padding: 10px;
-            width: 100%;
+@import url(http://fonts.googleapis.com/css?family=Mr+Dafoe);
+@import url(http://fonts.googleapis.com/css?family=Arbutus+Slab);
 
-		}
-
-
-        #page{
-            position: relative;
-            margin: 0px auto;
-            width: 90%;
-        }
-
-        #logo{
-             position:fixed;
-			top:5px;
-			left:15px;
-        }
-
-        #navigationMenu{
-            background-color:#DFEFFC;
-            margin-top: -25%;
-            float: left;
-            min-width: 190px;
-        }
-
-
-
-
-        #buttonMenu {
-          background-color: #EEE;
-            height: 30px;
-             left: 251px;
-            padding-top: 5px;
-             position: absolute;
-            top: 47px;
-}
-        .buttonMenuButton{
-            font-size: 20px;
-            margin-top: 15px;
-            margin-left: 5px;
-            margin-right: 5px;
-            padding-left: 5px;
-            padding-right: 5px;
-            color: #00458A;
-             border-left-style: solid;
-             border-left-color: #B9181E;
-             border-left-width: 5px;
-            border-right-style: solid;
-            border-right-color: #B9181E;
-            border-right-width: 5px;
-        }
-
-        #search {
-             margin-top: 1px;
-             padding-left: 15px;
-            padding-right: 15px;
-             width: 200px;
-             height: 23px;
-             margin-left: 1px;
-            margin-right: 20px;
-}
-    #searchDiv{
-
-        display: inline;
-    }
-.helpTextDiv{
-
-
-
-
+#header {
+    font-weight: bold;
+    z-index: 1;
+    background-color: #DDD;
+    height: 30px;
+    padding: 10px;
+    width: 100%;
 
 }
 
-        #loginNameMenu {
-          font-size: 14px;
-            height: 18px;
-            margin-left: 30px;
-            margin-top: -34px;
-            padding-left: 84%;
-            width: 171px;
-            z-index: 2;
+#page {
+    position: relative;
+    margin: 0px auto;
+    width: 90%;
 }
 
+#logo {
+    position: fixed;
+    top: 5px;
+    left: 15px;
+}
 
-		
-		#subMenuList{
-			padding:0px;
-			overflow:hidden	
-		}
-		
-		
-		#menu{
-			background-color:#EEE;
-		}
+#navigationMenu {
+    background-color: #DFEFFC;
+    margin-top: -25%;
+    float: left;
+    min-width: 190px;
+}
 
-        .crumb{
-            color: #00458A;
-            font-size: 26px;
-            display: inline;
-        }
-        .crumb span{
-            color:#B9181E;
-        }
+#buttonMenu {
+    background-color: #EEE;
+    height: 30px;
+    left: 251px;
+    padding-top: 5px;
+    position: absolute;
+    top: 47px;
+}
 
-        .headerTab{
-            margin-right: 10px;
-            margin-left: 10px;
-            padding-right: 10px;
-            padding-left: 10px;
-            font-size: 20px;
-        display: inline;
-         color: #ffffff;
-         border-left-style: solid;
-border-left-color: #B9181E;
-border-left-width: 5px;
-            border-right-style: solid;
-border-right-color: #B9181E;
-border-right-width: 5px;
-        }
-        .headerTabIanctive{
+.buttonMenuButton {
+    font-size: 20px;
+    margin-top: 15px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: #00458A;
+    border-left-style: solid;
+    border-left-color: #B9181E;
+    border-left-width: 5px;
+    border-right-style: solid;
+    border-right-color: #B9181E;
+    border-right-width: 5px;
+}
 
-         color: #ffffff;
-         border-left-style: solid;
-border-left-color: #ffffff;
-border-left-width: 5px;
-            border-right-style: solid;
-border-right-color: #ffffff;
-border-right-width: 5px;
-        }
-        .headerTabDeactive{
+#search {
+    margin-top: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 200px;
+    height: 23px;
+    margin-left: 1px;
+    margin-right: 20px;
+}
 
-         color: gray;
-         border-left-style: solid;
-border-left-color: grey;
-border-left-width: 5px;
-            border-right-style: solid;
-border-right-color: grey;
-border-right-width: 5px;
-        }
-        .ui-tabs-nav{
-            display: none;
-        }
+#searchDiv {
 
+    display: inline;
+}
 
+.helpTextDiv {
+    background-color: #EEE;
+    position: absolute;
+    top: 50px;
+    width: 230px;
+    padding: 7px;
+}
+    .ui-timepicker-div .ui-widget-header{ margin-bottom: 8px; }
+    .ui-timepicker-div dl{ text-align: left; }
+    .ui-timepicker-div dl dt{ height: 25px; }
+    .ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
+    .ui-timepicker-div td { font-size: 90%; }
 
-        #content {
-            font-family: 'Arbutus Slab',serif;
-            left: 250px;
-            position: absolute;
+.helpTextDiv h1 {
+    color: #00458A;
+    font-size: 20px;
+    text-align: center;
+}
 
-            }
+#loginNameMenu {
+    font-size: 14px;
+    height: 18px;
+    margin-left: 30px;
+    margin-top: -34px;
+    padding-left: 84%;
+    width: 171px;
+    z-index: 2;
+}
+
+#subMenuList {
+    padding: 0px;
+    overflow: hidden
+}
+
+#menu {
+    background-color: #EEE;
+}
+
+.crumb {
+    color: #00458A;
+    font-size: 26px;
+    display: inline;
+}
+
+.crumb span {
+    color: #B9181E;
+}
+
+.headerTab {
+    margin-right: 10px;
+    margin-left: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+    display: inline;
+    color: #B9181E;
+    border-left-style: solid;
+    border-left-color: #B9181E;
+    border-left-width: 5px;
+    border-right-style: solid;
+    border-right-color: #B9181E;
+    border-right-width: 5px;
+}
+
+.headerTabIanctive {
+
+    color: #00458A;
+    border-left-style: solid;
+    border-left-color: #B9181E;
+    border-left-width: 5px;
+    border-right-style: solid;
+    border-right-color: #B9181E;
+    border-right-width: 5px;
+}
+
+.headerTabDeactive {
+
+    color: gray;
+    border-left-style: solid;
+    border-left-color: grey;
+    border-left-width: 5px;
+    border-right-style: solid;
+    border-right-color: grey;
+    border-right-width: 5px;
+}
+
+.ui-tabs-nav {
+    display: none;
+}
+
+#content {
+    font-family: 'Arbutus Slab', serif;
+    left: 250px;
+    position: absolute;
+
+}
 
 .overViewDiv {
-    background-color: #D6EEFF;
-    border: 4px double #03588C;
-    color: #03588C;
+    background-color: #EEE;
+    border: 4px solid #BBB;
+    color: #00458A;
     float: left;
     height: 300px;
     margin-bottom: 20px;
@@ -173,12 +181,13 @@ border-right-width: 5px;
     width: 280px;
     overflow: hidden;
 }
+
 .overViewContentDiv {
-    background-color: #D6EFFF;
-    display: -moz-grid-line;
+    background-color: #FFF;
+    display: inline-block;
     margin-right: 13px;
     margin-top: 13px;
-    padding: 8px 0;
+    padding: 8px;
     position: relative;
     top: 44px;
     border-style: solid;
@@ -187,10 +196,13 @@ border-right-width: 5px;
     border-width: 1px;
 }
 
+.helpTextDiv {
+
+}
 
 #overViewHeader {
-    background-color: #67A3DB;
-    border-bottom-right-radius: 50px;
+    background-color: #BBB;
+    border-bottom-right-radius: 10px;
     border-color: #03588C;
     font-size: 23px;
     height: 35px;
@@ -198,78 +210,101 @@ border-right-width: 5px;
     width: 240px;
 }
 
-        a{
-            text-decoration: none
-        }
+a {
+    text-decoration: none
+}
 
-    /*custom checkboxes*/
-.icn{
-    width:40px;
-    height:40px;
-    padding:0px;
-    margin:0px;
+/*custom checkboxes*/
+.icn {
+    width: 40px;
+    height: 40px;
+    padding: 0px;
+    margin: 0px;
 
 }
 
-
-
-
-
-
-        .customChList li input[type='checkbox']{
-    display:none;
+.customChList li input[type='checkbox'] {
+    display: none;
 }
-.customChList li label{
+
+.customChList li label {
     font-size: 18px;
-    padding-left:35px;
+    padding-left: 35px;
     background: url(/img/add-icon.png) no-repeat;
 }
 
-.customChList li label:hover{
+.customChList li label:hover {
     background-position: 0px -32px;
 }
 
-.customChList li label.checked{
+.customChList li label.checked {
     background-position: 0px -64px;
 }
 
+/*
 
+Only for Login and Register Page
 
-		/*
-		
-		Only for Login and Register Page
-		
-		*/
-		
-	
-		#RegisterBtnCell{
-			text-align:right;
-		
-		}
-		
-		#infoDiv{
-			position:absolute;
-			top:5%;
-			left:5%;
-			width:300px;
-			height:500px;
-		}
-		#LoginRegisterDiv{
-			
-			top:200px;
-			left:800px;
-			position:fixed;
-			width:200px;
-			height:500px;
-		
-		
-		}
-		#registerDiv{
-			position:absolute;
-			bottom:40%;
-		
-		}
-		
-		
-		
-		
+*/
+
+#RegisterBtnCell {
+    text-align: right;
+
+}
+
+#infoDiv {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 300px;
+    height: 500px;
+}
+
+#LoginRegisterDiv {
+
+    top: 200px;
+    left: 800px;
+    position: fixed;
+    width: 200px;
+    height: 500px;
+
+}
+
+#registerDiv {
+    position: absolute;
+    bottom: 40%;
+
+}
+
+.datasets {
+    width: 200px;
+    border: 1px solid #6688AA;
+}
+
+.datasets caption {
+    background-color: #6688AA;
+    font-family: Arial, Verdana, sans-serif;
+    font-weight: normal;
+    font-size: 12px;
+    color: #FFFFFF;
+    padding: 6px 0 3px 0;
+}
+
+.datasets thead th {
+    font: bold 11px Arial, Verdana, sans-serif;
+    padding: 3px;
+    background-color: #CCDDEE;
+    border: 1px solid #FFFFFF;
+    text-align: center;
+    color: #4E6C8D;
+    font-weight: normal;
+}
+
+.datasets td {
+    font: normal 11px Arial, Verdana, sans-serif;
+    padding: 5px 5px;
+    background-color: #DDEEFF;
+    border: 1px solid #FFFFFF;
+    line-height: 130%;
+    text-align: center;
+}

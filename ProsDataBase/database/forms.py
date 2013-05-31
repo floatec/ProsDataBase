@@ -11,7 +11,7 @@ from django.forms import ModelForm
 class ColumnForm(ModelForm):
     class Meta:
         model = Column
-        fields = ('name', 'required', 'created')
+        fields = ('name', 'created')
 
 
 class DatasetForm(ModelForm):
