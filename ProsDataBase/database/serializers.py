@@ -31,38 +31,9 @@ class TableSerializer:
 
         result = dict()
         result["name"] = table.name
-        result["datasets"] = list()
-        try:
-            datasets = table.getDatasets()
-        except Dataset.DoesNotExist:
-            pass
+        result.update(DatasetSerializer.serializeAll(tableName))
 
-        for dataset in datasets:
-            row = dict()
-            row["id"] = dataset.pk
-            row["data"] = list()
-
-            data = dataset.getData()
-            for primitiveData in data:
-                for item in primitiveData:
-                    dataObj = dict()
-                    dataObj["column"] = item.column.name
-                    dataObj["type"] = item.column.type.type
-                    if dataObj["type"] == Type.TABLE:
-                        dataObj["value"] = list()
-                        for link in DataTableToDataset.objects.filter(DataTable=item):
-                            dataObj["value"].append(link.dataset_id)
-                    else:
-                        try:
-                            dataObj["value"] = str(item.content)
-                        except UnicodeEncodeError:
-                            dataObj["value"] = unicode(item.content)
-
-                    row["data"].append(dataObj)
-
-            result["datasets"].append(row)
-
-        return json.dumps(result)
+        return result
 
     @staticmethod
     def serializeAll():
@@ -85,12 +56,11 @@ class TableSerializer:
             columnNames = []
             print columns
             for col in columns:
-                print "hi"
                 columnNames.append(col.name)
 
             result["tables"].append({"name": table.name, "column": columnNames})
 
-        return json.dumps(result)
+        return result
 
     @staticmethod
     def serializeStructure(tableName):
@@ -137,7 +107,7 @@ class TableSerializer:
 
         result = dict()
         result["columns"] = colStructs
-        return json.dumps(result)
+        return result
 
 
 class UserSerializer:
@@ -154,7 +124,7 @@ class UserSerializer:
         result["name"] = user.username
         result["id"] = user.id
 
-        return json.dumps(result)
+        return result
 
     @staticmethod
     def serializeAll():
@@ -175,7 +145,7 @@ class UserSerializer:
         for user in users:
             result["users"].append(user.username)
 
-        return json.dumps(result)
+        return result
 
 
 class GroupSerializer:
@@ -192,7 +162,7 @@ class GroupSerializer:
         result["name"] = user.username
         result["id"] = user.id
 
-        return json.dumps(result)
+        return result
 
     @staticmethod
     def serializeAll():
@@ -213,41 +183,64 @@ class GroupSerializer:
         for group in groups:
             result["groups"].append(group.name)
 
-        return json.dumps(result)
+        return result
 
 
 class DatasetSerializer:
 
-    def serializeAll(self, tableRef):
+    @staticmethod
+    def serializeOne(id):
         """
-        return all datasets of table tableRef
-
         {
-            "name": "example",
-            "columns": ["columname", "anothercolum"],
-            "datasets": [
-                [value, value],
-                [value, value]
+            "id": "2.2013_192_B",
+            "data": [
+                {"column": "columnname1", "type": 0, "value": "aText"},
+                {"column": "columnname2", "type": 1, "value": 392.03},
+                {"column": "columnname3", "type": 2, "value": "2013-08-22 10:55:00"},
+                {"column": "columnname4", "type": 3, "value": "aSelectionOption"},
+                {"column": "columnname5", "type": 4, "value": true},
+                {"column": "columnname6", "type": 5, "value": ["5.2013_3_B", "5.2013_4_K"], "table": "aTableName"}
             ]
         }
         """
+        dataset = Dataset.objects.get(datasetID=id)
         result = dict()
-        result["name"] = tableRef.name
+        result["id"] = dataset.datasetID
+        result["data"] = list()
 
-        columns = Column.objects.filter(table=tableRef)
-        columnNames = []
-        for col in columns:
-            columnNames.append(col.name)
-        result["columns"] = columnNames
+        data = dataset.getData()
+        for primitiveData in data:
+            for item in primitiveData:
+                dataObj = dict()
+                dataObj["column"] = item.column.name
+                dataObj["type"] = item.column.type.type
+                if dataObj["type"] == Type.TABLE:
+                    dataObj["value"] = list()
+                    for link in DataTableToDataset.objects.filter(DataTable=item):
+                        dataObj["value"].append(link.dataset_datasetID)
+                else:
+                    try:
+                        dataObj["value"] = str(item.content)
+                    except UnicodeEncodeError:
+                        dataObj["value"] = unicode(item.content)
 
-        datasetList = []
-        datasets = Dataset.objects.filter(table=tableRef)
+                result["data"].append(dataObj)
+
+        return result
+
+    @staticmethod
+    def serializeAll(tableRef):
+        try:
+            datasets = Dataset.objects.filter(table=tableRef)
+        except Dataset.DoesNotExist:
+            pass
+
+        result = dict()
+        result["datasets"] = list()
         for dataset in datasets:
-            values = dataset.getData().values()
-            datasetList.append(values)
-        result["datasets"] = datasetList
-
-        return json.dumps(result)
+            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID))
+        print result
+        return result
 
     def serializeBy(self, tableRef, rangeFlag, filter):  # tuple of criteria-dicts
         result = dict()

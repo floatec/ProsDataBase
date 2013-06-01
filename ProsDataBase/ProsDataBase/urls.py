@@ -37,7 +37,7 @@ urlpatterns = patterns(
     (r'^api/table/all/$', "database.views.api.showAllTables"),
     (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.table"),
     (r'^api/table/(?P<name>[\w]+)/structure/$', "database.views.api.tableStructure"),
-    (r'^api/table/dataset/(?P<datasetID>[\d]+)/$', "database.views.api.modifyData"),
+    (r'^api/table/(?P<tableName>[\w]+)/(?P<datasetID>[\w\.]+)/$', "database.views.api.dataset"),
 
     (r'^api/user/$', "database.views.api.showAllUsers"),
     (r'^api/group/$', "database.views.api.showAllGroups"),

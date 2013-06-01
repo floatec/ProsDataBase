@@ -1,9 +1,8 @@
 # Create your views here.
 # -*- coding: UTF-8 -*-
 
-from django.http import HttpResponse, HttpRequest
-import sys
-
+from django.http import HttpResponse
+import sys, json
 from ..serializers import *
 from ..forms import *
 
@@ -24,16 +23,36 @@ def table(request, name):
         return insertData(request, name)
 
 
+def dataset(request, tableName, datasetID):
+    if request.method == 'GET':
+        return showDataset(tableName, datasetID)
+    elif request.method == 'POST':
+        modifyData(request, tableName, datasetID)
+
+
 def showTable(request, name):
     if request.method == 'GET':
-        return HttpResponse(TableSerializer.serializeOne(name), content_type="application/json")
+        table = TableSerializer.serializeOne(name)
+        return HttpResponse(json.dumps(table), content_type="application/json")
 
 
 def tableStructure(request, name):
     if request.method == 'GET':
-        structure = TableSerializer.serializeStructure(name)
-        return HttpResponse(structure, content_type="application/json") if structure is not None \
-            else HttpResponse(status=500)
+            structure = TableSerializer.serializeStructure(name)
+            return HttpResponse(json.dumps(structure), content_type="application/json")
+
+
+def showDataset(tableName, datasetID):
+    try:
+        table = Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(content="Table with name " + tableName + " could not be found.", status=400)
+    try:
+        Dataset.objects.get(datasetID=datasetID, table=table)
+    except Dataset.DoesNotExist:
+        return HttpResponse(content="dataset with id " + datasetID + " could not be found in table " + tableName + ".", status=400)
+    dataset = DatasetSerializer.serializeOne(datasetID)
+    return HttpResponse(json.dumps(dataset), content_type="application/json")
 
 
 def insertData(request, tableName):
@@ -136,7 +155,7 @@ def insertData(request, tableName):
         return HttpResponse(json.dumps({"id": newDataset.datasetID}), content_type="application/json", status=200)
 
 
-def modifyData(request, datasetID):
+def modifyData(request, tableName, datasetID):
     """
     Modify a table's dataset.
 
@@ -149,13 +168,13 @@ def modifyData(request, datasetID):
     if request.method == 'POST':
         request = json.loads(request.raw_post_data)
         try:
-            theTable = Table.objects.get(name=request["table"])
+            theTable = Table.objects.get(name=tableName)
         except Table.DoesNotExist:
-            return HttpResponse(content="table with name" + request["table"] + " not found.", status=400)
+            return HttpResponse(content="table with name" + tableName + " not found.", status=400)
         try:
             dataset = Dataset.objects.get(datasetID=datasetID)
         except Dataset.DoesNotExist:
-            return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + request["table"] + ".", status=400)
+            return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + tableName + ".", status=400)
 
         dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
         newData = None
@@ -290,19 +309,19 @@ def modifyData(request, datasetID):
 def showAllUsers(request):
     if request.method == 'GET':
         user = UserSerializer.serializeAll()
-        return HttpResponse(user, content_type="application/json")
+        return HttpResponse(json.dumps(user), content_type="application/json")
 
 
 def showAllGroups(request):
     if request.method == 'GET':
         user = GroupSerializer.serializeAll()
-        return HttpResponse(user, content_type="application/json")
+        return HttpResponse(json.dumps(user), content_type="application/json")
 
 
 def showAllTables(request):
     if request.method == 'GET':
         tables = TableSerializer.serializeAll()
-        return HttpResponse(tables, content_type="application/json") if tables is not None \
+        return HttpResponse(json.dumps(tables), content_type="application/json") if tables is not None \
             else HttpResponse(status=500)
 
 
