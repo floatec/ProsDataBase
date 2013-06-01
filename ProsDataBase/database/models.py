@@ -36,6 +36,8 @@ class Column(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='columncreator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='columnmodifier', blank=True, null=True)
 
+    deleted = models.BooleanField(default=False)
+
     def __unicode__(self):
         return self.name
 
@@ -47,6 +49,8 @@ class Dataset(models.Model):
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setcreator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setmodifier', blank=True, null=True)
+
+    deleted = models.BooleanField(default=False)
 
     def getData(self):
         """
@@ -97,6 +101,8 @@ class Table(models.Model):
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablecreator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablemodifier', blank=True, null=True)
+
+    deleted = models.BooleanField(default=False)
 
     def getColumns(self):
         return Column.objects.filter(table=self)

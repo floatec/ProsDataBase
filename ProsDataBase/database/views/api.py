@@ -11,7 +11,7 @@ from datetime import datetime
 
 def tables(request):
     if request.method == 'GET':
-        return showAllTables(request)
+        return showAllTables()
     if request.method == 'POST':
         return addTable(request)
 
@@ -23,11 +23,18 @@ def table(request, name):
         return insertData(request, name)
 
 
+def datasets(request, tableName):
+    if request.method == 'DELETE':
+        return deleteDatasets(request, tableName)
+
+
 def dataset(request, tableName, datasetID):
     if request.method == 'GET':
         return showDataset(tableName, datasetID)
     elif request.method == 'POST':
-        modifyData(request, tableName, datasetID)
+        return modifyData(request, tableName, datasetID)
+    elif request.method == 'DELETE':
+        return deleteDataset(tableName, datasetID)
 
 
 def showTable(request, name):
@@ -38,8 +45,8 @@ def showTable(request, name):
 
 def tableStructure(request, name):
     if request.method == 'GET':
-            structure = TableSerializer.serializeStructure(name)
-            return HttpResponse(json.dumps(structure), content_type="application/json")
+        structure = TableSerializer.serializeStructure(name)
+        return HttpResponse(json.dumps(structure), content_type="application/json")
 
 
 def showDataset(tableName, datasetID):
@@ -48,11 +55,57 @@ def showDataset(tableName, datasetID):
     except Table.DoesNotExist:
         return HttpResponse(content="Table with name " + tableName + " could not be found.", status=400)
     try:
-        Dataset.objects.get(datasetID=datasetID, table=table)
+        dataset = Dataset.objects.get(datasetID=datasetID, table=table)
     except Dataset.DoesNotExist:
         return HttpResponse(content="dataset with id " + datasetID + " could not be found in table " + tableName + ".", status=400)
-    dataset = DatasetSerializer.serializeOne(datasetID)
-    return HttpResponse(json.dumps(dataset), content_type="application/json")
+
+    if dataset.deleted:
+        return HttpResponse("The requested dataset does not exist.", status=400)
+    else:
+        dataset = DatasetSerializer.serializeOne(datasetID)
+        return HttpResponse(json.dumps(dataset), content_type="application/json")
+
+
+def deleteDatasets(request, tableName):
+    try:
+        Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(content="Could not find table " + tableName + " to delete from.", status=400)
+
+    deleted = list()
+    for id in request["datasets"]:
+        try:
+            dataset = Dataset.objects.get(datasetID=id)
+        except Dataset.DoesNotExist:
+            continue
+        if dataset.deleted:
+            continue
+        dataset.deleted = True
+        dataset.modifed = datetime.now()
+        dataset.deleter = DBUser.objects.get(username="test")
+        dataset.save()
+        deleted.append(id)
+
+    return HttpResponse(json.dumps({"deleted": deleted}), content_type="application/json")
+
+
+def deleteDataset(tableName, datasetID):
+    try:
+        table = Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(content="Could not find table " + tableName + " to delete from.", status=400)
+    try:
+        dataset = Dataset.objects.get(datasetID=datasetID, table=table)
+    except Dataset.DoesNotExist:
+        return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + tableName + ".", status=400)
+
+    if dataset.deleted:
+        return HttpResponse(content="Dataset with id " + datasetID + " does not exist.", status=400)
+    dataset.deleted = True
+    dataset.modified = datetime.now()
+    dataset.modifier = DBUser.objects.get(username="test")
+    dataset.save()
+    return HttpResponse("Successfully deleted dataset with id " + datasetID + " from table " + tableName + ".", status=200)
 
 
 def insertData(request, tableName):
@@ -318,11 +371,10 @@ def showAllGroups(request):
         return HttpResponse(json.dumps(user), content_type="application/json")
 
 
-def showAllTables(request):
-    if request.method == 'GET':
-        tables = TableSerializer.serializeAll()
-        return HttpResponse(json.dumps(tables), content_type="application/json") if tables is not None \
-            else HttpResponse(status=500)
+def showAllTables():
+    tables = TableSerializer.serializeAll()
+    return HttpResponse(json.dumps(tables), content_type="application/json") if tables is not None \
+        else HttpResponse(status=500)
 
 
 def addTable(request):

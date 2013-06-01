@@ -238,8 +238,10 @@ class DatasetSerializer:
         result = dict()
         result["datasets"] = list()
         for dataset in datasets:
+            if dataset.deleted:
+                continue
             result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID))
-        print result
+
         return result
 
     def serializeBy(self, tableRef, rangeFlag, filter):  # tuple of criteria-dicts
