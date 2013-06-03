@@ -654,10 +654,34 @@ def deleteTable(name):
     if table.deleted:
         HttpResponse(content="Table with name " + name + " does not exist.", status=400)
 
+    datasets = list()
+    for dataset in table.datasets.all():
+        datasets.append(dataset)
+        dataset.deleted = True
+        dataset.modified = datetime.now()
+        dataset.modifier = DBUser.objects.get(username="test")
+        dataset.save()
+
+    columns = list()
+    for column in table.columns.all():
+        columns.append(column)
+        column.deleted = True
+        column.modified = datetime.now()
+        column.modifier = DBUser.objects.get(username="test")
+        column.save()
+
     table.deleted = True
     table.modified = datetime.now()
     table.modifier = DBUser.objects.get(username="test")
     table.name = table.name + "_DELETED_" + str(datetime.now())
     table.save()
+
+    for col in columns:
+        col.table = table
+        col.save()
+
+    for dataset in datasets:
+        dataset.table = table
+        dataset.save()
 
     return HttpResponse(json.dumps({"deleted": table.name}), status=200)
