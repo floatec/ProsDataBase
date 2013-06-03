@@ -191,7 +191,15 @@ function init() {
         autoOpen: false,
         buttons: {
             "delete": function () {
-               //TODO: API callen um table zu loeschen
+                $.ajax({
+                url: '/api/table/' + getTableName() + '/',
+                type: 'delete',
+                success:function(data){
+                    window.location.href = '/table/';
+
+                }
+
+            });
                 $(this).dialog("close");
             },
             "back": function () {
