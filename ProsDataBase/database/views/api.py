@@ -218,7 +218,7 @@ def modifyData(request, tableName, datasetID):
         "dataset": [ {"column": "name", "value": 0}, {"column": "columnname", "value": val1}, {"column": "anothercolumn", "value": val2} ]
     }
     """
-    if request.method == 'POST':
+    if request.method == 'PUT':
         request = json.loads(request.raw_post_data)
         try:
             theTable = Table.objects.get(name=tableName)
