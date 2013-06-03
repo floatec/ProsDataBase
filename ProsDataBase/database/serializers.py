@@ -152,22 +152,29 @@ class GroupSerializer:
     @staticmethod
     def serializeOne(id):
         """
-        return table with specified id
-
-        {"id":"1","name": "example"}
+        {
+            "name": "group1",
+            "users": [
+                {"name": "John Doe"},
+                {"name": "Alex Anonymus"}
+            ]
+        }
         """
-        user = AbstractUser.objects.get(pk=id)
-
+        group = DBGroup.objects.get(name=id)
         result = dict()
-        result["name"] = user.username
-        result["id"] = user.id
+        result["name"] = group.name
+
+        result["users"] = list()
+        users = group.users.all()
+        for user in users:
+            result["users"].append({"name": user.username})
 
         return result
 
     @staticmethod
     def serializeAll():
         """
-        return all tables with their columns
+        return all groups
 
         {
             "users": [

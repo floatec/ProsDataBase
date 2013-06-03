@@ -16,16 +16,20 @@
 														});
 		subMenuList.menu();	
 		navigationMenuContent.menu();
-
-
-		
-		
-		
 	});
 
+//TODO:encode function
+function encode_pros(string){
 
+    return string.replace(/ /g,"_-_");
 
+}
 
+function decode_pros(string){
+
+    return string.replace(/_-_/g," ");
+
+}
 
 
 
