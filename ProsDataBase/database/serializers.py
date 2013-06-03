@@ -161,35 +161,38 @@ class GroupSerializer:
             ]
         }
         """
-        group = DBGroup.objects.get(name=id)
-        result = dict()
-        result["name"] = group.name
+        try:
+            group = DBGroup.objects.get(name=id)
+        except DBGroup.DoesNotExist:
+            return False
 
-        result["users"] = list()
-        users = group.users.all()
-        for user in users:
-            result["users"].append({"name": user.username})
+        theGroup = dict()
+        theGroup["name"] = group.name
+        theGroup["tableCreator"] = group.tableCreator
+        theGroup["groupCreator"] = group.groupCreator
+        theGroup["admins"] = list()
+        theGroup["users"] = list()
 
-        return result
+        for m in Membership.objects.filter(group=group, isAdmin=True):
+            theGroup["admins"].append(m.user.username)
+
+        for m in Membership.objects.filter(group=group, isAdmin=False):
+            theGroup["users"].append(m.user.username)
+
+        return theGroup
 
     @staticmethod
     def serializeAll():
         """
         return all groups
 
-        {
-            "users": [
-               {"id":"1","name": "example"},
-                {"id":"2","name": "example2"}]}
-            ]
-        }
         """
         groups = DBGroup.objects.all()
         result = dict()
         result["groups"] = []
 
         for group in groups:
-            result["groups"].append(group.name)
+            result["groups"].append(GroupSerializer.serializeOne(group.name))
 
         return result
 
