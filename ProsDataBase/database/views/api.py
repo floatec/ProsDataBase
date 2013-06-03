@@ -44,6 +44,8 @@ def table(request, name):
 
 
 def datasets(request, tableName):
+    if request.method == 'GET':
+        return showDatasets(request, tableName)
     if request.method == 'DELETE':
         return deleteDatasets(request, tableName)
 
@@ -121,6 +123,20 @@ def tableStructure(request, name):
     if request.method == 'GET':
         structure = TableSerializer.serializeStructure(name)
         return HttpResponse(json.dumps(structure), content_type="application/json")
+
+
+def showDatasets(request, tableName):
+    try:
+        table = Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(content="Could not find table with name " + tableName + ".", status=400)
+
+    result = dict()
+    result["datasets"] = list()
+    for id in request["datasets"]:
+        result["datasets"].append(DatasetSerializer.serializeOne(id))
+
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 
 def showDataset(tableName, datasetID):
