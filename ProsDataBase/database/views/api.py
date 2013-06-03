@@ -33,6 +33,8 @@ def table(request, name):
         return showTable(request, name)
     if request.method == 'POST':
         return insertData(request, name)
+    if request.method == "DELETE":
+        return deleteTable(name)
 
 
 def datasets(request, tableName):
@@ -580,3 +582,21 @@ def addTable(request):
                     return HttpResponse("Could not create column right list for group")
 
     return HttpResponse(status=200)
+
+
+def deleteTable(name):
+    try:
+        table = Table.objects.get(name=name)
+    except Table.DoesNotExist:
+        HttpResponse(content="Could not find table with name " + name + ".", status=400)
+
+    if table.deleted:
+        HttpResponse(content="Table with name " + name + " does not exist.", status=400)
+
+    table.deleted = True
+    table.modified = datetime.now()
+    table.modifier = DBUser.objects.get(username="test")
+    table.name = table.name + "_DELETED_" + str(datetime.now())
+    table.save()
+
+    return HttpResponse(json.dumps({"deleted": table.name}), status=200)
