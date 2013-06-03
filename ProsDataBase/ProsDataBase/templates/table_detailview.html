@@ -38,7 +38,7 @@ function init(){
 
     var tableName = getTableName();
     $("#naviheader").append(tableName)
-     var columns = [];
+     columns = [];
     $.getJSON('/api/table/'+tableName+'/structure/',function(data){
          columns = data.columns;
          createTable(columns);
@@ -89,13 +89,19 @@ function createDatasets(){
          var counter = 0;
         for(var key in allDatasets){
 
+
           $("#detailTable").append("<tr class='contentRow' id='datasetRow"+counter+"'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/"+tableName+"/"+allDatasets[key].id+"'>edit</a></td><td class='datasetClassCell'>"+allDatasets[key].id+"</td></tr>");
 
+            for(var p in columns){
           for(var i in allDatasets[key].data){
+              if(allDatasets[key].data[i].column == columns[p].name){
 
               $("#datasetRow"+counter).append("<td>"+allDatasets[key].data[i].value+"</td>")
+              }
 
           }
+
+            }
           counter++;
 
         }

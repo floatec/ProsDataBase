@@ -565,11 +565,14 @@ $("#createTableButton").click(function () {
         type: 'post',
         data: JSON.stringify(jsonTbl),
         contentType: 'application/json',
-        dataType: 'json'
+        dataType: 'json',
+         success:function(data){
+                 window.location.href = '/table/';
+                }
     });
 
     console.log(jsonTbl);
-    window.location.href = '/table/';
+
 
 });
 //TODO:encode function
