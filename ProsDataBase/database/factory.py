@@ -21,11 +21,11 @@ def create_table(**kwargs):
     creates a simple table with two columns and
     two datasets filed with 3 values
     """
-    testUser = DBUser.objects.create_user(username="test")
+    testUser = DBUser.objects.create_user(username=generate_random_number())
     testUser.save()
 
     table = dict()
-    table["name"] = "BungaBunga"
+    table["name"] = generate_random_username()
     table["created"] = datetime.now()
     tabF = TableForm(table)
     if tabF.is_valid():
@@ -82,8 +82,8 @@ def create_table(**kwargs):
 
     for i in range(0,6):
         columns = dict()
-        columns["name"] = i
-        columns["required"] = True
+        columnsArray = ["TEXT", "NUMERIC", "DATE", "SELECTION", "BOOLEAN", "TABLE" ]
+        columns["name"] = columnsArray[i]
         columns["created"] = datetime.now()
         columnsF = ColumnForm(columns)
         if columnsF.is_valid():
@@ -113,6 +113,9 @@ def create_table(**kwargs):
                 newDataSets.creator = testUser
                 newDataSets.table = newTable
                 newDataSets.save()
+                newDataSets.datasetID = newTable.generateDatasetID(newDataSets)
+                newDataSets.save()
+                # -- the 1st column have a text data type
                 if i == 0:
                     for j in range(0,2):
                         dataText = dict()
@@ -125,6 +128,7 @@ def create_table(**kwargs):
                             newDataText.dataset = newDataSets
                             newDataText.creator = testUser
                             newDataText.save()
+                # -- the 2nd column have a numeric data type
                 if i == 1:
                     for k in range(0,2):
                         dataNumeric = dict()
@@ -137,6 +141,7 @@ def create_table(**kwargs):
                             newDataNummeric.dataset = newDataSets
                             newDataNummeric.creator = testUser
                             newDataNummeric.save()
+                # -- the 3rd column have a date data type
                 if i == 2:
                     for l in range(0,2):
                         dataDate = dict()
@@ -149,6 +154,7 @@ def create_table(**kwargs):
                             newDataDate.dataset = newDataSets
                             newDataDate.creator = testUser
                             newDataDate.save()
+                # -- the 4th column have a Selection data type
                 if i == 3:
                     for m in range(0,2):
                         dataSelection = dict()
@@ -164,6 +170,7 @@ def create_table(**kwargs):
                             newDataSelection.dataset = newDataSets
                             newDataSelection.creator = testUser
                             newDataSelection.save()
+                # -- the 5th column have a boolean data type
                 if i == 4:
                     for n in range(0,2):
                         dataBoolean = dict()
@@ -179,10 +186,10 @@ def create_table(**kwargs):
                             newDataBoolean.dataset = newDataSets
                             newDataBoolean.creator = testUser
                             newDataBoolean.save()
-                # -- the 5th column have a table datatype
+                # -- the 6th column have a table datatype
                 if i == 5:
                     op = dict()
-                    op["name"] = "BlaBla"
+                    op["name"] = generate_random_username()
                     op["created"] = datetime.now()
                     opF = TableForm(op)
                     if opF.is_valid():
@@ -192,7 +199,6 @@ def create_table(**kwargs):
 
                         columnsOP = dict()
                         columnsOP["name"] = i
-                        columnsOP["required"] = True
                         columnsOP["created"] = datetime.now()
                         columnsOPF = ColumnForm(columnsOP)
                         if columnsOPF.is_valid():
@@ -210,6 +216,8 @@ def create_table(**kwargs):
                                 newDataSetsOP.creator = testUser
                                 newDataSetsOP.table = newOP
                                 newDataSetsOP.save()
+                                newDataSetsOP.datasetID = newOP.generateDatasetID(newDataSetsOP)
+                                newDataSetsOP.save()
                                 dataText2 = dict()
                                 dataText2["created"] = datetime.now()
                                 dataText2["content"] = "HalloWelt!!!"
@@ -223,7 +231,6 @@ def create_table(**kwargs):
 
                         columnsOP2 = dict()
                         columnsOP2["name"] = i
-                        columnsOP2["required"] = True
                         columnsOP2["created"] = datetime.now()
                         columnsOP2F = ColumnForm(columnsOP2)
                         if columnsOP2F.is_valid():
@@ -240,6 +247,8 @@ def create_table(**kwargs):
                                 newDataSetsOP2.column = newColumnsOP2
                                 newDataSetsOP2.creator = testUser
                                 newDataSetsOP2.table = newOP
+                                newDataSetsOP2.save()
+                                newDataSetsOP2.datasetID = newOP.generateDatasetID(newDataSetsOP2)
                                 newDataSetsOP2.save()
                                 dataText3 = dict()
                                 dataText3["created"] = datetime.now()
@@ -268,8 +277,8 @@ def create_table(**kwargs):
                     dataTableToDataSets2 = DataTableToDataset(DataTable=newDataTable, dataset=newDataSetsOP2)
                     dataTableToDataSets2.save()
 
-    print TableSerializer.serializeOne("BungaBunga")
-    return table
+    #print TableSerializer.serializeOne(newTable.name)
+    return newTable
 
 def create_Group(**kwargs):
     """
@@ -292,4 +301,13 @@ def create_Group(**kwargs):
             newm.user = user
             newm.group = newDBGroup
             newm.save()
+
+    print GroupSerializer.serializeOne("Student")
     return newDBGroup
+
+def create_User(**kwargs):
+    """
+    creates a User
+    """
+    user = DBUser.objects.create_user(username = "Timi")
+    user.save()
