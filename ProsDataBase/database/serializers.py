@@ -52,6 +52,8 @@ class TableSerializer:
         result["tables"] = []
 
         for table in tables:
+            if table.deleted:
+                continue
             columns = table.getColumns()
             columnNames = []
             print columns
