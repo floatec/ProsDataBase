@@ -42,7 +42,7 @@ urlpatterns = patterns(
 
     (r'^api/user/$', "database.views.api.showAllUsers"),
     (r'^api/group/$', "database.views.api.groups"),
-    (r'^api/group/(?P<name>[\w ]+)$', "database.views.api.group"),
+    (r'^api/group/(?P<name>[\w ]+)/$', "database.views.api.group"),
 
 
 )
