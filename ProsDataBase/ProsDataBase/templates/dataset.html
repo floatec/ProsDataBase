@@ -19,25 +19,25 @@
             var columns = data.columns;
 
             for (var i in columns) {
-                var row = "<tr class='allColumns'><td class='nameCell'>" + columns[i].name + "</td><td>"
+                var row = "<tr class='allColumns'><td class='nameCell'>" +  (columns[i].name) + "</td><td>"
                 if (columns[i].type == 0) {
-                    row += '<input class="inputText" name="' + columns[i].name + '" type="text">'
+                    row += '<input class="inputText" name="' + encode_pros(columns[i].name) + '" type="text">'
                 }
                 if (columns[i].type == 1) {
-                    row += '<input class="inputNumber" name="' + columns[i].name + '" type="text">'
+                    row += '<input class="inputNumber" name="' + encode_pros(columns[i].name) + '" type="text">'
                 }
                 if (columns[i].type == 2) {
-                    row += '<input class="dateClass" name="' + columns[i].name + '" type="text">'
+                    row += '<input class="dateClass" name="' + encode_pros(columns[i].name) + '" type="text">'
                 }
                 if (columns[i].type == 3) {
-                    row += '<select class="inputField" name="' + columns[i].name + '" limit="1">'
+                    row += '<select class="inputField" name="' + encode_pros(columns[i].name) + '" limit="1">'
                     for (var v in columns[i].options) {
                         row += '<option value="' + columns[i].options[v].key + '" limit="1">' + columns[i].options[v].value + '</option>'
                     }
                     row += '</select>'
                 }
                 if (columns[i].type == 5) {
-                    row += '<span id="' + columns[i].name + '"></span><span onClick="newElement(\'' + columns[i].table + '\',\'' + columns[i].name + '\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><span onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros( columns[i].name) + '\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
                 }
                 row += "</td></tr>"
                 $("#fields").append(row)
@@ -58,7 +58,7 @@
             jsonDataset.columns = [];
             $(".allColumns").each(function () {
                 columnObj = {};
-                columnObj.name = $(this).find(".nameCell").text();
+                columnObj.name = decode_pros($(this).find(".nameCell").text());
                 if ($(this).find("input").length == 0) {
                     if ($(this).find("select").length == 0) {
                         value=[]
@@ -125,7 +125,7 @@
             return tableName;
         }
         function newElement(table,field) {
-            myWindow = window.open('/dataset/' + table);
+            myWindow = window.open('/dataset/' + table,"_blank", "height=600,width=800,modal=yes,alwaysRaised=yes");
             myWindow.field=field;
             myWindow.popup=true;
 
