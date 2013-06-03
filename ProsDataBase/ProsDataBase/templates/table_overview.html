@@ -24,14 +24,14 @@
     });
     //function to create and fill tables
     function createTables(tables){
-	for (key in tables) {
+	for (var key in tables) {
 		var tablename = tables[key].name;
 		// fill Navigation-Bar
 		$("#navigationMenuContent").append("<li><a href='/detailview/"+tables[key].name+"'>"+tables[key].name+"</a></li>");
 		// create tables
 		$("#content").append("<a href='/detailview/"+tables[key].name+"'><div class='overViewDiv' id='table"+key+"'><div id='overViewHeader'>"+tablename+"</div></div></a>");
-		for (rows in tables[key].column){
-			$("#table"+key).append("<div class='overViewContentDiv'>"+tables[key].column[rows]+"</div>");
+		for (var rows in tables[key].columns){
+			$("#table"+key).append("<div class='overViewContentDiv'>"+tables[key].columns[rows]+"</div>");
 		}
     }
 	}

@@ -14,9 +14,16 @@
 {% block content %}
 <span>group name:</span><br/>
 <input type="text" id="groupName"><br/><br/>
-<span>add users:</span><br />
-<textarea rows="4" cols="50" id="allUsers">
+<span>create tables:</span>
+<input type="checkbox" id="createTables"><br/><br />
+<span>create groups:</span>
+<input type="checkbox" id="createGroups"><br /><br />
+<span>add administrators:</span><br/>
+<textarea rows="4" cols="50" id="allAdmins">
 </textarea><br />
+<span>add users:</span><br/>
+<textarea rows="4" cols="50" id="allUsers">
+</textarea><br/>
 <button id='createGroupButton'>create</button>
 {% endblock %}
 
@@ -31,51 +38,118 @@
         $("#groupAdmin").prepend("admin");
         $("#createGroup").prepend("create Group");
 
- $.getJSON('/api/user/', function (data) {
+        $.getJSON('/api/user/', function (data) {
 
-        var allUsers = data.users;
+            var allUsers = data.users;
 
-        $("#allUsers")
+            $("#allUsers")
 // don't navigate away from the field on tab when selecting an item
-                .bind("keydown", function (event) {
-                    if (event.keyCode === $.ui.keyCode.TAB &&
-                            $(this).data("ui-autocomplete").menu.active) {
-                        event.preventDefault();
-                    }
-                })
-                .autocomplete({
-                    minLength: 0,
-                    source: function (request, response) {
+                    .bind("keydown", function (event) {
+                        if (event.keyCode === $.ui.keyCode.TAB &&
+                                $(this).data("ui-autocomplete").menu.active) {
+                            event.preventDefault();
+                        }
+                    })
+                    .autocomplete({
+                        minLength: 0,
+                        source: function (request, response) {
 // delegate back to autocomplete, but extract the last term
-                        response($.ui.autocomplete.filter(
-                                allUsers, extractLast(request.term)));
-                    },
-                    focus: function () {
+                            response($.ui.autocomplete.filter(
+                                    allUsers, extractLast(request.term)));
+                        },
+                        focus: function () {
 // prevent value inserted on focus
-                        return false;
-                    },
-                    select: function (event, ui) {
-                        var terms = split(this.value);
+                            return false;
+                        },
+                        select: function (event, ui) {
+                            var terms = split(this.value);
 // remove the current input
-                        terms.pop();
+                            terms.pop();
 // add the selected item
-                        terms.push(ui.item.value);
+                            terms.push(ui.item.value);
 // add placeholder to get the comma-and-space at the end
-                        terms.push("");
-                        this.value = terms.join(", ");
-                        return false;
-                    }
-                });
+                            terms.push("");
+                            this.value = terms.join(",");
+                            return false;
+                        }
+                    });
 
- });
+
+             $("#allAdmins")
+// don't navigate away from the field on tab when selecting an item
+                    .bind("keydown", function (event) {
+                        if (event.keyCode === $.ui.keyCode.TAB &&
+                                $(this).data("ui-autocomplete").menu.active) {
+                            event.preventDefault();
+                        }
+                    })
+                    .autocomplete({
+                        minLength: 0,
+                        source: function (request, response) {
+// delegate back to autocomplete, but extract the last term
+                            response($.ui.autocomplete.filter(
+                                    allUsers, extractLast(request.term)));
+                        },
+                        focus: function () {
+// prevent value inserted on focus
+                            return false;
+                        },
+                        select: function (event, ui) {
+                            var terms = split(this.value);
+// remove the current input
+                            terms.pop();
+// add the selected item
+                            terms.push(ui.item.value);
+// add placeholder to get the comma-and-space at the end
+                            terms.push("");
+                            this.value = terms.join(",");
+                            return false;
+                        }
+                    });
+
+        });
 
     }
- function split(val) {
-            return val.split(/,\s*/);
-        }
 
-        function extractLast(term) {
-            return split(term).pop();
-        }
+
+
+    $("#createGroupButton").click(function(){
+
+
+        groupObj = {};
+        groupObj.name = $("#groupName").val();
+        groupObj.groupCreator = $("#createGroups").is(":checked");
+        groupObj.tableCreator = $("#createTables").is(":checked");
+        groupObj.admins =getUsers($("#allAdmins").val());
+        groupObj.users = getUsers($("#allUsers").val());
+
+        console.log(groupObj);
+        $.ajax({
+        url: '/api/group/',
+        type: 'post',
+        data: JSON.stringify(groupObj),
+        contentType: 'application/json',
+        dataType: 'json'
+    });
+
+
+    });
+
+
+    function getUsers(users){
+       var allUsers = []
+        var users = users;
+        allUsers = users.split(',');
+        return allUsers;
+    }
+
+
+    function split(val) {
+        return val.split(/,\s*/);
+    }
+
+    function extractLast(term) {
+        return split(term).pop();
+    }
 </script>
 {% endblock %}

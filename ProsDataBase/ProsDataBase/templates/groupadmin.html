@@ -24,7 +24,7 @@
 
     init();
     function init(){
-	var groups = jQuery.parseJSON( '{"groups":[{"name":"Arzt","dataDescr":["Paul","Snuggles"]},{"name":"Student","dataDescr":["Egon","Walter"]},{"name":"Hiwi","dataDescr":["Inge","Hans"]}]}' ).groups;
+	//var groups = jQuery.parseJSON( '{"groups":[{"name":"Arzt","users":["Paul","Snuggles"]},{"name":"Student","dataDescr":["Egon","Walter"]},{"name":"Hiwi","dataDescr":["Inge","Hans"]}]}' ).groups;
     $.getJSON('/api/group/', function (data) {
 
         allGroups = data.groups;
@@ -35,8 +35,12 @@
 		$("#navigationMenuContent").append("<li><a href='#'>"+allGroups[key].name+"</a></li>");
 		// create group content
 		$("#content").append("<a href='#'><div class='overViewDiv' id='group"+key+"'><div id='overViewHeader'>"+groupname+"</div></div></a>");
-		for (var users in allGroups[key].dataDescr){
-			$("#group"+key).append("<div class='overViewContentDiv'>"+allGroups[key].dataDescr[users]+"</div>");
+		for (var users in allGroups[key].users){
+			$("#group"+key).append("<div class='overViewContentDiv'>"+allGroups[key].users[users]+"</div>");
+
+		}
+        for (var users in allGroups[key].admins){
+			$("#group"+key).append("<div class='overViewContentDiv'>"+allGroups[key].admins[users]+"</div>");
 
 		}
 
