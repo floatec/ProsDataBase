@@ -176,10 +176,6 @@ def insertData(request, tableName):
                     newData = boolF.save(commit=False)
 
             elif column.type.type == Type.TABLE:
-                table = Table.objects.get(name=col["table"])
-                if table is None:
-                    return HttpResponse(content="Global object " + col["table"] + " could not be found", status=400)
-
                 dataTblF = DataTableForm({"created": datetime.now()})
                 if dataTblF.is_valid():
                     newData = dataTblF.save(commit=False)
@@ -198,7 +194,7 @@ def insertData(request, tableName):
                     try:
                         dataset = Dataset.objects.get(datasetID=index)
                     except Dataset.DoesNotExist:
-                        return HttpResponse(content="dataset with id " + index + " could not be found in specified table " + col["table"] + ".", status=400)
+                        return HttpResponse(content="dataset with id " + index + " could not be found in table " + column.type.getType().table.name + ".", status=400)
                     else:
                         link = DataTableToDataset()
                         link.DataTable = newData
