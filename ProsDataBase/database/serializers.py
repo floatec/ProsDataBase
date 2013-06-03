@@ -217,7 +217,7 @@ class DatasetSerializer:
                 if dataObj["type"] == Type.TABLE:
                     dataObj["value"] = list()
                     for link in DataTableToDataset.objects.filter(DataTable=item):
-                        dataObj["value"].append(link.dataset_datasetID)
+                        dataObj["value"].append(link.dataset.datasetID)
                 else:
                     try:
                         dataObj["value"] = str(item.content)
