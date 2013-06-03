@@ -32,10 +32,10 @@ function init(){
 
                 var row = "<tr class='allColumns'><td class='nameCell'>" + columns[i].name + "</td><td>"
                 if (columns[i].type == 0) {
-                    row += '<input  class="'+columns[i].name+'" name="' + columns[i].name + '" type="text">'
+                    row += '<input  class="'+columns[i].name+' inputText" name="' + columns[i].name + '" type="text">'
                 }
                 if (columns[i].type == 1) {
-                    row += '<input   class="'+columns[i].name+'"  name="' + columns[i].name + '" type="text">'
+                    row += '<input   class="'+columns[i].name+' inputNumber"  name="' + columns[i].name + '" type="text">'
                 }
                 if (columns[i].type == 2) {
                     row += '<input  class="'+columns[i].name+' dateClass" name="' + columns[i].name + '" type="text">'
@@ -119,7 +119,7 @@ function getTableName(){
          $("#saveInsert").click(function () {
 
             var jsonDataset = {};
-            jsonDataset.table = getTableName();
+
             jsonDataset.columns = [];
             $(".allColumns").each(function () {
                 columnObj = {};
@@ -155,7 +155,7 @@ function getTableName(){
             });
             console.log(jsonDataset);
             $.ajax({
-                url: '/api/table/' + getTableName() + '/'+getDatasetID()+'/',
+                url: '/api/table/' + getTableName() + '/dataset/'+getDatasetID()+'/',
                 type: 'put',
                 data: JSON.stringify(jsonDataset),
                 contentType: 'application/json',
