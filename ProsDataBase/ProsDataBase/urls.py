@@ -22,6 +22,7 @@ urlpatterns = patterns(
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     (r'^detailview/(?P<table_id>\w+)/$', TemplateView.as_view(template_name="table_detailview.html")),
+    (r'^modifyDataset/(?P<table_id>\w+)/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', TemplateView.as_view(template_name="modifyDataset.html")),
     (r'^modify/(?P<table_id>\w+)/$', TemplateView.as_view(template_name="modify.html")),
     (r'^createTable/$', TemplateView.as_view(template_name="createTable.html")),
     (r'^createGroup/$', TemplateView.as_view(template_name="createGroup.html")),
@@ -34,10 +35,10 @@ urlpatterns = patterns(
 
     # APIs for table requests
     (r'^api/table/$', "database.views.api.tables"),
-    (r'^api/table/all/$', "database.views.api.showAllTables"),
-    (r'^api/table/(?P<name>[\w]+)/$', "database.views.api.table"),
-    (r'^api/table/(?P<name>[\w]+)/structure/$', "database.views.api.tableStructure"),
-    (r'^api/table/dataset/(?P<datasetID>[\d]+)/$', "database.views.api.modifyData"),
+    (r'^api/table/(?P<name>\w+)/$', "database.views.api.table"),
+    (r'^api/table/(?P<name>\w+)/structure/$', "database.views.api.tableStructure"),
+    (r'^api/table/(?P<name>\w+)/dataset/$', "database.views.api.datasets"),
+    (r'^api/table/(?P<tableName>\w+)/dataset/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', "database.views.api.dataset"),
 
     (r'^api/user/$', "database.views.api.showAllUsers"),
     (r'^api/group/$', "database.views.api.showAllGroups"),

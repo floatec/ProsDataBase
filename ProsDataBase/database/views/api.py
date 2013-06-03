@@ -1,9 +1,8 @@
 # Create your views here.
 # -*- coding: UTF-8 -*-
 
-from django.http import HttpResponse, HttpRequest
-import sys
-
+from django.http import HttpResponse
+import sys, json
 from ..serializers import *
 from ..forms import *
 
@@ -12,7 +11,7 @@ from datetime import datetime
 
 def tables(request):
     if request.method == 'GET':
-        return showAllTables(request)
+        return showAllTables()
     if request.method == 'POST':
         return addTable(request)
 
@@ -24,16 +23,89 @@ def table(request, name):
         return insertData(request, name)
 
 
+def datasets(request, tableName):
+    if request.method == 'DELETE':
+        return deleteDatasets(request, tableName)
+
+
+def dataset(request, tableName, datasetID):
+    if request.method == 'GET':
+        return showDataset(tableName, datasetID)
+    elif request.method == 'POST':
+        return modifyData(request, tableName, datasetID)
+    elif request.method == 'DELETE':
+        return deleteDataset(tableName, datasetID)
+
+
 def showTable(request, name):
     if request.method == 'GET':
-        return HttpResponse(TableSerializer.serializeOne(name), content_type="application/json")
+        table = TableSerializer.serializeOne(name)
+        return HttpResponse(json.dumps(table), content_type="application/json")
 
 
 def tableStructure(request, name):
     if request.method == 'GET':
         structure = TableSerializer.serializeStructure(name)
-        return HttpResponse(structure, content_type="application/json") if structure is not None \
-            else HttpResponse(status=500)
+        return HttpResponse(json.dumps(structure), content_type="application/json")
+
+
+def showDataset(tableName, datasetID):
+    try:
+        table = Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(content="Table with name " + tableName + " could not be found.", status=400)
+    try:
+        dataset = Dataset.objects.get(datasetID=datasetID, table=table)
+    except Dataset.DoesNotExist:
+        return HttpResponse(content="dataset with id " + datasetID + " could not be found in table " + tableName + ".", status=400)
+
+    if dataset.deleted:
+        return HttpResponse("The requested dataset does not exist.", status=400)
+    else:
+        dataset = DatasetSerializer.serializeOne(datasetID)
+        return HttpResponse(json.dumps(dataset), content_type="application/json")
+
+
+def deleteDatasets(request, tableName):
+    try:
+        Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(content="Could not find table " + tableName + " to delete from.", status=400)
+
+    deleted = list()
+    for id in request["datasets"]:
+        try:
+            dataset = Dataset.objects.get(datasetID=id)
+        except Dataset.DoesNotExist:
+            continue
+        if dataset.deleted:
+            continue
+        dataset.deleted = True
+        dataset.modifed = datetime.now()
+        dataset.deleter = DBUser.objects.get(username="test")
+        dataset.save()
+        deleted.append(id)
+
+    return HttpResponse(json.dumps({"deleted": deleted}), content_type="application/json")
+
+
+def deleteDataset(tableName, datasetID):
+    try:
+        table = Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(content="Could not find table " + tableName + " to delete from.", status=400)
+    try:
+        dataset = Dataset.objects.get(datasetID=datasetID, table=table)
+    except Dataset.DoesNotExist:
+        return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + tableName + ".", status=400)
+
+    if dataset.deleted:
+        return HttpResponse(content="Dataset with id " + datasetID + " does not exist.", status=400)
+    dataset.deleted = True
+    dataset.modified = datetime.now()
+    dataset.modifier = DBUser.objects.get(username="test")
+    dataset.save()
+    return HttpResponse("Successfully deleted dataset with id " + datasetID + " from table " + tableName + ".", status=200)
 
 
 def insertData(request, tableName):
@@ -124,7 +196,7 @@ def insertData(request, tableName):
             if column.type.type == Type.TABLE and newData is not None:
                 for index in col["value"]:  # find all datasets for this
                     try:
-                        dataset = Dataset.objects.get(pk=index)
+                        dataset = Dataset.objects.get(datasetID=index)
                     except Dataset.DoesNotExist:
                         return HttpResponse(content="dataset with id " + index + " could not be found in specified table " + col["table"] + ".", status=400)
                     else:
@@ -136,7 +208,7 @@ def insertData(request, tableName):
         return HttpResponse(json.dumps({"id": newDataset.datasetID}), content_type="application/json", status=200)
 
 
-def modifyData(request, datasetID):
+def modifyData(request, tableName, datasetID):
     """
     Modify a table's dataset.
 
@@ -149,13 +221,13 @@ def modifyData(request, datasetID):
     if request.method == 'POST':
         request = json.loads(request.raw_post_data)
         try:
-            theTable = Table.objects.get(name=request["table"])
+            theTable = Table.objects.get(name=tableName)
         except Table.DoesNotExist:
-            return HttpResponse(content="table with name" + request["table"] + " not found.", status=400)
+            return HttpResponse(content="table with name" + tableName + " not found.", status=400)
         try:
-            dataset = Dataset.objects.get(pk=datasetID)
+            dataset = Dataset.objects.get(datasetID=datasetID)
         except Dataset.DoesNotExist:
-            return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + request["table"] + ".", status=400)
+            return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + tableName + ".", status=400)
 
         dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
         newData = None
@@ -248,7 +320,7 @@ def modifyData(request, datasetID):
                     #  now add any link that does not exist yet
                     for id in [index for index in col["value"] if index not in setIDs]:  # this list comprehension returns the difference col["value"] - setIDs
                         try:
-                            newDataset = Dataset.objects.get(pk=id)
+                            newDataset = Dataset.objects.get(datasetID=id)
                             newLink = DataTableToDataset()
                             newLink.DataTable = dataTbl
                             newLink.dataset = newDataset
@@ -290,20 +362,19 @@ def modifyData(request, datasetID):
 def showAllUsers(request):
     if request.method == 'GET':
         user = UserSerializer.serializeAll()
-        return HttpResponse(user, content_type="application/json")
+        return HttpResponse(json.dumps(user), content_type="application/json")
 
 
 def showAllGroups(request):
     if request.method == 'GET':
         user = GroupSerializer.serializeAll()
-        return HttpResponse(user, content_type="application/json")
+        return HttpResponse(json.dumps(user), content_type="application/json")
 
 
-def showAllTables(request):
-    if request.method == 'GET':
-        tables = TableSerializer.serializeAll()
-        return HttpResponse(tables, content_type="application/json") if tables is not None \
-            else HttpResponse(status=500)
+def showAllTables():
+    tables = TableSerializer.serializeAll()
+    return HttpResponse(json.dumps(tables), content_type="application/json") if tables is not None \
+        else HttpResponse(status=500)
 
 
 def addTable(request):

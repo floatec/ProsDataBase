@@ -31,6 +31,7 @@
 
 {% block content %}
 <div id="deleteAlertBox">Are you sure to delete this item?</div>
+<div id="alertTableBox">Are you sure to delete this table? All data inside will be lost! Be careful with doing that!</div>
 
 <div id="tabs">
     <ul>
@@ -52,6 +53,7 @@
 
         <button id="addColumn">+</button>
         <br/><br/>
+        <button id='deleteTable'>delete Table</button>
 
 
     </div>
@@ -177,6 +179,19 @@ function init() {
         buttons: {
             "delete": function () {
                 $("#row_" + lastID).remove();
+                $(this).dialog("close");
+            },
+            "back": function () {
+                $(this).dialog("close");
+            }
+        }
+    });
+    // initialize alertbox
+    $("#alertTableBox").dialog({
+        autoOpen: false,
+        buttons: {
+            "delete": function () {
+               //TODO: API callen um table zu loeschen
                 $(this).dialog("close");
             },
             "back": function () {
@@ -707,6 +722,15 @@ $("#createTableButton").click(function () {
     //window.location.href = '/table/';
 
 });
+
+$("#deleteTable").click(function(){
+
+     $("#alertTableBox").dialog("open");
+
+});
+
+
+
 //TODO:encode function
 function encode(string) {
 

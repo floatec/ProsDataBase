@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
+    <a class="crumb" href='#' id='modifyDatasetCrumb'> <span>></span></a>
+{% endblock %}
+{% block content %}
+    <input type="hidden" id="newID" value="42">
+    <table id="fields" border="0">
+    </table>
+    <input type="button" id='saveInsert' value="Save">
+{% endblock %}
+
+
+{% block javascript %}
+    <script language="JavaScript">
+        init();
+
+
+function init(){
+    var tableName = getTableName();
+    var datasetID = getDatasetID();
+    $("#naviheader").append(tableName);
+    $("#tableCrumb").prepend(tableName);
+      $("#modifyDatasetCrumb").prepend(datasetID);
+    $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
+    $("#modifyDatasetCrumb").attr('href','/modifyDataset/'+tableName+'/'+datasetID);
+
+}
+function getDatasetID(){
+    var tableName = window.location.href;
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(0,lastIndex);
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(lastIndex+1);
+    return tableName;
+}
+function getTableName(){
+    var tableName = window.location.href;
+    var lastIndex = tableName.lastIndexOf('/');
+
+    var tableName = tableName.substr(0,lastIndex);
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(0,lastIndex);
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(lastIndex+1);
+
+    return tableName;
+}
+
+    </script>
+{% endblock %}
