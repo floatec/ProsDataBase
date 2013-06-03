@@ -53,6 +53,23 @@ function init(){
 
     });
 }
+function laodSubTable(datasets,tableName,insertTo){
+    var obj={}
+    obj.datasets=[]
+    obj.datasets.push(datasets)
+    var tableName=tableName
+    $.ajax({
+        url: '/api/table/'+tableName+'/dataset/',
+        type: 'post',
+        data: JSON.stringify(obj),
+        contentType: 'application/json',
+        dataType: 'json',
+         success:function(data){
+               createTable(data.columns,tableName,insertTo);
+         }
+    });
+}
+
 function createTable(columns,tableName,insertTo){
     subtable++
     var table = $("<table>");
@@ -70,7 +87,7 @@ function createTable(columns,tableName,insertTo){
     }
        table.append(tableHead)
       $(insertTo).append(table)
-    createDatasets(subtable,tableName);
+    createDatasets(subtable,tableName,columns);
 
 }
 
@@ -83,22 +100,37 @@ function getTableName(){
     return tableName;
 }
 
-function createDatasets(tableID,tableName){
+function createDatasets(tableID,tableName,columns){
+    var columns=columns
     var tableID=tableID
     var tableName = tableName;
     $.getJSON('/api/table/'+tableName+'/',function(data){
          allDatasets = data.datasets;
-        console.log($("tab"+tableID));
+        console.log(allDatasets);
+         var counter = 0;
+         allDatasets = data.datasets;
+        console.log(data);
+
          var counter = 0;
         for(var key in allDatasets){
 
+
           $("#tab"+tableID).append("<tr class='contentRow' id='datasetRow"+counter+"'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/"+tableName+"/"+allDatasets[key].id+"'>edit</a></td><td class='datasetClassCell'>"+allDatasets[key].id+"</td></tr>");
 
+            for(var p in columns){
           for(var i in allDatasets[key].data){
+              if(allDatasets[key].data[i].column == columns[p].name){
+                    if(allDatasets[key].data[i].type==5){
+                        $("#datasetRow"+counter).append("<td><button onClick='laodSubTable(\""+allDatasets[key].data[i].value+"\",\""+columns[p].table+"\",$(this).parent)'>show</Button></td>")
 
-              $("#datasetRow"+counter).append("<td>"+allDatasets[key].data[i].value+"</td>")
+                    }else{
+                    $("#datasetRow"+counter).append("<td>"+allDatasets[key].data[i].value+"</td>")
 
+                    }
+              }
           }
+
+            }
           counter++;
 
         }
