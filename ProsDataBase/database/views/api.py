@@ -82,7 +82,7 @@ def deleteDatasets(request, tableName):
             continue
         dataset.deleted = True
         dataset.modifed = datetime.now()
-        dataset.deleter = DBUser.objects.get(username="test")
+        dataset.modifier = DBUser.objects.get(username="test")
         dataset.save()
         deleted.append(id)
 
