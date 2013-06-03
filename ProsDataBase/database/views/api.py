@@ -79,7 +79,8 @@ def addGroup(request):
             try:
                 admin = DBUser.objects.get(username=adminName)
             except DBUser.DoesNotExist:
-                failed.append(admin)
+                if len(adminName) > 0:
+                    failed.append(adminName)
                 continue
             membership = Membership(group=newGroup, user=admin)
             membership.isAdmin = True
@@ -89,7 +90,8 @@ def addGroup(request):
             try:
                 user = DBUser.objects.get(username=userName)
             except DBUser.DoesNotExist:
-                failed.append(user)
+                if len(userName) > 0:
+                    failed.append(userName)
                 continue
             membership = Membership(group=newGroup, user=user)
             membership.save()
