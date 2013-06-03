@@ -22,6 +22,11 @@ def groups(request):
         return addGroup(request)
 
 
+def group(request, name):
+    if request.method == 'GET':
+        return showOneGroup(name)
+
+
 def tables(request):
     if request.method == 'GET':
         return showAllTables()
@@ -55,6 +60,11 @@ def dataset(request, tableName, datasetID):
 def showAllGroups():
     groups = GroupSerializer.serializeAll()
     return HttpResponse(json.dumps(groups), content_type="application/json")
+
+
+def showOneGroup(name):
+    group = GroupSerializer.serializeOne(name)
+    return HttpResponse(json.dumps(group), content_type="application/json")
 
 
 def addGroup(request):
