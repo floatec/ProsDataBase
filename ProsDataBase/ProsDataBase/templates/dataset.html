@@ -61,7 +61,15 @@
                 columnObj.name = $(this).find(".nameCell").text();
                 if ($(this).find("input").length == 0) {
                     if ($(this).find("select").length == 0) {
+                        value=[]
+                        /* todo denn ganzen misst drüber mal umdrehen*/
+                        if($(this).find(".value").length!=0){
 
+                            $(this).find(".value").each(function(){
+                                    value.push($(this).html())
+                            });
+                            columnObj.value=value
+                        }
 
                     }
                     else {
@@ -94,14 +102,14 @@
                 type: 'post',
                 data: JSON.stringify(jsonDataset),
                 contentType: 'application/json',
-                dataType: 'json'
-               /*
+                dataType: 'json',
+
                 success:function(data){
-                        if(popup){
-                         $(window.opener.document).find('#'+field).append(data.id);
+                        if(true){
+                         $(window.opener.document).find('#'+field).append("<span class='value'>"+data.id+"</span> ");
                         }
                 }
-                */
+
             });
 
 
