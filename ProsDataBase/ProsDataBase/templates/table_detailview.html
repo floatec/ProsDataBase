@@ -58,7 +58,7 @@ function createTable(columns){
     var columns = columns;
     $("#detailTable").prepend("<caption>"+tableName+"</capton>");
     //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
-     $("#descrRow").append("<th>select</th><th>system ID</th><th>data edit</th>");
+     $("#descrRow").append("<th>select</th><th>data edit</th><th>system ID</th>");
     for(var key in columns){
         $("#descrRow").append("<th>"+columns[key].name+"</th>");
         $("#navigationMenuContent").append("<li><a href='#"+columns[key].name+"'>"+columns[key].name+"</a></li>");
@@ -121,7 +121,16 @@ function deleteDataSet(){
 
     });
 
-//TODO: post ajax to api to delete these items
+        $.ajax({
+        url: '/api/table/'+getTableName()+'/dataset/',
+        type: 'delete',
+        data: JSON.stringify(datasetIDs),
+        contentType: 'application/json',
+        dataType: 'json'
+    });
+
+
+
 }
 
     $("#deleteData").click(function(){

@@ -42,7 +42,7 @@
                 row += "</td></tr>"
                 $("#fields").append(row)
             }
-            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd" });
+            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true,changeYear: true });
             $("#tableCrumb").prepend(tableName);
             $("#insertCrumb").prepend("insert");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
@@ -111,7 +111,7 @@
                 }
 
             });
-
+        // window.location.href = '/detailview/'+getTableName();+'/';
 
         });
 

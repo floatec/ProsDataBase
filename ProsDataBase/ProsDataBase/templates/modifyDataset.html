@@ -18,13 +18,80 @@
 
 
 function init(){
-    var tableName = getTableName();
+     var tableName = getTableName();
     var datasetID = getDatasetID();
-    $("#naviheader").append(tableName);
     $("#tableCrumb").prepend(tableName);
       $("#modifyDatasetCrumb").prepend(datasetID);
     $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
     $("#modifyDatasetCrumb").attr('href','/modifyDataset/'+tableName+'/'+datasetID);
+  $.getJSON('/api/table/' + getTableName() + '/structure/', function (struct) {
+            var tableName = getTableName();
+            var columns = struct.columns;
+            //TODO: this!
+            for (var i in columns) {
+
+                var row = "<tr class='allColumns'><td class='nameCell'>" + columns[i].name + "</td><td>"
+                if (columns[i].type == 0) {
+                    row += '<input  class="'+columns[i].name+'" name="' + columns[i].name + '" type="text">'
+                }
+                if (columns[i].type == 1) {
+                    row += '<input   class="'+columns[i].name+'"  name="' + columns[i].name + '" type="text">'
+                }
+                if (columns[i].type == 2) {
+                    row += '<input  class="'+columns[i].name+' dateClass" name="' + columns[i].name + '" type="text">'
+                }
+                if (columns[i].type == 3) {
+                    row += '<select  class="'+columns[i].name+'" name="' + columns[i].name + '" limit="1">'
+                    for (var v in columns[i].options) {
+
+                             row += '<option select="selected" value="' + columns[i].options[v].key + '" limit="1">' + columns[i].options[v].value + '</option>'
+
+                    }
+                    row += '</select>'
+                }
+                if (columns[i].type == 5) {
+                    row += '<span id="' + columns[i].name + '"></span><span onClick="newElement(\'' + columns[i].table + '\',\'' + columns[i].name + '\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
+                }
+                row += "</td></tr>"
+                $("#fields").append(row)
+            }
+            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true,changeYear: true });
+            $("#tableCrumb").prepend(tableName);
+            $("#insertCrumb").prepend("insert");
+            $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
+
+            $("#insertCrumb").attr('href', '/dataset/' + tableName + '/');
+        $.getJSON('/api/table/'+tableName+'/dataset/'+datasetID+'/',function(data){
+           var dataset = data.data;
+            for(var key in dataset){
+                if(dataset[key].type == 0 || dataset[key].type == 1 || dataset[key].type == 2){
+                    $("."+dataset[key].column).val(dataset[key].value);
+
+
+                }
+                else if(dataset[key].type == 3){
+                    var selectedValue = dataset[key].value;
+                $("."+dataset[key].column+" option").filter(function() {return this.text == selectedValue; }).attr('selected', true);
+
+                }
+                else if(dataset[key].type == 4){
+
+                }
+                 else if(dataset[key].type == 5){
+
+                }
+
+
+            }
+
+        });
+
+
+ });
+
+
+
+
 
 }
 function getDatasetID(){
@@ -47,6 +114,65 @@ function getTableName(){
 
     return tableName;
 }
+
+
+         $("#saveInsert").click(function () {
+
+            var jsonDataset = {};
+            jsonDataset.table = getTableName();
+            jsonDataset.columns = [];
+            $(".allColumns").each(function () {
+                columnObj = {};
+                columnObj.name = $(this).find(".nameCell").text();
+                if ($(this).find("input").length == 0) {
+                    if ($(this).find("select").length == 0) {
+
+
+                    }
+                    else {
+
+                        columnObj.value = $(this).find(":selected").text();
+
+                    }
+
+                }
+                else {
+                    if ($(this).find(".dateClass").length != 0) {
+                        columnObj.value = $(this).find("input").val();
+
+                    }
+                    else if ($(this).find(".inputNumber").length != 0) {
+                        columnObj.value = parseFloat($(this).find("input").val());
+                    }
+                    else if ($(this).find(".inputText").length != 0) {
+                        columnObj.value = $(this).find("input").val();
+                    }
+                }
+
+                jsonDataset.columns.push(columnObj);
+                console.log(jsonDataset);
+
+            });
+            console.log(jsonDataset);
+            $.ajax({
+                url: '/api/table/' + getTableName() + '/'+getDatasetID()+'/',
+                type: 'put',
+                data: JSON.stringify(jsonDataset),
+                contentType: 'application/json',
+                dataType: 'json'
+               /*
+                success:function(data){
+                        if(popup){
+                         $(window.opener.document).find('#'+field).append(data.id);
+                        }
+                }
+                */
+            });
+        // window.location.href = '/detailview/'+getTableName();+'/';
+
+        });
+
+
 
     </script>
 {% endblock %}
