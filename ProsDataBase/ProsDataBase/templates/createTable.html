@@ -402,7 +402,7 @@ $("#addUserToRights").click(function () {
         countCheckboxes++;
         var columnNames = getAllColumnNames();
         for (i in columnNames) {
-            var ClassColumnName = encode(columnNames[i]);
+            var ClassColumnName = encode_pros(columnNames[i]);
             var stringToappend = "";
             $("#descriptionRow_" + rightColumnID).append("<td>" + columnNames[i] + "</td>");
             countCheckboxes++;
@@ -504,10 +504,10 @@ $("#createTableButton").click(function () {
             var userObj = {};
             userObj.name = name;
             var tempRights = [];
-            if($(this).find("."+encode(columnNames)).find(".read").is(':checked')){
+            if($(this).find("."+encode_pros(columnNames)).find(".read").is(':checked')){
                 tempRights.push('read');
             }
-             if($(this).find("."+encode(columnNames)).find(".modify").is(':checked')){
+             if($(this).find("."+encode_pros(columnNames)).find(".modify").is(':checked')){
                 tempRights.push('modify');
             }
             userObj.rights = tempRights;
@@ -569,15 +569,10 @@ $("#createTableButton").click(function () {
     });
 
     console.log(jsonTbl);
-    window.location.href = '/table/';
+   // window.location.href = '/table/';
 
 });
-//TODO:encode function
-function encode(string){
 
-    return string;
-
-}
 
 </script>
 
