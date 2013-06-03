@@ -52,13 +52,14 @@ class TableSerializer:
         result["tables"] = []
 
         for table in tables:
+            if table.deleted:
+                continue
             columns = table.getColumns()
             columnNames = []
-            print columns
             for col in columns:
                 columnNames.append(col.name)
 
-            result["tables"].append({"name": table.name, "column": columnNames})
+            result["tables"].append({"name": table.name, "columns": columnNames})
 
         return result
 
