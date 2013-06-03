@@ -231,9 +231,9 @@ def modifyData(request, tableName, datasetID):
 
         dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
         newData = None
-        for col in request["dataset"]:
+        for col in request["columns"]:
             try:
-                column = Column.objects.get(name=col["column"], table=theTable)
+                column = Column.objects.get(name=col["name"], table=theTable)
             except Column.DoesNotExist:
                 return HttpResponse("Could not find column with name " + col["name"] + ".", status=400)
                 continue
