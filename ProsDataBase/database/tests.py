@@ -35,9 +35,10 @@ class GroupTest(TestCase):
         user = create_User()
 
 class TableTest(TestCase):
-    def test_table(self):
+    def test_serializeAll(self):
         """
-        tests a table
+        test serializer TableSerializer serializeAll()
+
         {
             "tables": [
                 {"name": "example", "columns": ["columname","anothercolum"]},
@@ -48,24 +49,36 @@ class TableTest(TestCase):
         table1 = create_table()
         table2 = create_table()
         result =  TableSerializer.serializeAll()
-
-        self.assertTrue(table1.name in [deinamudda["name"] for deinamudda in result["tables"]])
-        self.assertTrue(table2.name in [deinamudda["name"] for deinamudda in result["tables"]])
-
-        tablelist = result["tables"]
-        namelist = []
         length = 0
-        for table in tablelist:
-            name = table["name"]
-            namelist.append(name)
-            length += len(table["columns"])
 
-        self.assertTrue(table1.name in namelist)
-        self.assertTrue(table2.name in namelist)
+        print result
+
+        self.assertTrue(table1.name in [table["name"] for table in result["tables"]])
+        self.assertTrue(table2.name in [table["name"] for table in result["tables"]])
 
 
-        #for list in [deinamudda["columns"] for deinamudda in result["tables"]]:
-         #   length += len(list)
-        #self.assertEquals(length, 16)
+        for list in [table["columns"] for table in result["tables"]]:
+            length += len(list)
+        self.assertEquals(length, 16)
 
         self.assertEqual(16, length)
+
+    def test_serializeOne(self):
+        """
+        return the table with specified name, along with its columns and datasets.
+
+        {
+            "name": "example",
+            "datasets": [
+                {"id": 38, "data": [ {"column": "id", "type": 1, "value": 0}, "column": "columnname", "type": 0, "value": "aString"}, {"column": "anothercolumn", "type": 5, "value": [1, 2], "table": "aTableName"} ]},  //row 1
+                {"id": 18, "data": [ {"column": "id", "type": 1, "value": 17}, "column": "columnname", "type": 0, "value": "aString"}, {"column": "anothercolumn", "type": 5, "value": [13, 14], "table": "aTableName"} ]}   //row 2
+            ]
+        }
+        """
+        table1 = create_table()
+        result = TableSerializer.serializeOne(table1)
+
+        print result
+
+        self.assertEquals(table1.name,result["name"])
+        self.assertEquals(table1.datasets, result["datasets"])
