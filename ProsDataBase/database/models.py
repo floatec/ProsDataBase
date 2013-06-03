@@ -307,7 +307,7 @@ class TypeTable(models.Model):
         datasets = self.table.datasets.all()
         datasetIDs = []
         for dataset in datasets:
-            datasetIDs.append(dataset.id)
+            datasetIDs.append(dataset.datasetID)
 
         return set(input).issubset(set(datasetIDs))
 
