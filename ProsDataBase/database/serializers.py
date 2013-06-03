@@ -56,11 +56,10 @@ class TableSerializer:
                 continue
             columns = table.getColumns()
             columnNames = []
-            print columns
             for col in columns:
                 columnNames.append(col.name)
 
-            result["tables"].append({"name": table.name, "column": columnNames})
+            result["tables"].append({"name": table.name, "columns": columnNames})
 
         return result
 

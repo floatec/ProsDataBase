@@ -15,10 +15,11 @@ def showAllUsers(request):
         return HttpResponse(json.dumps(user), content_type="application/json")
 
 
-def showAllGroups(request):
+def groups(request):
     if request.method == 'GET':
-        user = GroupSerializer.serializeAll()
-        return HttpResponse(json.dumps(user), content_type="application/json")
+        return showAllGroups()
+    elif request.method == 'POST':
+        return addGroup(request)
 
 
 def tables(request):
@@ -49,6 +50,55 @@ def dataset(request, tableName, datasetID):
         return modifyData(request, tableName, datasetID)
     elif request.method == 'DELETE':
         return deleteDataset(tableName, datasetID)
+
+
+def showAllGroups():
+    groups = GroupSerializer.serializeAll()
+    return HttpResponse(json.dumps(groups), content_type="application/json")
+
+
+def addGroup(request):
+    request = json.loads(request.raw_post_data)
+
+    groupNames = list()
+    for name in DBGroup.objects.all():
+        groupNames.append(name)
+
+    if request["name"] in groupNames:
+        HttpResponse(content="Group with name " + request["name"] + " already exists.", status=400)
+
+    groupF = DBGroupForm({"name": request["name"]})
+    if groupF.is_valid():
+        newGroup = groupF.save(commit=False)
+        newGroup.tableCreator = request["tableCreator"]
+        newGroup.groupCreator = request["groupCreator"]
+        newGroup.save()
+
+        failed = list() # list of users whose names could not be found in the database
+        for adminName in set(request["admins"]):
+            try:
+                admin = DBUser.objects.get(username=adminName)
+            except DBUser.DoesNotExist:
+                if len(adminName) > 0:
+                    failed.append(adminName)
+                continue
+            membership = Membership(group=newGroup, user=admin)
+            membership.isAdmin = True
+            membership.save()
+
+        for userName in set(request["users"]) - set(request["admins"]):
+            try:
+                user = DBUser.objects.get(username=userName)
+            except DBUser.DoesNotExist:
+                if len(userName) > 0:
+                    failed.append(userName)
+                continue
+            membership = Membership(group=newGroup, user=user)
+            membership.save()
+
+    if len(failed) > 0:
+        return HttpResponse({"error": "following users could not be added to the group: " + str(failed) + ". Have you misspelled them?"}, content_type="application/json")
+    return HttpResponse("Successfully saved group " + request["name"] + ".", status=200)
 
 
 def showTable(request, name):
@@ -129,13 +179,11 @@ def insertData(request, tableName):
 
     Receives data in json format:
     {
-        "table": "tablename",
         "columns": [
-            {"name": "colname1", "value": val1},
-            {"name": "colname2", "value": [0, 1, 2], "table": "referencedTableName"} // for TypeTable columns
+            {"name": "colname1", "value": "val1"},
+            {"name": "colname2", "value": ["3.2013_44_T", "3.2013_43_Q", "3.2013_45_L"], "table": "referencedTableName"} // for TypeTable columns
         ]
     }
-
     """
     request = json.loads(request.raw_post_data)
     try:
@@ -224,8 +272,11 @@ def modifyData(request, tableName, datasetID):
 
     Receives data in json format:
     {
-        "table": "tablename",
-        "dataset": [ {"column": "name", "value": 0}, {"column": "columnname", "value": val1}, {"column": "anothercolumn", "value": val2} ]
+        "columns": [
+            {"column": "column1", "value": 0},
+            {"column": "column2", "value": "2013-12-07 22:07:00"},
+            {"column": "column3", "value": ["3.2013_44_T", "3.2013_43_Q", "3.2013_45_L"]}
+        ]
     }
     """
     request = json.loads(request.raw_post_data)
