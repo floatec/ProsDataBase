@@ -44,7 +44,7 @@ def table(request, name):
 
 
 def datasets(request, tableName):
-    if request.method == 'GET':
+    if request.method == 'POST':
         return showDatasets(request, tableName)
     if request.method == 'DELETE':
         return deleteDatasets(request, tableName)
