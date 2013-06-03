@@ -32,9 +32,9 @@
 		var groupname = allGroups[key].name;
 
 		// fill Navigation-Bar
-		$("#navigationMenuContent").append("<li><a href='#'>"+allGroups[key].name+"</a></li>");
+		$("#navigationMenuContent").append("<li><a href='/group/"+allGroups[key].name+"'>"+allGroups[key].name+"</a></li>");
 		// create group content
-		$("#content").append("<a href='#'><div class='overViewDiv' id='group"+key+"'><div id='overViewHeader'>"+groupname+"</div></div></a>");
+		$("#content").append("<a href='/group/"+allGroups[key].name+"'><div class='overViewDiv' id='group"+key+"'><div id='overViewHeader'>"+groupname+"</div></div></a>");
 		for (var users in allGroups[key].users){
 			$("#group"+key).append("<div class='overViewContentDiv'>"+allGroups[key].users[users]+"</div>");
 

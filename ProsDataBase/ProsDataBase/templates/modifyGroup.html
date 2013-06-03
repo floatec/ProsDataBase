@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <a class="crumb" href='#' id='groupCrumb'> <span>></span></a>
+    <a class="crumb" href='#' id='modifyGroupCrumb'> <span>></span></a>
+{% endblock %}
+
+{% block content %}
+<span>group name:</span><br/>
+<input type="text" id="groupName"><br/><br/>
+<span>create tables:</span>
+<input type="checkbox" id="createTables"><br/><br />
+<span>create groups:</span>
+<input type="checkbox" id="createGroups"><br /><br />
+<span>add administrators:</span><br/>
+<textarea rows="4" cols="50" id="allAdmins">
+</textarea><br />
+<span>add users:</span><br/>
+<textarea rows="4" cols="50" id="allUsers">
+</textarea><br/>
+<button id='saveGroup'>save</button>
+{% endblock %}
+
+
+{% block javascript %}
+    <script language="JavaScript">
+    init();
+    function init(){
+
+        var groupName = getGroupName();
+         $("#groupCrumb").prepend("all groups");
+            $("#modifyGroupCrumb").prepend(groupName);
+            $("#groupCrumb").attr('href', '/groupadmin/');
+
+            $("#modifyGroupCrumb").attr('href', '/group/' + groupName + '/');
+
+
+        $.getJSON('/api/user/', function (data) {
+
+            var allUsers = data.users;
+
+            $("#allUsers")
+// don't navigate away from the field on tab when selecting an item
+                    .bind("keydown", function (event) {
+                        if (event.keyCode === $.ui.keyCode.TAB &&
+                                $(this).data("ui-autocomplete").menu.active) {
+                            event.preventDefault();
+                        }
+                    })
+                    .autocomplete({
+                        minLength: 0,
+                        source: function (request, response) {
+// delegate back to autocomplete, but extract the last term
+                            response($.ui.autocomplete.filter(
+                                    allUsers, extractLast(request.term)));
+                        },
+                        focus: function () {
+// prevent value inserted on focus
+                            return false;
+                        },
+                        select: function (event, ui) {
+                            var terms = split(this.value);
+// remove the current input
+                            terms.pop();
+// add the selected item
+                            terms.push(ui.item.value);
+// add placeholder to get the comma-and-space at the end
+                            terms.push("");
+                            this.value = terms.join(",");
+                            return false;
+                        }
+                    });
+
+
+             $("#allAdmins")
+// don't navigate away from the field on tab when selecting an item
+                    .bind("keydown", function (event) {
+                        if (event.keyCode === $.ui.keyCode.TAB &&
+                                $(this).data("ui-autocomplete").menu.active) {
+                            event.preventDefault();
+                        }
+                    })
+                    .autocomplete({
+                        minLength: 0,
+                        source: function (request, response) {
+// delegate back to autocomplete, but extract the last term
+                            response($.ui.autocomplete.filter(
+                                    allUsers, extractLast(request.term)));
+                        },
+                        focus: function () {
+// prevent value inserted on focus
+                            return false;
+                        },
+                        select: function (event, ui) {
+                            var terms = split(this.value);
+// remove the current input
+                            terms.pop();
+// add the selected item
+                            terms.push(ui.item.value);
+// add placeholder to get the comma-and-space at the end
+                            terms.push("");
+                            this.value = terms.join(",");
+                            return false;
+                        }
+                    });
+
+        });
+
+        $.getJSON('/api/group/'+getGroupName()+'/', function (data) {
+        $("#groupName").val(data.name);
+
+       if(data.groupCreator){
+
+           $("#createGroups").attr('checked',true);
+       }
+       if(data.tableCreator){
+           $("#createTables").attr('checked',true);
+       }
+
+       $("#allAdmins").val(getAllUsers(data.admins));
+       $("#allUsers").val(getAllUsers(data.users));
+        });
+
+    }
+function getAllUsers(users){
+
+    allUsersString = "";
+    for(var key in users){
+        allUsersString += users[key] +",";
+    }
+    return allUsersString;
+}
+
+
+
+    $("#saveGroup").click(function(){
+
+
+        groupObj = {};
+        groupObj.name = $("#groupName").val();
+        groupObj.groupCreator = $("#createGroups").is(":checked");
+        groupObj.tableCreator = $("#createTables").is(":checked");
+        groupObj.admins =getUsers($("#allAdmins").val());
+        groupObj.users = getUsers($("#allUsers").val());
+
+        console.log(groupObj);
+        $.ajax({
+        url: '/api/group/',
+        type: 'put',
+        data: JSON.stringify(groupObj),
+        contentType: 'application/json',
+        dataType: 'json'
+    });
+ });
+    function getUsers(users){
+       var allUsers = []
+        var users = users;
+        allUsers = users.split(',');
+        return allUsers;
+    }
+function getGroupName(){
+    var tableName = window.location.href;
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(0,lastIndex);
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(lastIndex+1);
+
+    return tableName;
+}
+
+    </script>
+{% endblock %}
