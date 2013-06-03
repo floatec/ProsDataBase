@@ -165,7 +165,7 @@ class GroupSerializer:
         result["name"] = group.name
 
         result["users"] = list()
-        users = group.users
+        users = group.users.all()
         for user in users:
             result["users"].append({"name": user.name})
 
