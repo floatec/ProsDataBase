@@ -31,7 +31,7 @@ def datasets(request, tableName):
 def dataset(request, tableName, datasetID):
     if request.method == 'GET':
         return showDataset(tableName, datasetID)
-    elif request.method == 'POST':
+    elif request.method == 'PUT':
         return modifyData(request, tableName, datasetID)
     elif request.method == 'DELETE':
         return deleteDataset(tableName, datasetID)
