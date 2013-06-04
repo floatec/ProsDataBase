@@ -118,17 +118,23 @@ function createDatasets(tableID,tableName,columns){
           $("#tab"+tableID).append("<tr class='contentRow' id='datasetRow"+counter+"'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/"+tableName+"/"+allDatasets[key].id+"'>edit</a></td><td class='datasetClassCell'>"+allDatasets[key].id+"</td></tr>");
 
             for(var p in columns){
+                var sete=false
           for(var i in allDatasets[key].data){
               if(allDatasets[key].data[i].column == columns[p].name){
                     if(allDatasets[key].data[i].type==5){
                         $("#datasetRow"+counter).append("<td><button onClick='laodSubTable(\""+allDatasets[key].data[i].value+"\",\""+columns[p].table+"\",$(this).parent)'>show</Button></td>")
 
                     }else{
-                    $("#datasetRow"+counter).append("<td>"+allDatasets[key].data[i].value+"</td>")
+                    $("#datasetRow"+counter).append("<td>"+allDatasets[key].data[i].value+"&nbsp;</td>")
 
                     }
+                  sete=true;
               }
           }
+                if(!sete){
+                      $("#datasetRow"+counter).append("<td>"+"&nbsp;</td>")
+
+                }
 
             }
           counter++;
