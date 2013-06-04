@@ -302,6 +302,7 @@ class TypeBool(models.Model):
 class TypeTable(models.Model):
     type = models.OneToOneField('Type')
     table = models.ForeignKey('Table')
+   # column = models.ForeignKey('Column')
 
     def isValid(self, input):
         datasets = self.table.datasets.all()

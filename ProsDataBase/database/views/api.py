@@ -23,6 +23,8 @@ def groups(request):
 
 
 def group(request, name):
+    if request.method == 'PUT':
+        return modifyGroup(request, name)
     if request.method == 'GET':
         return showOneGroup(name)
 
@@ -113,6 +115,10 @@ def addGroup(request):
     return HttpResponse("Successfully saved group " + request["name"] + ".", status=200)
 
 
+def modifyGroup(request, name):
+    pass
+
+
 def showTable(request, name):
     if request.method == 'GET':
         table = TableSerializer.serializeOne(name)
@@ -127,10 +133,11 @@ def tableStructure(request, name):
 
 def showDatasets(request, tableName):
     try:
-        table = Table.objects.get(name=tableName)
+        Table.objects.get(name=tableName)
     except Table.DoesNotExist:
         return HttpResponse(content="Could not find table with name " + tableName + ".", status=400)
 
+    request = json.loads(request.raw_post_data)
     result = dict()
     result["datasets"] = list()
     for id in request["datasets"]:
@@ -164,7 +171,7 @@ def deleteDatasets(request, tableName):
 
     request = json.loads(request.raw_post_data)
     deleted = list()
-    for id in request["datasets"]:
+    for id in request:
         try:
             dataset = Dataset.objects.get(datasetID=id)
         except Dataset.DoesNotExist:
@@ -427,7 +434,7 @@ def modifyData(request, tableName, datasetID):
             else:
                 newData.creator = DBUser.objects.get(username="test")
                 newData.column = column
-                newData.dataset = newDataset
+                newData.dataset = Dataset.objects.get(datasetID=datasetID)
                 newData.save()
 
             # this must be performed at the end, because DatatableToDataset receives newData, which has to be saved first
