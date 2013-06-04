@@ -22,7 +22,46 @@ from datetime import datetime
 from django.contrib.auth.models import AbstractUser, UserManager
 
 
-# -- Table structure
+# ===============================
+# ----- STRUCTURE TABLES --------
+# ===============================
+
+class Table(models.Model):
+    name = models.CharField(unique=True, max_length=100)
+    tablegroup = models.ForeignKey('TableGroup', related_name="tables")
+    created = models.DateTimeField(default=datetime.now)
+    modified = models.DateTimeField(blank=True, null=True)
+    deleted = models.BooleanField(default=False)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablecreator')
+    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablemodifier', blank=True, null=True)
+
+    def getColumns(self):
+        return Column.objects.filter(table=self)
+
+    def getDatasets(self):
+        return self.datasets.all()
+
+    def generateDatasetID(self, dataset):
+        """
+        returns a semantical id of the form tableID.YYYY_No_Checksum.
+
+        tableID is the unique id from the table's AutoField,
+        YYYY is the year the dataset was created in,
+        No is a counter for datasets in a specific year,
+        Checksum is a letter in range ['A', 'Z'].
+        E.g. 3_2013_23_C means: this is the 23rd dataset which was created  in 2013 for the table with id 3.
+        """
+        datasets = self.datasets.filter(created__year=dataset.created.year)
+
+        counts = list()
+        counts.append(0)
+        for dataset in datasets:
+            counts.append(dataset.getCount())
+
+        return str(self.pk) + "." + str(dataset.created.year) + "_" + str(max(counts) + 1) + "_" + dataset.checksum()
+
+    def __unicode__(self):  # TODO: does not check for tables without columns
+        return self.name
 
 
 class Column(models.Model):
@@ -95,47 +134,16 @@ class Dataset(models.Model):
         return unicode(self.table) + " id " + unicode(self.id)
 
 
-class Table(models.Model):
-    name = models.CharField(unique=True, max_length=100)
-    created = models.DateTimeField(default=datetime.now)
-    modified = models.DateTimeField(blank=True, null=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablecreator')
-    modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablemodifier', blank=True, null=True)
+class TableGroup:
+    name = models.CharField(max_length=100)
 
-    deleted = models.BooleanField(default=False)
+# ===============================
+# ----- DATA TABLES -------------
+# ===============================
 
-    def getColumns(self):
-        return Column.objects.filter(table=self)
-
-    def getDatasets(self):
-        return self.datasets.all()
-
-    def generateDatasetID(self, dataset):
-        """
-        returns a semantical id of the form tableID.YYYY_No_Checksum.
-
-        tableID is the unique id from the table's AutoField,
-        YYYY is the year the dataset was created in,
-        No is a counter for datasets in a specific year,
-        Checksum is a letter in range ['A', 'Z'].
-        E.g. 3_2013_23_C means: this is the 23rd dataset which was created  in 2013 for the table with id 3.
-        """
-        datasets = self.datasets.filter(created__year=dataset.created.year)
-
-        counts = list()
-        counts.append(0)
-        for dataset in datasets:
-            counts.append(dataset.getCount())
-
-        return str(self.pk) + "." + str(dataset.created.year) + "_" + str(max(counts) + 1) + "_" + dataset.checksum()
-
-    def __unicode__(self):  # TODO: does not check for tables without columns
-        return self.name
-
-
-# -- Data fields
 
 # related-names in base classes must contain '%(class)s' to avoid clashes in inheriting classes
+
 class Data(models.Model):
     column = models.ForeignKey('Column', related_name="%(class)s")
     dataset = models.ForeignKey('Dataset', related_name="%(class)s")
@@ -192,7 +200,9 @@ class DataTableToDataset(models.Model):
     DataTable = models.ForeignKey('DataTable', related_name="linkToDatasets")
     dataset = models.ForeignKey('Dataset')
 
-# -- data types
+# ===============================
+# ----- TYPE TABLES -------------
+# ===============================
 
 
 class Type(models.Model):
@@ -302,7 +312,7 @@ class TypeBool(models.Model):
 class TypeTable(models.Model):
     type = models.OneToOneField('Type')
     table = models.ForeignKey('Table')
-   # column = models.ForeignKey('Column')
+    column = models.ForeignKey('Column', blank=True, null=True)
 
     def isValid(self, input):
         datasets = self.table.datasets.all()
@@ -315,7 +325,9 @@ class TypeTable(models.Model):
     def __unicode__(self):
         return self.type.name
 
-# -- Permission system
+# ===============================
+# ----- PERMISSION TABLES -------
+# ===============================
 
 
 class DBUser(AbstractUser):
