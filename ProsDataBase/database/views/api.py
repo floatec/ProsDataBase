@@ -133,10 +133,11 @@ def tableStructure(request, name):
 
 def showDatasets(request, tableName):
     try:
-        table = Table.objects.get(name=tableName)
+        Table.objects.get(name=tableName)
     except Table.DoesNotExist:
         return HttpResponse(content="Could not find table with name " + tableName + ".", status=400)
 
+    json.loads(request.raw_post_data)
     result = dict()
     result["datasets"] = list()
     for id in request["datasets"]:
