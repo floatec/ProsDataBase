@@ -78,19 +78,31 @@ function createTable(columns,tableName,insertTo){
     var tableHead =$("<thead id='descrRow'></thead>")
     table.prepend("<caption>"+tableName+"</capton>");
     //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
-     tableHead.append("<th>select</th><th>data edit</th><th>system ID</th>");
+     tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
     for(var key in columns){
         tableHead.append("<th>"+columns[key].name+"</th>");
         $("#navigationMenuContent").append("<li><a href='#"+columns[key].name+"'>"+columns[key].name+"</a></li>");
 
 
     }
+
        table.append(tableHead)
       $(insertTo).append(table)
     createDatasets(subtable,tableName,columns);
 
+
 }
 
+function toggleAll(element){
+
+    var row = $(".contentRow").find(".selectDataset");
+
+    row.each(function(){
+
+      this.checked = element.checked;
+    });
+
+}
 function getTableName(){
     var tableName = window.location.href;
     var lastIndex = tableName.lastIndexOf('/');

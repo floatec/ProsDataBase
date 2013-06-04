@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block navigation %}
+        <div>Gruppen</div>
+ <ul id="navigationMenuContent">
+
+			</ul>
+
+{% endblock %}
+{% block header %}
+        <a class="crumb" href='/groupadmin/' id='groupAdmin'> <span>></span></a>
+        <a class="crumb" href='/useradmin/' id='userAdmin'> <span>></span></a>
+
+
+{% endblock %}
+{% block content %}
+
+
+{% endblock %}
+
+{% block menu %}
+
+{% endblock %}
+{% block javascript %}
+<script language="JavaScript">
+
+    init();
+    function init(){
+    $("#userAdmin").prepend("admin users");
+    $("#groupAdmin").prepend("admin");
+
+
+    $.getJSON('/api/user/', function (data) {
+
+        allUsers = data.users;
+
+        for (key in allUsers) {
+            allUserGroups.push(allUsers[key]);
+        }
+
+
+    });
+
+}
+
+</script>
+{% endblock %}
