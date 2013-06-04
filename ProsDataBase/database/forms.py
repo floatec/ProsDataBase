@@ -5,7 +5,15 @@ __author__ = 'My-Tien Nguyen'
 from models import *
 from django.forms import ModelForm
 
-# -- Table structure
+# ===============================
+# ----- TABLE FORMS ---------
+# ===============================
+
+
+class TableGroupForm(ModelForm):
+    class Meta:
+        model = TableGroup
+        fields = ('name', )
 
 
 class ColumnForm(ModelForm):
@@ -24,6 +32,11 @@ class TableForm(ModelForm):
     class Meta:
         model = Table
         fields = ('name', 'created')
+
+
+# ===============================
+# ----- DATA FORMS --------------
+# ===============================
 
 
 class DataForm(ModelForm):  # TODO: Needed?
@@ -67,7 +80,9 @@ class DataTableForm(ModelForm):
         model = DataTable
         fields = ('created',)
 
-# -- data types
+# ===============================
+# ----- TYPE FORMS --------------
+# ===============================
 
 
 class TypeForm(ModelForm):
@@ -105,7 +120,9 @@ class TypeSelectionForm(ModelForm):
         model = TypeSelection
         fields = ('count', )
 
-# -- Permission system
+# ===============================
+# ----- PERMISSION FORMS --------
+# ===============================
 
 
 class DBGroupForm(ModelForm):

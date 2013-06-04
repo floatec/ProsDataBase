@@ -4,6 +4,7 @@ __author__ = 'My-Tien Nguyen'
 from django.contrib import admin
 from models import *
 
+admin.site.register(TableGroup)
 admin.site.register(Table)
 admin.site.register(Column)
 admin.site.register(Dataset)

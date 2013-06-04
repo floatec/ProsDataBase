@@ -47,19 +47,26 @@ class TableSerializer:
             ]
         }
         """
-        tables = Table.objects.all()
         result = dict()
-        result["tables"] = []
+        result["tableGroups"] = []
 
-        for table in tables:
-            if table.deleted:
-                continue
-            columns = table.getColumns()
-            columnNames = []
-            for col in columns:
-                columnNames.append(col.name)
+        groups = TableGroup.objects.all()
+        for group in groups:
+            groupObj = dict()
+            groupObj["name"] = group.name
+            groupObj["tables"] = list()
+            tables = Table.objects.filter(tablegroup=group)
+            for table in tables:
+                if table.deleted:
+                    continue
+                columns = table.getColumns()
+                columnNames = []
+                for col in columns:
+                    columnNames.append(col.name)
 
-            result["tables"].append({"name": table.name, "columns": columnNames})
+                groupObj["tables"].append({"name": table.name, "columns": columnNames})
+
+            result["tableGroups"].append(groupObj)
 
         return result
 
@@ -214,21 +221,39 @@ class DatasetSerializer:
             ]
         }
         """
-        dataset = Dataset.objects.get(datasetID=id)
+        try:
+            dataset = Dataset.objects.get(datasetID=id)
+        except Dataset.DoesNotExist:
+            return None
+
         result = dict()
         result["id"] = dataset.datasetID
         result["data"] = list()
 
-        data = dataset.getData()
-        for primitiveData in data:
-            for item in primitiveData:
+        datalist = dataset.getData()
+        for data in datalist:
+            for item in data:
                 dataObj = dict()
                 dataObj["column"] = item.column.name
                 dataObj["type"] = item.column.type.type
+
                 if dataObj["type"] == Type.TABLE:
                     dataObj["value"] = list()
                     for link in DataTableToDataset.objects.filter(DataTable=item):
-                        dataObj["value"].append(link.dataset.datasetID)
+                        valObj = dict()
+                        valObj["id"] = link.dataset.datasetID
+
+                        typeTable = item.column.type.getType()
+                        columnForDisplay = typeTable.column
+
+                        refDataList = link.dataset.getData()
+                        for refData in refDataList:
+                            for refItem in refData:
+                                print refItem.column
+                                if refItem.column == columnForDisplay:
+                                    valObj["value"] = refItem.content
+                        dataObj["value"].append(valObj)
+
                 else:
                     try:
                         dataObj["value"] = str(item.content)
