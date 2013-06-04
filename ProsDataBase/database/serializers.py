@@ -47,19 +47,26 @@ class TableSerializer:
             ]
         }
         """
-        tables = Table.objects.all()
         result = dict()
-        result["tables"] = []
+        result["tableGroups"] = []
 
-        for table in tables:
-            if table.deleted:
-                continue
-            columns = table.getColumns()
-            columnNames = []
-            for col in columns:
-                columnNames.append(col.name)
+        groups = TableGroup.objects.all()
+        for group in groups:
+            groupObj = dict()
+            groupObj["name"] = group.name
+            groupObj["tables"] = list()
+            tables = Table.objects.filter(tablegroup=group)
+            for table in tables:
+                if table.deleted:
+                    continue
+                columns = table.getColumns()
+                columnNames = []
+                for col in columns:
+                    columnNames.append(col.name)
 
-            result["tables"].append({"name": table.name, "columns": columnNames})
+                groupObj["tables"].append({"name": table.name, "columns": columnNames})
+
+            result["tableGroups"].append(groupObj)
 
         return result
 
