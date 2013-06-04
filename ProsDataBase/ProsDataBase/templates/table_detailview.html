@@ -3,10 +3,10 @@
 
 
 {% block navigation %}
-<div id="naviheader"></div>
- <ul id="navigationMenuContent">
+    <div id="naviheader"></div>
+    <ul id="navigationMenuContent">
 
- </ul>
+    </ul>
 
 {% endblock %}
 
@@ -14,197 +14,223 @@
     <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
 {% endblock %}
 {% block menu %}
-        <a class='buttonMenuButton' id='insertData' href='#'>Insert Data</a>
-        <a class='buttonMenuButton' id='deleteData' href='#'>Delete Data</a>
-        <a class='buttonMenuButton'>Export</a>
-        <a class='buttonMenuButton' id='modifyStructure'>Modify Structure</a>
+    <a class='buttonMenuButton' id='insertData' href='#'>Insert Data</a>
+    <a class='buttonMenuButton' id='deleteData' href='#'>Delete Data</a>
+    <a class='buttonMenuButton'>Export</a>
+    <a class='buttonMenuButton' id='modifyStructure'>Modify Structure</a>
 {% endblock %}
 
 {% block content %}
-        <div id="deleteAlertBox">Are you sure to delete this item(s)?</div>
+    <div id="deleteAlertBox">Are you sure to delete this item(s)?</div>
     <div id="headTable"></div>
 
 {% endblock %}
 {% block javascript %}
-<script language="JavaScript">
+    <script language="JavaScript">
 
 
-init();
+        init();
 
 
+        function init() {
+            counter = 0;
+            subtable = 0;
+            var tableName = getTableName();
+            $("#naviheader").append(tableName)
+            var columns = [];
+            $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+                columns = data.columns;
+                createTable(columns, tableName, $("#headTable"), '/api/table/' + tableName + '/',undefined);
+            });
+            $("#tableCrumb").prepend(tableName);
+            $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
+            $("#insertData").attr('href', '/dataset/' + tableName + '/');
+            $("#modifyStructure").attr('href', '/modify/' + tableName + '/');
+            $("#deleteData").click(function () {
 
 
-function init(){
-    subtable=0;
-    var tableName = getTableName();
-    $("#naviheader").append(tableName)
-     var columns = [];
-    $.getJSON('/api/table/'+tableName+'/structure/',function(data){
-         columns = data.columns;
-         createTable(columns,tableName,$("#headTable"));
-    });
-    $("#tableCrumb").prepend(tableName);
-    $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
-    $("#insertData").attr('href', '/dataset/'+tableName+'/');
-    $("#modifyStructure").attr('href','/modify/'+tableName+'/');
-    $("#deleteData").click(function(){
+            });
+        }
+        function laodSubTable(datasets, tableName, insertTo) {
+            var obj = {}
+            obj.datasets = JSON.parse(datasets)
+
+            var tableName = tableName
+            $.ajax({
+                url: '/api/table/' + tableName + '/structure/',
+
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+
+                columns = data.columns;
+                    createTable(data.columns, tableName, insertTo, '/api/table/' + tableName + '/dataset/', obj);
+                }
+            });
+        }
+
+        function createTable(columns, tableName, insertTo, url, post) {
+            subtable++
+            var url = url
+            var post = post
+            var table = $("<table>");
+            table.addClass("datasets");
+            table.attr("id", "tab" + subtable);
+            var tableHead = $("<thead onClick='toggleTable(this.parentNode)' id='descrRow'></thead>")
+            table.prepend("<caption  onClick='toggleTable(this.parentNode)'>" + tableName + "</capton>");
+            //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
+            tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
+            for (var key in columns) {
+                tableHead.append("<th>" + columns[key].name + "</th>");
+                $("#navigationMenuContent").append("<li><a href='#" + columns[key].name + "'>" + columns[key].name + "</a></li>");
+            }
+
+            table.append(tableHead)
+            $(insertTo).html("")
+            $(insertTo).append(table)
+            createDatasets(subtable, tableName, columns, url, post);
 
 
+        }
+        function toggleTable(element) {
 
-    });
-}
-function laodSubTable(datasets,tableName,insertTo){
-    var obj={}
-    obj.datasets=[]
-    obj.datasets.push(datasets)
-    var tableName=tableName
-    $.ajax({
-        url: '/api/table/'+tableName+'/dataset/',
-        type: 'post',
-        data: JSON.stringify(obj),
-        contentType: 'application/json',
-        dataType: 'json',
-         success:function(data){
-               createTable(data.columns,tableName,insertTo);
-         }
-    });
-}
-
-function createTable(columns,tableName,insertTo){
-    subtable++
-    var table = $("<table>");
-    table.addClass("datasets");
-    table.attr("id", "tab"+subtable);
-    var tableHead =$("<thead id='descrRow'></thead>")
-    table.prepend("<caption>"+tableName+"</capton>");
-    //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
-     tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
-    for(var key in columns){
-        tableHead.append("<th>"+columns[key].name+"</th>");
-        $("#navigationMenuContent").append("<li><a href='#"+columns[key].name+"'>"+columns[key].name+"</a></li>");
+                if(!$(element).hasClass("closed")){
+                      $(element).addClass("closed")
+                    $(element).find("tr,thead").css("display","none")
+                }else{
+                      $(element).removeClass("closed")
+                    $(element).find("tr,thead").css("display","table-row")
+                }
 
 
-    }
+          /*  row.each(function () {
+                if($(element).hasClass("closed")){
 
-       table.append(tableHead)
-      $(insertTo).append(table)
-    createDatasets(subtable,tableName,columns);
+                    $(this).css("display","none")
+                }else{
+                    $(this).css("display","table-row")
+                }
+
+            });*/
+
+        }
+
+        function toggleAll(element) {
+
+            var row = $(".contentRow").find(".selectDataset");
+
+            row.each(function () {
+
+                this.checked = element.checked;
+            });
+
+        }
+        function getTableName() {
+            var tableName = window.location.href;
+            var lastIndex = tableName.lastIndexOf('/');
+            var tableName = tableName.substr(0, lastIndex);
+            var lastIndex = tableName.lastIndexOf('/');
+            var tableName = tableName.substr(lastIndex + 1);
+            return tableName;
+        }
+
+        function createDatasets(tableID, tableName,columns, url, post) {
+            var columns = columns
+            var tableID = tableID
+            var tableName = tableName;
+            $.ajax({
+                url: url,
+                type: post == undefined ? 'get' : 'post',
+                data: JSON.stringify(post),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    allDatasets = data.datasets;
+                    console.log(allDatasets);
+
+                    allDatasets = data.datasets;
+                    console.log(data);
 
 
-}
-
-function toggleAll(element){
-
-    var row = $(".contentRow").find(".selectDataset");
-
-    row.each(function(){
-
-      this.checked = element.checked;
-    });
-
-}
-function getTableName(){
-    var tableName = window.location.href;
-    var lastIndex = tableName.lastIndexOf('/');
-    var tableName = tableName.substr(0,lastIndex);
-    var lastIndex = tableName.lastIndexOf('/');
-    var tableName = tableName.substr(lastIndex+1);
-    return tableName;
-}
-
-function createDatasets(tableID,tableName,columns){
-    var columns=columns
-    var tableID=tableID
-    var tableName = tableName;
-    $.getJSON('/api/table/'+tableName+'/',function(data){
-         allDatasets = data.datasets;
-        console.log(allDatasets);
-         var counter = 0;
-         allDatasets = data.datasets;
-        console.log(data);
-
-         var counter = 0;
-        for(var key in allDatasets){
+                    for (var key in allDatasets) {
 
 
-          $("#tab"+tableID).append("<tr class='contentRow' id='datasetRow"+counter+"'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/"+tableName+"/"+allDatasets[key].id+"'>edit</a></td><td class='datasetClassCell'>"+allDatasets[key].id+"</td></tr>");
+                        $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'>edit</a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
 
-            for(var p in columns){
-                var sete=false
-          for(var i in allDatasets[key].data){
-              if(allDatasets[key].data[i].column == columns[p].name){
-                    if(allDatasets[key].data[i].type==5){
-                        $("#datasetRow"+counter).append("<td><button onClick='laodSubTable(\""+allDatasets[key].data[i].value+"\",\""+columns[p].table+"\",$(this).parent)'>show</Button></td>")
+                        for (var p in columns) {
+                            var sete = false
+                            for (var i in allDatasets[key].data) {
+                                if (allDatasets[key].data[i].column == columns[p].name) {
+                                    if (allDatasets[key].data[i].type == 5) {
+                                        $("#datasetRow" + counter).append("<td><button onClick='laodSubTable(\"" + JSON.stringify(allDatasets[key].data[i].value).replace(/"/g,"\\\"") + "\",\"" + columns[p].table + "\",this.parentNode)'>show</Button></td>")
 
-                    }else{
-                    $("#datasetRow"+counter).append("<td>"+allDatasets[key].data[i].value+"&nbsp;</td>")
+                                    } else {
+                                        $("#datasetRow" + counter).append("<td>" + allDatasets[key].data[i].value + "&nbsp;</td>")
+
+                                    }
+                                    sete = true;
+                                }
+                            }
+                            if (!sete) {
+                                $("#datasetRow" + counter).append("<td>" + "&nbsp;</td>")
+
+                            }
+
+                        }
+                        counter++;
 
                     }
-                  sete=true;
-              }
-          }
-                if(!sete){
-                      $("#datasetRow"+counter).append("<td>"+"&nbsp;</td>")
+                }
+
+                });
+
+
+        }
+
+
+        function deleteDataSet() {
+
+            var datasetIDs = [];
+            $(".contentRow").each(function () {
+
+                if ($(this).find(".selectDataset").is(':checked')) {
+                    $(this).remove();
+                    datasetIDs.push($(this).find(".datasetClassCell").text());
 
                 }
 
+            });
+
+            $.ajax({
+                url: '/api/table/' + getTableName() + '/dataset/',
+                type: 'delete',
+                data: JSON.stringify(datasetIDs),
+                contentType: 'application/json',
+                dataType: 'json'
+            });
+
+
+        }
+
+        $("#deleteData").click(function () {
+            $("#deleteAlertBox").dialog("open");
+
+
+        });
+
+        // initialize alertbox
+        $("#deleteAlertBox").dialog({
+            autoOpen: false,
+            buttons: {
+                "delete": function () {
+                    deleteDataSet();
+                    $(this).dialog("close");
+                },
+                "back": function () {
+                    $(this).dialog("close");
+                }
             }
-          counter++;
+        });
 
-        }
-
-    });
-
-
-}
-
-
-
-
-function deleteDataSet(){
-
-    var datasetIDs = [];
-    $(".contentRow").each(function(){
-
-      if($(this).find(".selectDataset").is(':checked')){
-             $(this).remove();
-            datasetIDs.push($(this).find(".datasetClassCell").text());
-
-        }
-
-    });
-
-        $.ajax({
-        url: '/api/table/'+getTableName()+'/dataset/',
-        type: 'delete',
-        data: JSON.stringify(datasetIDs),
-        contentType: 'application/json',
-        dataType: 'json'
-    });
-
-
-
-}
-
-    $("#deleteData").click(function(){
-         $("#deleteAlertBox").dialog("open");
-
-
-    });
-
-  // initialize alertbox
-    $("#deleteAlertBox").dialog({
-        autoOpen: false,
-        buttons: {
-            "delete": function () {
-                deleteDataSet();
-                $(this).dialog("close");
-            },
-            "back": function () {
-                $(this).dialog("close");
-            }
-        }
-    });
-
-</script>
+    </script>
 {% endblock %}

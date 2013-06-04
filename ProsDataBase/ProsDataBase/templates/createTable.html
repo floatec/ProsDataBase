@@ -292,7 +292,25 @@ function createNewColumnsRow() {
         if ($("#selectDataType_" + lastID).val() == "2") {
             $("#selectDataTypeCell_" + lastID).remove();
         }
+        if ($("#selectDataType_" + lastID).val() == "5") {
+           $("#selectDataTypeCell_" + lastID).remove();
+            var tableName = $("#selectDataType_" + lastID).find(":selected").text();
+            $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+            var input = "";
+            input += "<td id='selectDataTypeCell_" + lastID + "'>select value: <select class='referencedColumn'>";
+            input += "<option>all</option>"
+               allColumns = data.columns;
+               for(var key in allColumns){
+                   input += "<option>";
+                   input += allColumns[key].name;
+                   input += "</option>";
+               }
+            input += "</select></td>";
 
+           $("#row_" + lastID).append(input);
+            });
+
+        }
         if ($("#selectDataType_" + lastID).val() == "3") {
 
 
@@ -490,6 +508,7 @@ $("#createTableButton").click(function () {
         }
         else {
             columnObj.table = $(row.find(".dataType")).find(":selected").text();
+            columnObj.column = $(row.find(".referencedColumn").find(":selected")).text();
         }
         var users = [];
         var groups = [];

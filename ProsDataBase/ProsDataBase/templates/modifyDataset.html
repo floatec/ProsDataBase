@@ -20,7 +20,7 @@
 function init(){
      var tableName = getTableName();
     var datasetID = getDatasetID();
-    $("#tableCrumb").prepend(tableName);
+
       $("#modifyDatasetCrumb").prepend(datasetID);
     $("#tableCrumb").attr('href', '/detailview/'+tableName+'/');
     $("#modifyDatasetCrumb").attr('href','/modifyDataset/'+tableName+'/'+datasetID);
