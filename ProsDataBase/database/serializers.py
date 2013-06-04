@@ -48,13 +48,28 @@ class TableSerializer:
         }
         """
         result = dict()
-        result["tableGroups"] = []
+        result["tables"] = list()
+        result["tableGroups"] = list()
 
+        # first find all tables with no group
+        tables = Table.objects.filter(tablegroup=None)
+        for table in tables:
+            if table.deleted:
+                continue
+            columns = table.getColumns()
+            columnNames = []
+            for col in columns:
+                columnNames.append(col.name)
+
+            result["tables"].append({"name": table.name, "columns": columnNames})
+
+        # now find all tables with a group
         groups = TableGroup.objects.all()
         for group in groups:
             groupObj = dict()
             groupObj["name"] = group.name
             groupObj["tables"] = list()
+
             tables = Table.objects.filter(tablegroup=group)
             for table in tables:
                 if table.deleted:
@@ -67,7 +82,6 @@ class TableSerializer:
                 groupObj["tables"].append({"name": table.name, "columns": columnNames})
 
             result["tableGroups"].append(groupObj)
-
         return result
 
     @staticmethod
