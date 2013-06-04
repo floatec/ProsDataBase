@@ -27,7 +27,7 @@
                     row += '<input class="inputNumber" name="' + encode_pros(columns[i].name) + '" type="text">'
                 }
                 if (columns[i].type == 2) {
-                    row += '<input class="dateClass" name="' + encode_pros(columns[i].name) + '" type="text">'
+                    row += '<input  class="dateClass" name="' + encode_pros(columns[i].name) + '" type="text">'
                 }
                 if (columns[i].type == 3) {
                     row += '<select class="inputField" name="' + encode_pros(columns[i].name) + '" limit="1">'
@@ -42,7 +42,7 @@
                 row += "</td></tr>"
                 $("#fields").append(row)
             }
-            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true,changeYear: true });
+            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true,changeYear: true});
             $("#tableCrumb").prepend(tableName);
             $("#insertCrumb").prepend("insert");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
