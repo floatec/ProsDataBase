@@ -221,21 +221,39 @@ class DatasetSerializer:
             ]
         }
         """
-        dataset = Dataset.objects.get(datasetID=id)
+        try:
+            dataset = Dataset.objects.get(datasetID=id)
+        except Dataset.DoesNotExist:
+            return None
+
         result = dict()
         result["id"] = dataset.datasetID
         result["data"] = list()
 
-        data = dataset.getData()
-        for primitiveData in data:
-            for item in primitiveData:
+        datalist = dataset.getData()
+        for data in datalist:
+            for item in data:
                 dataObj = dict()
                 dataObj["column"] = item.column.name
                 dataObj["type"] = item.column.type.type
+
                 if dataObj["type"] == Type.TABLE:
                     dataObj["value"] = list()
                     for link in DataTableToDataset.objects.filter(DataTable=item):
-                        dataObj["value"].append(link.dataset.datasetID)
+                        valObj = dict()
+                        valObj["id"] = link.dataset.datasetID
+
+                        typeTable = item.column.type.getType()
+                        columnForDisplay = typeTable.column
+
+                        refDataList = link.dataset.getData()
+                        for refData in refDataList:
+                            for refItem in refData:
+                                print refItem.column
+                                if refItem.column == columnForDisplay:
+                                    valObj["value"] = refItem.content
+                        dataObj["value"].append(valObj)
+
                 else:
                     try:
                         dataObj["value"] = str(item.content)

@@ -617,6 +617,7 @@ def addTable(request):
         elif col["type"] == Type.TABLE:
             newTypeTable = TypeTable()
             newTypeTable.table = Table.objects.get(name=col["table"])
+            newTypeTable.column = Column.objects.get(name=col["name"]) if "name" in col else None
             newTypeTable.type = newDatatype
             newTypeTable.save()
 
