@@ -2,9 +2,9 @@
 
 {% block navigation %}
 <div>Tabellen</div>
- <ul id="navigationMenuContent">
+<ul id="navigationMenuContent">
 
- </ul>
+</ul>
 
 {% endblock %}
 
@@ -18,22 +18,43 @@
 {% endblock %}
 
 {% block javascript %}
-<script language="JavaScript" >
-       $.getJSON('/api/table',function(data){
-        createTables(data.tables);
+<script language="JavaScript">
+    $.getJSON('/api/table/', function (tabledata) {
+        createTables(tabledata.tables);
+
+
     });
+
     //function to create and fill tables
-    function createTables(tables){
-	for (var key in tables) {
-		var tablename = tables[key].name;
-		// fill Navigation-Bar
-		$("#navigationMenuContent").append("<li><a href='/detailview/"+tables[key].name+"'>"+tables[key].name+"</a></li>");
-		// create tables
-		$("#content").append("<a href='/detailview/"+tables[key].name+"'><div class='overViewDiv' id='table"+key+"'><div id='overViewHeader'>"+tablename+"</div></div></a>");
-		for (var rows in tables[key].columns){
-			$("#table"+key).append("<div class='overViewContentDiv'>"+tables[key].columns[rows]+"</div>");
-		}
+    function createTables(tables) {
+        $.getJSON('/api/category/', function (data) {
+
+            allCatagories = data.categories;
+
+            for (var i in allCatagories) {
+                var content = "<div id='"+allCatagories[i]+"'>";
+                for (var key in tables) {
+
+                    if (allCatagories[i] == tables[key].category) {
+
+                        var tablename = tables[key].name;
+                        // fill Navigation-Bar
+                        $("#navigationMenuContent").append("<li><a href='/detailview/" + tables[key].name + "'>" + tables[key].name + "</a></li>");
+                        // create tables
+
+                        content+="<a href='/detailview/" + tables[key].name + "'><div class='overViewDiv' id='table" + key + "'>";
+                        content += "<div id='overViewHeader'>" + tablename + "</div>";
+                        for (var rows in tables[key].columns) {
+                           content+="<div class='overViewContentDiv'>" + tables[key].columns[rows] + "</div>";
+                        }
+                        content += "</div></a>";
+
+                    }
+                }
+                content+="</div>";
+                $("#content").append(content);
+            }
+        });
     }
-	}
 </script>
 {% endblock %}

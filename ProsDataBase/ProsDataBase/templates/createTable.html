@@ -159,7 +159,7 @@ function init() {
         tables = data.tables;
 
     });
-  jQuery.getJSON('/api/categories/', function (data) {
+  jQuery.getJSON('/api/category/', function (data) {
 
        var cat = data.categories;
       for(var key in cat){
@@ -312,9 +312,11 @@ function createNewColumnsRow() {
             input += "<option value='defaultValue'>all</option>"
                allColumns = data.columns;
                for(var key in allColumns){
+                   if(allColumns[key].type != 5){
                    input += "<option>";
                    input += allColumns[key].name;
                    input += "</option>";
+               }
                }
             input += "</select></td>";
 
