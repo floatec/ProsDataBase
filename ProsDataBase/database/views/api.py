@@ -161,17 +161,28 @@ def modifyCategories(request):
     oldNotFound = list()
     newExists = list()
     for cat in request["categories"]:
-        try:
-            catForChange = Category.objects.get(name=cat["old"])
-        except Category.DoesNotExist:
-            oldNotFound.append(cat["old"])
+        if "old" in cat:
+            try:
+                catForChange = Category.objects.get(name=cat["old"])
+            except Category.DoesNotExist:
+                oldNotFound.append(cat["old"])
 
-        try:  # check if category with name already exists. Only save new name, if not existent yet
-            Category.objects.get(name=cat["new"])
-            newExists.append(cat["new"])
-        except Category.DoesNotExist:
-            catForChange.name = cat["new"]
-            catForChange.save()
+            try:  # check if category with name already exists. Only save new name, if not existent yet
+                Category.objects.get(name=cat["new"])
+                newExists.append(cat["new"])
+            except Category.DoesNotExist:
+                catForChange.name = cat["new"]
+                catForChange.save()
+
+        else:
+            try:  # check if category with name already exists. Only save new name, if not existent yet
+                Category.objects.get(name=cat["new"])
+                newExists.append(cat["new"])
+            except Category.DoesNotExist:
+                newCatF = CategoryForm({"name": cat["new"]})
+                if newCatF.is_valid():
+                    newCat = newCatF.save()
+                    newCat.save()
 
     if len(oldNotFound) > 0:
         if len(newExists) > 0:
