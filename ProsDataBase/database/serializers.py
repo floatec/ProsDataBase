@@ -49,7 +49,6 @@ class TableSerializer:
 
         result = dict()
         result["tables"] = list()
-        result["categories"] = list()
 
         # first find all tables with no group
         tables = Table.objects.filter(name__in=allowedTables)
