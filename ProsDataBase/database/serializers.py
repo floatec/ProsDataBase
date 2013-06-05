@@ -24,10 +24,10 @@ class TableSerializer:
             ]
         }
         """
-        table = Table.objects.get(name=tableName)
-
-        if table is None:  # table does not exist!
-            return False
+        try:
+            table = Table.objects.get(name=tableName)
+        except Table.DoesNotExist:
+            return None
 
         result = dict()
         result["name"] = table.name
@@ -47,6 +47,12 @@ class TableSerializer:
             ]
         }
         """
+        user = DBUser.objects.get(username="test")
+        allowedTables = set()
+
+        for rights in RightListForColumn.objects.filter(user=user):
+            allowedTables.add(rights.column.table)
+
         result = dict()
         result["tables"] = list()
         result["categories"] = list()
@@ -95,7 +101,7 @@ class TableSerializer:
             {"name": "columnname1", "type": 1, "min": "a decimal", "max": "a decimal"},
             {"name": "columnname2", "type": 2, "min": "a date", "max": "a date"},
             {"name": "columnname3", "type": 3, "options": {"0": "opt1", "1": "opt2", "2": "opt3"},
-            {"name": "columnname4", "type": 4, "table": "tablename"},
+            {"name": "columnname4", "type": 4, "table": "tablename", "column": "refColname"},
           ]
         }
         """
@@ -123,7 +129,9 @@ class TableSerializer:
             elif type is Type.BOOL:
                 colStructs.append({"name": col.name, "type": Type.BOOL, "comment": comment})
             elif type is Type.TABLE:
-                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
+                if col.type.getType().column is not None:
+                    refCol = col.type.getType().column.name
+                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol, "comment": comment})
             else:
                 return None
 
@@ -143,6 +151,7 @@ class TableSerializer:
         for cat in Category.objects.all():
             result["categories"].append(cat.name)
         return result
+
 
 class UserSerializer:
     @staticmethod
