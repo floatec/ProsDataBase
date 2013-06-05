@@ -37,7 +37,7 @@ urlpatterns = patterns(
 
 
     # APIs for category requests
-    (r'^api/categories/$', "database.views.api.categories"),
+    (r'^api/category/$', "database.views.api.categories"),
     (r'^api/category/(?P<name>[\w ]+)/$', "database.views.api.category"),
     # APIs for table requests
     (r'^api/table/$', "database.views.api.tables"),
