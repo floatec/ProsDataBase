@@ -151,7 +151,56 @@ def modifyGroup(request, name):
         "groupCreator": false
     }
     """
-    pass
+    try:
+        group = DBGroup.objects.get(name=name)
+    except DBGroup.DoesNotExist:
+        return HttpResponse(content="Could not find group with name " + name + ".", status=400)
+
+    request = json.loads(request.raw_post_data)
+    if request["name"] != group.name:
+        try:
+            DBGroup.objects.get(name=request["name"])
+            return HttpResponse(content="A group with name " + request["name"] + " already exists.", status=400)
+        except DBGroup.DoesNotExist:
+            group.name = request["name"]
+
+    group.tableCreator = request["tableCreator"]
+    group.groupCreator = request["groupCreator"]
+    group.save()
+
+    usernames = list()
+    adminnames = list()
+    for m in Membership.objects.get(group=group):
+        if m.user.isAdmin:
+            adminnames.append(m.user.username)
+        else:
+            usernames.append(m.user.username)
+
+    for user in set(request["users"]) - set(usernames):  # new users were added to the group
+        membershipF = MembershipForm({"isAdmin": False})
+        if membershipF.is_valid():
+            membership = membershipF.save(commit=False)
+            membership.user = DBUser.objects.get(username=user)
+            membership.group = group
+            membership.save()
+
+    for user in set(usernames) - set(request["users"]):  # users were deleted from the group
+        theUser = DBUser.objects.get(username=user)
+        membership = Membership.objects.get(user=theUser)
+        membership.delete()
+
+    for admin in set(request["admins"]) - set(adminnames):  # new admins were added to the group
+        membershipF = MembershipForm({"isAdmin": True})
+        if membershipF.is_valid():
+            membership = membershipF.save(commit=False)
+            membership.user = DBUser.objects.get(username=admin)
+            membership.group = group
+            membership.save()
+
+    for admin in set(adminnames) - set(request["admins"]):  # users were deleted from the group
+        theUser = DBUser.objects.get(username=admin)
+        membership = Membership.objects.get(user=theUser)
+        membership.delete()
 
 
 def showCategories():
@@ -204,15 +253,15 @@ def modifyCategories(request):
 def deleteCategory(name):
     try:
         category = Category.objects.get(name=name)
+        try:
+            Table.objects.filter(category=category)
+            return HttpResponse(content="Please put the tables of this group into another category first.")
+        except Table.DoesNotExist:
+            category.delete()
     except Category.DoesNotExist:
         return HttpResponse(content="Category with name " + name + " does not exist.")
 
-    for table in Table.objects.filter(category=category):
-        table.category = None
-        table.save()
-
-    category.delete()
-    return HttpResponse(content="deleted")
+    return HttpResponse(content="Deleted category " + name + ".", status=400)
 
 
 def showTable(request, name):
