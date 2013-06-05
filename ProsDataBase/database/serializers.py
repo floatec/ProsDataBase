@@ -4,12 +4,6 @@ __author__ = 'My-Tien Nguyen'
 from models import *
 
 
-import json
-
-
-# TODO: how to convert CharFields to String? unicode(model.CharField()) or model.CharField().__unicode__()? Or entirely different?
-
-
 class TableSerializer:
     @staticmethod
     def serializeOne(tableName):
@@ -55,10 +49,9 @@ class TableSerializer:
 
         result = dict()
         result["tables"] = list()
-        result["categories"] = list()
 
         # first find all tables with no group
-        tables = Table.objects.filter(category=None)
+        tables = Table.objects.filter(name__in=allowedTables)
         for table in tables:
             if table.deleted:
                 continue
@@ -67,27 +60,8 @@ class TableSerializer:
             for col in columns:
                 columnNames.append(col.name)
 
-            result["tables"].append({"name": table.name, "columns": columnNames})
+            result["tables"].append({"name": table.name, "columns": columnNames, "category": table.category.name})
 
-        # now find all tables with a group
-        groups = Category.objects.all()
-        for group in groups:
-            groupObj = dict()
-            groupObj["name"] = group.name
-            groupObj["tables"] = list()
-
-            tables = Table.objects.filter(category=group)
-            for table in tables:
-                if table.deleted:
-                    continue
-                columns = table.getColumns()
-                columnNames = []
-                for col in columns:
-                    columnNames.append(col.name)
-
-                groupObj["tables"].append({"name": table.name, "columns": columnNames})
-
-            result["categories"].append(groupObj)
         return result
 
     @staticmethod
@@ -291,6 +265,15 @@ class DatasetSerializer:
                     for link in DataTableToDataset.objects.filter(DataTable=item):
                         valObj = dict()
                         valObj["id"] = link.dataset.datasetID
+                        typeTable = item.column.type.getType()
+                        columnForDisplay = typeTable.column if typeTable.column else None
+                        if columnForDisplay:
+                            refDataList = link.dataset.getData()
+                            for refData in refDataList:
+                                for refItem in refData:
+                                    if refItem.column == columnForDisplay:
+                                        valObj["value"] = refItem.content
+
                         dataObj["value"].append(valObj)
 
                 else:
