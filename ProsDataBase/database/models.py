@@ -28,7 +28,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 
 class Table(models.Model):
     name = models.CharField(unique=True, max_length=100)
-    tablegroup = models.ForeignKey('TableGroup', related_name="tables", blank=True, null=True)
+    category = models.ForeignKey('Category', related_name="tables", blank=True, null=True)
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False)
@@ -134,7 +134,7 @@ class Dataset(models.Model):
         return unicode(self.table) + " id " + unicode(self.id)
 
 
-class TableGroup(models.Model):
+class Category(models.Model):
     name = models.CharField(max_length=100)
 
     def __unicode__(self):

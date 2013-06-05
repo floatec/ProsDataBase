@@ -49,10 +49,10 @@ class TableSerializer:
         """
         result = dict()
         result["tables"] = list()
-        result["tableGroups"] = list()
+        result["categories"] = list()
 
         # first find all tables with no group
-        tables = Table.objects.filter(tablegroup=None)
+        tables = Table.objects.filter(category=None)
         for table in tables:
             if table.deleted:
                 continue
@@ -64,13 +64,13 @@ class TableSerializer:
             result["tables"].append({"name": table.name, "columns": columnNames})
 
         # now find all tables with a group
-        groups = TableGroup.objects.all()
+        groups = Category.objects.all()
         for group in groups:
             groupObj = dict()
             groupObj["name"] = group.name
             groupObj["tables"] = list()
 
-            tables = Table.objects.filter(tablegroup=group)
+            tables = Table.objects.filter(category=group)
             for table in tables:
                 if table.deleted:
                     continue
@@ -81,7 +81,7 @@ class TableSerializer:
 
                 groupObj["tables"].append({"name": table.name, "columns": columnNames})
 
-            result["tableGroups"].append(groupObj)
+            result["categories"].append(groupObj)
         return result
 
     @staticmethod
@@ -131,21 +131,82 @@ class TableSerializer:
         result["columns"] = colStructs
         return result
 
+    @staticmethod
+    def serializeCategories():
+        """
+        {
+            "categories": ["cat1", "cat2", "cat3"]
+        }
+        """
+        result = dict()
+        result["categories"] = list()
+        for cat in Category.objects.all():
+            result["categories"].append(cat.name)
+        return result
 
 class UserSerializer:
     @staticmethod
-    def serializeOne(id):
+    def serializeOne(username):
         """
-        return table with specified id
-
-        {"id":"1","name": "example"}
+        {
+            "name": "myname",
+            "groups": ["groupname1", "groupname2", "groupname3"],
+            "tableRights": [
+                {"table": "tablename1", "rights": ["viewLog", "rightsAdmin"]},
+                {"table": "tablename2", "rights": ["insert", "delete"]}
+            ],
+            "columnRights": [
+                {
+                    "table": "tablename1",
+                    "columns": [
+                        {"name": "colname1", "rights": ["read", "modify"]},
+                        {"name": "colname2", "rights": ["read"]},
+                        {"name": "colname3", "rights": ["read"]}
+                    ]
+                },
+                {
+                    "table": "tablename2",
+                    "columns": [
+                        {"name": "colname4", "rights": ["read", "modify"]},
+                        {"name": "colname5", "rights": ["read"]},
+                        {"name": "colname6", "rights": ["read"]}
+                    ]
+                }
+            ]
+        }
         """
-        user = AbstractUser.objects.get(pk=id)
+        try:
+            user = DBUser.objects.get(username=username)
+        except DBUser.DoesNotExist:
+            return None
 
         result = dict()
-        result["name"] = user.username
-        result["id"] = user.id
+        result["name"] = username
+        result["groups"] = list
 
+        for m in Membership.objects.filter(user=user):
+            result["groups"].append(m.group.name)
+
+        result["tableRights"] = list()
+        for rights in RightListForTable.objects.filter(user=user):
+            rightObj = dict()
+            rightObj["table"] = rights.table.name
+            rightObj["rights"] = list()
+            if rights.delete:
+                rightObj["rights"].append("delete")
+            if rights.insert:
+                rightObj["rights"].append("insert")
+            if rights.viewLog:
+                rightObj["rights"].append("viewLog")
+            if rights.rightsAdmin:
+                rightObj["rights"].append("rightsAdmin")
+
+            result["tableRights"].append(rightObj)
+
+        result["columnRights"] = list()
+
+        for rights in RightListForColumn.objects.filter(user=user):
+            pass
         return result
 
     @staticmethod

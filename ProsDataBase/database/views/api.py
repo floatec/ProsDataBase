@@ -29,6 +29,11 @@ def group(request, name):
         return showOneGroup(name)
 
 
+def categories(request):
+    if request.method == 'GET'
+        return showCategories()
+
+
 def tables(request):
     if request.method == 'GET':
         return showAllTables()
@@ -117,6 +122,11 @@ def addGroup(request):
 
 def modifyGroup(request, name):
     pass
+
+
+def showCategories():
+    categories = TableSerializer.serializeCategories()
+    return HttpResponse(json.dumps(categories), content_type="application/json")
 
 
 def showTable(request, name):

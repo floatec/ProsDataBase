@@ -10,9 +10,9 @@ from django.forms import ModelForm
 # ===============================
 
 
-class TableGroupForm(ModelForm):
+class Category(ModelForm):
     class Meta:
-        model = TableGroup
+        model = Category
         fields = ('name', )
 
 
