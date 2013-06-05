@@ -149,10 +149,7 @@ def showCategories():
 
 
 def deleteCategory(name):
-    try:
-        category = Category.objects.get(name=name)
-    except Category.DoesNotExist:
-        return HttpResponse(content="Category with name " + name + " does not exist.", status=400)
+    category = Category.objects.get(name=name)
 
     for table in Table.objects.filter(category=category):
         table.category = None
