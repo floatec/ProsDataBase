@@ -8,7 +8,6 @@
 
 {% endblock %}
 {% block header %}
-        <a class="crumb" href='/groupadmin/' id='groupAdmin'> <span>></span></a>
         <a class="crumb" href='/useradmin/' id='userAdmin'> <span>></span></a>
 
 
@@ -27,7 +26,7 @@
     init();
     function init(){
     $("#userAdmin").prepend("admin users");
-    $("#groupAdmin").prepend("admin");
+
 
 
     $.getJSON('/api/user/', function (data) {

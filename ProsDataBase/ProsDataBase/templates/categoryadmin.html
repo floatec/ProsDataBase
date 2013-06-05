@@ -8,7 +8,6 @@
 
 {% endblock %}
 {% block header %}
-        <a class="crumb" href='/groupadmin/' id='groupAdmin'> <span>></span></a>
         <a class="crumb" href='/categories/' id='categoryAdmin'> <span>></span></a>
 
 
@@ -57,7 +56,6 @@
     oldCategories = [];
     newCategories = [];
     $("#categoryAdmin").prepend("categories");
-    $("#groupAdmin").prepend("admin");
 
 
     $.getJSON('/api/category/', function (data) {
