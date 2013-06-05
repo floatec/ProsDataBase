@@ -36,6 +36,7 @@ urlpatterns = patterns(
         view='database.views.frontend.insertDataset'),
 
     # APIs for table requests
+    (r'^api/categories/$', "database.views.api.categories"),
     (r'^api/table/$', "database.views.api.tables"),
     (r'^api/table/(?P<name>[\w ]+)/$', "database.views.api.table"),
     (r'^api/table/(?P<name>[\w ]+)/structure/$', "database.views.api.tableStructure"),
