@@ -18,6 +18,7 @@ def user(request, name):
     if request.method == 'GET':
         return showOneUser(name)
 
+
 def groups(request):
     if request.method == 'GET':
         return showAllGroups()
@@ -640,7 +641,7 @@ def addTable(request):
         elif col["type"] == Type.TABLE:
             newTypeTable = TypeTable()
             newTypeTable.table = Table.objects.get(name=col["table"])
-            newTypeTable.column = Column.objects.get(name=col["name"]) if "name" in col else None
+            newTypeTable.column = Column.objects.get(name=col["column"]) if "column" in col else None
             newTypeTable.type = newDatatype
             newTypeTable.save()
 
