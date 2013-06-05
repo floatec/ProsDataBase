@@ -290,15 +290,6 @@ class DatasetSerializer:
                     for link in DataTableToDataset.objects.filter(DataTable=item):
                         valObj = dict()
                         valObj["id"] = link.dataset.datasetID
-
-                        typeTable = item.column.type.getType()
-                        columnForDisplay = typeTable.column if typeTable.column else None
-
-                        refDataList = link.dataset.getData()
-                        for refData in refDataList:
-                            for refItem in refData:
-                                if refItem.column == columnForDisplay:
-                                    valObj["value"] = refItem.content
                         dataObj["value"].append(valObj)
 
                 else:
