@@ -52,7 +52,7 @@ class TableSerializer:
         result["categories"] = list()
 
         # first find all tables with no group
-        tables = Table.objects.filter(category=None, name__in=allowedTables)
+        tables = Table.objects.filter(name__in=allowedTables)
         for table in tables:
             if table.deleted:
                 continue
@@ -61,27 +61,8 @@ class TableSerializer:
             for col in columns:
                 columnNames.append(col.name)
 
-            result["tables"].append({"name": table.name, "columns": columnNames})
+            result["tables"].append({"name": table.name, "columns": columnNames, "category": table.category.name})
 
-        # now find all tables with a group
-        groups = Category.objects.all()
-        for group in groups:
-            groupObj = dict()
-            groupObj["name"] = group.name
-            groupObj["tables"] = list()
-
-            tables = Table.objects.filter(category=group, name__in=allowedTables)
-            for table in tables:
-                if table.deleted:
-                    continue
-                columns = table.getColumns()
-                columnNames = []
-                for col in columns:
-                    columnNames.append(col.name)
-
-                groupObj["tables"].append({"name": table.name, "columns": columnNames})
-
-            result["categories"].append(groupObj)
         return result
 
     @staticmethod
