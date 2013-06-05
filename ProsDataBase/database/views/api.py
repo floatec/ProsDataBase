@@ -38,6 +38,11 @@ def categories(request):
         return showCategories()
 
 
+def category(request, name):
+    if request.method == 'DELETE':
+        return deleteCategory(name)
+
+
 def tables(request):
     if request.method == 'GET':
         return showAllTables()
@@ -141,6 +146,19 @@ def modifyGroup(request, name):
 def showCategories():
     categories = TableSerializer.serializeCategories()
     return HttpResponse(json.dumps(categories), content_type="application/json")
+
+
+def deleteCategory(name):
+    try:
+        category = Category.objects.get(name=name)
+    except Category.DoesNotExist:
+        return HttpResponse(content="Category with name " + name + " does not exist.", status=400)
+
+    for table in Table.objects.filter(category=category):
+        table.category = None
+        table.save()
+
+    category.delete()
 
 
 def showTable(request, name):
