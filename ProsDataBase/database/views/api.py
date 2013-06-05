@@ -182,8 +182,8 @@ def showDatasets(request, tableName):
     request = json.loads(request.raw_post_data)
     result = dict()
     result["datasets"] = list()
-    for id in request["datasets"]:
-        result["datasets"].append(DatasetSerializer.serializeOne(id))
+    for obj in request["datasets"]:
+        result["datasets"].append(DatasetSerializer.serializeOne(obj["id"]))
 
     return HttpResponse(json.dumps(result), content_type="application/json")
 
