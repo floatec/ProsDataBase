@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 from django.http import HttpResponse
-import sys, json
+import sys,json
 from ..serializers import *
 from ..forms import *
 
@@ -149,13 +149,17 @@ def showCategories():
 
 
 def deleteCategory(name):
-    category = Category.objects.get(name=name)
+    try:
+        category = Category.objects.get(name=name)
+    except Category.DoesNotExist:
+        return HttpResponse(content="Category with name " + name + " does not exist.")
 
     for table in Table.objects.filter(category=category):
         table.category = None
         table.save()
 
     category.delete()
+    return HttpResponse(content="deleted")
 
 
 def showTable(request, name):
