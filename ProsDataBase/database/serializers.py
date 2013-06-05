@@ -131,7 +131,8 @@ class TableSerializer:
             elif type is Type.TABLE:
                 if col.type.getType().column is not None:
                     refCol = col.type.getType().column.name
-                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol, "comment": comment})
+                    colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol, "comment": comment})
+                colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
             else:
                 return None
 
@@ -291,12 +292,11 @@ class DatasetSerializer:
                         valObj["id"] = link.dataset.datasetID
 
                         typeTable = item.column.type.getType()
-                        columnForDisplay = typeTable.column
+                        columnForDisplay = typeTable.column if typeTable.column else None
 
                         refDataList = link.dataset.getData()
                         for refData in refDataList:
                             for refItem in refData:
-                                print refItem.column
                                 if refItem.column == columnForDisplay:
                                     valObj["value"] = refItem.content
                         dataObj["value"].append(valObj)
