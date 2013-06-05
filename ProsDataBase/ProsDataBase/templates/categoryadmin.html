@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block navigation %}
+        <div>groups</div>
+ <ul id="navigationMenuContent">
+
+			</ul>
+
+{% endblock %}
+{% block header %}
+        <a class="crumb" href='/groupadmin/' id='groupAdmin'> <span>></span></a>
+        <a class="crumb" href='/categories/' id='categoryAdmin'> <span>></span></a>
+
+
+{% endblock %}
+{% block content %}
+        <div id="deleteAlertBox">Are you sure to delete this item?</div>
+
+<table id='allCategories'></table>
+<button id='createInput'>+</button><br /><br />
+<button id='saveButton'>save</button>
+
+{% endblock %}
+
+{% block menu %}
+
+{% endblock %}
+{% block javascript %}
+<script language="JavaScript">
+    columnrow = 0;
+    lastID = 0;
+    init();
+    function init(){
+
+     // initialize alertbox
+ $("#deleteAlertBox").dialog({
+        autoOpen: false,
+        buttons: {
+            "delete": function () {
+                    $.ajax({
+                    url: '/api/category/'+$("#row_"+lastID).find(":hidden").val()+'/',
+                    type: 'delete',
+                    success:  $("#row_" + lastID).remove()
+    });
+
+             $(this).dialog("close");
+            },
+            "back": function () {
+                $(this).dialog("close");
+            }
+        }
+    });
+
+
+
+
+    oldCategories = [];
+    newCategories = [];
+    $("#categoryAdmin").prepend("categories");
+    $("#groupAdmin").prepend("admin");
+
+
+    $.getJSON('/api/category/', function (data) {
+
+        allCategories = data.categories;
+
+
+        for (key in allCategories) {
+            oldCategories.push(allCategories[key]);
+             columnrow++;
+            $("#allCategories").append("<tr class='oldEntry' id='row_"+columnrow+"'><td><input type='hidden' value='"+allCategories[key]+"'><button id='delete_"+columnrow+"'>-</button></td><td><input type='text' value='"+allCategories[key]+"'></td></tr>");
+
+
+            $("#delete_"+columnrow).click(function(){
+                lastID = getNumber(this.id);
+                $("#deleteAlertBox").dialog("open");
+            });
+
+        }
+
+
+    });
+
+
+
+
+
+
+
+}
+
+
+    $("#createInput").click(function(){
+        columnrow++;
+         $("#allCategories").append("<tr class='newEntry' id='row_"+columnrow+"'><td><button id='delete_"+columnrow+"'>-</button></td><td><input type='text' value=''></td></tr>");
+            $("#delete_"+columnrow).click(function(){
+                lastID = getNumber(this.id);
+                $("#row_" + lastID).remove();
+            });
+
+    });
+    $("#saveButton").click(function(){
+       var allCategories = {};
+       allCategories.categories = [];
+
+       var old= $(".oldEntry");
+       old.each(function(){
+            var changeObj = {}
+           var oldValue = $(this).find(":hidden").val();
+           var newValue = $(this).find(":text").val();
+           if(oldValue != newValue){
+               changeObj.old = oldValue;
+               changeObj.new = newValue;
+               allCategories.categories.push(changeObj);
+
+           }
+
+       });
+       var newCategories = $(".newEntry");
+       newCategories.each(function(){
+            var changeObj = {}
+            changeObj.new = $(this).find(":text").val();
+            allCategories.categories.push(changeObj);
+       });
+       $.ajax({
+        url: '/api/category/',
+        type: 'put',
+        data: JSON.stringify(allCategories),
+        contentType: 'application/json',
+        dataType: 'json'
+    });
+
+
+        console.log(allCategories);
+    });
+
+
+
+    //function to get the ID
+function getNumber(number) {
+
+    return number.substring(number.lastIndexOf("_") + 1);
+
+}
+</script>
+{% endblock %}
