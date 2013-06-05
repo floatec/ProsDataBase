@@ -142,6 +142,15 @@ def addGroup(request):
 
 
 def modifyGroup(request, name):
+    """
+    {
+        "name": "group1",
+        "users": ["John Doe","Alex Anonymus"],
+        "admins": ["admin1", "admin2"],
+        "tableCreator": true,
+        "groupCreator": false
+    }
+    """
     pass
 
 
@@ -587,6 +596,7 @@ def addTable(request):
     if tableF.is_valid():
         newTable = tableF.save(commit=False)
         newTable.creator = DBUser.objects.get(username="test")
+        newTable.category = Category.objects.get(name=request["category"])
         newTable.save()
     else:
         return HttpResponse("Could not create table.")
