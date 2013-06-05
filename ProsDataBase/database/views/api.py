@@ -36,6 +36,8 @@ def group(request, name):
 def categories(request):
     if request.method == 'GET':
         return showCategories()
+    if request.method == 'PUT':
+        return modifyCategories(request)
 
 
 def category(request, name):
@@ -146,6 +148,37 @@ def modifyGroup(request, name):
 def showCategories():
     categories = TableSerializer.serializeCategories()
     return HttpResponse(json.dumps(categories), content_type="application/json")
+
+
+def modifyCategories(request):
+    """
+    {
+        "categories": [{"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}]
+    }
+    """
+    request = json.loads(request.raw_post_data)
+
+    oldNotFound = list()
+    newExists = list()
+    for cat in request["categories"]:
+        try:
+            catForChange = Category.objects.get(name=cat["old"])
+        except Category.DoesNotExist:
+            oldNotFound.append(cat["old"])
+
+        try:  # check if category with name already exists. Only save new name, if not existent yet
+            Category.objects.get(name=cat["new"])
+            newExists.append(cat["new"])
+        except Category.DoesNotExist:
+            catForChange.name = cat["new"]
+            catForChange.save()
+
+    if len(oldNotFound) > 0:
+        if len(newExists) > 0:
+            return HttpResponse({"notFound": oldNotFound, "newExists": newExists}, content_type="application/json")
+        return HttpResponse({"notFound": oldNotFound}, content_type="application/json")
+
+    return HttpResponse(content="Saved changes successfully.", status=200)
 
 
 def deleteCategory(name):
