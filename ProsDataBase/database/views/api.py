@@ -30,7 +30,7 @@ def group(request, name):
 
 
 def categories(request):
-    if request.method == 'GET'
+    if request.method == 'GET':
         return showCategories()
 
 
