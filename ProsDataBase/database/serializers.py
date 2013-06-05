@@ -151,28 +151,8 @@ class UserSerializer:
         {
             "name": "myname",
             "groups": ["groupname1", "groupname2", "groupname3"],
-            "tableRights": [
-                {"table": "tablename1", "rights": ["viewLog", "rightsAdmin"]},
-                {"table": "tablename2", "rights": ["insert", "delete"]}
-            ],
-            "columnRights": [
-                {
-                    "table": "tablename1",
-                    "columns": [
-                        {"name": "colname1", "rights": ["read", "modify"]},
-                        {"name": "colname2", "rights": ["read"]},
-                        {"name": "colname3", "rights": ["read"]}
-                    ]
-                },
-                {
-                    "table": "tablename2",
-                    "columns": [
-                        {"name": "colname4", "rights": ["read", "modify"]},
-                        {"name": "colname5", "rights": ["read"]},
-                        {"name": "colname6", "rights": ["read"]}
-                    ]
-                }
-            ]
+            "groupCreator": true,
+            "tableCreator": false
         }
         """
         try:
@@ -182,31 +162,14 @@ class UserSerializer:
 
         result = dict()
         result["name"] = username
-        result["groups"] = list
+        result["groups"] = list()
 
         for m in Membership.objects.filter(user=user):
             result["groups"].append(m.group.name)
 
-        result["tableRights"] = list()
-        for rights in RightListForTable.objects.filter(user=user):
-            rightObj = dict()
-            rightObj["table"] = rights.table.name
-            rightObj["rights"] = list()
-            if rights.delete:
-                rightObj["rights"].append("delete")
-            if rights.insert:
-                rightObj["rights"].append("insert")
-            if rights.viewLog:
-                rightObj["rights"].append("viewLog")
-            if rights.rightsAdmin:
-                rightObj["rights"].append("rightsAdmin")
+        result["tableCreator"] = user.tableCreator
+        result["groupCreator"] = user.groupCreator
 
-            result["tableRights"].append(rightObj)
-
-        result["columnRights"] = list()
-
-        for rights in RightListForColumn.objects.filter(user=user):
-            pass
         return result
 
     @staticmethod

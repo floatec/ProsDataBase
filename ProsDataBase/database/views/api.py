@@ -9,11 +9,14 @@ from ..forms import *
 from datetime import datetime
 
 
-def showAllUsers(request):
+def users(request):
     if request.method == 'GET':
-        user = UserSerializer.serializeAll()
-        return HttpResponse(json.dumps(user), content_type="application/json")
+        return showAllUsers()
 
+
+def user(request, name):
+    if request.method == 'GET':
+        return showOneUser(name)
 
 def groups(request):
     if request.method == 'GET':
@@ -64,6 +67,16 @@ def dataset(request, tableName, datasetID):
         return modifyData(request, tableName, datasetID)
     elif request.method == 'DELETE':
         return deleteDataset(tableName, datasetID)
+
+
+def showAllUsers():
+    users = UserSerializer.serializeAll()
+    return HttpResponse(json.dumps(users), content_type="application/json")
+
+
+def showOneUser(name):
+    user = UserSerializer.serializeOne(name)
+    return HttpResponse(json.dumps(user), content_type="application/json")
 
 
 def showAllGroups():

@@ -43,7 +43,8 @@ urlpatterns = patterns(
     (r'^api/table/(?P<tableName>[\w ]+)/dataset/$', "database.views.api.datasets"),
     (r'^api/table/(?P<tableName>[\w ]+)/dataset/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', "database.views.api.dataset"),
 
-    (r'^api/user/$', "database.views.api.showAllUsers"),
+    (r'^api/user/$', "database.views.api.users"),
+    (r'^api/user/(?P<name>[\w]+)/$', 'database.views.api.user'),
     (r'^api/group/$', "database.views.api.groups"),
     (r'^api/group/(?P<name>[\w ]+)/$', "database.views.api.group"),
 
