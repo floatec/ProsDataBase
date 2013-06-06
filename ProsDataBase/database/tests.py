@@ -7,7 +7,7 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 from database.models import *
-from database.factory import *
+from database.testfactory import *
 from database.serializers import *
 from views.api import *
 
