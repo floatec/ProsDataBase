@@ -176,8 +176,9 @@ def createColumn(col, table):
 
         elif col["type"] == Type.TABLE:
             newTypeTable = TypeTable()
-            newTypeTable.table = Table.objects.get(name=col["table"])
-            newTypeTable.column = Column.objects.get(name=col["column"]) if "column" in col else None
+            refTable = Table.objects.get(name=col["table"])
+            newTypeTable.table = refTable
+            newTypeTable.column = Column.objects.get(name=col["column"], table=refTable) if "column" in col else None
             newTypeTable.type = newDatatype
             newTypeTable.save()
 

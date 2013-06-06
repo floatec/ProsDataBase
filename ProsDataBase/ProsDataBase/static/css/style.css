@@ -25,7 +25,8 @@
 
 #navigationMenu {
     background-color: #DFEFFC;
-    margin-top: -25%;
+    position: absolute;
+    top: 50px;
     float: left;
     min-width: 190px;
 }
@@ -161,9 +162,11 @@
 }
 
 #content {
+     position: absolute;
     font-family: 'Arbutus Slab', serif;
     left: 250px;
-    position: absolute;
+    top: 90px;
+
 
 }
 
