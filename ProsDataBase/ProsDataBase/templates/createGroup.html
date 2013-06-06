@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block navigation %}
-<div>Gruppen</div>
+<div>groups</div>
 <ul id="navigationMenuContent">
 
 </ul>
@@ -35,8 +35,8 @@
     function init() {
 
 
-        $("#groupAdmin").prepend("admin");
-        $("#createGroup").prepend("create Group");
+        $("#groupAdmin").prepend("groups");
+        $("#createGroup").prepend("create group");
 
         $.getJSON('/api/user/', function (data) {
 

@@ -49,10 +49,9 @@ class TableSerializer:
 
         result = dict()
         result["tables"] = list()
-        result["categories"] = list()
 
         # first find all tables with no group
-        tables = Table.objects.filter(category=None, name__in=allowedTables)
+        tables = Table.objects.filter(name__in=allowedTables)
         for table in tables:
             if table.deleted:
                 continue
@@ -61,27 +60,8 @@ class TableSerializer:
             for col in columns:
                 columnNames.append(col.name)
 
-            result["tables"].append({"name": table.name, "columns": columnNames})
+            result["tables"].append({"name": table.name, "columns": columnNames, "category": table.category.name})
 
-        # now find all tables with a group
-        groups = Category.objects.all()
-        for group in groups:
-            groupObj = dict()
-            groupObj["name"] = group.name
-            groupObj["tables"] = list()
-
-            tables = Table.objects.filter(category=group, name__in=allowedTables)
-            for table in tables:
-                if table.deleted:
-                    continue
-                columns = table.getColumns()
-                columnNames = []
-                for col in columns:
-                    columnNames.append(col.name)
-
-                groupObj["tables"].append({"name": table.name, "columns": columnNames})
-
-            result["categories"].append(groupObj)
         return result
 
     @staticmethod
@@ -109,25 +89,25 @@ class TableSerializer:
             comment = col.comment if col.comment is not None else ""
             type = col.type.type
             if type is Type.TEXT:
-                colStructs.append({"name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment})
             elif type is Type.NUMERIC:
-                colStructs.append({"name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
             elif type is Type.DATE:
-                colStructs.append({"name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
 
             elif type is Type.SELECTION:
                 options = list()
                 for value in col.type.getType().values():
                     options.append({"key": value.index, "value": value.content})
-                colStructs.append({"name": col.name, "type": Type.SELECTION, "options": options, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.SELECTION, "options": options, "comment": comment})
             elif type is Type.BOOL:
-                colStructs.append({"name": col.name, "type": Type.BOOL, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.BOOL, "comment": comment})
             elif type is Type.TABLE:
                 if col.type.getType().column is not None:
                     refCol = col.type.getType().column.name
-                    colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol, "comment": comment})
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol, "refType": refCol.type.type, "comment": comment})
                 else:
-                    colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
             else:
                 return None
 
@@ -146,6 +126,146 @@ class TableSerializer:
         result["categories"] = list()
         for cat in Category.objects.all():
             result["categories"].append(cat.name)
+        return result
+
+
+    @staticmethod
+    def serializeRightsFor(tableName):
+        """
+        {
+            "users": [
+                {
+                    "name": "user1",
+                    "tableRights": ["insert"],
+                    "columnRights": [
+                        {"name": "col1", "rights": ["modify", "read"]},
+                        {"name": "col2", "rights": ["modify", "read"]},
+                        {"name": "col3", "rights": ["read"]},
+                        {"name": "col4", "rights": ["read"]}
+                    ]
+                },
+                {
+                    "name": "user2",
+                    "tableRights": ["viewLog", "delete"],
+                    "columnRights": []
+                },
+            ],
+            "groups": [
+                {
+                    "name": "group1",
+                    "tableRights": ["insert"],
+                    "columnRights": [
+                        {"name": "col5", "rights": ["modify", "read"]},
+                        {"name": "col6", "rights": ["modify", "read"]},
+                    ]
+                },
+                {
+                    "name": "group2",
+                    "tableRights": ["viewLog", "delete"],
+                    "columnRights": []
+                },
+            ]
+        }
+        """
+        try:
+            table = Table.objects.get(name=tableName)
+        except Table.DoesNotExist:
+            return None
+
+        result = dict()
+
+        result["users"] = list()
+        users = table.getUsersWithRights()
+        for user in users:
+            userObj = dict()
+            userObj["name"] = user.username
+            rights = TableSerializer.serializeRightsForActor(user.username, table.name)
+            userObj["tableRights"] = rights["tableRights"]
+            userObj["columnRights"] = rights["columnRights"]
+
+            result["users"].append(userObj)
+
+        result["groups"] = list()
+        groups = table.getGroupsWithRights()
+        for group in groups:
+            groupObj = dict()
+            groupObj["name"] = group.name
+            rights = TableSerializer.serializeRightsForActor(group.name, table.name)
+            groupObj["tableRights"] = rights["tableRights"]
+            groupObj["columnRights"] = rights["columnRights"]
+
+            result["groups"].append(groupObj)
+
+        return result
+
+
+    @staticmethod
+    def serializeRightsForActor(name, tableName):
+        """
+        {
+            "tableRights": ["viewLog", "insert"],
+            "columnRights": [
+                {"name": "col1", "rights": ["read"]},
+                {"name": "col1", "rights": ["read", "modify"]}
+            ]
+        }
+        """
+        try:
+            table = Table.objects.get(name=tableName)
+        except Table.DoesNotExist:
+            return None
+        # either a user or a group name was passed
+        try:
+            actor = DBUser.objects.get(username=name)
+            user = True
+        except DBUser.DoesNotExist:
+            actor = DBGroup.objects.get(name=name)
+            user = False
+
+        if user:
+            try:
+                tableRights = RightListForTable.objects.get(user=actor, table=table)
+            except RightListForTable. DoesNotExist:
+                tableRights = None
+            try:
+                columnRights = RightListForColumn.objects.filter(user=actor, table=table)
+            except RightListForColumn.DoesNotExist:
+                columnRights = None
+        else:  # a group was passed
+            try:
+                tableRights = RightListForTable.objects.get(group=actor, table=table)
+            except RightListForTable. DoesNotExist:
+                tableRights = None
+            try:
+                columnRights = RightListForColumn.objects.filter(group=actor, table=table)
+            except RightListForColumn.DoesNotExist:
+                columnRights = None
+
+        result = dict()
+        result["tableRights"] = list()
+        if tableRights:
+            if tableRights.rightsAdmin:
+                result["tableRights"].append("rightsAdmin")
+            if tableRights.viewLog:
+                result["tableRights"].append("viewLog")
+            if tableRights.insert:
+                result["tableRights"].append("insert")
+            if tableRights.delete:
+                result["tableRights"].append("delete")
+
+        result["columnRights"] = list()
+        if columnRights:
+            for rights in columnRights:
+                colObj = dict()
+                colObj["name"] = rights.column.name
+                colObj["rights"] = list()
+                if rights.read:
+                    colObj["rights"].append("read")
+                if rights.modify:
+                    colObj["rights"].append("modify")
+
+                result["columnRights"].append(colObj)
+
         return result
 
 

@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 from django.http import HttpResponse
-import sys, json
+import sys,json
 from ..serializers import *
 from ..forms import *
 
@@ -36,6 +36,8 @@ def group(request, name):
 def categories(request):
     if request.method == 'GET':
         return showCategories()
+    if request.method == 'PUT':
+        return modifyCategories(request)
 
 
 def category(request, name):
@@ -57,6 +59,11 @@ def table(request, name):
         return insertData(request, name)
     if request.method == "DELETE":
         return deleteTable(name)
+
+
+def tableRights(request, tableName):
+    if request.method == 'GET':
+        return showTableRights(tableName)
 
 
 def datasets(request, tableName):
@@ -140,7 +147,65 @@ def addGroup(request):
 
 
 def modifyGroup(request, name):
-    pass
+    """
+    {
+        "name": "group1",
+        "users": ["John Doe","Alex Anonymus"],
+        "admins": ["admin1", "admin2"],
+        "tableCreator": true,
+        "groupCreator": false
+    }
+    """
+    try:
+        group = DBGroup.objects.get(name=name)
+    except DBGroup.DoesNotExist:
+        return HttpResponse(content="Could not find group with name " + name + ".", status=400)
+
+    request = json.loads(request.raw_post_data)
+    if request["name"] != group.name:
+        try:
+            DBGroup.objects.get(name=request["name"])
+            return HttpResponse(content="A group with name " + request["name"] + " already exists.", status=400)
+        except DBGroup.DoesNotExist:
+            group.name = request["name"]
+
+    group.tableCreator = request["tableCreator"]
+    group.groupCreator = request["groupCreator"]
+    group.save()
+
+    usernames = list()
+    adminnames = list()
+    for m in Membership.objects.get(group=group):
+        if m.user.isAdmin:
+            adminnames.append(m.user.username)
+        else:
+            usernames.append(m.user.username)
+
+    for user in set(request["users"]) - set(usernames):  # new users were added to the group
+        membershipF = MembershipForm({"isAdmin": False})
+        if membershipF.is_valid():
+            membership = membershipF.save(commit=False)
+            membership.user = DBUser.objects.get(username=user)
+            membership.group = group
+            membership.save()
+
+    for user in set(usernames) - set(request["users"]):  # users were deleted from the group
+        theUser = DBUser.objects.get(username=user)
+        membership = Membership.objects.get(user=theUser)
+        membership.delete()
+
+    for admin in set(request["admins"]) - set(adminnames):  # new admins were added to the group
+        membershipF = MembershipForm({"isAdmin": True})
+        if membershipF.is_valid():
+            membership = membershipF.save(commit=False)
+            membership.user = DBUser.objects.get(username=admin)
+            membership.group = group
+            membership.save()
+
+    for admin in set(adminnames) - set(request["admins"]):  # users were deleted from the group
+        theUser = DBUser.objects.get(username=admin)
+        membership = Membership.objects.get(user=theUser)
+        membership.delete()
 
 
 def showCategories():
@@ -148,20 +213,70 @@ def showCategories():
     return HttpResponse(json.dumps(categories), content_type="application/json")
 
 
+def modifyCategories(request):
+    """
+    {
+        "categories": [{"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}]
+    }
+    """
+    request = json.loads(request.raw_post_data)
+
+    oldNotFound = list()
+    newExists = list()
+    for cat in request["categories"]:
+        if "old" in cat:
+            try:
+                catForChange = Category.objects.get(name=cat["old"])
+            except Category.DoesNotExist:
+                oldNotFound.append(cat["old"])
+
+            try:  # check if category with name already exists. Only save new name, if not existent yet
+                Category.objects.get(name=cat["new"])
+                newExists.append(cat["new"])
+            except Category.DoesNotExist:
+                catForChange.name = cat["new"]
+                catForChange.save()
+
+        else:
+            try:  # check if category with name already exists. Only save new name, if not existent yet
+                Category.objects.get(name=cat["new"])
+                newExists.append(cat["new"])
+            except Category.DoesNotExist:
+                newCatF = CategoryForm({"name": cat["new"]})
+                if newCatF.is_valid():
+                    newCat = newCatF.save()
+                    newCat.save()
+
+    if len(oldNotFound) > 0:
+        if len(newExists) > 0:
+            return HttpResponse({"notFound": oldNotFound, "newExists": newExists}, content_type="application/json")
+        return HttpResponse({"notFound": oldNotFound}, content_type="application/json")
+
+    return HttpResponse(content="Saved changes successfully.", status=200)
+
+
 def deleteCategory(name):
-    category = Category.objects.get(name=name)
+    try:
+        category = Category.objects.get(name=name)
+        try:
+            Table.objects.filter(category=category)
+            return HttpResponse(content="Please put the tables of this group into another category first.")
+        except Table.DoesNotExist:
+            category.delete()
+    except Category.DoesNotExist:
+        return HttpResponse(content="Category with name " + name + " does not exist.")
 
-    for table in Table.objects.filter(category=category):
-        table.category = None
-        table.save()
-
-    category.delete()
+    return HttpResponse(content="Deleted category " + name + ".", status=400)
 
 
-def showTable(request, name):
-    if request.method == 'GET':
-        table = TableSerializer.serializeOne(name)
-        return HttpResponse(json.dumps(table), content_type="application/json")
+def showTable(name):
+    table = TableSerializer.serializeOne(name)
+    return HttpResponse(json.dumps(table), content_type="application/json")
+
+
+def showTableRights(name):
+    rights = TableSerializer.serializeRightsFor(name)
+    return HttpResponse(json.dumps(rights), content_type="application/json")
 
 
 def tableStructure(request, name):
@@ -539,6 +654,7 @@ def addTable(request):
     if tableF.is_valid():
         newTable = tableF.save(commit=False)
         newTable.creator = DBUser.objects.get(username="test")
+        newTable.category = Category.objects.get(name=request["category"])
         newTable.save()
     else:
         return HttpResponse("Could not create table.")

@@ -33,18 +33,29 @@ def create_table(**kwargs):
         newTable.creator = testUser
         newTable.save()
 
-
+    # ============================================================
+    # - create a texttype
+    # ============================================================
     texttype = Type(name="Text", type=0)
     texttype.save()
 
+    # ============================================================
+    # - creates a numerictype
+    # ============================================================
     numerictype = Type(name="Numeric", type=1)
     numerictype.save()
     numericCond = TypeNumeric(type=numerictype, min=2, max=10)
     numericCond.save()
 
+    # ============================================================
+    # - creates a datetype
+    # ============================================================
     datetype = Type(name="Type", type=2)
     datetype.save()
 
+    # ============================================================
+    # - creates a selectiontype
+    # ============================================================
     selectiontype = Type(name="Selection", type=3)
     selectiontype.save()
 
@@ -74,15 +85,20 @@ def create_table(**kwargs):
         newSelection2.typeSelection = newTypeSelection
         newSelection2.save()
 
+    # ============================================================
+    # - creates a booleantype
+    # ============================================================
     booleantype = Type(name="Boolean", type=4)
     booleantype.save()
 
     tabletype = Type(name="Table", type=5)
     tabletype.save()
 
+
     for i in range(0,6):
         columns = dict()
-        columnsArray = ["TEXT", "NUMERIC", "DATE", "SELECTION", "BOOLEAN", "TABLE" ]
+        columnsArray = ["TEXT" + newTable.name, "NUMERIC" + newTable.name, "DATE" + newTable.name,
+                        "SELECTION" + newTable.name, "BOOLEAN" + newTable.name, "TABLE" + newTable.name ]
         columns["name"] = columnsArray[i]
         columns["created"] = datetime.now()
         columnsF = ColumnForm(columns)
@@ -285,13 +301,13 @@ def create_Group(**kwargs):
     creates a group with two members
     """
     groupA = dict()
-    groupA["name"] = "Student"
+    groupA["name"] = generate_random_username()
     groupF = DBGroupForm(groupA)
     if groupF.is_valid():
         newDBGroup = groupF.save()
         newDBGroup.save()
     for i in range(1,1001):
-        user = DBUser.objects.create_user(username=i)
+        user = DBUser.objects.create_user(username=generate_random_username(                                                                                                                ))
         user.save()
         m = dict()
         m["isAdmin"] = False
@@ -302,7 +318,18 @@ def create_Group(**kwargs):
             newm.group = newDBGroup
             newm.save()
 
-    print GroupSerializer.serializeOne("Student")
+    user = DBUser.objects.create_user(username="Huseyin")
+    user.save
+    mAdmin = dict()
+    mAdmin["isAdmin"] = True
+    mAdminF = MembershipForm(mAdmin)
+    if mAdminF.is_valid():
+        newmAdmin = mAdminF.save(commit=False)
+        newmAdmin.user = user
+        newmAdmin.group = newDBGroup
+        newmAdmin.save()
+
+    GroupSerializer.serializeOne(groupA["name"])
     return newDBGroup
 
 def create_User(**kwargs):

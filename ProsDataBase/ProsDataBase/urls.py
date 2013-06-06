@@ -27,6 +27,7 @@ urlpatterns = patterns(
     (r'^modify/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="modify.html")),
     (r'^createTable/$', TemplateView.as_view(template_name="createTable.html")),
     (r'^useradmin/$', TemplateView.as_view(template_name="useradmin.html")),
+    (r'^categories/$', TemplateView.as_view(template_name="categoryadmin.html")),
     (r'^createGroup/$', TemplateView.as_view(template_name="createGroup.html")),
     (r'^groupadmin/$', TemplateView.as_view(template_name="groupadmin.html")),
     (r'^table/$', TemplateView.as_view(template_name="table_overview.html")),
@@ -45,6 +46,8 @@ urlpatterns = patterns(
     (r'^api/table/(?P<name>[\w ]+)/structure/$', "database.views.api.tableStructure"),
     (r'^api/table/(?P<tableName>[\w ]+)/dataset/$', "database.views.api.datasets"),
     (r'^api/table/(?P<tableName>[\w ]+)/dataset/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', "database.views.api.dataset"),
+    (r'^api/table/(?P<tableName>[\w ]+)/rights/$', "database.views.api.tableRights"),
+
 
     # APIs for user/group requests
     (r'^api/user/$', "database.views.api.users"),

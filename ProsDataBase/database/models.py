@@ -60,6 +60,32 @@ class Table(models.Model):
 
         return str(self.pk) + "." + str(dataset.created.year) + "_" + str(max(counts) + 1) + "_" + dataset.checksum()
 
+    def getUsersWithRights(self):
+        tableRights = RightListForTable.objects.filter(table=self, group__isnull=True)
+
+        colRights = RightListForColumn.objects.filter(table=self, group__isnull=True)
+
+        users = set()
+        for tableRight in tableRights:
+            users.add(tableRight.user)
+        for colRight in colRights:
+            users.add(colRight.user)
+
+        return list(users)
+
+    def getGroupsWithRights(self):
+        tableRights = RightListForTable.objects.filter(table=self, user__isnull=True)
+
+        colRights = RightListForColumn.objects.filter(table=self, user__isnull=True)
+
+        groups = set()
+        for tableRight in tableRights:
+            groups.add(tableRight.group)
+        for colRight in colRights:
+            groups.add(colRight.group)
+
+        return list(groups)
+
     def __unicode__(self):  # TODO: does not check for tables without columns
         return self.name
 
@@ -369,7 +395,11 @@ class RightListForTable(models.Model):
     delete = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return "list " + unicode(self.id) + " for " + unicode(self.table)
+        if self.user is not None:
+            actor = self.user.username
+        else:
+            actor = self.group.name
+        return "list " + unicode(self.id) + " for " + actor + " on " + unicode(self.table)
 
 
 class RightListForColumn(models.Model):
@@ -377,8 +407,13 @@ class RightListForColumn(models.Model):
     group = models.ForeignKey('DBGroup', blank=True, null=True, related_name="column-rights")
 
     column = models.ForeignKey('Column')
+    table = models.ForeignKey('Table')
     read = models.BooleanField(default=False)
     modify = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return "list" + unicode(self.id) + ":" + unicode(self.column)
+        if self.user is not None:
+            actor = self.user.username
+        else:
+            actor = self.group.name
+        return "list " + unicode(self.id) + " for " + actor + " on " + unicode(self.table) + "." + self.column.name
