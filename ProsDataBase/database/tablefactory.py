@@ -236,15 +236,13 @@ def modifyTable(request, name):
         "name": "tablename",
         "category: "category",
         "columns": [
-            {"id": 1, "name": "columname1", "type": 0, // text type
-                "length": 30,
+            {"id": 1, "name": "columname1", "length": 30,
                 "rights": {
                     "users" : [{"name": "user1", "rights": ["read"]}, {"name": "user2", "rights": ["modify", "read"]}],
                     "groups": [{"name": "group1", "rights": ["modify", "read"]}]
                 }
             },
-            {"id": 2, "name": "column2", "type": 1, // numeric type, "min" and "max" can be omitted
-                "min": 0, "max": 150,
+            {"id": 2, "name": "column2", "min": 0, "max": 150,
                 "rights": {
                     "users" : [{"name": "user1", "rights": ["read"]}, {"name": "user2", "rights": ["modify", "read"]}],
                     "groups": [{"name": "group2", "rights": ["modify", "read"]}]
@@ -289,3 +287,47 @@ def modifyTable(request, name):
             column = Column.objects.get(pk=col["id"])
         except Column.DoesNotExist:
             HttpResponse(content="Could not find column with id " + col["id"] + ".", status=400)
+
+        try:
+            Column.objects.get(name=col["name"])
+            return HttpResponse(content="Column with name " + col["name"] + " already exists.", status=400)
+        except Column.DoesNotExist:
+            column.name = col["name"]
+
+        colType = column.type
+        if colType.type == Type.TEXT:
+            typeText = colType.getType()
+            if col["length"] >= typeText.length:
+                typeText.length = col["length"]
+                typeText.save()
+        elif colType.type == Type.NUMERIC:
+            typeNum = colType.getType()
+            if col["min"] <= typeNum.min:
+                typeNum.min = col["min"]
+            if typeNum.max <= col["max"]:
+                typeNum.max = col["max"]
+
+        elif colType.type == Type.DATE:
+            typeDate = colType.getType()
+            if "min" in col and col["min"] <= typeDate.min:
+                typeDate.min = col["min"]
+            if "max" in col and col["max"] >= typeDate.max:
+                typeDate.max = col["max"]
+
+        elif colType.type == Type.SELECTION:
+            typeSel = colType.getType()
+            if len([option["name"] for option in col["options"]]) > len(set([option["name"] for option in col["options"]])):
+                pass
+            for option in col["options"]:
+                try:
+                    value = SelectionValue.objects.get(index=option["key"])
+                    value.content = option["value"]
+                    value.save()
+                except SelectionValue.DoesNotExist:  # this is a new selection value
+                    typeSel.count += 1
+                    typeSel.save()
+                    selValF = SelectionValueForm({"index": option["key"], "content": option["value"]})
+                    if selValF.is_valid():
+                        selVal = selValF.save()
+                        selVal.typeselection = typeSel
+                        selVal.save()
