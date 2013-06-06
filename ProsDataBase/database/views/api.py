@@ -55,7 +55,7 @@ def tables(request):
 
 def table(request, name):
     if request.method == 'GET':
-        return showTable(request, name)
+        return showTable(name)
     if request.method == 'POST':
         return insertData(request, name)
     if request.method == 'PUT':
