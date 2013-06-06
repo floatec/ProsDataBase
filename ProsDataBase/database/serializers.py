@@ -104,8 +104,8 @@ class TableSerializer:
                 colStructs.append({"id": col.id, "name": col.name, "type": Type.BOOL, "comment": comment})
             elif type is Type.TABLE:
                 if col.type.getType().column is not None:
-                    refCol = col.type.getType().column.name
-                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol, "refType": refCol.type.type, "comment": comment})
+                    refCol = col.type.getType().column
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol.name, "refType": refCol.type.type, "comment": comment})
                 else:
                     colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
             else:
