@@ -89,25 +89,25 @@ class TableSerializer:
             comment = col.comment if col.comment is not None else ""
             type = col.type.type
             if type is Type.TEXT:
-                colStructs.append({"name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment})
             elif type is Type.NUMERIC:
-                colStructs.append({"name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
             elif type is Type.DATE:
-                colStructs.append({"name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
 
             elif type is Type.SELECTION:
                 options = list()
                 for value in col.type.getType().values():
                     options.append({"key": value.index, "value": value.content})
-                colStructs.append({"name": col.name, "type": Type.SELECTION, "options": options, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.SELECTION, "options": options, "comment": comment})
             elif type is Type.BOOL:
-                colStructs.append({"name": col.name, "type": Type.BOOL, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.BOOL, "comment": comment})
             elif type is Type.TABLE:
                 if col.type.getType().column is not None:
                     refCol = col.type.getType().column.name
-                    colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol, "comment": comment})
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol, "refType": refCol.type.type, "comment": comment})
                 else:
-                    colStructs.append({"name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
             else:
                 return None
 
