@@ -129,6 +129,146 @@ class TableSerializer:
         return result
 
 
+    @staticmethod
+    def serializeRightsFor(tableName):
+        """
+        {
+            "users": [
+                {
+                    "name": "user1",
+                    "tableRights": ["insert"],
+                    "columnRights": [
+                        {"name": "col1", "rights": ["modify", "read"]},
+                        {"name": "col2", "rights": ["modify", "read"]},
+                        {"name": "col3", "rights": ["read"]},
+                        {"name": "col4", "rights": ["read"]}
+                    ]
+                },
+                {
+                    "name": "user2",
+                    "tableRights": ["viewLog", "delete"],
+                    "columnRights": []
+                },
+            ],
+            "groups": [
+                {
+                    "name": "group1",
+                    "tableRights": ["insert"],
+                    "columnRights": [
+                        {"name": "col5", "rights": ["modify", "read"]},
+                        {"name": "col6", "rights": ["modify", "read"]},
+                    ]
+                },
+                {
+                    "name": "group2",
+                    "tableRights": ["viewLog", "delete"],
+                    "columnRights": []
+                },
+            ]
+        }
+        """
+        try:
+            table = Table.objects.get(name=tableName)
+        except Table.DoesNotExist:
+            return None
+
+        result = dict()
+
+        result["users"] = list()
+        users = table.getUsersWithRights()
+        for user in users:
+            userObj = dict()
+            userObj["name"] = user.username
+            rights = TableSerializer.serializeRightsForActor(user.username, table.name)
+            userObj["tableRights"] = rights["tableRights"]
+            userObj["columnRights"] = rights["columnRights"]
+
+            result["users"].append(userObj)
+
+        result["groups"] = list()
+        groups = table.getGroupsWithRights()
+        for group in groups:
+            groupObj = dict()
+            groupObj["name"] = group.name
+            rights = TableSerializer.serializeRightsForActor(group.name, table.name)
+            groupObj["tableRights"] = rights["tableRights"]
+            groupObj["columnRights"] = rights["columnRights"]
+
+            result["groups"].append(groupObj)
+
+        return result
+
+
+    @staticmethod
+    def serializeRightsForActor(name, tableName):
+        """
+        {
+            "tableRights": ["viewLog", "insert"],
+            "columnRights": [
+                {"name": "col1", "rights": ["read"]},
+                {"name": "col1", "rights": ["read", "modify"]}
+            ]
+        }
+        """
+        try:
+            table = Table.objects.get(name=tableName)
+        except Table.DoesNotExist:
+            return None
+        # either a user or a group name was passed
+        try:
+            actor = DBUser.objects.get(username=name)
+            user = True
+        except DBUser.DoesNotExist:
+            actor = DBGroup.objects.get(name=name)
+            user = False
+
+        if user:
+            try:
+                tableRights = RightListForTable.objects.get(user=actor, table=table)
+            except RightListForTable. DoesNotExist:
+                tableRights = None
+            try:
+                columnRights = RightListForColumn.objects.filter(user=actor, table=table)
+            except RightListForColumn.DoesNotExist:
+                columnRights = None
+        else:  # a group was passed
+            try:
+                tableRights = RightListForTable.objects.get(group=actor, table=table)
+            except RightListForTable. DoesNotExist:
+                tableRights = None
+            try:
+                columnRights = RightListForColumn.objects.filter(group=actor, table=table)
+            except RightListForColumn.DoesNotExist:
+                columnRights = None
+
+        result = dict()
+        result["tableRights"] = list()
+        if tableRights:
+            if tableRights.rightsAdmin:
+                result["tableRights"].append("rightsAdmin")
+            if tableRights.viewLog:
+                result["tableRights"].append("viewLog")
+            if tableRights.insert:
+                result["tableRights"].append("insert")
+            if tableRights.delete:
+                result["tableRights"].append("delete")
+
+        result["columnRights"] = list()
+        if columnRights:
+            for rights in columnRights:
+                colObj = dict()
+                colObj["name"] = rights.column.name
+                colObj["rights"] = list()
+                if rights.read:
+                    colObj["rights"].append("read")
+                if rights.modify:
+                    colObj["rights"].append("modify")
+
+                result["columnRights"].append(colObj)
+
+        return result
+
+
 class UserSerializer:
     @staticmethod
     def serializeOne(username):

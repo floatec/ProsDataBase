@@ -61,6 +61,11 @@ def table(request, name):
         return deleteTable(name)
 
 
+def tableRights(request, tableName):
+    if request.method == 'GET':
+        return showTableRights(tableName)
+
+
 def datasets(request, tableName):
     if request.method == 'POST':
         return showDatasets(request, tableName)
@@ -264,10 +269,14 @@ def deleteCategory(name):
     return HttpResponse(content="Deleted category " + name + ".", status=400)
 
 
-def showTable(request, name):
-    if request.method == 'GET':
-        table = TableSerializer.serializeOne(name)
-        return HttpResponse(json.dumps(table), content_type="application/json")
+def showTable(name):
+    table = TableSerializer.serializeOne(name)
+    return HttpResponse(json.dumps(table), content_type="application/json")
+
+
+def showTableRights(name):
+    rights = TableSerializer.serializeRightsFor(name)
+    return HttpResponse(json.dumps(rights), content_type="application/json")
 
 
 def tableStructure(request, name):
