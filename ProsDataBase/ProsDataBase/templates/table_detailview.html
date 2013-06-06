@@ -21,6 +21,12 @@
 {% endblock %}
 
 {% block content %}
+    <div id="filter">
+  <h3>filter</h3>
+  <div id="filterView">
+
+  </div>
+    </div>
     <div id="deleteAlertBox">Are you sure to delete this item(s)?</div>
     <div id="headTable"></div>
 
@@ -31,10 +37,47 @@
 
         init();
 
+        function addFilter(view,tableName){
+            filter++;
+            $(view).append("<div id='filter"+filter+"'></div>")
+            addFilterOption($("#filter"+filter), tableName)
+        }
+
+        function updateFilerOption(select,tableName){
+             console.log($(select).find(":selected").attr("table"))
+
+            if($(select).find(":selected").val()==5){
+                addFilterOption($(select).next(), $(select).find(":selected").attr("table"))
+            }
+            if($(select).find(":selected").val()==0){
+               $(select).next().html("<input type='text'>")
+            }
+            if($(select).find(":selected").val()==1){
+               $(select).next().html("Min:<input type='text' name='min'>Max:<input name='max' type='text'>")
+
+            }
+            if($(select).find(":selected").val()==2){
+               $(select).next().html("Min:<input type='text' name='min'>Max:<input name='max' type='text'>")
+
+            }
+          }
+
+        function addFilterOption(view, tableName){
+            $(view).html("")
+            $(view).append("<select onChange='updateFilerOption(this)'><option value'-1'>---</option></select><span></span>");
+             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+                columns = $(data.columns);
+                columns.each(function(){
+                    console.log(this.name)
+                    $(view).find("select").append("<option table='"+this.table+"' value='"+this.type+"'>"+this.name+"</option>")
+                })
+               });
+        }
 
         function init() {
             counter = 0;
             subtable = 0;
+            filter = 0;
             var tableName = getTableName();
             $("#naviheader").append(tableName)
             var columns = [];
@@ -50,6 +93,7 @@
 
 
             });
+            addFilterOption("#filterView",tableName)
         }
         function laodSubTable(datasets, tableName, insertTo) {
             var obj = {}
@@ -76,7 +120,7 @@
             var table = $("<table>");
             table.addClass("datasets");
             table.attr("id", "tab" + subtable);
-            var tableHead = $("<thead onClick='toggleTable(this.parentNode)' id='descrRow'></thead>")
+            var tableHead = $("<thead  id='descrRow'></thead>")
             table.prepend("<caption  onClick='toggleTable(this.parentNode)'>" + tableName + "</capton>");
             //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
             tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
@@ -161,9 +205,21 @@
                             var sete = false
                             for (var i in allDatasets[key].data) {
                                 if (allDatasets[key].data[i].column == columns[p].name) {
-                                    if (allDatasets[key].data[i].type == 5) {
-                                        $("#datasetRow" + counter).append("<td><button onClick='laodSubTable(\"" + JSON.stringify(allDatasets[key].data[i].value).replace(/"/g,"\\\"") + "\",\"" + columns[p].table + "\",this.parentNode)'>show</Button></td>")
 
+                                    if (allDatasets[key].data[i].type == 5) {
+                                         if(columns[p].column==undefined){
+                                               $("#datasetRow" + counter).append("<td><table onClick='laodSubTable(\"" + JSON.stringify(allDatasets[key].data[i].value).replace(/"/g,"\\\"") + "\",\"" + columns[p].table + "\",this.parentNode)'><caption>"+columns[p].table+"</caption></table></td>")
+                                         }else{
+                                             console.log(columns[p].name    )
+                                             console.log(allDatasets[key].data[i].value)
+                                            var tmp="<table class='datasets closed'><caption  onClick='toggleTable(this.parentNode)'>"+columns[p].column+"</capton>"
+                                             $(allDatasets[key].data[i].value).each(function(){
+                                                 console.log(this)
+                                                 tmp+="<tr style='display:none'><td>"+this.value+"</td><tr>"
+                                             })
+                                             tmp+="</table>"
+                                             $("#datasetRow" + counter).append("<td>" + tmp + "</td>")
+                                         }
                                     } else {
                                         $("#datasetRow" + counter).append("<td>" + allDatasets[key].data[i].value + "&nbsp;</td>")
 
@@ -231,6 +287,12 @@
                 }
             }
         });
+$(function() {
+    $( "#filter" ).accordion({
+         active: false,
+      collapsible: true
+    });
+  });
 
     </script>
 {% endblock %}
