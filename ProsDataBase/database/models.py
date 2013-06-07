@@ -93,7 +93,7 @@ class Table(models.Model):
 class Column(models.Model):
     name = models.CharField(max_length=100)
     table = models.ForeignKey('Table', related_name="columns", to_field='name')
-    type = models.ForeignKey('Type')
+    type = models.OneToOneField('Type', related_name="owncolumn")
     comment = models.TextField(blank=True, null=True)
 
     created = models.DateTimeField(default=datetime.now)
@@ -241,6 +241,7 @@ class Type(models.Model):
     SELECTION = 3
     BOOL = 4
     TABLE = 5
+    LINK = 6
 
     type = models.IntegerField()
     name = models.CharField(max_length=30)
@@ -362,6 +363,8 @@ class TypeTable(models.Model):
 class DBUser(AbstractUser):
     tableCreator = models.BooleanField(default=False)
     groupCreator = models.BooleanField(default=False)
+    userManager = models.BooleanField(default=False)
+    admin = models.BooleanField(default=False)
     objects = UserManager()
 
 
@@ -369,6 +372,8 @@ class DBGroup(models.Model):
     name = models.CharField(max_length=30)
     tableCreator = models.BooleanField(default=False)
     groupCreator = models.BooleanField(default=False)
+    userManager = models.BooleanField(default=False)
+
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Membership')
 
     def __unicode__(self):

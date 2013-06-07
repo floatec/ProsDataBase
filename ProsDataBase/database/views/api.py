@@ -65,7 +65,7 @@ def tables(request):
 
 def table(request, name):
     if request.method == 'GET':
-        return showTable(name)
+        return showTable(name, request.user)
     if request.method == 'POST':
         return insertData(request, name)
     if request.method == 'PUT':
@@ -81,7 +81,7 @@ def tableRights(request, tableName):
 
 def datasets(request, tableName):
     if request.method == 'POST':
-        return showDatasets(request, tableName)
+        return showDatasets(request, tableName, request.user)
     if request.method == 'DELETE':
         return deleteDatasets(request, tableName)
 
@@ -163,6 +163,7 @@ def addGroup(request):
         newGroup = groupF.save(commit=False)
         newGroup.tableCreator = request["tableCreator"]
         newGroup.groupCreator = request["groupCreator"]
+        newGroup.userManager = request["userManager"]
         newGroup.save()
 
         failed = list() # list of users whose names could not be found in the database
@@ -332,16 +333,16 @@ def showDatasets(request, tableName):
     except Table.DoesNotExist:
         return HttpResponse(content="Could not find table with name " + tableName + ".", status=400)
 
-    request = json.loads(request.raw_post_data)
+    jsonRequest = json.loads(request.raw_post_data)
     result = dict()
     result["datasets"] = list()
-    for obj in request["datasets"]:
-        result["datasets"].append(DatasetSerializer.serializeOne(obj["id"]))
+    for obj in jsonRequest["datasets"]:
+        result["datasets"].append(DatasetSerializer.serializeOne(obj["id"], request.user))
 
     return HttpResponse(json.dumps(result), content_type="application/json")
 
 
-def showDataset(tableName, datasetID):
+def showDataset(tableName, datasetID, user):
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
@@ -354,7 +355,7 @@ def showDataset(tableName, datasetID):
     if dataset.deleted:
         return HttpResponse("The requested dataset does not exist.", status=400)
     else:
-        dataset = DatasetSerializer.serializeOne(datasetID)
+        dataset = DatasetSerializer.serializeOne(datasetID, user)
         return HttpResponse(json.dumps(dataset), content_type="application/json")
 
 
@@ -653,8 +654,8 @@ def showAllTables(user):
         else HttpResponse(status=500)
 
 
-def showTable(name):
-    table = TableSerializer.serializeOne(name)
+def showTable(name, user):
+    table = TableSerializer.serializeOne(name, user)
     return HttpResponse(json.dumps(table), content_type="application/json")
 
 

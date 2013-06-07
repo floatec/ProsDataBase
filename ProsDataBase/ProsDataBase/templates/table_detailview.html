@@ -22,10 +22,11 @@
 
 {% block content %}
     <div id="filter">
-  <h3>filter</h3>
+  <h3>filter</h3><div>
   <div id="filterView">
-
+<button onClick="addFilter('#filterView',global.table)" >+</button>
   </div>
+</div>
     </div>
     <div id="deleteAlertBox">Are you sure to delete this item(s)?</div>
     <div id="headTable"></div>
@@ -39,25 +40,36 @@
 
         function addFilter(view,tableName){
             filter++;
-            $(view).append("<div id='filter"+filter+"'></div>")
-            addFilterOption($("#filter"+filter), tableName)
+            $(view).append("<div id='filter'></div>")
+            addFilterOption($(view).children().last(), tableName)
         }
 
         function updateFilerOption(select,tableName){
-             console.log($(select).find(":selected").attr("table"))
+             console.log($(select).find(":selected").attr("value"))
 
             if($(select).find(":selected").val()==5){
+               console.log("hallo")
                 addFilterOption($(select).next(), $(select).find(":selected").attr("table"))
-            }
-            if($(select).find(":selected").val()==0){
-               $(select).next().html("<input type='text'>")
-            }
-            if($(select).find(":selected").val()==1){
-               $(select).next().html("Min:<input type='text' name='min'>Max:<input name='max' type='text'>")
 
             }
-            if($(select).find(":selected").val()==2){
-               $(select).next().html("Min:<input type='text' name='min'>Max:<input name='max' type='text'>")
+            if($(select).find(":selected").val()==0 || $(select).find(":selected").attr("refType")==0){
+               $(select).next().html("<input type='text' placeholder='tex...'>")
+            }
+            if($(select).find(":selected").val()==1|| $(select).find(":selected").attr("refType")==1){
+               $(select).next().html("Min:<input type='text' name='min'  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' size='4'>Max:<input  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' name='max' type='text' size='4'>")
+
+            }
+            if($(select).find(":selected").val()==3 || $(select).find(":selected").attr("refType")==3){
+               $(select).next().html("<select></select>")
+                sel=$(select).next().find("select")
+                opt=JSON.parse($(select).find(":selected").attr("options"))
+                $(opt).each(function(){
+                    sel.append("<option>"+this.value+"</option>")
+                })
+
+            }
+            if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
+               $(select).next().html("Min:<input type='text' name='min' placeholder='1990-05-26 23:42'>Max:<input name='max' type='text' placeholder='1990-05-26 23:42'>")
 
             }
           }
@@ -68,8 +80,8 @@
              $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
                 columns = $(data.columns);
                 columns.each(function(){
-                    console.log(this.name)
-                    $(view).find("select").append("<option table='"+this.table+"' value='"+this.type+"'>"+this.name+"</option>")
+                    console.log(this)
+                    $(view).find("select").append("<option refType='"+JSON.stringify(this.refType)+"' options='"+JSON.stringify(this.options)+"' table='"+this.table+"' value='"+this.type+"'>"+this.name+"</option>")
                 })
                });
         }
@@ -78,7 +90,9 @@
             counter = 0;
             subtable = 0;
             filter = 0;
+            global={}
             var tableName = getTableName();
+            global.table=tableName
             $("#naviheader").append(tableName)
             var columns = [];
             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
@@ -93,7 +107,15 @@
 
 
             });
-            addFilterOption("#filterView",tableName)
+
+            jQuery("#filter").accordion({
+
+        active: false,
+        collapsible: true,
+
+
+    });
+            addFilter("#filterView",tableName)
         }
         function laodSubTable(datasets, tableName, insertTo) {
             var obj = {}
@@ -287,12 +309,7 @@
                 }
             }
         });
-$(function() {
-    $( "#filter" ).accordion({
-         active: false,
-      collapsible: true
-    });
-  });
+
 
     </script>
 {% endblock %}

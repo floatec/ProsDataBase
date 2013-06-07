@@ -6,7 +6,7 @@ from models import *
 
 class TableSerializer:
     @staticmethod
-    def serializeOne(tableName):
+    def serializeOne(tableName, user):
         """
         return the table with specified name, along with its columns and datasets.
 
@@ -25,7 +25,7 @@ class TableSerializer:
 
         result = dict()
         result["name"] = table.name
-        result.update(DatasetSerializer.serializeAll(tableName))
+        result.update(DatasetSerializer.serializeAll(tableName, user))
 
         return result
 
@@ -70,6 +70,7 @@ class TableSerializer:
         return the table with its columns and the column's datatypes as well as ranges
 
         {
+          "category": "categoryname"
           "columns": [
             {"name": "columnname0", "type": 0, "length": 100},
             {"name": "columnname1", "type": 1, "min": "a decimal", "max": "a decimal"},
@@ -111,7 +112,14 @@ class TableSerializer:
             else:
                 return None
 
+        #  add relation columns, that is, the columns, in which this table can be found in other tables
+        typeTables = TypeTable.objects.filter(table=table)
+        for typeTable in typeTables:
+            typesColumn = Column.objects.get(type=typeTable.type)
+            colStructs.append({"name": table.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "column": typesColumn.name})
+
         result = dict()
+        result["category"] = table.category.name
         result["columns"] = colStructs
         return result
 
@@ -133,37 +141,22 @@ class TableSerializer:
     def serializeRightsFor(tableName):
         """
         {
-            "users": [
+            "actors": [
                 {
-                    "name": "user1",
-                    "tableRights": ["insert"],
+                    "name": "actor1",
+                    "tableRights": {"insert": false, "delete": false, "viewLog": true, "rightsAdmin": true},
                     "columnRights": [
-                        {"name": "col1", "rights": ["modify", "read"]},
-                        {"name": "col2", "rights": ["modify", "read"]},
-                        {"name": "col3", "rights": ["read"]},
-                        {"name": "col4", "rights": ["read"]}
+                        {"name": "col1", "rights": {"modify": true, "read": true}},
+                        {"name": "col2", "rights": {"modify": false, "read": true}},
+                        {"name": "col3", "rights": {"modify": false, "read": true}},
+                        {"name": "col4", "rights": {"modify": false, "read": true}}
                     ]
                 },
                 {
-                    "name": "user2",
-                    "tableRights": ["viewLog", "delete"],
+                    "name": "actor2",
+                    "tableRights": {"viewLog": false, "rightsAdmin": false, "delete": true, "insert": true},
                     "columnRights": []
-                },
-            ],
-            "groups": [
-                {
-                    "name": "group1",
-                    "tableRights": ["insert"],
-                    "columnRights": [
-                        {"name": "col5", "rights": ["modify", "read"]},
-                        {"name": "col6", "rights": ["modify", "read"]},
-                    ]
-                },
-                {
-                    "name": "group2",
-                    "tableRights": ["viewLog", "delete"],
-                    "columnRights": []
-                },
+                }
             ]
         }
         """
@@ -174,7 +167,7 @@ class TableSerializer:
 
         result = dict()
 
-        result["users"] = list()
+        result["actors"] = list()
         users = table.getUsersWithRights()
         for user in users:
             userObj = dict()
@@ -183,9 +176,8 @@ class TableSerializer:
             userObj["tableRights"] = rights["tableRights"]
             userObj["columnRights"] = rights["columnRights"]
 
-            result["users"].append(userObj)
+            result["actors"].append(userObj)
 
-        result["groups"] = list()
         groups = table.getGroupsWithRights()
         for group in groups:
             groupObj = dict()
@@ -194,7 +186,7 @@ class TableSerializer:
             groupObj["tableRights"] = rights["tableRights"]
             groupObj["columnRights"] = rights["columnRights"]
 
-            result["groups"].append(groupObj)
+            result["actors"].append(groupObj)
 
         return result
 
@@ -203,10 +195,11 @@ class TableSerializer:
     def serializeRightsForActor(name, tableName):
         """
         {
-            "tableRights": ["viewLog", "insert"],
+            "name": "actor1",
+            "tableRights": {"insert": false, "delete": false, "viewLog": true, "rightsAdmin": true},
             "columnRights": [
-                {"name": "col1", "rights": ["read"]},
-                {"name": "col1", "rights": ["read", "modify"]}
+                {"name": "col1", "rights": {"modify": true, "read": true}},
+                {"name": "col2", "rights": {"modify": false, "read": true}}
             ]
         }
         """
@@ -242,27 +235,21 @@ class TableSerializer:
                 columnRights = None
 
         result = dict()
-        result["tableRights"] = list()
+        result["tableRights"] = dict()
         if tableRights:
-            if tableRights.rightsAdmin:
-                result["tableRights"].append("rightsAdmin")
-            if tableRights.viewLog:
-                result["tableRights"].append("viewLog")
-            if tableRights.insert:
-                result["tableRights"].append("insert")
-            if tableRights.delete:
-                result["tableRights"].append("delete")
+            result["tableRights"]["rightsAdmin"] = tableRights.rightsAdmin
+            result["tableRights"]["viewLog"] = tableRights.viewLog
+            result["tableRights"]["insert"] = tableRights.insert
+            result["tableRights"]["delete"] = tableRights.delete
 
         result["columnRights"] = list()
         if columnRights:
             for rights in columnRights:
                 colObj = dict()
                 colObj["name"] = rights.column.name
-                colObj["rights"] = list()
-                if rights.read:
-                    colObj["rights"].append("read")
-                if rights.modify:
-                    colObj["rights"].append("modify")
+                colObj["rights"] = dict()
+                colObj["rights"]["read"] = rights.read
+                colObj["rights"]["modify"] = rights.modify
 
                 result["columnRights"].append(colObj)
 
@@ -294,6 +281,8 @@ class UserSerializer:
 
         result["tableCreator"] = user.tableCreator
         result["groupCreator"] = user.groupCreator
+        result["userManager"] = user.userManager
+        result["admin"] = user.admin
 
         return result
 
@@ -340,6 +329,7 @@ class GroupSerializer:
         theGroup["name"] = group.name
         theGroup["tableCreator"] = group.tableCreator
         theGroup["groupCreator"] = group.groupCreator
+        theGroup["userManager"] = group.userManager
         theGroup["admins"] = list()
         theGroup["users"] = list()
 
@@ -370,7 +360,7 @@ class GroupSerializer:
 class DatasetSerializer:
 
     @staticmethod
-    def serializeOne(id):
+    def serializeOne(id, user):
         """
         {
             "id": "2.2013_192_B",
@@ -396,6 +386,7 @@ class DatasetSerializer:
         datalist = dataset.getData()
         for data in datalist:
             for item in data:
+
                 dataObj = dict()
                 dataObj["column"] = item.column.name
                 dataObj["type"] = item.column.type.type
@@ -427,7 +418,7 @@ class DatasetSerializer:
         return result
 
     @staticmethod
-    def serializeAll(tableRef):
+    def serializeAll(tableRef, user):
         try:
             datasets = Dataset.objects.filter(table=tableRef)
         except Dataset.DoesNotExist:
@@ -438,7 +429,7 @@ class DatasetSerializer:
         for dataset in datasets:
             if dataset.deleted:
                 continue
-            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID))
+            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
 
         return result
 
