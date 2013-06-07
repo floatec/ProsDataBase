@@ -237,22 +237,20 @@ class TableSerializer:
 
         result = dict()
         result["tableRights"] = dict()
-        if tableRights:
-            result["tableRights"]["rightsAdmin"] = tableRights.rightsAdmin
-            result["tableRights"]["viewLog"] = tableRights.viewLog
-            result["tableRights"]["insert"] = tableRights.insert
-            result["tableRights"]["delete"] = tableRights.delete
+        result["tableRights"]["rightsAdmin"] = tableRights.rightsAdmin if tableRights else False
+        result["tableRights"]["viewLog"] = tableRights.viewLog if tableRights else False
+        result["tableRights"]["insert"] = tableRights.insert if tableRights else False
+        result["tableRights"]["delete"] = tableRights.delete if tableRights else False
 
         result["columnRights"] = list()
-        if columnRights:
-            for rights in columnRights:
-                colObj = dict()
-                colObj["name"] = rights.column.name
-                colObj["rights"] = dict()
-                colObj["rights"]["read"] = rights.read
-                colObj["rights"]["modify"] = rights.modify
+        for rights in columnRights:
+            colObj = dict()
+            colObj["name"] = rights.column.name
+            colObj["rights"] = dict()
+            colObj["rights"]["read"] = rights.read if columnRights else False
+            colObj["rights"]["modify"] = rights.modify if columnRights else False
 
-                result["columnRights"].append(colObj)
+            result["columnRights"].append(colObj)
 
         return result
 
