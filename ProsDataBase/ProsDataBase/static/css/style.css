@@ -99,6 +99,9 @@
     width: 171px;
     z-index: 2;
 }
+.ui-menu-item{
+    z-index: 2;
+}
 
 #subMenuList {
     padding: 0px;
@@ -264,18 +267,17 @@ Only for Login and Register Page
 }
 
 #LoginRegisterDiv {
+    position: absolute;
+    right: 0px;
+    width: 50%;
+    font-size: 20px;
 
-    top: 200px;
-    left: 800px;
-    position: fixed;
-    width: 200px;
-    height: 500px;
 
 }
 
 #registerDiv {
-    position: absolute;
-    bottom: 40%;
+    padding-top: 30px;
+
 
 }
 

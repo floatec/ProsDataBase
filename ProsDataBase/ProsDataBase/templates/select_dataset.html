@@ -1,23 +1,16 @@
-{% extends "base.html" %}
+{% extends "base_popup.html" %}
 
 
 
 {% block navigation %}
-    <div id="naviheader"></div>
-    <ul id="navigationMenuContent">
-
-    </ul>
 
 {% endblock %}
 
 {% block header %}
-    <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
+    <a class="crumb" href='#' id='tableCrumb'> <span></span></a>
 {% endblock %}
 {% block menu %}
-    <a class='buttonMenuButton' id='insertData' href='#'>Insert Data</a>
-    <a class='buttonMenuButton' id='deleteData' href='#'>Delete Data</a>
-    <a class='buttonMenuButton'>Export</a>
-    <a class='buttonMenuButton' id='modifyStructure'>Modify Structure</a>
+    <a class='buttonMenuButton' id='insertData' href='#'>Select Dataset</a>
 {% endblock %}
 
 {% block content %}
@@ -68,9 +61,6 @@
                 })
 
             }
-            if($(select).find(":selected").val()==4 || $(select).find(":selected").attr("refType")==4){
-               $(select).next().html("<input type='checkbox'>")
-            }
             if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
                $(select).next().html("Min:<input type='text' name='min' placeholder='1990-05-26 23:42'>Max:<input name='max' type='text' placeholder='1990-05-26 23:42'>")
 
@@ -112,8 +102,7 @@
             });
 
             jQuery("#filter").accordion({
-         active: false,
-    collapsible: true,
+
       heightStyle: "content", autoHeight: false, clearStyle: true,
 
     });
@@ -147,7 +136,7 @@
             var tableHead = $("<thead  id='descrRow'></thead>")
             table.prepend("<caption  onClick='toggleTable(this.parentNode)'>" + tableName + "</capton>");
             //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
-            tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
+            tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>system ID</th>");
             for (var key in columns) {
                 tableHead.append("<th>" + columns[key].name + "</th>");
                 $("#navigationMenuContent").append("<li><a href='#" + columns[key].name + "'>" + columns[key].name + "</a></li>");
@@ -223,7 +212,7 @@
                     for (var key in allDatasets) {
 
 
-                        $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'>edit</a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
+                        $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
 
                         for (var p in columns) {
                             var sete = false
@@ -244,17 +233,7 @@
                                              tmp+="</table>"
                                              $("#datasetRow" + counter).append("<td>" + tmp + "</td>")
                                          }
-                                    }else if(allDatasets[key].data[i].type == 4){
-                                         tmp="<td style='align:center'>"
-                                        if(allDatasets[key].data[i].value=="True")
-                                         tmp+="&times;"
-                                        else
-                                        tmp+="&nbsp;"
-                                        tmp+= "</td>"
-                                         $("#datasetRow" + counter).append(tmp)
-
                                     } else {
-
                                         $("#datasetRow" + counter).append("<td>" + allDatasets[key].data[i].value + "&nbsp;</td>")
 
                                     }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>ProsDataBase</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/jqueryui.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+    <script src="/static/js/timepicker.js"></script>
+
+
+    <style>
+    {% block css %}
+{% endblock %}</style>
+</head>
+
+
+<body >
+{% block body %}
+<div id=header>
+ {% block header %}{% endblock %}
+
+
+</div>
+        <span id="buttonMenu">
+                    {% block menu %}
+                    {% endblock %}
+
+                </span>
+
+<div >
+    <div style="">
+
+
+    </div>
+
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+{% endblock %}
+
+
+     {% block help %}
+     {% endblock %}
+
+
+
+
+
+</body>
+<script language="JavaScript" src="/static/js/methods.js"></script>
+
+{% block javascript %}{% endblock %}
+
+</html>
