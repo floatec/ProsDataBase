@@ -138,40 +138,25 @@ class TableSerializer:
 
 
     @staticmethod
-    def serializsereRightsFor(tableName):
+    def serializeRightsFor(tableName):
         """
         {
-            "users": [
+            "actors": [
                 {
-                    "name": "user1",
-                    "tableRights": ["insert"],
+                    "name": "actor1",
+                    "tableRights": {"insert": false, "delete": false, "viewLog": true, "rightsAdmin": true},
                     "columnRights": [
-                        {"name": "col1", "rights": ["modify", "read"]},
-                        {"name": "col2", "rights": ["modify", "read"]},
-                        {"name": "col3", "rights": ["read"]},
-                        {"name": "col4", "rights": ["read"]}
+                        {"name": "col1", "rights": {"modify": true, "read": true}},
+                        {"name": "col2", "rights": {"modify": false, "read": true}},
+                        {"name": "col3", "rights": {"modify": false, "read": true}},
+                        {"name": "col4", "rights": {"modify": false, "read": true}}
                     ]
                 },
                 {
-                    "name": "user2",
-                    "tableRights": ["viewLog", "delete"],
+                    "name": "actor2",
+                    "tableRights": {"viewLog": false, "rightsAdmin": false, "delete": true, "insert": true},
                     "columnRights": []
-                },
-            ],
-            "groups": [
-                {
-                    "name": "group1",
-                    "tableRights": ["insert"],
-                    "columnRights": [
-                        {"name": "col5", "rights": ["modify", "read"]},
-                        {"name": "col6", "rights": ["modify", "read"]},
-                    ]
-                },
-                {
-                    "name": "group2",
-                    "tableRights": ["viewLog", "delete"],
-                    "columnRights": []
-                },
+                }
             ]
         }
         """
@@ -182,7 +167,7 @@ class TableSerializer:
 
         result = dict()
 
-        result["users"] = list()
+        result["actors"] = list()
         users = table.getUsersWithRights()
         for user in users:
             userObj = dict()
@@ -191,9 +176,8 @@ class TableSerializer:
             userObj["tableRights"] = rights["tableRights"]
             userObj["columnRights"] = rights["columnRights"]
 
-            result["users"].append(userObj)
+            result["actors"].append(userObj)
 
-        result["groups"] = list()
         groups = table.getGroupsWithRights()
         for group in groups:
             groupObj = dict()
@@ -202,7 +186,7 @@ class TableSerializer:
             groupObj["tableRights"] = rights["tableRights"]
             groupObj["columnRights"] = rights["columnRights"]
 
-            result["groups"].append(groupObj)
+            result["actors"].append(groupObj)
 
         return result
 
@@ -211,10 +195,11 @@ class TableSerializer:
     def serializeRightsForActor(name, tableName):
         """
         {
-            "tableRights": ["viewLog", "insert"],
+            "name": "actor1",
+            "tableRights": {"insert": false, "delete": false, "viewLog": true, "rightsAdmin": true},
             "columnRights": [
-                {"name": "col1", "rights": ["read"]},
-                {"name": "col1", "rights": ["read", "modify"]}
+                {"name": "col1", "rights": {"modify": true, "read": true}},
+                {"name": "col2", "rights": {"modify": false, "read": true}}
             ]
         }
         """
@@ -252,14 +237,10 @@ class TableSerializer:
         result = dict()
         result["tableRights"] = list()
         if tableRights:
-            if tableRights.rightsAdmin:
-                result["tableRights"].append("rightsAdmin")
-            if tableRights.viewLog:
-                result["tableRights"].append("viewLog")
-            if tableRights.insert:
-                result["tableRights"].append("insert")
-            if tableRights.delete:
-                result["tableRights"].append("delete")
+            result["tableRights"].append({"rightsAdmin": tableRights.rightsAdmin})
+            result["tableRights"].append({"viewLog": tableRights.viewLog})
+            result["tableRights"].append({"insert": tableRights.insert})
+            result["tableRights"].append({"delete": tableRights.delete})
 
         result["columnRights"] = list()
         if columnRights:
@@ -267,10 +248,8 @@ class TableSerializer:
                 colObj = dict()
                 colObj["name"] = rights.column.name
                 colObj["rights"] = list()
-                if rights.read:
-                    colObj["rights"].append("read")
-                if rights.modify:
-                    colObj["rights"].append("modify")
+                colObj["rights"].append({"read": rights.read})
+                colObj["rights"].append({"modify": rights.modify})
 
                 result["columnRights"].append(colObj)
 
