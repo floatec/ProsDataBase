@@ -76,7 +76,7 @@ class TableSerializer:
             {"name": "columnname1", "type": 1, "min": "a decimal", "max": "a decimal"},
             {"name": "columnname2", "type": 2, "min": "a date", "max": "a date"},
             {"name": "columnname3", "type": 3, "options": {"0": "opt1", "1": "opt2", "2": "opt3"},
-            {"name": "columnname4", "type": 4, "table": "tablename", "column": "refColname"},
+            {"name": "columnname4", "type": 4, "table": "tablename", "shownColumn": "PSA"},
           ]
         }
         """
@@ -116,7 +116,10 @@ class TableSerializer:
         typeTables = TypeTable.objects.filter(table=table)
         for typeTable in typeTables:
             typesColumn = Column.objects.get(type=typeTable.type)
-            colStructs.append({"name": table.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "column": typesColumn.name})
+            if typeTable.column is not None:
+                colStructs.append({"name": table.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "shownColumn": typeTable.column.name})
+            else:
+                colStructs.append({"name": table.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name})
 
         result = dict()
         result["category"] = table.category.name
@@ -433,19 +436,55 @@ class DatasetSerializer:
 
         return result
 
-    def serializeBy(self, tableRef, rangeFlag, filter):  # tuple of criteria-dicts
-        result = dict()
-        result["name"] = tableRef.name
+    @staticmethod
+    def serializeBy(request, tableName, user):
+        """
+        {
+            "column": "columnname",
+            "child": {
+                "column": "columnInRelatedTable",
+                "child": {
+                    "column": "columnname2", "min": 12, "max": 20
+                }
+            }
+        }
+        """
+        try:
+            table = Table.objects.get(name=tableName)
+        except Table.DoesNotExist:
+            return None
 
-        columns = Column.objects.filter(table=tableRef)
-        columnNames = []
-        for col in columns:
-            columnNames.append(col.name)
-        result["column"] = columnNames
+        try:
+            column = table.getColumns().get(name=request["column"])
+        except Column.DoesNotExist:
+            return None
 
-        datasetList = []
-        datasets = Dataset.objects.filter(table=tableRef)
-        for crit in filter:
-            if len(crit) < 3 and rangeFlag:
-                for dataset in datasets:
-                    field = crit.iterkeys().next()
+        if "child" not in request:  # filter only with criteria inside this table
+            result = dict()
+            result["datasets"] = list()
+
+            ownDatasets = Dataset.objects.filter(table=table)
+            if column.type.type == Type.TEXT:
+                dataTexts = DataText.objects.filter(dataset__in=ownDatasets, content__contains=request["substr"])
+                for data in dataTexts:
+                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+            if column.type.type == Type.NUMERIC:
+                dataNumerics = DataNumeric.objects.filter(dataset__in=ownDatasets, content__gte=request["min"], content__lte=request["max"])
+                for data in dataNumerics:
+                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+            if column.type.type == Type.DATE:
+                dataDates = DataDate.objects.filter(dataset__in=ownDatasets, content__gte=request["min"], content__lte=request["max"])
+                for data in dataDates:
+                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+            if column.type.type == Type.SELECTION:
+                dataSelections = DataSelection.objects.filter(dataset__in=ownDatasets, content=request["min"], content__lte=request["max"])
+                for data in dataDates:
+                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+
+            return result
+
+        else:
+            nextTable = column.type.getType().table.name
+            return DatasetSerializer.serializeBy(request["child"], nextTable, user)
+
+
