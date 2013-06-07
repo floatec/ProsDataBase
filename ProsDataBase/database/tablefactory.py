@@ -316,7 +316,7 @@ def modifyTable(request, name):
             HttpResponse(content="Could not find column with id " + col["id"] + ".", status=400)
 
         try:
-            Column.objects.get(name=col["name"])
+            Column.objects.get(name=col["name"], table=table)
             return HttpResponse(content="Column with name " + col["name"] + " already exists.", status=400)
         except Column.DoesNotExist:
             column.name = col["name"]

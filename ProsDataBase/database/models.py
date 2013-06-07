@@ -367,6 +367,9 @@ class DBUser(AbstractUser):
     admin = models.BooleanField(default=False)
     objects = UserManager()
 
+    def mayDeleteTable(self, tableName):
+        pass
+
 
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)

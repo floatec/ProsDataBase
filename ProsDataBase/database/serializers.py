@@ -457,7 +457,7 @@ class DatasetSerializer:
         except Column.DoesNotExist:
             return None
 
-        if "child" not in request:  # filter only with criteria inside this table
+        if "child" not in request:  # filter only with criteria on this table
             result = dict()
             result["datasets"] = list()
 
@@ -475,14 +475,12 @@ class DatasetSerializer:
                 for data in dataDates:
                     result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
             if column.type.type == Type.SELECTION:
-                dataSelections = DataSelection.objects.filter(dataset__in=ownDatasets, content=request["min"], content__lte=request["max"])
-                for data in dataDates:
+                dataSelections = DataSelection.objects.filter(dataset__in=ownDatasets, content__in=request["options"])
+                for data in dataSelections:
                     result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
 
             return result
 
-        else:
+        else:  # filter with criteria on nested table
             nextTable = column.type.getType().table.name
             return DatasetSerializer.serializeBy(request["child"], nextTable, user)
-
-
