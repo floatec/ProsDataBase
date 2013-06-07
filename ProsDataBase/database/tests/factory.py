@@ -17,20 +17,29 @@ def generate_random_number(length=2, chars=digits):
     return number
 
 def create_table(**kwargs):
-    """
-    creates a simple table with two columns and
-    two datasets filed with 3 values
-    """
-    testUser = DBUser.objects.create_user(username=generate_random_number())
+    # ============================================================
+    # creates a simple table with two columns and
+    # two datasets filed with 3 values
+    # ============================================================
+    testUser = DBUser.objects.create_user(username=generate_random_username())
     testUser.save()
+
+    category = dict()
+    category["name"] = "Allgemein"
+    categoryF = CategoryForm(category)
+    if categoryF.is_valid():
+        newCategory = categoryF.save(commit=False)
+        newCategory.save()
 
     table = dict()
     table["name"] = generate_random_username()
     table["created"] = datetime.now()
+
     tabF = TableForm(table)
     if tabF.is_valid():
         newTable = tabF.save(commit=False)
         newTable.creator = testUser
+        newTable.category = newCategory
         newTable.save()
 
     # ============================================================
@@ -131,7 +140,9 @@ def create_table(**kwargs):
                 newDataSets.save()
                 newDataSets.datasetID = newTable.generateDatasetID(newDataSets)
                 newDataSets.save()
-                # -- the 1st column have a text data type
+                # ============================================================
+                # - the 1st column have a text data type
+                # ============================================================
                 if i == 0:
                     for j in range(0,2):
                         dataText = dict()
@@ -144,7 +155,9 @@ def create_table(**kwargs):
                             newDataText.dataset = newDataSets
                             newDataText.creator = testUser
                             newDataText.save()
-                # -- the 2nd column have a numeric data type
+                # ============================================================
+                # - the 2nd column have a numeric data type
+                # ============================================================
                 if i == 1:
                     for k in range(0,2):
                         dataNumeric = dict()
@@ -157,7 +170,9 @@ def create_table(**kwargs):
                             newDataNummeric.dataset = newDataSets
                             newDataNummeric.creator = testUser
                             newDataNummeric.save()
+                # ============================================================
                 # -- the 3rd column have a date data type
+                # ============================================================
                 if i == 2:
                     for l in range(0,2):
                         dataDate = dict()
@@ -170,7 +185,9 @@ def create_table(**kwargs):
                             newDataDate.dataset = newDataSets
                             newDataDate.creator = testUser
                             newDataDate.save()
+                # ============================================================
                 # -- the 4th column have a Selection data type
+                # ============================================================
                 if i == 3:
                     for m in range(0,2):
                         dataSelection = dict()
@@ -186,7 +203,9 @@ def create_table(**kwargs):
                             newDataSelection.dataset = newDataSets
                             newDataSelection.creator = testUser
                             newDataSelection.save()
+                # ============================================================
                 # -- the 5th column have a boolean data type
+                # ============================================================
                 if i == 4:
                     for n in range(0,2):
                         dataBoolean = dict()
@@ -202,7 +221,9 @@ def create_table(**kwargs):
                             newDataBoolean.dataset = newDataSets
                             newDataBoolean.creator = testUser
                             newDataBoolean.save()
+                # ============================================================
                 # -- the 6th column have a table datatype
+                # ============================================================
                 if i == 5:
                     op = dict()
                     op["name"] = generate_random_username()
@@ -293,13 +314,12 @@ def create_table(**kwargs):
                     dataTableToDataSets2 = DataTableToDataset(DataTable=newDataTable, dataset=newDataSetsOP2)
                     dataTableToDataSets2.save()
 
-    #print TableSerializer.serializeOne(newTable.name)
     return newTable
 
 def create_Group(**kwargs):
-    """
-    creates a group with two members
-    """
+    # ============================================================
+    # creates a group with 1000 members
+    # ============================================================
     groupA = dict()
     groupA["name"] = ("Student")
     groupF = DBGroupForm(groupA)
@@ -322,8 +342,19 @@ def create_Group(**kwargs):
     return newDBGroup
 
 def create_User(**kwargs):
-    """
-    creates a User
-    """
-    user = DBUser.objects.create_user(username = "Timi")
+    user = DBUser.objects.create_user(username=generate_random_username())
     user.save()
+    return user
+
+def connect_User_With_Rights(user, table):
+    # ============================================================
+    # creates a User with rights
+    # ============================================================
+    rights = dict()
+    rightsF = RightListForTableForm(rights)
+    if rightsF.is_valid():
+        newRights = rightsF.save(commit=False)
+        newRights.user = user
+        newRights.table = table
+        newRights.save()
+        return newRights
