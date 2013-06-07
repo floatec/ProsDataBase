@@ -1,71 +1,7 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
 from database.models import *
-from database.testfactory import *
-from database.serializers import *
-from views.api import *
-
-
-class GroupTest(TestCase):
-    def test_user_exist(self):
-        # =================================================================
-        # if a user is in a group the test goes right
-        # =================================================================
-        group = create_Group()
-
-        self.assertTrue(group.users.get(username = 1))
-        self.assertTrue(group.users.get(username = 50))
-        self.assertTrue(group.users.get(username = 100))
-        self.assertTrue(group.users.get(username = 1001))
-
-        with self.assertRaises(DBUser.DoesNotExist):
-            group.users.get(username=1001)
-            group.users.get(username=-100)
-            group.users.get(username=0)
-
-
-    def test_showAllGroups(self):
-        # =================================================================
-        # return all groups
-        # =================================================================
-        self.maxDiff = None
-        group1 = create_Group()
-        group2 = create_Group()
-
-        result = GroupSerializer.serializeAll()
-
-        groupMembers1 = list()
-        for m1 in Membership.objects.filter(group=group1):
-            groupMembers1.append(m1.user.username)
-
-        groupMembers2 = list()
-        for m2 in Membership.objects.filter(group=group2):
-            groupMembers2.append(m2.user.username)
-
-        # =================================================================
-        # test the name of the group is the same groupname in the result
-        # =================================================================
-        self.assertTrue(group1.name in [group["name"] for group in result["groups"]])
-        self.assertTrue(group2.name in [group["name"] for group in result["groups"]])
-
-        # =================================================================
-        # test the users in the group are the same users in the result
-        # =================================================================
-        for group in result["groups"]:
-            if group["name"] == group1.name:
-                self.assertEquals(groupMembers1, group["users"])
-                break
-            elif group["name"] == group2.name:
-                self.assertEquals(groupMembers2, group["users"])
-
-
-
+from database.tests.factory import *
+from database.views.api import *
 
 
 class TableTest(TestCase):
@@ -80,6 +16,9 @@ class TableTest(TestCase):
         #     ]
         # }
         # =================================================================
+        schmog = DBUser.objects.create_user(username="test")
+        schmog.save()
+
         table1 = create_table()
         table2 = create_table()
         result =  TableSerializer.serializeAll()
@@ -116,10 +55,7 @@ class TableTest(TestCase):
             length += len(array)
 
         self.assertEquals(length, 16)
-        self.assertEqual(16, length)
-
         print result
-
 
     def test_serializeOne(self):
         # =================================================================
