@@ -48,6 +48,7 @@ urlpatterns = patterns(
     (r'^api/table/(?P<name>[\w ]+)/structure/$', "database.views.api.tableStructure"),
     (r'^api/table/(?P<tableName>[\w ]+)/rights/$', "database.views.api.tableRights"),
 
+    (r'^api/table/(?P<tableName>[\w ]+)/column/(?P<columnName>[\w ]+)/$', "database.views.api.column"),
 
     # APIs for dataset requests
     (r'^api/table/(?P<tableName>[\w ]+)/dataset/$', "database.views.api.datasets"),
