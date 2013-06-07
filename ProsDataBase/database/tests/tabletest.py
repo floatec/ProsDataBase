@@ -3,12 +3,10 @@ from database.models import *
 from database.tests.factory import *
 from database.views.api import *
 
-
 class TableTest(TestCase):
     def test_serializeAll(self):
         # =================================================================
         # test serializer TableSerializer serializeAll()
-        #
         # {
         #     "tables": [
         #         {"name": "example", "columns": ["columname","anothercolum"]},
@@ -16,12 +14,17 @@ class TableTest(TestCase):
         #     ]
         # }
         # =================================================================
+
         schmog = DBUser.objects.create_user(username="test")
         schmog.save()
 
         table1 = create_table()
         table2 = create_table()
-        result =  TableSerializer.serializeAll()
+
+        connect_User_With_Rights(schmog,table1)
+        connect_User_With_Rights(schmog,table2)
+
+        result =  TableSerializer.serializeAll(schmog)
         length = 0
 
         table1Cols = list()
@@ -54,13 +57,12 @@ class TableTest(TestCase):
         for array in [table["columns"] for table in result["tables"]]:
             length += len(array)
 
-        self.assertEquals(length, 16)
-        print result
+        self.assertEquals(length, 12)
 
+        print result
     def test_serializeOne(self):
         # =================================================================
         #return the table with specified name, along with its columns and datasets.
-        #
         # {
         #     "name": "example",
         #     "datasets": [
@@ -70,6 +72,11 @@ class TableTest(TestCase):
         # }
         # =================================================================
         table1 = create_table()
+
+        schmog = DBUser.objects.create_user(username="test")
+        schmog.save()
+
+        connect_User_With_Rights(schmog, table1)
         result = TableSerializer.serializeOne(table1.name)
 
         table1Cols = list()
