@@ -113,6 +113,10 @@ class TableSerializer:
                 return None
 
         #  add relation columns, that is, the columns, in which this table can be found in other tables
+        typeTables = TypeTable.objects.filter(table=table)
+        for typeTable in typeTables:
+            typesColumn = Column.objects.get(type=typeTable.type)
+            colStructs.append({"name": table.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "column": typesColumn.name})
 
         result = dict()
         result["category"] = table.category.name
@@ -134,7 +138,7 @@ class TableSerializer:
 
 
     @staticmethod
-    def serializeRightsFor(tableName):
+    def serializsereRightsFor(tableName):
         """
         {
             "users": [
