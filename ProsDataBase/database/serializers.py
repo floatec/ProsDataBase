@@ -235,21 +235,21 @@ class TableSerializer:
                 columnRights = None
 
         result = dict()
-        result["tableRights"] = list()
+        result["tableRights"] = dict()
         if tableRights:
-            result["tableRights"].append({"rightsAdmin": tableRights.rightsAdmin})
-            result["tableRights"].append({"viewLog": tableRights.viewLog})
-            result["tableRights"].append({"insert": tableRights.insert})
-            result["tableRights"].append({"delete": tableRights.delete})
+            result["tableRights"]["rightsAdmin"] = tableRights.rightsAdmin
+            result["tableRights"]["viewLog"] = tableRights.viewLog
+            result["tableRights"]["insert"] = tableRights.insert
+            result["tableRights"]["delete"] = tableRights.delete
 
         result["columnRights"] = list()
         if columnRights:
             for rights in columnRights:
                 colObj = dict()
                 colObj["name"] = rights.column.name
-                colObj["rights"] = list()
-                colObj["rights"].append({"read": rights.read})
-                colObj["rights"].append({"modify": rights.modify})
+                colObj["rights"] = dict()
+                colObj["rights"]["read"] = rights.read
+                colObj["rights"]["modify"] = rights.modify
 
                 result["columnRights"].append(colObj)
 
