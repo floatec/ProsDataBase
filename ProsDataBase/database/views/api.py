@@ -79,11 +79,32 @@ def tableRights(request, tableName):
         return showTableRights(tableName)
 
 
+def column(request, tableName, columnName):
+    if request.method == 'DELETE':
+        answer = tablefactory.deleteColumn(tableName, columnName, request.user)
+        if answer != 'OK':
+            return answer
+        else:
+            return HttpResponse("Successfully deleted column " + columnName + " from table " + tableName + ".", status=200)
+
+
 def datasets(request, tableName):
     if request.method == 'POST':
-        return showDatasets(request, tableName, request.user)
+        if request.user.mayReadTable(tableName):
+            return showDatasets(request, tableName, request.user)
+        else:
+            return HttpResponse("Permission denied", status=403)
     if request.method == 'DELETE':
-        return deleteDatasets(request, tableName)
+        if request.user.mayDeleteTable(tableName):
+            return deleteDatasets(request, tableName)
+        else:
+            return HttpResponse("Permission denied", status=403)
+
+
+def filterDatasets(request, tableName):
+    if request.method == 'POST':
+        datasets = DatasetSerializer.serializeBy(json.loads(request.raw_post_data), tableName, request.user)
+        return HttpResponse(json.dumps(datasets), content_type="application/json")
 
 
 def dataset(request, tableName, datasetID):
@@ -678,11 +699,9 @@ def deleteTable(name, user):
 
     columns = list()
     for column in table.columns.all():
-        columns.append(column)
-        column.deleted = True
-        column.modified = datetime.now()
-        column.modifier = user
-        column.save()
+        answer = tablefactory.deleteColumn(table.name, column.name, user)
+        if answer != 'OK':
+            return answer
 
     table.deleted = True
     table.modified = datetime.now()

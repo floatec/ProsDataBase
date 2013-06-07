@@ -40,13 +40,20 @@ urlpatterns = patterns(
     # APIs for category requests
     (r'^api/category/$', "database.views.api.categories"),
     (r'^api/category/(?P<name>[\w ]+)/$', "database.views.api.category"),
+
+
     # APIs for table requests
     (r'^api/table/$', "database.views.api.tables"),
     (r'^api/table/(?P<name>[\w ]+)/$', "database.views.api.table"),
     (r'^api/table/(?P<name>[\w ]+)/structure/$', "database.views.api.tableStructure"),
-    (r'^api/table/(?P<tableName>[\w ]+)/dataset/$', "database.views.api.datasets"),
-    (r'^api/table/(?P<tableName>[\w ]+)/dataset/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', "database.views.api.dataset"),
     (r'^api/table/(?P<tableName>[\w ]+)/rights/$', "database.views.api.tableRights"),
+
+    (r'^api/table/(?P<tableName>[\w ]+)/column/(?P<columnName>[\w ]+)/$', "database.views.api.column"),
+
+    # APIs for dataset requests
+    (r'^api/table/(?P<tableName>[\w ]+)/dataset/$', "database.views.api.datasets"),
+    (r'^api/table/(?P<tableName>[\w ]+)/dataset/filter/$', "database.views.api.filterDatasets"),
+    (r'^api/table/(?P<tableName>[\w ]+)/dataset/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', "database.views.api.dataset"),
 
 
     # APIs for user/group requests

@@ -58,6 +58,8 @@ class TableSerializer:
             columns = table.getColumns()
             columnNames = []
             for col in columns:
+                if col.deleted:
+                    continue
                 columnNames.append(col.name)
 
             result["tables"].append({"name": table.name, "columns": columnNames, "category": table.category.name})
@@ -76,7 +78,7 @@ class TableSerializer:
             {"name": "columnname1", "type": 1, "min": "a decimal", "max": "a decimal"},
             {"name": "columnname2", "type": 2, "min": "a date", "max": "a date"},
             {"name": "columnname3", "type": 3, "options": {"0": "opt1", "1": "opt2", "2": "opt3"},
-            {"name": "columnname4", "type": 4, "table": "tablename", "column": "refColname"},
+            {"name": "columnname4", "type": 4, "table": "tablename", "shownColumn": "PSA"},
           ]
         }
         """
@@ -87,6 +89,8 @@ class TableSerializer:
         columns = table.getColumns()
         colStructs = []
         for col in columns:
+            if col.deleted:
+                continue
             comment = col.comment if col.comment is not None else ""
             type = col.type.type
             if type is Type.TEXT:
@@ -116,7 +120,8 @@ class TableSerializer:
         typeTables = TypeTable.objects.filter(table=table)
         for typeTable in typeTables:
             typesColumn = Column.objects.get(type=typeTable.type)
-            colStructs.append({"name": table.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "column": typesColumn.name})
+            if typeTable.column is None:
+                colStructs.append({"name": typesColumn.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name})
 
         result = dict()
         result["category"] = table.category.name
@@ -220,38 +225,43 @@ class TableSerializer:
                 tableRights = RightListForTable.objects.get(user=actor, table=table)
             except RightListForTable. DoesNotExist:
                 tableRights = None
-            try:
-                columnRights = RightListForColumn.objects.filter(user=actor, table=table)
-            except RightListForColumn.DoesNotExist:
-                columnRights = None
         else:  # a group was passed
             try:
                 tableRights = RightListForTable.objects.get(group=actor, table=table)
             except RightListForTable. DoesNotExist:
                 tableRights = None
-            try:
-                columnRights = RightListForColumn.objects.filter(group=actor, table=table)
-            except RightListForColumn.DoesNotExist:
-                columnRights = None
 
         result = dict()
         result["tableRights"] = dict()
-        if tableRights:
-            result["tableRights"]["rightsAdmin"] = tableRights.rightsAdmin
-            result["tableRights"]["viewLog"] = tableRights.viewLog
-            result["tableRights"]["insert"] = tableRights.insert
-            result["tableRights"]["delete"] = tableRights.delete
+        result["tableRights"]["rightsAdmin"] = tableRights.rightsAdmin if tableRights else False
+        result["tableRights"]["viewLog"] = tableRights.viewLog if tableRights else False
+        result["tableRights"]["insert"] = tableRights.insert if tableRights else False
+        result["tableRights"]["delete"] = tableRights.delete if tableRights else False
 
         result["columnRights"] = list()
-        if columnRights:
-            for rights in columnRights:
-                colObj = dict()
-                colObj["name"] = rights.column.name
-                colObj["rights"] = dict()
-                colObj["rights"]["read"] = rights.read
-                colObj["rights"]["modify"] = rights.modify
+        columns = table.getColumns()
 
-                result["columnRights"].append(colObj)
+        for column in columns:
+            if column.deleted:
+                continue
+            if user:
+                try:
+                    columnRights = RightListForColumn.objects.get(column=column, user=actor)
+                except RightListForColumn.DoesNotExist:
+                    columnRights = None
+            else:
+                try:
+                    columnRights = RightListForColumn.objects.get(column=column, group=actor)
+                except RightListForColumn.DoesNotExist:
+                    columnRights = None
+
+            colObj = dict()
+            colObj["name"] = column.name
+            colObj["rights"] = dict()
+            colObj["rights"]["read"] = columnRights.read if columnRights else False
+            colObj["rights"]["modify"] = columnRights.modify if columnRights else False
+
+            result["columnRights"].append(colObj)
 
         return result
 
@@ -386,7 +396,8 @@ class DatasetSerializer:
         datalist = dataset.getData()
         for data in datalist:
             for item in data:
-
+                if item.deleted:
+                    continue
                 dataObj = dict()
                 dataObj["column"] = item.column.name
                 dataObj["type"] = item.column.type.type
@@ -433,19 +444,53 @@ class DatasetSerializer:
 
         return result
 
-    def serializeBy(self, tableRef, rangeFlag, filter):  # tuple of criteria-dicts
-        result = dict()
-        result["name"] = tableRef.name
+    @staticmethod
+    def serializeBy(request, tableName, user):
+        """
+        {
+            "column": "columnname",
+            "child": {
+                "column": "columnInRelatedTable",
+                "child": {
+                    "column": "columnname2", "min": 12, "max": 20
+                }
+            }
+        }
+        """
+        try:
+            table = Table.objects.get(name=tableName)
+        except Table.DoesNotExist:
+            return None
 
-        columns = Column.objects.filter(table=tableRef)
-        columnNames = []
-        for col in columns:
-            columnNames.append(col.name)
-        result["column"] = columnNames
+        try:
+            column = table.getColumns().get(name=request["column"])
+        except Column.DoesNotExist:
+            return None
 
-        datasetList = []
-        datasets = Dataset.objects.filter(table=tableRef)
-        for crit in filter:
-            if len(crit) < 3 and rangeFlag:
-                for dataset in datasets:
-                    field = crit.iterkeys().next()
+        if "child" not in request:  # filter only with criteria on this table
+            result = dict()
+            result["datasets"] = list()
+
+            ownDatasets = Dataset.objects.filter(table=table)
+            if column.type.type == Type.TEXT:
+                dataTexts = DataText.objects.filter(dataset__in=ownDatasets, content__contains=request["substr"])
+                for data in dataTexts:
+                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+            if column.type.type == Type.NUMERIC:
+                dataNumerics = DataNumeric.objects.filter(dataset__in=ownDatasets, content__gte=request["min"], content__lte=request["max"])
+                for data in dataNumerics:
+                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+            if column.type.type == Type.DATE:
+                dataDates = DataDate.objects.filter(dataset__in=ownDatasets, content__gte=request["min"], content__lte=request["max"])
+                for data in dataDates:
+                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+            if column.type.type == Type.SELECTION:
+                dataSelections = DataSelection.objects.filter(dataset__in=ownDatasets, content__in=request["options"])
+                for data in dataSelections:
+                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+
+            return result
+
+        else:  # filter with criteria on nested table
+            nextTable = column.type.getType().table.name
+            return DatasetSerializer.serializeBy(request["child"], nextTable, user)

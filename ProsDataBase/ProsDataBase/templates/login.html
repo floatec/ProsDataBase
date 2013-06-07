@@ -13,14 +13,30 @@
 			$(document).ready(function(){ 
 				$( '.btn' ).button({ disabled: false});
 			});
+            function login(){
+                jsonobj={}
+                jsonobj.username=$("#user").val()
+                jsonobj.password=$("#pw").val()
+                $.ajax({
+                url: '/api/auth/session/',
+                type: 'put',
+                data: JSON.stringify(jsonobj),
+                contentType: 'application/json',
+                dataType: 'json',
+
+                success: function (data) {
+                    window.location.href = '/table/';
+                }
+
+            });
+            }
 		</script>
 		<style type="text/css">
 		
 		#content{
 			
-			
-			width:800px;
-			height:500px;
+		left:0px;
+		width: 50%;
 		
 		}
 	
@@ -46,9 +62,12 @@
 			</div>
 			<div id="LoginRegisterDiv">
 				<div id="loginDiv">
-					<span>Username:</span><input type="text"><br>
-					<span>Password:</span><input type="password">
-					<a href="/table"><input class="btn" type="submit" value="Login"></a>
+					<table>
+
+                    <tr><td>Username:</td><td><input id="user" type="text"></td></tr>
+					<tr><td>Password:</td><td><input id="pw" type="password"></td></tr>
+					</table>
+                    <a href="#" onClick="login()"><input class="btn" type="submit" value="Login"></a>
 				</div>
 				<div id="registerDiv">
 					

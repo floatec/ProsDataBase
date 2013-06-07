@@ -19,7 +19,7 @@
             var columns = data.columns;
 
             for (var i in columns) {
-                var row = "<tr class='allColumns'><td class='nameCell'>" +  (columns[i].name) + "</td><td>"
+                var row = "<tr class='allColumns'><td class='nameCell'>" + (columns[i].name) + "</td><td>"
                 if (columns[i].type == 0) {
                     row += '<input class="inputText" name="' + encode_pros(columns[i].name) + '" type="text" placeholder="text">'
                 }
@@ -36,13 +36,16 @@
                     }
                     row += '</select>'
                 }
+                if (columns[i].type == 4) {
+                     row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
+                }
                 if (columns[i].type == 5) {
-                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><span onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros( columns[i].name) + '\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><span onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
                 }
                 row += "</td></tr>"
                 $("#fields").append(row)
             }
-            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true,changeYear: true});
+            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
             $("#tableCrumb").prepend(tableName);
             $("#insertCrumb").prepend("insert");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
@@ -61,14 +64,14 @@
                 columnObj.name = decode_pros($(this).find(".nameCell").text());
                 if ($(this).find("input").length == 0) {
                     if ($(this).find("select").length == 0) {
-                        value=[]
+                        value = []
                         /* todo denn ganzen misst drüber mal umdrehen*/
-                        if($(this).find(".value").length!=0){
+                        if ($(this).find(".value").length != 0) {
 
-                            $(this).find(".value").each(function(){
-                                    value.push($(this).html())
+                            $(this).find(".value").each(function () {
+                                value.push($(this).html())
                             });
-                            columnObj.value=value
+                            columnObj.value = value
                         }
 
                     }
@@ -90,6 +93,14 @@
                     else if ($(this).find(".inputText").length != 0) {
                         columnObj.value = $(this).find("input").val();
                     }
+                    else if ($(this).find(".check").length != 0) {
+
+                        if($(this).find("input").is(':checked')){
+                            columnObj.value = true;
+                        }else{
+                            columnObj.value = false;
+                        }
+                    }
                 }
 
                 jsonDataset.columns.push(columnObj);
@@ -104,14 +115,14 @@
                 contentType: 'application/json',
                 dataType: 'json',
 
-                success:function(data){
-                        if(true){
-                         $(window.opener.document).find('#'+field).append("<span class='value'>"+data.id+"</span> ");
-                        }
+                success: function (data) {
+                    if (true) {
+                        $(window.opener.document).find('#' + field).append("<span class='value'>" + data.id + "</span> ");
+                    }
                 }
 
             });
-        // window.location.href = '/detailview/'+getTableName();+'/';
+            // window.location.href = '/detailview/'+getTableName();+'/';
 
         });
 
@@ -124,10 +135,10 @@
             var tableName = tableName.substr(lastIndex + 1);
             return tableName;
         }
-        function newElement(table,field) {
-            myWindow = window.open('/dataset/' + table,"_blank", "height=600,width=800,modal=yes,alwaysRaised=yes");
-            myWindow.field=field;
-            myWindow.popup=true;
+        function newElement(table, field) {
+            myWindow = window.open('/dataset/' + table, "_blank", "height=600,width=800,modal=yes,alwaysRaised=yes");
+            myWindow.field = field;
+            myWindow.popup = true;
 
         }
 

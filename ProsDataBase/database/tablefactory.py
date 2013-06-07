@@ -169,6 +169,44 @@ def createColumn(col, table, user):
         return 'OK'
 
 
+def deleteColumn(tableName, columnName, user):
+    try:
+        table = Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse("Could not find table with name " + tableName + ".", status=400)
+    try:
+        column = Column.objects.get(name=columnName, table=table)
+    except Column.DoesNotExist:
+        return HttpResponse("Could not find column with name " + columnName + " in table " + tableName + ".", status=400)
+
+    if column.type.type == Type.TEXT:
+        data = DataText.objects.filter(column=column)
+    if column.type.type == Type.NUMERIC:
+        data = DataNumeric.objects.filter(column=column)
+    if column.type.type == Type.DATE:
+        data = DataDate.objects.filter(column=column)
+    if column.type.type == Type.SELECTION:
+        data = DataSelection.objects.filter(column=column)
+    if column.type.type == Type.BOOL:
+        data = DataBool.objects.filter(column=column)
+    if column.type.type == Type.TABLE:
+        data = DataTable.objects.filter(column=column)
+
+    for item in data:
+        item.deleted = True
+        item.modified = datetime.now()
+        item.modifier = user
+        item.save()
+
+    column.name = column.name + "_DELETED_" + str(datetime.now())
+    column.deleted = True
+    column.modified = datetime.now()
+    column.modifier = user
+    column.save()
+
+    return 'OK'
+
+
 def createTableRights(rights, table):
     # for users
     for item in rights["users"]:
@@ -281,30 +319,30 @@ def modifyTable(request, name):
     except Table.DoesNotExist:
         return HttpResponse(content="Could not find table with name " + name + ".", status=400)
 
-    request = json.loads(request.raw_post_data)
-    if request["name"] != name:
+    jsonRequest = json.loads(request.raw_post_data)
+    if jsonRequest["name"] != name:
         try:
-            Table.objects.get(name=request["name"])
+            Table.objects.get(name=jsonRequest["name"])
         except Table.DoesNotExist:
-            table.name = request["name"]
+            table.name = jsonRequest["name"]
 
-    if request["category"] != table.category.name:
+    if jsonRequest["category"] != table.category.name:
         try:
-            category = Category.objects.get(name=request["category"])
+            category = Category.objects.get(name=jsonRequest["category"])
         except Category.DoesNotExist:
-            return HttpResponse("Could not find category " + request["category"] + ".", status=400)
+            return HttpResponse("Could not find category " + jsonRequest["category"] + ".", status=400)
 
         table.category = category
         table.save()
+        if "rights" in jsonRequest:
+            RightListForTable.objects.filter(table=table).delete()
+            answer = createTableRights(jsonRequest["rights"], table)
+            if answer != 'OK':
+                return HttpResponse(content=answer, status=400)
 
-        RightListForTable.objects.filter(table=table).delete()
-        answer = createTableRights(request["rights"], table)
-        if answer != 'OK':
-            return HttpResponse(content=answer, status=400)
-
-    for col in request["columns"]:
+    for col in jsonRequest["columns"]:
         if "id" not in col:  # this should be a newly added column
-            answer = createColumn(col, table)
+            answer = createColumn(col, table, request.user)
             if answer != 'OK':
                 return HttpResponse(content=answer, status=400)
             continue
@@ -314,12 +352,12 @@ def modifyTable(request, name):
             column = Column.objects.get(pk=col["id"])
         except Column.DoesNotExist:
             HttpResponse(content="Could not find column with id " + col["id"] + ".", status=400)
-
-        try:
-            Column.objects.get(name=col["name"])
-            return HttpResponse(content="Column with name " + col["name"] + " already exists.", status=400)
-        except Column.DoesNotExist:
-            column.name = col["name"]
+        if column.name != col["name"]:
+            try:
+                Column.objects.get(name=col["name"], table=table)
+                return HttpResponse(content="Column with name " + col["name"] + " already exists.", status=400)
+            except Column.DoesNotExist:
+                column.name = col["name"]
 
         colType = column.type
         if colType.type == Type.TEXT:
@@ -373,8 +411,10 @@ def modifyTable(request, name):
             except Column.DoesNotExist:
                 return HttpResponse(content="Column " + col["column"] + " does not exist.", status=400)
             typeTable.column = refColumn
+        if "rights" in col:
+            RightListForColumn.objects.filter(column=column).delete()
+            answer = createColumnRights(col["rights"], column)
+            if answer != 'OK':
+                return HttpResponse(content=answer, status=400)
 
-        RightListForColumn.objects.filter(column=column).delete()
-        answer = createColumnRights(col["rights"], column)
-        if answer != 'OK':
-            return HttpResponse(content=answer, status=400)
+    return HttpResponse(content="Successfully modified table", status=200)
