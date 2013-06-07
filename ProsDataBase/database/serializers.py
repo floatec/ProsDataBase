@@ -58,6 +58,8 @@ class TableSerializer:
             columns = table.getColumns()
             columnNames = []
             for col in columns:
+                if col.deleted:
+                    continue
                 columnNames.append(col.name)
 
             result["tables"].append({"name": table.name, "columns": columnNames, "category": table.category.name})
@@ -87,6 +89,8 @@ class TableSerializer:
         columns = table.getColumns()
         colStructs = []
         for col in columns:
+            if col.deleted:
+                continue
             comment = col.comment if col.comment is not None else ""
             type = col.type.type
             if type is Type.TEXT:
@@ -238,6 +242,8 @@ class TableSerializer:
         columns = table.getColumns()
 
         for column in columns:
+            if column.deleted:
+                continue
             if user:
                 try:
                     columnRights = RightListForColumn.objects.get(column=column, user=actor)
@@ -390,7 +396,8 @@ class DatasetSerializer:
         datalist = dataset.getData()
         for data in datalist:
             for item in data:
-
+                if item.deleted:
+                    continue
                 dataObj = dict()
                 dataObj["column"] = item.column.name
                 dataObj["type"] = item.column.type.type

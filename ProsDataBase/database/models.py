@@ -180,6 +180,7 @@ class Data(models.Model):
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_creator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_modifier', blank=True, null=True)
+    deleted = models.BooleanField()
 
     class Meta:
         abstract = True
@@ -367,8 +368,17 @@ class DBUser(AbstractUser):
     admin = models.BooleanField(default=False)
     objects = UserManager()
 
-    def mayDeleteTable(self, tableName):
+    def mayReadTable(self, tableName):
+       # columnRights = RightList
         pass
+
+    def mayDeleteTable(self, tableName):
+        table = Table.objects.get(name=tableName)
+        try:
+            tableRights = RightListForTable.objects.get(user=self, table=table)
+        except RightListForTable.DoesNotExist:
+            pass
+        return tableRights.delete
 
 
 class DBGroup(models.Model):

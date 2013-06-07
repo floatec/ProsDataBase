@@ -169,6 +169,44 @@ def createColumn(col, table, user):
         return 'OK'
 
 
+def deleteColumn(tableName, columnName, user):
+    try:
+        table = Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse("Could not find table with name " + tableName + ".", status=400)
+    try:
+        column = Column.objects.get(name=columnName, table=table)
+    except Column.DoesNotExist:
+        return HttpResponse("Could not find column with name " + columnName + " in table " + tableName + ".", status=400)
+
+    if column.type.type == Type.TEXT:
+        data = DataText.objects.filter(column=column)
+    if column.type.type == Type.NUMERIC:
+        data = DataNumeric.objects.filter(column=column)
+    if column.type.type == Type.DATE:
+        data = DataDate.objects.filter(column=column)
+    if column.type.type == Type.SELECTION:
+        data = DataSelection.objects.filter(column=column)
+    if column.type.type == Type.BOOL:
+        data = DataBool.objects.filter(column=column)
+    if column.type.type == Type.TABLE:
+        data = DataTable.objects.filter(column=column)
+
+    for item in data:
+        item.deleted = True
+        item.modified = datetime.now()
+        item.modifier = user
+        item.save()
+
+    column.name = column.name + "_DELETED_" + str(datetime.now())
+    column.deleted = True
+    column.modified = datetime.now()
+    column.modifier = user
+    column.save()
+
+    return 'OK'
+
+
 def createTableRights(rights, table):
     # for users
     for item in rights["users"]:
