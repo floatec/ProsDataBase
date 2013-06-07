@@ -1,13 +1,23 @@
 # Create your views here.
 # -*- coding: UTF-8 -*-
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 import json
 from datetime import datetime
+from django.contrib import auth
 
 from ..serializers import *
 from ..forms import *
 from .. import tablefactory
+
+
+def session(request):
+    if request.method == 'POST':
+        return register(request)
+    elif request.method == 'PUT':
+        return login(request)
+    elif request.method == 'DELETE':
+        return logoff()
 
 
 def users(request):
@@ -48,7 +58,7 @@ def category(request, name):
 
 def tables(request):
     if request.method == 'GET':
-        return showAllTables()
+        return showAllTables(request.user)
     if request.method == 'POST':
         return tablefactory.createTable(request)
 
@@ -61,7 +71,7 @@ def table(request, name):
     if request.method == 'PUT':
         return tablefactory.modifyTable(request, name)
     if request.method == "DELETE":
-        return deleteTable(name)
+        return deleteTable(name, request.user)
 
 
 def tableRights(request, tableName):
@@ -82,7 +92,40 @@ def dataset(request, tableName, datasetID):
     elif request.method == 'PUT':
         return modifyData(request, tableName, datasetID)
     elif request.method == 'DELETE':
-        return deleteDataset(tableName, datasetID)
+        return deleteDataset(tableName, datasetID, request.user)
+
+
+def register(request):
+    jsonRequest = json.loads(request.raw_post_data)
+    try:
+        DBUser.objects.get(username=jsonRequest["username"])
+        return HttpResponse("user with name " + jsonRequest["username"] + " already exists.", status=400)
+    except DBUser.DoesNotExist:
+        user = DBUser.objects.create_user(username=jsonRequest["username"], email=jsonRequest["email"], password=jsonRequest["password"])
+        user.is_active = True
+        user.save()
+        return HttpResponseRedirect("/login/")
+
+
+def login(request):
+    jsonRequest = json.loads(request.raw_post_data)
+    user = auth.authenticate(username=jsonRequest["username"], password=jsonRequest["password"])
+    if user is not None and user.is_active:
+        auth.login(request, user)
+        #return HttpResponseRedirect("table/")
+        return HttpResponse("ok")
+    else:
+        if user is None:
+            return HttpResponse("user not ok")
+        if not user.is_active:
+        #return HttpResponseRedirect("invalid/")
+            return HttpResponse("not ok")
+
+
+def logoff(request):
+    auth.logout(request)
+    #return HttpResponseRedirect("loggedoff/")
+    return HttpResponse("logged off")
 
 
 def showAllUsers():
@@ -321,9 +364,9 @@ def deleteDatasets(request, tableName):
     except Table.DoesNotExist:
         return HttpResponse(content="Could not find table " + tableName + " to delete from.", status=400)
 
-    request = json.loads(request.raw_post_data)
+    jsonRequest = json.loads(request.raw_post_data)
     deleted = list()
-    for id in request:
+    for id in jsonRequest:
         try:
             dataset = Dataset.objects.get(datasetID=id)
         except Dataset.DoesNotExist:
@@ -332,14 +375,14 @@ def deleteDatasets(request, tableName):
             continue
         dataset.deleted = True
         dataset.modifed = datetime.now()
-        dataset.modifier = DBUser.objects.get(username="test")
+        dataset.modifier = request.user
         dataset.save()
         deleted.append(id)
 
     return HttpResponse(json.dumps({"deleted": deleted}), content_type="application/json")
 
 
-def deleteDataset(tableName, datasetID):
+def deleteDataset(tableName, datasetID, user):
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
@@ -353,7 +396,7 @@ def deleteDataset(tableName, datasetID):
         return HttpResponse(content="Dataset with id " + datasetID + " does not exist.", status=400)
     dataset.deleted = True
     dataset.modified = datetime.now()
-    dataset.modifier = DBUser.objects.get(username="test")
+    dataset.modifier = user
     dataset.save()
     return HttpResponse("Successfully deleted dataset with id " + datasetID + " from table " + tableName + ".", status=200)
 
@@ -370,7 +413,7 @@ def insertData(request, tableName):
         ]
     }
     """
-    request = json.loads(request.raw_post_data)
+    jsonRequest = json.loads(request.raw_post_data)
     try:
         theTable = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
@@ -382,12 +425,12 @@ def insertData(request, tableName):
 
     newDataset = datasetF.save(commit=False)
     newDataset.table = theTable
-    newDataset.creator = DBUser.objects.get(username="test")
+    newDataset.creator = request.user
     newDataset.save()
     newDataset.datasetID = theTable.generateDatasetID(newDataset)
     newDataset.save()
 
-    for col in request["columns"]:
+    for col in jsonRequest["columns"]:
         try:
             column = Column.objects.get(name=col["name"], table=theTable)
         except Column.DoesNotExist:
@@ -431,7 +474,7 @@ def insertData(request, tableName):
             return HttpResponse(content="Could not add data for column + " + col["name"] + ". The content type was not valid.", status=400)
 
         else:
-            newData.creator = DBUser.objects.get(username="test")
+            newData.creator = request.user
             newData.column = column
             newData.dataset = newDataset
             newData.save()
@@ -464,7 +507,7 @@ def modifyData(request, tableName, datasetID):
         ]
     }
     """
-    request = json.loads(request.raw_post_data)
+    jsonRequest = json.loads(request.raw_post_data)
     try:
         theTable = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
@@ -476,7 +519,7 @@ def modifyData(request, tableName, datasetID):
 
     dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
     newData = None
-    for col in request["columns"]:
+    for col in jsonRequest["columns"]:
         try:
             column = Column.objects.get(name=col["name"], table=theTable)
         except Column.DoesNotExist:
@@ -490,7 +533,7 @@ def modifyData(request, tableName, datasetID):
             try:
                 text = dataset.datatext.get(column=column)
                 text.modified = datetime.now()
-                text.modifier = DBUser.objects.get(username="test")
+                text.modifier = request.user
                 text.content = col["value"]
                 text.save()
             except DataText.DoesNotExist:
@@ -503,7 +546,7 @@ def modifyData(request, tableName, datasetID):
             try:
                 num = dataset.datanumeric.get(column=column)
                 num.modified = datetime.now()
-                num.modifier = DBUser.objects.get(username="test")
+                num.modifier = request.user
                 num.content = col["value"]
                 num.save()
             except DataNumeric.DoesNotExist:
@@ -516,7 +559,7 @@ def modifyData(request, tableName, datasetID):
             try:
                 date = dataset.datadate.get(column=column)
                 date.modified = datetime.now()
-                date.modifier = DBUser.objects.get(username="test")
+                date.modifier = request.user
                 date.content = col["value"]
                 date.save()
             except DataDate.DoesNotExist:
@@ -529,7 +572,7 @@ def modifyData(request, tableName, datasetID):
             try:
                 sel = dataset.dataselection.get(column=column)
                 sel.modified = datetime.now()
-                sel.modifier = DBUser.objects.get(username="test")
+                sel.modifier = request.user
                 sel.content = col["value"]
                 sel.save()
             except DataSelection.DoesNotExist:
@@ -542,7 +585,7 @@ def modifyData(request, tableName, datasetID):
             try:
                 bool = dataset.databool.get(column=column)
                 bool.modified = datetime.now()
-                bool.modifier = DBUser.objects.get(username="test")
+                bool.modifier = request.user
                 bool.content = col["value"]
                 bool.save()
             except DataBool.DoesNotExist:
@@ -584,7 +627,7 @@ def modifyData(request, tableName, datasetID):
                 return HttpResponse(content="Could not add data to column " + col["name"] + ". The content type was invalid.", status=400)
 
             else:
-                newData.creator = DBUser.objects.get(username="test")
+                newData.creator = request.user
                 newData.column = column
                 newData.dataset = Dataset.objects.get(datasetID=datasetID)
                 newData.save()
@@ -604,8 +647,8 @@ def modifyData(request, tableName, datasetID):
     return HttpResponse(json.dumps({"id": dataset.datasetID}), status=200)
 
 
-def showAllTables():
-    tables = TableSerializer.serializeAll()
+def showAllTables(user):
+    tables = TableSerializer.serializeAll(user)
     return HttpResponse(json.dumps(tables), content_type="application/json") if tables is not None \
         else HttpResponse(status=500)
 
@@ -615,7 +658,7 @@ def showTable(name):
     return HttpResponse(json.dumps(table), content_type="application/json")
 
 
-def deleteTable(name):
+def deleteTable(name, user):
     try:
         table = Table.objects.get(name=name)
     except Table.DoesNotExist:
@@ -629,7 +672,7 @@ def deleteTable(name):
         datasets.append(dataset)
         dataset.deleted = True
         dataset.modified = datetime.now()
-        dataset.modifier = DBUser.objects.get(username="test")
+        dataset.modifier = user
         dataset.save()
 
     columns = list()
@@ -637,12 +680,12 @@ def deleteTable(name):
         columns.append(column)
         column.deleted = True
         column.modified = datetime.now()
-        column.modifier = DBUser.objects.get(username="test")
+        column.modifier = user
         column.save()
 
     table.deleted = True
     table.modified = datetime.now()
-    table.modifier = DBUser.objects.get(username="test")
+    table.modifier = user
     table.name = table.name + "_DELETED_" + str(datetime.now())
     table.save()
 
