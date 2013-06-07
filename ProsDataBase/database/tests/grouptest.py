@@ -73,3 +73,12 @@ class GroupTest(TestCase):
             elif group["name"] == group2.name:
                 self.assertFalse(group["tableCreator"])
                 self.assertFalse(group["groupCreator"])
+
+    def test_showOneGroup(self):
+
+        group = create_Group()
+
+        result = GroupSerializer.serializeOne(group)
+
+
+        self.assertEquals(len(result["users"]), 1000)
