@@ -314,12 +314,12 @@ def modifyTable(request, name):
             column = Column.objects.get(pk=col["id"])
         except Column.DoesNotExist:
             HttpResponse(content="Could not find column with id " + col["id"] + ".", status=400)
-
-        try:
-            Column.objects.get(name=col["name"], table=table)
-            return HttpResponse(content="Column with name " + col["name"] + " already exists.", status=400)
-        except Column.DoesNotExist:
-            column.name = col["name"]
+        if column.name != col["name"]:
+            try:
+                Column.objects.get(name=col["name"], table=table)
+                return HttpResponse(content="Column with name " + col["name"] + " already exists.", status=400)
+            except Column.DoesNotExist:
+                column.name = col["name"]
 
         colType = column.type
         if colType.type == Type.TEXT:
