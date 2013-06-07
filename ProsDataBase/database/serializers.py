@@ -221,19 +221,11 @@ class TableSerializer:
                 tableRights = RightListForTable.objects.get(user=actor, table=table)
             except RightListForTable. DoesNotExist:
                 tableRights = None
-            try:
-                columnRights = RightListForColumn.objects.filter(user=actor, table=table)
-            except RightListForColumn.DoesNotExist:
-                columnRights = None
         else:  # a group was passed
             try:
                 tableRights = RightListForTable.objects.get(group=actor, table=table)
             except RightListForTable. DoesNotExist:
                 tableRights = None
-            try:
-                columnRights = RightListForColumn.objects.filter(group=actor, table=table)
-            except RightListForColumn.DoesNotExist:
-                columnRights = None
 
         result = dict()
         result["tableRights"] = dict()
@@ -243,12 +235,25 @@ class TableSerializer:
         result["tableRights"]["delete"] = tableRights.delete if tableRights else False
 
         result["columnRights"] = list()
-        for rights in columnRights:
+        columns = table.getColumns()
+
+        for column in columns:
+            if user:
+                try:
+                    columnRights = RightListForColumn.objects.get(column=column, user=actor)
+                except RightListForColumn.DoesNotExist:
+                    columnRights = None
+            else:
+                try:
+                    columnRights = RightListForColumn.objects.get(column=column, group=actor)
+                except RightListForColumn.DoesNotExist:
+                    columnRights = None
+
             colObj = dict()
-            colObj["name"] = rights.column.name
+            colObj["name"] = column.name
             colObj["rights"] = dict()
-            colObj["rights"]["read"] = rights.read if columnRights else False
-            colObj["rights"]["modify"] = rights.modify if columnRights else False
+            colObj["rights"]["read"] = columnRights.read if columnRights else False
+            colObj["rights"]["modify"] = columnRights.modify if columnRights else False
 
             result["columnRights"].append(colObj)
 
