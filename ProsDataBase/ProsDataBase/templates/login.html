@@ -25,7 +25,10 @@
                 dataType: 'json',
 
                 success: function (data) {
+                    if(data.status=="ok")
                     window.location.href = '/table/';
+                    else
+                    $("#error").css("display","block")
                 }
 
             });
@@ -62,6 +65,7 @@
 			</div>
 			<div id="LoginRegisterDiv">
 				<div id="loginDiv">
+                    <div id="error" style="display:none; color:#FFFFF;background-color: red">Error at login</div>
 					<table>
 
                     <tr><td>Username:</td><td><input id="user" type="text"></td></tr>

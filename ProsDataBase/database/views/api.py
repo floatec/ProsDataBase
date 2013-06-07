@@ -134,13 +134,13 @@ def login(request):
     if user is not None and user.is_active:
         auth.login(request, user)
         #return HttpResponseRedirect("table/")
-        return HttpResponse("ok")
+        return HttpResponse('{"status":"ok"}')
     else:
         if user is None:
-            return HttpResponse("user not ok")
+            return HttpResponse('{"status":"not_ok"}')
         if not user.is_active:
         #return HttpResponseRedirect("invalid/")
-            return HttpResponse("not ok")
+            return HttpResponse('{"status":"not_ok"}')
 
 
 def logoff(request):
