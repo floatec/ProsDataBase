@@ -21,13 +21,13 @@
             for (var i in columns) {
                 var row = "<tr class='allColumns'><td class='nameCell'>" +  (columns[i].name) + "</td><td>"
                 if (columns[i].type == 0) {
-                    row += '<input class="inputText" name="' + encode_pros(columns[i].name) + '" type="text">'
+                    row += '<input class="inputText" name="' + encode_pros(columns[i].name) + '" type="text" placeholder="text">'
                 }
                 if (columns[i].type == 1) {
-                    row += '<input class="inputNumber" name="' + encode_pros(columns[i].name) + '" type="text">'
+                    row += '<input class="inputNumber" name="' + encode_pros(columns[i].name) + '" type="text" placeholder="0.0" onkeyup="this.value=this.value.replace(/[^\\d.]/,\'\')">'
                 }
                 if (columns[i].type == 2) {
-                    row += '<input  class="dateClass" name="' + encode_pros(columns[i].name) + '" type="text">'
+                    row += '<input  class="dateClass" name="' + encode_pros(columns[i].name) + '" type="text" placeholder="1990-05-26 23:42">'
                 }
                 if (columns[i].type == 3) {
                     row += '<select class="inputField" name="' + encode_pros(columns[i].name) + '" limit="1">'
