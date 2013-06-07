@@ -138,7 +138,7 @@ function init() {
 
         allUsers = data.users;
 
-        for (key in allUsers) {
+        for (var key in allUsers) {
             allUserGroups.push(allUsers[key]);
         }
 
@@ -147,7 +147,7 @@ function init() {
     $.getJSON('/api/group/', function (data) {
 
         allGroups = data.groups;
-        for (key in allGroups) {
+        for (var key in allGroups) {
             allUserGroups.push(allGroups[key]);
         }
 
