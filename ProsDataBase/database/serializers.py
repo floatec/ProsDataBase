@@ -116,10 +116,8 @@ class TableSerializer:
         typeTables = TypeTable.objects.filter(table=table)
         for typeTable in typeTables:
             typesColumn = Column.objects.get(type=typeTable.type)
-            if typeTable.column is not None:
-                colStructs.append({"name": table.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "shownColumn": typeTable.column.name})
-            else:
-                colStructs.append({"name": table.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name})
+            if typeTable.column is None:
+                colStructs.append({"name": typesColumn.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name})
 
         result = dict()
         result["category"] = table.category.name
