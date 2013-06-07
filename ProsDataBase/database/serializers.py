@@ -6,7 +6,7 @@ from models import *
 
 class TableSerializer:
     @staticmethod
-    def serializeOne(tableName):
+    def serializeOne(tableName, user):
         """
         return the table with specified name, along with its columns and datasets.
 
@@ -25,7 +25,7 @@ class TableSerializer:
 
         result = dict()
         result["name"] = table.name
-        result.update(DatasetSerializer.serializeAll(tableName))
+        result.update(DatasetSerializer.serializeAll(tableName, user))
 
         return result
 
@@ -70,6 +70,7 @@ class TableSerializer:
         return the table with its columns and the column's datatypes as well as ranges
 
         {
+          "category": "categoryname"
           "columns": [
             {"name": "columnname0", "type": 0, "length": 100},
             {"name": "columnname1", "type": 1, "min": "a decimal", "max": "a decimal"},
@@ -111,7 +112,10 @@ class TableSerializer:
             else:
                 return None
 
+        #  add relation columns, that is, the columns, in which this table can be found in other tables
+
         result = dict()
+        result["category"] = table.category.name
         result["columns"] = colStructs
         return result
 
@@ -294,6 +298,8 @@ class UserSerializer:
 
         result["tableCreator"] = user.tableCreator
         result["groupCreator"] = user.groupCreator
+        result["userManager"] = user.userManager
+        result["admin"] = user.admin
 
         return result
 
@@ -340,6 +346,7 @@ class GroupSerializer:
         theGroup["name"] = group.name
         theGroup["tableCreator"] = group.tableCreator
         theGroup["groupCreator"] = group.groupCreator
+        theGroup["userManager"] = group.userManager
         theGroup["admins"] = list()
         theGroup["users"] = list()
 
@@ -370,7 +377,7 @@ class GroupSerializer:
 class DatasetSerializer:
 
     @staticmethod
-    def serializeOne(id):
+    def serializeOne(id, user):
         """
         {
             "id": "2.2013_192_B",
@@ -396,6 +403,7 @@ class DatasetSerializer:
         datalist = dataset.getData()
         for data in datalist:
             for item in data:
+
                 dataObj = dict()
                 dataObj["column"] = item.column.name
                 dataObj["type"] = item.column.type.type
@@ -427,7 +435,7 @@ class DatasetSerializer:
         return result
 
     @staticmethod
-    def serializeAll(tableRef):
+    def serializeAll(tableRef, user):
         try:
             datasets = Dataset.objects.filter(table=tableRef)
         except Dataset.DoesNotExist:
@@ -438,7 +446,7 @@ class DatasetSerializer:
         for dataset in datasets:
             if dataset.deleted:
                 continue
-            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID))
+            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
 
         return result
 
