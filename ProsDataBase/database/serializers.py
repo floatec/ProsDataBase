@@ -30,7 +30,7 @@ class TableSerializer:
         return result
 
     @staticmethod
-    def serializeAll():
+    def serializeAll(user):
         """
         return all tables with their columns
 
@@ -41,7 +41,7 @@ class TableSerializer:
             ]
         }
         """
-        user = DBUser.objects.get(username="test")
+        user = user
         allowedTables = set()
 
         for rights in RightListForColumn.objects.filter(user=user):

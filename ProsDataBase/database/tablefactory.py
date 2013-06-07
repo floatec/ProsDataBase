@@ -40,36 +40,36 @@ def createTable(request):
       }
     }
     """
-    request = json.loads(request.raw_post_data)
+    jsonRequest = json.loads(request.raw_post_data)
     # add to table 'Table'
     table = dict()
-    table["name"] = request["name"]
+    table["name"] = jsonRequest["name"]
     table["created"] = datetime.now()
 
     tableF = TableForm(table)
     if tableF.is_valid():
         newTable = tableF.save(commit=False)
-        newTable.creator = DBUser.objects.get(username="test")
-        newTable.category = Category.objects.get(name=request["category"])
+        newTable.creator = request.user
+        newTable.category = Category.objects.get(name=jsonRequest["category"])
         newTable.save()
     else:
         return HttpResponse("Could not create table.")
 
     # add to table 'RightlistForTable' for user
-    answer = createTableRights(request["rights"], newTable)
+    answer = createTableRights(jsonRequest["rights"], newTable)
     if answer != 'OK':
         return HttpResponse(content=answer, status=400)
 
-    for col in request["columns"]:
+    for col in jsonRequest["columns"]:
         # add to table 'Datatype'
-        answer = createColumn(col, newTable)
+        answer = createColumn(col, newTable, request.user)
         if answer != 'OK':
             return HttpResponse(content=answer, status=400)
 
     return HttpResponse(status=200)
 
 
-def createColumn(col, table):
+def createColumn(col, table, user):
         # add to table 'Datatype'
         newDatatype = Type(name=col["name"], type=col["type"])
         newDatatype.save()
@@ -155,7 +155,7 @@ def createColumn(col, table):
         columnF = ColumnForm(column)
         if columnF.is_valid():
             newColumn = columnF.save(commit=False)
-            newColumn.creator = DBUser.objects.get(username="test")
+            newColumn.creator = user
             newColumn.type = newDatatype
             newColumn.table = table
             newColumn.save()
@@ -177,18 +177,19 @@ def createTableRights(rights, table):
         rightList["rightsAdmin"] = True if "rightsAdmin" in item["rights"] else False
         rightList["insert"] = True if "insert" in item["rights"] else False
         rightList["delete"] = True if "delete" in item["rights"] else False
-        rightListF = RightListForTableForm(rightList)
 
-        if rightListF.is_valid():
-            newRightList = rightListF.save(commit=False)
-            newRightList.table = table
+        if True in rightList.values():
+            rightListF = RightListForTableForm(rightList)
+            if rightListF.is_valid():
+                newRightList = rightListF.save(commit=False)
+                newRightList.table = table
 
-            user = DBUser.objects.get(username=item["name"])
-            newRightList.user = user
-            newRightList.save()
+                user = DBUser.objects.get(username=item["name"])
+                newRightList.user = user
+                newRightList.save()
 
-        else:
-            return "Could not create user's rightlist for table."
+            else:
+                return "Could not create user's rightlist for table."
 
      # for groups
     for item in rights["groups"]:
@@ -197,16 +198,18 @@ def createTableRights(rights, table):
         rightList["rightsAdmin"] = True if "rightsAdmin" in item["rights"] else False
         rightList["insert"] = True if "insert" in item["rights"] else False
         rightList["delete"] = True if "delete" in item["rights"] else False
-        rightListF = RightListForTableForm(rightList)
-        if rightListF.is_valid():
-            newRightList = rightListF.save(commit=False)
-            newRightList.table = table
 
-            group = DBGroup.objects.get(name=item["name"])
-            newRightList.group = group
-            newRightList.save()
-        else:
-            return "Could not create group's rightlist for table"
+        if True in rightList.values():
+            rightListF = RightListForTableForm(rightList)
+            if rightListF.is_valid():
+                newRightList = rightListF.save(commit=False)
+                newRightList.table = table
+
+                group = DBGroup.objects.get(name=item["name"])
+                newRightList.group = group
+                newRightList.save()
+            else:
+                return "Could not create group's rightlist for table"
     return 'OK'
 
 
@@ -216,33 +219,35 @@ def createColumnRights(rights, column):
         rightList = dict()
         rightList["read"] = 1 if "read" in item["rights"] else 0
         rightList["modify"] = 1 if "modify" in item["rights"] else 0
-        rightListF = RightListForColumnForm(rightList)
-        if rightListF.is_valid():
-            newRightList = rightListF.save(commit=False)
-            newRightList.column = column
-            newRightList.table = column.table
+        if True in rightList.values():
+            rightListF = RightListForColumnForm(rightList)
+            if rightListF.is_valid():
+                newRightList = rightListF.save(commit=False)
+                newRightList.column = column
+                newRightList.table = column.table
 
-            user = DBUser.objects.get(username=item["name"])
-            newRightList.user = user
-            newRightList.save()
-        else:
-            return "could not create column right list for user"
+                user = DBUser.objects.get(username=item["name"])
+                newRightList.user = user
+                newRightList.save()
+            else:
+                return "could not create column right list for user"
     # for groups
     for item in rights["groups"]:
         rightList = dict()
         rightList["read"] = 1 if "read" in item["rights"] else 0
         rightList["modify"] = 1 if "modify" in item["rights"] else 0
-        rightListF = RightListForColumnForm(rightList)
-        if rightListF.is_valid():
-            newRightList = rightListF.save(commit=False)
-            newRightList.column = column
-            newRightList.table = column.table
+        if True in rightList.values():
+            rightListF = RightListForColumnForm(rightList)
+            if rightListF.is_valid():
+                newRightList = rightListF.save(commit=False)
+                newRightList.column = column
+                newRightList.table = column.table
 
-            group = DBGroup.objects.get(name=item["name"])
-            newRightList.group = group
-            newRightList.save()
-        else:
-            return "Could not create column right list for group"
+                group = DBGroup.objects.get(name=item["name"])
+                newRightList.group = group
+                newRightList.save()
+            else:
+                return "Could not create column right list for group"
     return 'OK'
 
 
