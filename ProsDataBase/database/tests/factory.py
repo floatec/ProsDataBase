@@ -301,13 +301,13 @@ def create_Group(**kwargs):
     creates a group with two members
     """
     groupA = dict()
-    groupA["name"] = generate_random_username()
+    groupA["name"] = ("Student")
     groupF = DBGroupForm(groupA)
     if groupF.is_valid():
         newDBGroup = groupF.save()
         newDBGroup.save()
     for i in range(1,1001):
-        user = DBUser.objects.create_user(username=generate_random_username(                                                                                                                ))
+        user = DBUser.objects.create_user(username=i)
         user.save()
         m = dict()
         m["isAdmin"] = False
@@ -317,17 +317,6 @@ def create_Group(**kwargs):
             newm.user = user
             newm.group = newDBGroup
             newm.save()
-
-    user = DBUser.objects.create_user(username="Huseyin")
-    user.save
-    mAdmin = dict()
-    mAdmin["isAdmin"] = True
-    mAdminF = MembershipForm(mAdmin)
-    if mAdminF.is_valid():
-        newmAdmin = mAdminF.save(commit=False)
-        newmAdmin.user = user
-        newmAdmin.group = newDBGroup
-        newmAdmin.save()
 
     GroupSerializer.serializeOne(groupA["name"])
     return newDBGroup
