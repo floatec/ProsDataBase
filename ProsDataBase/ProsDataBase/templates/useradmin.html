@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block navigation %}
-        <div>groups</div>
+        <div>users</div>
  <ul id="navigationMenuContent">
 
 			</ul>
@@ -13,8 +13,20 @@
 
 {% endblock %}
 {% block content %}
+<table id='userTable' class='datasets'>
+    <caption>user rights</caption>
+    <thead>
+        <th>user</th>
+        <th>enabled</th>
+        <th>create tables</th>
+        <th>create groups</th>
+        <th>manage users</th>
+    </thead>
 
 
+</table>
+        <br />
+<button id='saveUsers'>save</button>
 {% endblock %}
 
 {% block menu %}
@@ -25,22 +37,56 @@
 
     init();
     function init(){
+
     $("#userAdmin").prepend("admin users");
 
 
 
     $.getJSON('/api/user/', function (data) {
 
-        allUsers = data.users;
+      var allUsers = data.users;
+        var countCheckboxes = 0;
 
-        for (key in allUsers) {
-            allUserGroups.push(allUsers[key]);
+        allUsers.sort(stringComparison);
+        console.log(allUsers);
+        for (var key in allUsers) {
+        $("#navigationMenuContent").append("<li><a href='#"+allUsers[key]+"'>"+allUsers[key]+"</a></li>");
+         countCheckboxes++;
+          var row = "<tr><td>"+allUsers[key]+"</td>";
+            countCheckboxes++;
+
+            //todo:if abfragen, ob freigeschaltet,tableadmin groupadmin, user manager oder nicht
+            row+= "<td><input type='checkbox' id='"+allUsers[key]+"'><label title='un/lock user' for='"+allUsers[key]+"'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
+           countCheckboxes++;
+            row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='tableCreator'><label title='create tables' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
+           countCheckboxes++;
+            row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='groupCreator'><label title='create groups' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/EQ-icon.png'></label></td>";
+           countCheckboxes++;
+
+            row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='userManager'><label title='manage users' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+          countCheckboxes++;
+            row += "</tr>";
+          $("#userTable").append(row);
+            $("input:checkbox").button();
+
         }
+
 
 
     });
 
+
+
 }
+$("#saveUsers").click(function(){
+
+
+
+
+
+});
+
+
 
 </script>
 {% endblock %}

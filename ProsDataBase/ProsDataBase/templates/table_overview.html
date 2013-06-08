@@ -19,20 +19,28 @@
 
 {% block javascript %}
 <script language="JavaScript">
-    $.getJSON('/api/table/', function (tabledata) {
-        createTables(tabledata.tables);
+ $.getJSON('/api/category/', function (data) {
+        createTables(data.categories);
 
 
-    });
+        });
+
+
 
     //function to create and fill tables
-    function createTables(tables) {
-        $.getJSON('/api/category/', function (data) {
+    function createTables(categories) {
 
-            allCatagories = data.categories;
+               allCatagories = categories;
 
-            for (var i in allCatagories) {
-                var content = "<div id='"+allCatagories[i]+"'>";
+            $.getJSON('/api/table/', function (tabledata) {
+               for (var i in allCatagories) {
+
+
+                var tables = tabledata.tables
+
+                var content="";
+
+                var content = "<span class='categoryHeadline'>"+allCatagories[i]+":</span><br /><br /><div class='"+allCatagories[i]+"'>";
                 for (var key in tables) {
 
                     if (allCatagories[i] == tables[key].category) {
@@ -53,8 +61,10 @@
                 }
                 content+="</div>";
                 $("#content").append(content);
-            }
+
+   }
         });
+
     }
 </script>
 {% endblock %}

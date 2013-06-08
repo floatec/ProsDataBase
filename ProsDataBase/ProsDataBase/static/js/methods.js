@@ -38,9 +38,23 @@ function decode_pros(string){
     function extractLast(term) {
         return split(term).pop();
     }
+//comparison to sort arrays alphabetically
 
+function stringComparison(a, b)	{
+	a = a.toLowerCase();
+	a = a.replace(/ä/g,"a");
+	a = a.replace(/ö/g,"o");
+	a = a.replace(/ü/g,"u");
+	a = a.replace(/ß/g,"s");
 
+	b = b.toLowerCase();
+	b = b.replace(/ä/g,"a");
+	b = b.replace(/ö/g,"o");
+	b = b.replace(/ü/g,"u");
+	b = b.replace(/ß/g,"s");
 
+	return(a==b)?0:(a>b)?1:-1;
+}
 
 
 	

@@ -117,7 +117,11 @@
     font-size: 26px;
     display: inline;
 }
+.categoryHeadline{
+    color: #00458A;
+    font-size: 26px;
 
+}
 .crumb span {
     color: #B9181E;
 }
