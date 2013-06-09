@@ -1,5 +1,11 @@
 $(document).ready(function () {
-    $('.btn').button({ disabled: false});
+      $.getJSON('/api/myself/',function(data){
+        if(data == null){
+            window.location = "/login/";
+        }
+        else{
+             $("#loginNameMenu").prepend("<p>"+data.name+"</p>");
+             $('.btn').button({ disabled: false});
     loginNameMenu = $("#loginNameMenu");
     subMenuList = $("#subMenuList");
     navigationMenu = $("#navigationMenu");
@@ -15,6 +21,34 @@ $(document).ready(function () {
     });
     subMenuList.menu();
     navigationMenuContent.menu();
+        if(!data.tableCreator){
+            $("#createTableButton").remove();
+        }
+        if(!data.groupCreator && !data.userManager){
+            $("#adminMenu").remove();
+
+        }
+
+        else {
+            if(!data.groupCreator){
+                $("#groupManagement").remove();
+                $("#categoryManagement").remove();
+
+            }
+
+        if(!data.userManager){
+            $("#userManagement").remove();
+        }
+    }
+        }
+    });
+
+
+
+
+
+
+
 
 });
 //TODO:encode function
