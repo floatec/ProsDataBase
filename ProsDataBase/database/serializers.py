@@ -272,9 +272,10 @@ class UserSerializer:
         """
         {
             "name": "myname",
-            "groups": ["groupname1", "groupname2", "groupname3"],
             "groupCreator": true,
-            "tableCreator": false
+            "tableCreator": false,
+            "userManager": true,
+            "admin": false
         }
         """
         try:
@@ -284,14 +285,24 @@ class UserSerializer:
 
         result = dict()
         result["name"] = username
-        result["groups"] = list()
+        result["tableCreator"] = False
+        result["groupCreator"] = False
+        result["userManager"] = False
 
         for m in Membership.objects.filter(user=user):
-            result["groups"].append(m.group.name)
+            if m.group.tableCreator:
+                result["tableCreator"] = True
+            if m.group.groupCreator:
+                result["groupCreator"] = True
+            if m.group.userManager:
+                result["userManager"] = True
 
-        result["tableCreator"] = user.tableCreator
-        result["groupCreator"] = user.groupCreator
-        result["userManager"] = user.userManager
+        if not result["tableCreator"]:
+            result["tableCreator"] = user.tableCreator
+        if not result["groupCreator"]:
+            result["groupCreator"] = user.groupCreator
+        if not result["userManager"]:
+            result["userManager"] = user.userManager
         result["admin"] = user.admin
 
         return result
@@ -426,7 +437,16 @@ class DatasetSerializer:
 
                 result["data"].append(dataObj)
 
-        return result
+        # add datasets for table link column
+        links = DataTableToDataset.objects.filter(dataset=dataset)
+        for link in links:
+            dataTable = link.DataTable
+            dataObj = dict()
+            dataObj["column"] = dataTable.column.name
+            dataObj["type"] = Type.LINK
+            dataObj["value"] = list()
+
+            return result
 
     @staticmethod
     def serializeAll(tableRef, user):

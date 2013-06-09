@@ -44,6 +44,11 @@ def group(request, name):
         return showOneGroup(name)
 
 
+def myself(request):
+    if request.method == 'GET':
+        return showMyUser(request.user)
+
+
 def categories(request):
     if request.method == 'GET':
         return showCategories()
@@ -274,6 +279,11 @@ def modifyGroup(request, name):
         theUser = DBUser.objects.get(username=admin)
         membership = Membership.objects.get(user=theUser)
         membership.delete()
+
+
+def showMyUser(user):
+    myself = UserSerializer.serializeOne(user)
+    return HttpResponse(json.dumps(myself), content_type="application/json")
 
 
 def showCategories():

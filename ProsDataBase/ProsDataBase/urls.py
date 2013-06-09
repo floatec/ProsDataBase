@@ -61,7 +61,8 @@ urlpatterns = patterns(
     (r'^api/user/(?P<name>[\w]+)/$', 'database.views.api.user'),
     (r'^api/group/$', "database.views.api.groups"),
     (r'^api/group/(?P<name>[\w ]+)/$', "database.views.api.group"),
-    (r'^api/auth/session/$', "database.views.api.session")
+    (r'^api/auth/session/$', "database.views.api.session"),
+    (r'^api/myself/$', "database.views.api.myself")
 
 
 )
