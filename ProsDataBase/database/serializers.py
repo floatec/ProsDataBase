@@ -298,6 +298,7 @@ class UserSerializer:
         result["groupCreator"] = user.groupCreator
         result["userManager"] = user.userManager
         result["admin"] = user.admin
+        result["active"] = user.is_active
 
         return result
 
@@ -318,7 +319,8 @@ class UserSerializer:
         result["users"] = []
 
         for user in users:
-            result["users"].append(user.username)
+            if user.is_active:
+                result["users"].append(user.username)
 
         return result
 
@@ -328,8 +330,7 @@ class UserSerializer:
         result["users"] = list()
 
         for user in DBUser.objects.all():
-            if user.is_active:
-                result["users"].append(UserSerializer.serializeOne(user.username))
+            result["users"].append(UserSerializer.serializeOne(user.username))
 
         return result
 
