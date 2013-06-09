@@ -17,7 +17,7 @@ def session(request):
     elif request.method == 'PUT':
         return login(request)
     elif request.method == 'DELETE':
-        return logoff()
+        return logoff(request)
 
 
 def users(request):
@@ -38,10 +38,12 @@ def groups(request):
 
 
 def group(request, name):
-    if request.method == 'PUT':
-        return modifyGroup(request, name)
     if request.method == 'GET':
         return showOneGroup(name)
+    if request.method == 'PUT':
+        return modifyGroup(request, name)
+    if request.method == 'DELETE':
+        return deleteGroup(request, name)
 
 
 def myself(request):
@@ -251,41 +253,60 @@ def modifyGroup(request, name):
 
     group.tableCreator = request["tableCreator"]
     group.groupCreator = request["groupCreator"]
+    group.userManager = request["userManager"]
     group.save()
 
     usernames = list()
     adminnames = list()
-    for m in Membership.objects.get(group=group):
-        if m.user.isAdmin:
+    for m in Membership.objects.filter(group=group):
+        if m.isAdmin:
             adminnames.append(m.user.username)
         else:
             usernames.append(m.user.username)
 
-    for user in set(request["users"]) - set(usernames):  # new users were added to the group
-        membershipF = MembershipForm({"isAdmin": False})
-        if membershipF.is_valid():
-            membership = membershipF.save(commit=False)
-            membership.user = DBUser.objects.get(username=user)
-            membership.group = group
-            membership.save()
+    sendUsers = set(request["users"]) - set(request["admins"])
 
-    for user in set(usernames) - set(request["users"]):  # users were deleted from the group
+    for user in set(sendUsers) - set(usernames):  # new users were added to the group
+        if len(user) > 0:  # workaround. frontend always sends one empty string
+            membershipF = MembershipForm({"isAdmin": False})
+            if membershipF.is_valid():
+                membership = membershipF.save(commit=False)
+                membership.user = DBUser.objects.get(username=user)
+                membership.group = group
+                membership.save()
+
+    for user in set(usernames) - set(sendUsers):  # users were deleted from the group
         theUser = DBUser.objects.get(username=user)
         membership = Membership.objects.get(user=theUser)
         membership.delete()
 
     for admin in set(request["admins"]) - set(adminnames):  # new admins were added to the group
-        membershipF = MembershipForm({"isAdmin": True})
-        if membershipF.is_valid():
-            membership = membershipF.save(commit=False)
-            membership.user = DBUser.objects.get(username=admin)
-            membership.group = group
-            membership.save()
+        if len(admin) > 0:
+            membershipF = MembershipForm({"isAdmin": True})
+            if membershipF.is_valid():
+                membership = membershipF.save(commit=False)
+                membership.user = DBUser.objects.get(username=admin)
+                membership.group = group
+                membership.save()
 
     for admin in set(adminnames) - set(request["admins"]):  # users were deleted from the group
         theUser = DBUser.objects.get(username=admin)
         membership = Membership.objects.get(user=theUser)
         membership.delete()
+
+    return HttpResponse("Successfully modifed group " + name + ".", status=200)
+
+
+def deleteGroup(request, name):
+    try:
+        group = DBGroup.objects.get(name=name)
+    except DBGroup.DoesNotExist:
+        return HttpResponse(content="Could not find group with name " + name + ".", status=400)
+
+    Membership.objects.filter(group=group).delete()
+    group.delete()
+
+    return HttpResponse(content="Successfully deleted group " + name + ".", status=200)
 
 
 def showMyUser(user):

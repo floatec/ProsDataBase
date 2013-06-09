@@ -6,6 +6,8 @@
 {% endblock %}
 
 {% block content %}
+<div id="deleteAlertBox">Are you sure to delete this group?</div>
+<button id='deleteGroup'>delete group</button><br/><br />
 <span>group name:</span><br/>
 <input type="text" id="groupName"><br/><br/>
 <span>create tables:</span>
@@ -28,7 +30,32 @@
     <script language="JavaScript">
     init();
     function init(){
+$.getJSON('/api/myself/',function(data){
+        if(data == null){
+            window.location = "/login/";
+        }
+        else{
+        if(!data.tableCreator){
+            $("#createTableButton").remove();
+        }
+        if(!data.groupCreator && !data.userManager){
+            $("#adminMenu").remove();
 
+        }
+
+        else {
+            if(!data.groupCreator){
+                $("#groupManagement").remove();
+                $("#categoryManagement").remove();
+
+            }
+
+        if(!data.userManager){
+            $("#userManagement").remove();
+        }
+    }
+        }
+    });
         var groupName = getGroupName();
          $("#groupCrumb").prepend("all groups");
             $("#modifyGroupCrumb").prepend(groupName);
@@ -107,7 +134,24 @@
                     });
 
         });
+  // initialize alertbox
+    $("#deleteAlertBox").dialog({
+        autoOpen: false,
+        buttons: {
+            "delete": function () {
+               $.ajax({
+                url: '/api/group/'+getGroupName()+'/',
+                type: 'delete'
+                });
 
+
+                $(this).dialog("close");
+            },
+            "back": function () {
+                $(this).dialog("close");
+            }
+        }
+    });
         $.getJSON('/api/group/'+getGroupName()+'/', function (data) {
         $("#groupName").val(data.name);
 
@@ -124,6 +168,10 @@
        }
        $("#allAdmins").val(getAllUsers(data.admins));
        $("#allUsers").val(getAllUsers(data.users));
+        });
+
+        $("#deleteGroup").click(function(){
+           $("#deleteAlertBox").dialog('open');
         });
 
     }
@@ -151,7 +199,7 @@ function getAllUsers(users){
 
         console.log(groupObj);
         $.ajax({
-        url: '/api/group/',
+        url: '/api/group/'+getGroupName()+'/',
         type: 'put',
         data: JSON.stringify(groupObj),
         contentType: 'application/json',
