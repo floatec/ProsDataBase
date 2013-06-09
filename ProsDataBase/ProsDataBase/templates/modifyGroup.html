@@ -12,6 +12,8 @@
 <input type="checkbox" id="createTables"><br/><br />
 <span>create groups:</span>
 <input type="checkbox" id="createGroups"><br /><br />
+<span>allow user management:</span>
+<input type="checkbox" id="userManager"><br /><br />
 <span>add administrators:</span><br/>
 <textarea rows="4" cols="50" id="allAdmins">
 </textarea><br />
@@ -116,7 +118,10 @@
        if(data.tableCreator){
            $("#createTables").attr('checked',true);
        }
+        if(data.userManager){
 
+           $("#userManager").attr('checked',true);
+       }
        $("#allAdmins").val(getAllUsers(data.admins));
        $("#allUsers").val(getAllUsers(data.users));
         });
@@ -140,6 +145,7 @@ function getAllUsers(users){
         groupObj.name = $("#groupName").val();
         groupObj.groupCreator = $("#createGroups").is(":checked");
         groupObj.tableCreator = $("#createTables").is(":checked");
+        groupObj.userManager = $("#userManager").is(":checked");
         groupObj.admins =getUsers($("#allAdmins").val());
         groupObj.users = getUsers($("#allUsers").val());
 

@@ -18,7 +18,8 @@
 <input type="checkbox" id="createTables"><br/><br />
 <span>create groups:</span>
 <input type="checkbox" id="createGroups"><br /><br />
-<span>add administrators:</span><br/>
+<span>allow user management:</span>
+<input type="checkbox" id="userManager"><br /><br />
 <textarea rows="4" cols="50" id="allAdmins">
 </textarea><br />
 <span>add users:</span><br/>
@@ -120,6 +121,7 @@
         groupObj.name = $("#groupName").val();
         groupObj.groupCreator = $("#createGroups").is(":checked");
         groupObj.tableCreator = $("#createTables").is(":checked");
+        groupObj.userManager = $("#userManager").is(":checked");
         groupObj.admins =getUsers($("#allAdmins").val());
         groupObj.users = getUsers($("#allUsers").val());
 
