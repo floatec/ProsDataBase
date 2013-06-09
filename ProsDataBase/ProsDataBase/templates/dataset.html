@@ -14,6 +14,34 @@
 
 {% block javascript %}
     <script language="JavaScript">
+
+        $.getJSON('/api/myself/',function(data){
+        if(data == null){
+            window.location = "/login/";
+        }
+        else{
+        if(!data.tableCreator){
+            $("#createTableButton").remove();
+        }
+        if(!data.groupCreator && !data.userManager){
+            $("#adminMenu").remove();
+
+        }
+
+        else {
+            if(!data.groupCreator){
+                $("#groupManagement").remove();
+                $("#categoryManagement").remove();
+
+            }
+
+        if(!data.userManager){
+            $("#userManagement").remove();
+        }
+    }
+        }
+    });
+
         $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
             var tableName = getTableName();
             var columns = data.columns;
