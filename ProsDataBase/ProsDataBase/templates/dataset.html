@@ -14,6 +14,9 @@
 
 {% block javascript %}
     <script language="JavaScript">
+
+
+
         $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
             var tableName = getTableName();
             var columns = data.columns;

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block navigation %}
-<div>Tabellen</div>
+<div>tables</div>
 <ul id="navigationMenuContent">
 
 </ul>
@@ -20,6 +20,10 @@
 {% block javascript %}
 <script language="JavaScript">
     $.getJSON('/api/myself/',function(data){
+        if(data == null){
+            window.location = "/login/";
+        }
+        else{
         if(!data.tableCreator){
             $("#createTableButton").remove();
         }
@@ -39,7 +43,7 @@
             $("#userManagement").remove();
         }
     }
-
+        }
     });
 
  $.getJSON('/api/category/', function (data) {
