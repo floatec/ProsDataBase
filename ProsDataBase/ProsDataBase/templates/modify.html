@@ -485,6 +485,7 @@ function createAllExistedColumn(){
 
 
         for (var key in columns) {
+            if(columns[key].type != 6){
             createExistedColumnsRow(columns[key].id);
             $("#field_" + columnID).val(columns[key].name);
 
@@ -547,7 +548,7 @@ function createAllExistedColumn(){
                 }).attr('selected', true);
             }
 
-
+        }
         }
 
 
