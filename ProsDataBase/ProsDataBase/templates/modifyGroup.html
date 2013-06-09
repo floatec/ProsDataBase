@@ -12,10 +12,6 @@
 <input type="text" id="groupName"><br/><br/>
 <span>create tables:</span>
 <input type="checkbox" id="createTables"><br/><br />
-<span>create groups:</span>
-<input type="checkbox" id="createGroups"><br /><br />
-<span>allow user management:</span>
-<input type="checkbox" id="userManager"><br /><br />
 <span>add administrators:</span><br/>
 <textarea rows="4" cols="50" id="allAdmins">
 </textarea><br />
@@ -129,17 +125,8 @@
     });
         $.getJSON('/api/group/'+getGroupName()+'/', function (data) {
         $("#groupName").val(data.name);
-
-       if(data.groupCreator){
-
-           $("#createGroups").attr('checked',true);
-       }
        if(data.tableCreator){
            $("#createTables").attr('checked',true);
-       }
-        if(data.userManager){
-
-           $("#userManager").attr('checked',true);
        }
        $("#allAdmins").val(getAllUsers(data.admins));
        $("#allUsers").val(getAllUsers(data.users));

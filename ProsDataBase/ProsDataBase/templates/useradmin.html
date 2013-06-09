@@ -19,8 +19,7 @@
         <th>user</th>
         <th>enabled</th>
         <th>create tables</th>
-        <th>create groups</th>
-        <th>manage users</th>
+        <th>user admin</th>
     </thead>
 
 
@@ -40,16 +39,13 @@
 
     $("#userAdmin").prepend("admin users");
 
-    $.getJSON('/api/user/', function (data) {
-       alphabeticalUsers = [];
-       alphabeticalUsers = data.users;
-       alphabeticalUsers.sort(stringComparison);
-
-
-
     $.getJSON('/api/userrights/', function (data) {
 
-
+       alphabeticalUsers = [];
+       for(var p in data.users){
+           alphabeticalUsers.push(data.users[p].name);
+       }
+       alphabeticalUsers.sort(stringComparison);
 
       var allUsers = data.users;
         var countCheckboxes = 0;
@@ -77,14 +73,8 @@
                  row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='tableCreator'><label title='create tables' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
             }
               countCheckboxes++;
-            if(allUsers[key].groupCreator){
-                row+= "<td><input type='checkbox' checked='checked' id='check"+countCheckboxes+"' class='groupCreator'><label title='create groups' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/EQ-icon.png'></label></td>";
 
-            }
-           else{
-                 row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='groupCreator'><label title='create groups' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/EQ-icon.png'></label></td>";
-            }
-            countCheckboxes++;
+
 
             if(allUsers[key].userManager){
                 row+= "<td><input type='checkbox' checked='checked' id='check"+countCheckboxes+"' class='userManager'><label title='manage users' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
@@ -104,8 +94,6 @@
 
     });
 
-
- });
 }
 $("#saveUsers").click(function(){
 
@@ -115,10 +103,9 @@ $("#saveUsers").click(function(){
     allRows.each(function(){
        usersObj = {};
         usersObj.name = $(this).find(".enabled").attr('id');
-        usersObj.active = $(this).find(".enabled").val();
-       usersObj.tableCreator = $(this).find(".tableCreator").is('checked');
-        usersObj.groupCreator = $(this).find(".groupCreator").is('checked');
-        usersObj.userManager = $(this).find(".userManager").is('checked');
+        usersObj.active = $(this).find(".enabled").is(':checked');
+       usersObj.tableCreator = $(this).find(".tableCreator").is(':checked');
+        usersObj.userManager = $(this).find(".userManager").is(':checked');
         jsonObj.users.push(usersObj);
     });
 
