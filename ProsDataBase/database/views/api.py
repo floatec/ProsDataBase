@@ -256,7 +256,7 @@ def modifyGroup(request, name):
 
     usernames = list()
     adminnames = list()
-    for m in Membership.objects.get(group=group):
+    for m in Membership.objects.filter(group=group):
         if m.user.isAdmin:
             adminnames.append(m.user.username)
         else:
