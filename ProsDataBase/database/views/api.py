@@ -17,7 +17,7 @@ def session(request):
     elif request.method == 'PUT':
         return login(request)
     elif request.method == 'DELETE':
-        return logoff()
+        return logoff(request)
 
 
 def users(request):
@@ -251,6 +251,7 @@ def modifyGroup(request, name):
 
     group.tableCreator = request["tableCreator"]
     group.groupCreator = request["groupCreator"]
+    group.userManager = request["userManager"]
     group.save()
 
     usernames = list()
@@ -261,31 +262,37 @@ def modifyGroup(request, name):
         else:
             usernames.append(m.user.username)
 
-    for user in set(request["users"]) - set(usernames):  # new users were added to the group
-        membershipF = MembershipForm({"isAdmin": False})
-        if membershipF.is_valid():
-            membership = membershipF.save(commit=False)
-            membership.user = DBUser.objects.get(username=user)
-            membership.group = group
-            membership.save()
+    sendUsers = set(request["users"]) - set(request["admins"])
 
-    for user in set(usernames) - set(request["users"]):  # users were deleted from the group
+    for user in set(sendUsers) - set(usernames):  # new users were added to the group
+        if len(user) > 0:  # workaround. frontend always sends one empty string
+            membershipF = MembershipForm({"isAdmin": False})
+            if membershipF.is_valid():
+                membership = membershipF.save(commit=False)
+                membership.user = DBUser.objects.get(username=user)
+                membership.group = group
+                membership.save()
+
+    for user in set(usernames) - set(sendUsers):  # users were deleted from the group
         theUser = DBUser.objects.get(username=user)
         membership = Membership.objects.get(user=theUser)
         membership.delete()
 
     for admin in set(request["admins"]) - set(adminnames):  # new admins were added to the group
-        membershipF = MembershipForm({"isAdmin": True})
-        if membershipF.is_valid():
-            membership = membershipF.save(commit=False)
-            membership.user = DBUser.objects.get(username=admin)
-            membership.group = group
-            membership.save()
+        if len(admin) > 0:
+            membershipF = MembershipForm({"isAdmin": True})
+            if membershipF.is_valid():
+                membership = membershipF.save(commit=False)
+                membership.user = DBUser.objects.get(username=admin)
+                membership.group = group
+                membership.save()
 
     for admin in set(adminnames) - set(request["admins"]):  # users were deleted from the group
         theUser = DBUser.objects.get(username=admin)
         membership = Membership.objects.get(user=theUser)
         membership.delete()
+
+    return HttpResponse("Successfully modifed group " + name + ".", status=200)
 
 
 def showMyUser(user):
