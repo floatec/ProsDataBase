@@ -386,7 +386,7 @@ def modifyTable(request, name):
                 return HttpResponse(content="found duplicate selection values.", status=400)
             for option in col["options"]:
                 try:
-                    value = SelectionValue.objects.get(index=option["key"])
+                    value = SelectionValue.objects.get(index=option["key"], typeSelection=typeSel)
                     value.content = option["value"]
                     value.save()
                 except SelectionValue.DoesNotExist:  # this is a new selection value
