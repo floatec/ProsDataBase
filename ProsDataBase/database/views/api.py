@@ -38,10 +38,12 @@ def groups(request):
 
 
 def group(request, name):
-    if request.method == 'PUT':
-        return modifyGroup(request, name)
     if request.method == 'GET':
         return showOneGroup(name)
+    if request.method == 'PUT':
+        return modifyGroup(request, name)
+    if request.method == 'DELETE':
+        return deleteGroup(request, name)
 
 
 def myself(request):
@@ -293,6 +295,18 @@ def modifyGroup(request, name):
         membership.delete()
 
     return HttpResponse("Successfully modifed group " + name + ".", status=200)
+
+
+def deleteGroup(request, name):
+    try:
+        group = DBGroup.objects.get(name=name)
+    except DBGroup.DoesNotExist:
+        return HttpResponse(content="Could not find group with name " + name + ".", status=400)
+
+    Membership.objects.filter(group=group).delete()
+    group.delete()
+
+    return HttpResponse(content="Successfully deleted group " + name + ".", status=200)
 
 
 def showMyUser(user):
