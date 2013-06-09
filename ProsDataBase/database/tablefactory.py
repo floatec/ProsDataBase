@@ -382,7 +382,7 @@ def modifyTable(request, name):
 
         elif colType.type == Type.SELECTION:
             typeSel = colType.getType()
-            if len([option["name"] for option in col["options"]]) > len(set([option["name"] for option in col["options"]])):
+            if len([option["value"] for option in col["options"]]) > len(set([option["value"] for option in col["options"]])):
                 return HttpResponse(content="found duplicate selection values.", status=400)
             for option in col["options"]:
                 try:
