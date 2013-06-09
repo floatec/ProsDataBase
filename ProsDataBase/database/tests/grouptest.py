@@ -69,10 +69,8 @@ class GroupTest(TestCase):
         for group in result["groups"]:
             if group["name"] == group1.name:
                 self.assertFalse(group["tableCreator"])
-                self.assertFalse(group["groupCreator"])
             elif group["name"] == group2.name:
                 self.assertFalse(group["tableCreator"])
-                self.assertFalse(group["groupCreator"])
 
     def test_showOneGroup(self):
 

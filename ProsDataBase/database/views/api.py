@@ -199,13 +199,11 @@ def modifyUserRights(request):
             HttpResponse("Could not find user with name " + userObj["name"] + ".", status=400)
 
         if userObj["tableCreator"] != user.tableCreator\
-                or userObj["groupCreator"] != user.groupCreator\
                 or userObj["userManager"] != user.userManager\
                 or userObj["active"] != user.is_active:
             modified = True
 
         user.tableCreator = userObj["tableCreator"]
-        user.groupCreator = userObj["groupCreator"]
         user.userManager = userObj["userManager"]
         user.is_active = userObj["active"]
         if modified:
@@ -238,8 +236,6 @@ def addGroup(request):
     if groupF.is_valid():
         newGroup = groupF.save(commit=False)
         newGroup.tableCreator = request["tableCreator"]
-        newGroup.groupCreator = request["groupCreator"]
-        newGroup.userManager = request["userManager"]
         newGroup.save()
 
         failed = list() # list of users whose names could not be found in the database
@@ -293,8 +289,6 @@ def modifyGroup(request, name):
             group.name = request["name"]
 
     group.tableCreator = request["tableCreator"]
-    group.groupCreator = request["groupCreator"]
-    group.userManager = request["userManager"]
     group.save()
 
     usernames = list()

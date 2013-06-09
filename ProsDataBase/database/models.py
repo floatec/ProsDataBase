@@ -363,7 +363,6 @@ class TypeTable(models.Model):
 
 class DBUser(AbstractUser):
     tableCreator = models.BooleanField(default=False)
-    groupCreator = models.BooleanField(default=False)
     userManager = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
     objects = UserManager()
@@ -384,8 +383,6 @@ class DBUser(AbstractUser):
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)
     tableCreator = models.BooleanField(default=False)
-    groupCreator = models.BooleanField(default=False)
-    userManager = models.BooleanField(default=False)
 
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Membership')
 

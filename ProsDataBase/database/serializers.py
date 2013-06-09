@@ -272,7 +272,6 @@ class UserSerializer:
         """
         {
             "name": "myname",
-            "groupCreator": true,
             "tableCreator": false,
             "userManager": true,
             "admin": false
@@ -290,12 +289,9 @@ class UserSerializer:
             groupObj = dict()
             groupObj["name"] = m.group.name
             groupObj["tableCreator"] = m.group.tableCreator
-            groupObj["groupCreator"] = m.group.groupCreator
-            groupObj["userManager"] = m.group.userManager
             result["groups"].append(groupObj)
 
         result["tableCreator"] = user.tableCreator
-        result["groupCreator"] = user.groupCreator
         result["userManager"] = user.userManager
         result["active"] = user.is_active
 
@@ -354,8 +350,6 @@ class GroupSerializer:
         theGroup = dict()
         theGroup["name"] = group.name
         theGroup["tableCreator"] = group.tableCreator
-        theGroup["groupCreator"] = group.groupCreator
-        theGroup["userManager"] = group.userManager
         theGroup["admins"] = list()
         theGroup["users"] = list()
 
