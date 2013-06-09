@@ -19,6 +19,9 @@
             var columns = data.columns;
 
             for (var i in columns) {
+                if(columns[i].type == 6){
+                    continue
+                }
                 var row = "<tr class='allColumns'><td class='nameCell'>" + (columns[i].name) + "</td><td>"
                 if (columns[i].type == 0) {
                     row += '<input class="inputText" name="' + encode_pros(columns[i].name) + '" type="text" placeholder="text">'
