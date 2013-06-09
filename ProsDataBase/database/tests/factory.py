@@ -321,13 +321,13 @@ def create_Group(**kwargs):
     # creates a group with 1000 members
     # ============================================================
     groupA = dict()
-    groupA["name"] = ("Student")
+    groupA["name"] = generate_random_username()
     groupF = DBGroupForm(groupA)
     if groupF.is_valid():
         newDBGroup = groupF.save()
         newDBGroup.save()
-    for i in range(1,1001):
-        user = DBUser.objects.create_user(username=i)
+    for i in range(1,101):
+        user = DBUser.objects.create_user(username=generate_random_username())
         user.save()
         m = dict()
         m["isAdmin"] = False
