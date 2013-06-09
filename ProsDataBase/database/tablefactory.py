@@ -221,9 +221,7 @@ def createTableRights(rights, table):
             if rightListF.is_valid():
                 newRightList = rightListF.save(commit=False)
                 newRightList.table = table
-
-                user = DBUser.objects.get(username=item["name"])
-                newRightList.user = user
+                newRightList.user = DBUser.objects.get(username=item["name"])
                 newRightList.save()
 
             else:
@@ -242,7 +240,6 @@ def createTableRights(rights, table):
             if rightListF.is_valid():
                 newRightList = rightListF.save(commit=False)
                 newRightList.table = table
-
                 group = DBGroup.objects.get(name=item["name"])
                 newRightList.group = group
                 newRightList.save()
@@ -255,8 +252,8 @@ def createColumnRights(rights, column):
     # for users
     for item in rights["users"]:
         rightList = dict()
-        rightList["read"] = 1 if "read" in item["rights"] else 0
-        rightList["modify"] = 1 if "modify" in item["rights"] else 0
+        rightList["read"] = True if "read" in item["rights"] else False
+        rightList["modify"] = True if "modify" in item["rights"] else False
         if True in rightList.values():
             rightListF = RightListForColumnForm(rightList)
             if rightListF.is_valid():
@@ -272,8 +269,8 @@ def createColumnRights(rights, column):
     # for groups
     for item in rights["groups"]:
         rightList = dict()
-        rightList["read"] = 1 if "read" in item["rights"] else 0
-        rightList["modify"] = 1 if "modify" in item["rights"] else 0
+        rightList["read"] = True if "read" in item["rights"] else False
+        rightList["modify"] = True if "modify" in item["rights"] else False
         if True in rightList.values():
             rightListF = RightListForColumnForm(rightList)
             if rightListF.is_valid():
@@ -358,6 +355,7 @@ def modifyTable(request, name):
                 return HttpResponse(content="Column with name " + col["name"] + " already exists.", status=400)
             except Column.DoesNotExist:
                 column.name = col["name"]
+                column.save()
 
         colType = column.type
         if colType.type == Type.TEXT:
@@ -365,12 +363,14 @@ def modifyTable(request, name):
             if col["length"] >= typeText.length:
                 typeText.length = col["length"]
                 typeText.save()
+
         elif colType.type == Type.NUMERIC:
             typeNum = colType.getType()
             if col["min"] <= typeNum.min:
                 typeNum.min = col["min"]
             if typeNum.max <= col["max"]:
                 typeNum.max = col["max"]
+            typeNum.save()
 
         elif colType.type == Type.DATE:
             typeDate = colType.getType()
@@ -378,6 +378,7 @@ def modifyTable(request, name):
                 typeDate.min = col["min"]
             if "max" in col and col["max"] >= typeDate.max:
                 typeDate.max = col["max"]
+            typeDate.save()
 
         elif colType.type == Type.SELECTION:
             typeSel = colType.getType()
@@ -400,17 +401,21 @@ def modifyTable(request, name):
         elif colType.type == Type.TABLE:
             typeTable = colType.getType()
             refTable = typeTable.table
-            refColumns = refTable.getColumns()
-            refColNames = list()
-            for refColumn in refColumns:
-                refColNames.append(refColumn.name)
-            if col["column"] not in refColNames:
-                return HttpResponse(content="Column " + col["column"] + " does not exist in referenced table " + col["table"] + ".", status=400)
-            try:
-                refColumn = Column.objects.get(name=col["column"])
-            except Column.DoesNotExist:
-                return HttpResponse(content="Column " + col["column"] + " does not exist.", status=400)
-            typeTable.column = refColumn
+            if "column" in col:
+                refColumns = refTable.getColumns()
+                refColNames = list()
+                for refColumn in refColumns:
+                    refColNames.append(refColumn.name)
+                if col["column"] not in refColNames:
+                    return HttpResponse(content="Column " + col["column"] + " does not exist in referenced table " + col["table"] + ".", status=400)
+                try:
+                    refColumn = Column.objects.get(name=col["column"])
+                except Column.DoesNotExist:
+                    return HttpResponse(content="Column " + col["column"] + " does not exist.", status=400)
+                typeTable.column = refColumn
+            else:
+                typeTable.column = None
+                typeTable.save()
         if "rights" in col:
             RightListForColumn.objects.filter(column=column).delete()
             answer = createColumnRights(col["rights"], column)
