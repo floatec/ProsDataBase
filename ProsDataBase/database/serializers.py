@@ -268,7 +268,7 @@ class TableSerializer:
 
 class UserSerializer:
     @staticmethod
-    def serializeOne(username):
+    def serializeOne(user):
         """
         {
             "name": "myname",
@@ -279,12 +279,12 @@ class UserSerializer:
         }
         """
         try:
-            user = DBUser.objects.get(username=username)
+            user = DBUser.objects.get(username=user.username)
         except DBUser.DoesNotExist:
             return None
 
         result = dict()
-        result["name"] = username
+        result["name"] = user.username
         result["tableCreator"] = False
         result["groupCreator"] = False
         result["userManager"] = False
