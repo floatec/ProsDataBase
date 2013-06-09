@@ -331,11 +331,11 @@ def modifyTable(request, name):
 
         table.category = category
         table.save()
-        if "rights" in jsonRequest:
-            RightListForTable.objects.filter(table=table).delete()
-            answer = createTableRights(jsonRequest["rights"], table)
-            if answer != 'OK':
-                return HttpResponse(content=answer, status=400)
+    if "rights" in jsonRequest:
+        RightListForTable.objects.filter(table=table).delete()
+        answer = createTableRights(jsonRequest["rights"], table)
+        if answer != 'OK':
+            return HttpResponse(content=answer, status=400)
 
     for col in jsonRequest["columns"]:
         if "id" not in col:  # this should be a newly added column
