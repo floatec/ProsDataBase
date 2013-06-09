@@ -53,7 +53,7 @@ def group(request, name):
 
 def myself(request):
     if request.method == 'GET':
-        return showMyUser(request.user)
+        return showMyUser(request.user.username)
 
 
 def myPassword(request):
