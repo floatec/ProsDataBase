@@ -49,6 +49,13 @@ def myself(request):
         return showMyUser(request.user)
 
 
+def myPassword(request):
+    if request.method == 'POST':
+        return checkMyPassword(request)
+    if request.method == 'PUT':
+        return changeMyPassword(request)
+
+
 def categories(request):
     if request.method == 'GET':
         return showCategories()
@@ -284,6 +291,22 @@ def modifyGroup(request, name):
 def showMyUser(user):
     myself = UserSerializer.serializeOne(user)
     return HttpResponse(json.dumps(myself), content_type="application/json")
+
+
+def checkMyPassword(request):
+    jsonRequest = json.loads(request.raw_post_data)
+
+    response = dict()
+    response["valid"] = request.user.check_password(jsonRequest["password"])
+
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
+def changeMyPassword(request):
+    jsonRequest = json.loads(request.raw_post_data)
+    request.user.set_password(jsonRequest["password"])
+    request.user.save()
+    return HttpResponse("Saved password successfully.", status=200)
 
 
 def showCategories():
