@@ -40,48 +40,96 @@
 
     $("#userAdmin").prepend("admin users");
 
-
-
     $.getJSON('/api/user/', function (data) {
+       alphabeticalUsers = [];
+       alphabeticalUsers = data.users;
+       alphabeticalUsers.sort(stringComparison);
+
+
+
+    $.getJSON('/api/userrights/', function (data) {
+
+
 
       var allUsers = data.users;
         var countCheckboxes = 0;
-
-        allUsers.sort(stringComparison);
         console.log(allUsers);
+        for(var i in alphabeticalUsers){
         for (var key in allUsers) {
-        $("#navigationMenuContent").append("<li><a href='#"+allUsers[key]+"'>"+allUsers[key]+"</a></li>");
+            if(alphabeticalUsers[i] == allUsers[key].name){
+        $("#navigationMenuContent").append("<li><a href='#"+allUsers[key].name+"'>"+allUsers[key].name+"</a></li>");
          countCheckboxes++;
-          var row = "<tr><td>"+allUsers[key]+"</td>";
+          var row = "<tr class='allRows'><td>"+allUsers[key].name+"</td>";
             countCheckboxes++;
 
-            //todo:if abfragen, ob freigeschaltet,tableadmin groupadmin, user manager oder nicht
-            row+= "<td><input type='checkbox' id='"+allUsers[key]+"'><label title='un/lock user' for='"+allUsers[key]+"'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
-           countCheckboxes++;
-            row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='tableCreator'><label title='create tables' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
-           countCheckboxes++;
-            row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='groupCreator'><label title='create groups' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/EQ-icon.png'></label></td>";
-           countCheckboxes++;
 
-            row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='userManager'><label title='manage users' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+            if(allUsers[key].active){
+                 row+= "<td><input checked='checked' class='enabled' type='checkbox' id='"+allUsers[key].name+"'><label title='un/lock user' for='"+allUsers[key].name+"'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
+            }
+            else{
+                row+= "<td><input type='checkbox' class='enabled' id='"+allUsers[key].name+"'><label title='un/lock user' for='"+allUsers[key].name+"'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
+            }
+              countCheckboxes++;
+            if(allUsers[key].tableCreator){
+                row+= "<td><input type='checkbox' checked='checked' id='check"+countCheckboxes+"' class='tableCreator'><label title='create tables' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
+            }
+            else{
+                 row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='tableCreator'><label title='create tables' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
+            }
+              countCheckboxes++;
+            if(allUsers[key].groupCreator){
+                row+= "<td><input type='checkbox' checked='checked' id='check"+countCheckboxes+"' class='groupCreator'><label title='create groups' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/EQ-icon.png'></label></td>";
+
+            }
+           else{
+                 row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='groupCreator'><label title='create groups' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/EQ-icon.png'></label></td>";
+            }
+            countCheckboxes++;
+
+            if(allUsers[key].userManager){
+                row+= "<td><input type='checkbox' checked='checked' id='check"+countCheckboxes+"' class='userManager'><label title='manage users' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+            }
+            else{
+                row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='userManager'><label title='manage users' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+            }
+
           countCheckboxes++;
             row += "</tr>";
           $("#userTable").append(row);
             $("input:checkbox").button();
 
+        }}
+
         }
-
-
 
     });
 
 
-
+ });
 }
 $("#saveUsers").click(function(){
 
+    var jsonObj = {}
+    var allRows = $(".allRows");
+    jsonObj.users = [];
+    allRows.each(function(){
+       usersObj = {};
+        usersObj.name = $(this).find(".enabled").attr('id');
+        usersObj.active = $(this).find(".enabled").val();
+       usersObj.tableCreator = $(this).find(".tableCreator").is('checked');
+        usersObj.groupCreator = $(this).find(".groupCreator").is('checked');
+        usersObj.userManager = $(this).find(".userManager").is('checked');
+        jsonObj.users.push(usersObj);
+    });
 
+    $.ajax({
+        url:('/api/userrights/'),
+        type: 'post',
+        data: JSON.stringify(jsonObj),
+        contentType: 'application/json',
+        dataType: 'json'
 
+    });
 
 
 });

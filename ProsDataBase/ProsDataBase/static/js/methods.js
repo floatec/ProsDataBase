@@ -44,12 +44,6 @@ $(document).ready(function () {
     });
 
 
-
-
-
-
-
-
 });
 //TODO:encode function
 function encode_pros(string) {
