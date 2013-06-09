@@ -211,7 +211,7 @@ def modifyUserRights(request):
         if modified:
             user.save()
 
-    return
+    return HttpResponse("Successfully modified user rights.", status=200)
 
 
 def showAllGroups():
