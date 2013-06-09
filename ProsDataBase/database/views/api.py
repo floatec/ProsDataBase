@@ -30,6 +30,11 @@ def user(request, name):
         return showOneUser(name)
 
 
+def userRights(request):
+    if request.method == 'GET':
+        return showUserRights(request)
+
+
 def groups(request):
     if request.method == 'GET':
         return showAllGroups()
@@ -170,7 +175,15 @@ def showAllUsers():
 
 def showOneUser(name):
     user = UserSerializer.serializeOne(name)
-    return HttpResponse(json.dumps(user), content_type="application/json")
+    if user is None:
+        return HttpResponse("User does not exist", status=400)
+    else:
+        return HttpResponse(json.dumps(user), content_type="application/json")
+
+
+def showUserRights(request):
+    rights = UserSerializer.serializeAllWithRights()
+    return HttpResponse(json.dumps(rights), content_type="application/json")
 
 
 def showAllGroups():

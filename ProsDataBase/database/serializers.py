@@ -268,7 +268,7 @@ class TableSerializer:
 
 class UserSerializer:
     @staticmethod
-    def serializeOne(user):
+    def serializeOne(username):
         """
         {
             "name": "myname",
@@ -279,30 +279,24 @@ class UserSerializer:
         }
         """
         try:
-            user = DBUser.objects.get(username=user.username)
+            user = DBUser.objects.get(username=username)
         except DBUser.DoesNotExist:
             return None
 
         result = dict()
-        result["name"] = user.username
-        result["tableCreator"] = False
-        result["groupCreator"] = False
-        result["userManager"] = False
-
+        result["name"] = username
+        result["groups"] = list()
         for m in Membership.objects.filter(user=user):
-            if m.group.tableCreator:
-                result["tableCreator"] = True
-            if m.group.groupCreator:
-                result["groupCreator"] = True
-            if m.group.userManager:
-                result["userManager"] = True
+            groupObj = dict()
+            groupObj["name"] = m.group.name
+            groupObj["tableCreator"] = m.group.tableCreator
+            groupObj["groupCreator"] = m.group.groupCreator
+            groupObj["userManager"] = m.group.userManager
+            result["groups"].append(groupObj)
 
-        if not result["tableCreator"]:
-            result["tableCreator"] = user.tableCreator
-        if not result["groupCreator"]:
-            result["groupCreator"] = user.groupCreator
-        if not result["userManager"]:
-            result["userManager"] = user.userManager
+        result["tableCreator"] = user.tableCreator
+        result["groupCreator"] = user.groupCreator
+        result["userManager"] = user.userManager
         result["admin"] = user.admin
 
         return result
@@ -325,6 +319,17 @@ class UserSerializer:
 
         for user in users:
             result["users"].append(user.username)
+
+        return result
+
+    @staticmethod
+    def serializeAllWithRights():
+        result = dict()
+        result["users"] = list()
+
+        for user in DBUser.objects.all():
+            if user.is_active:
+                result["users"].append(UserSerializer.serializeOne(user.username))
 
         return result
 
