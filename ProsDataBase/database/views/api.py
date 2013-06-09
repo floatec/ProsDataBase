@@ -33,6 +33,8 @@ def user(request, name):
 def userRights(request):
     if request.method == 'GET':
         return showUserRights(request)
+    if request.method == 'POST':
+        return modifyUserRights(request)
 
 
 def groups(request):
@@ -184,6 +186,32 @@ def showOneUser(name):
 def showUserRights(request):
     rights = UserSerializer.serializeAllWithRights()
     return HttpResponse(json.dumps(rights), content_type="application/json")
+
+
+def modifyUserRights(request):
+    jsonRequest = json.loads(request.raw_post_data)
+
+    for userObj in jsonRequest["users"]:
+        modified = False
+        try:
+            user = DBUser.objects.get(username=userObj["name"])
+        except DBUser.DoesNotExist:
+            HttpResponse("Could not find user with name " + userObj["name"] + ".", status=400)
+
+        if userObj["tableCreator"] != user.tableCreator\
+                or userObj["groupCreator"] != user.groupCreator\
+                or userObj["userManager"] != user.userManager\
+                or userObj["active"] != user.is_active:
+            modified = True
+
+        user.tableCreator = userObj["tableCreator"]
+        user.groupCreator = userObj["groupCreator"]
+        user.userManager = userObj["userManager"]
+        user.is_active = userObj["active"]
+        if modified:
+            user.save()
+
+    return
 
 
 def showAllGroups():

@@ -297,7 +297,6 @@ class UserSerializer:
         result["tableCreator"] = user.tableCreator
         result["groupCreator"] = user.groupCreator
         result["userManager"] = user.userManager
-        result["admin"] = user.admin
         result["active"] = user.is_active
 
         return result
