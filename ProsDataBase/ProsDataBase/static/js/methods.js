@@ -1,51 +1,49 @@
 $(document).ready(function () {
-      $.getJSON('/api/myself/',function(data){
-        if(data == null){
+    $.getJSON('/api/myself/', function (data) {
+        if (data == null) {
             window.location = "/login/";
         }
-        else{
-             $("#loginNameMenu").prepend("<p>"+data.name+"</p>");
-             $('.btn').button({ disabled: false});
-    loginNameMenu = $("#loginNameMenu");
-    subMenuList = $("#subMenuList");
-    navigationMenu = $("#navigationMenu");
-    navigationMenuContent = $("#navigationMenuContent");
-
-    navigationMenu.accordion({    collapsible: false,
-        heightStyle: "content"
-    });
-    loginNameMenu.accordion({    collapsible: true,
-        autoHeight: false,
-        heightStyle: "content",
-        active: false
-    });
-    subMenuList.menu();
-    navigationMenuContent.menu();
-        if(!data.tableCreator){
-            $("#createTableButton").remove();
-        }
-        if(!data.groupCreator && !data.userManager){
-            $("#adminMenu").remove();
-
-        }
-
         else {
-            if(!data.groupCreator){
-                $("#groupManagement").remove();
-                $("#categoryManagement").remove();
+            $("#loginNameMenu").prepend("<p>" + data.name + "</p>");
+            $('.btn').button({ disabled: false});
+            loginNameMenu = $("#loginNameMenu");
+            subMenuList = $("#subMenuList");
+            navigationMenu = $("#navigationMenu");
+            navigationMenuContent = $("#navigationMenuContent");
+
+            navigationMenu.accordion({    collapsible: false,
+                heightStyle: "content"
+            });
+            loginNameMenu.accordion({    collapsible: true,
+                autoHeight: false,
+                heightStyle: "content",
+                active: false
+            });
+            subMenuList.menu();
+            navigationMenuContent.menu();
+            if (data.admin) {
 
             }
 
-        if(!data.userManager){
-            $("#userManagement").remove();
-        }
-    }
+            else {
+                $("#categoryManagement").remove();
+
+                if (!data.tableCreator) {
+                    $("#createTableButton").remove();
+                }
+                if (!data.userManager) {
+                    $("#adminMenu").addClass('ui-state-disabled');
+                   $("#adminSubMenu").remove();
+
+                }
+            }
+
         }
     });
 
 
 });
-//TODO:encode function
+//encode function
 function encode_pros(string) {
 
     return string.replace(/ /g, "_-_");
@@ -57,12 +55,12 @@ function decode_pros(string) {
     return string.replace(/_-_/g, " ");
 
 }
-function logoutUser(){
-     $.ajax({
-                url: '/api/auth/session/',
-                type: 'delete'
-               // success: window.location = "/login/"
-            });
+function logoutUser() {
+    $.ajax({
+        url: '/api/auth/session/',
+        type: 'delete'
+        // success: window.location = "/login/"
+    });
 }
 function split(val) {
     return val.split(/,\s*/);

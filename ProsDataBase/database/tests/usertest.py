@@ -15,15 +15,13 @@ class UserTest(TestCase):
             listofUsers1.append(m1.user.username)
 
         listofUsers2 = list()
-        for m2 in Membership.objects.fitler(group=group2):
+        for m2 in Membership.objects.filter(group=group2):
             listofUsers2.append(m2.user.username)
 
-
-        for group in result["groups"]:
-            if group["name"] == group1.name:
-                self.assertEquals(listofUsers1, group["users"])
-            elif group["name"] == group2.name:
-                self.assertEquals(listofUsers2, group["users"])
+        if group["name"] == group1.name:
+            self.assertEquals(listofUsers1, group["users"])
+        elif group["name"] == group2.name:
+            self.assertEquals(listofUsers2, group["users"])
 
         # ===================================================
         # tests the count of the users
@@ -36,5 +34,3 @@ class UserTest(TestCase):
         # ===================================================
         # test the users are in the result
         # ===================================================
-        for user in result["users"]:
-            self.assertEqual(listofUsers, result["users"])

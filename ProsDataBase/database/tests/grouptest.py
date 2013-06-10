@@ -4,26 +4,12 @@ from database.tests.factory import *
 from database.views.api import *
 
 
+# funzt bisher alles
 class GroupTest(TestCase):
-    def test_user_exist(self):
-        # =================================================================
-        # if a user is in a group the test goes right
-        # =================================================================
-        group = create_Group()
-
-        self.assertTrue(group.users.get(username = 1))
-        self.assertTrue(group.users.get(username = 50))
-        self.assertTrue(group.users.get(username = 100))
-        self.assertTrue(group.users.get(username = 1000))
-
-        with self.assertRaises(DBUser.DoesNotExist):
-            group.users.get(username=1001)
-            group.users.get(username=-100)
-            group.users.get(username=0)
 
     def test_showAllGroups(self):
         # =================================================================
-        # return all groups
+        # tests the api showAllGroups
         # =================================================================
         self.maxDiff = None
         group1 = create_Group()
@@ -77,6 +63,5 @@ class GroupTest(TestCase):
         group = create_Group()
 
         result = GroupSerializer.serializeOne(group)
-
 
         self.assertEquals(len(result["users"]), 1000)
