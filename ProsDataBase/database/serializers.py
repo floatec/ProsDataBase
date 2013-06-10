@@ -492,44 +492,213 @@ class DatasetSerializer:
             if not resultSet:
                 return None
 
-        return resultSet
+        result = dict()
+        result["datasets"] = list()
+        for dataset in resultSet.objects:
+            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
+        return result
 
     @staticmethod
-    def filter(table, datasets, criterion, user, simple):
+    def filter(table, datasets, criterion, user):
         try:
-            column = table.getColumns(). filter(name=criterion["name"])
+            column = table.getColumns().filter(name=criterion["name"])
         except Column.DoesNotExist:
             return False
 
         if "child" not in criterion:  # filter only with criteria on this table
-            result = dict()
-            result["datasets"] = list()
-
             if column.type.type == Type.TEXT:
-                dataTexts = DataText.objects.filter(dataset__in=datasets, content__contains=criterion["substr"])
-                for data in dataTexts:
-                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
-            if column.type.type == Type.NUMERIC:
-                dataNumerics = DataNumeric.objects.filter(dataset__in=datasets, content__gte=criterion["min"], content__lte=criterion["max"])
-                for data in dataNumerics:
-                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
-            if column.type.type == Type.DATE:
-                dataDates = DataDate.objects.filter(dataset__in=datasets, content__gte=criterion["min"], content__lte=criterion["max"])
-                for data in dataDates:
-                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
-            if column.type.type == Type.SELECTION:
-                dataSelections = DataSelection.objects.filter(dataset__in=datasets, content__in=criterion["options"])
-                for data in dataSelections:
-                    result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
+                dataTexts = DataText.objects.filter(dataset__in=datasets, content__contains=criterion["substring"])
+                datasetIDs = list()
+                for dataText in dataTexts:
+                    datasetIDs.append(dataText.dataset_id)
+                return datasets.objects.filter(pk__in=datasetIDs)
 
-            return result
+            elif column.type.type == Type.NUERMIC:
+                if "min" in criterion and "max" in criterion:
+                    dataNumerics = DataNumeric.objects.filter(dataset__in=datasets, content__gte=criterion["min"], content__lte=criterion["max"])
+                elif "min" in criterion:
+                    dataNumerics = DataNumeric.objects.filter(dataset__in=datasets, content__gte=criterion["min"])
+                else:  # "max" in criterion
+                    dataNumerics = DataNumeric.objects.filter(dataset__in=datasets, content__lte=criterion["max"])
+                datasetIDs = list()
+                for dataNumeric in dataNumerics:
+                    datasetIDs.append(dataNumeric.dataset_id)
+                return datasets.objects.filter(pk__in=datasetIDs)
+
+            elif column.type.type == Type.DATE:
+                if "min" in criterion and "max" in criterion:
+                    dataDates = DataDate.objects.filter(dataset__in=datasets, content__gte=criterion["min"], content__lte=criterion["max"])
+                elif "min" in criterion:
+                    dataDates = DataDate.objects.filter(dataset__in=datasets, content__gte=criterion["min"])
+                else:  # "max" in criterion
+                    dataDates = DataDate.objects.filter(dataset__in=datasets, content__lte=criterion["max"])
+                datasetIDs = list()
+                for dataDate in dataDates:
+                    datasetIDs.append(dataDate.dataset_id)
+                return datasets.objects.filter(pk__in=datasetIDs)
+
+            elif column.type.type == Type.SELECTION:
+                dataSelections = DataSelection.objects.filter(dataset__in=datasets, content=criterion["option"])
+                datasetIDs = list()
+                for dataSelection in dataSelections:
+                    datasetIDs.append(dataSelection.dataset_id)
+                return datasets.objects.filter(pk__in=datasetIDs)
+
+            elif column.type.type == Type.BOOL:
+                dataBools = DataBool.objects.filter(dataset__in=datasets, content=criterion["boolean"])
+                datasetIDs = list()
+                for dataBool in dataBools:
+                    datasetIDs.append(dataBool.dataset_id)
+                return datasets.objects.filter(pk__in=datasetIDs)
+
+            elif column.type.type == Type.TABLE:
+                typeTable = column.type.getType()
+                # filter over column in another table. In principle it repeats the algorithm above on the referenced table's column
+                if typeTable.column is None:
+                    try:
+                        nextTable = Table.objects.get(name=criterion["table"])
+                    except Table.DoesNotExist:
+                        return False
+                    try:
+                        refColumn = Column.objects.get(table=nextTable, name=criterion["linkColumn"])
+                    except Column.DoesNotExist:
+                        return False
+
+                    """
+                        First filter datasets of the next table with criteria specified in the criterion's child
+                    """
+                    filteredDatasets = DatasetSerializer.filter(nextTable, nextTable.getDatasets(), criterion["child"], user)
+
+                    """
+                        Now keep only those datasets, which have references to the "datasets" passed as argument
+                    """
+                    links = DataTableToDataset.objects.filter(dataset__in=datasets)
+                    dataTableIDs = list()
+                    for link in links:
+                        dataTableIDs.append(link.DataTable_id)
+
+                    # dataTables contained in datasets which fulfill child-criterion
+                    dataTables = DataTable.objects.filter(dataset__in=filteredDatasets, column=refColumn, pk__in=dataTableIDs)
+                    datasetIDs = list()
+                    for dataTable in dataTables:
+                        datasetIDs.append(dataTable.dataset_id)
+
+                    filteredDatasets = filteredDatasets.objects.filter(pk__in=datasetIDs)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
+
+                    """
+                        Finally, return a filtered version of 'datasets'.
+                        That is, only those, which are referenced by datasets in filteredDatasets.
+                    """
+
+                    # dataTables contained in datasets which fulfill child-criterion and are in datasets with reference to passed 'datasets'
+                    filteredDataTables = dataTables.filter(dataset__in=filteredDatasets)
+
+                    filteredLinks = DataTableToDataset(DataTable__in=filteredDataTables)
+                    finalDatasetIDs = list()
+                    for filteredLink in filteredLinks:
+                        finalDatasetIDs.append(filteredLink.dataset_id)
+
+                    return datasets.objects.filter(pk__in=finalDatasetIDs)
+
+                else:  # filter over column in table
+                    refTable = typeTable.table
+
+                    if typeTable.column.type.type == Type.TEXT:
+                        refDataTexts = DataText.objects.filter(dataset__in=refTable.getDatasets(), content__contains=criterion["substring"])
+                        refDatasetIDs = list()
+                        for refDataText in refDataTexts:
+                            refDatasetIDs.append(refDataText.dataset_id)
+
+                    elif typeTable.column.type.type == Type.NUMERIC:
+                        if "min" in criterion and "max" in criterion:
+                            refDataNumerics = DataNumeric.objects.filter(dataset__in=refTable.getDatasets(), content__gte=criterion["min"], content_lte=criterion["max"])
+                        elif "min" in criterion:
+                            refDataNumerics = DataNumeric.objects.filter(dataset__in=refTable.getDatasets(), content__gte=criterion["min"])
+                        else:  # "max" in criterion
+                            refDataNumerics = DataNumeric.objects.filter(dataset__in=refTable.getDatasets(), content_lte=criterion["max"])
+                        refDatasetIDs = list()
+                        for refDataNumeric in refDataNumerics:
+                            refDatasetIDs.append(refDataNumeric.dataset_id)
+
+                    elif typeTable.column.type.type == Type.DATE:
+                        if "min" in criterion and "max" in criterion:
+                            refDataDates = DataDate.objects.filter(dataset__in=refTable.getDatasets(), content__gte=criterion["min"], content_lte=criterion["max"])
+                        elif "min" in criterion:
+                            refDataDates = DataDate.objects.filter(dataset__in=refTable.getDatasets(), content__gte=criterion["min"])
+                        else:  # "max" in criterion
+                            refDataDates = DataDate.objects.filter(dataset__in=refTable.getDatasets(), content_lte=criterion["max"])
+                        refDatasetIDs = list()
+                        for refDataDate in refDataDates:
+                            refDatasetIDs.append(refDataDate.dataset_id)
+
+                    elif typeTable.column.type.type == Type.SELECTION:
+                        refDataSelections = DataSelection.objects.filter(dataset__in=refTable.getDatasets(), content=criterion["option"])
+                        refDatasetIDs = list()
+                        for refDataSelection in refDataSelections:
+                            refDatasetIDs.append(refDataSelection.dataset_id)
+
+                    elif typeTable.column.type.type == Type.BOOL:
+                        refDataBools = DataBool.objects.filter(dataset__in=refTable.getDatasets(), content__contains=criterion["boolean"])
+                        refDatasetIDs = list()
+                        for refDataBool in refDataBools:
+                            refDatasetIDs.append(refDataBool.dataset_id)
+
+                    refDatasets = Dataset.objects.filter(pk__in=refDatasetIDs)
+                    links = DataTableToDataset.objects.filter(dataset__in=refDatasets)
+                    dataTableIDs = list()
+                    for link in links:
+                        dataTableIDs.append(link.DataTable_id)
+                    dataTables = DataTable.objects.filter(pk__in=dataTableIDs)
+                    datasetIDs = list()
+                    for dataTable in dataTables:
+                        datasetIDs.append(dataTable.dataset_id)
+                    return datasets.objects.filter(pk__in=datasetIDs)
+
+            else:  # no matching column type
+                return False
 
         else:  # filter with criteria on nested table
             try:
                 nextTable = Table.objects.get(name=criterion["table"])
             except Table.DoesNotExist:
                 return False
-            nextDatasets = nextTable.getDatasets()
-            dataTables = DataTable.objects.filter(table)
-            links = DataTableToDataset.filter()
-            return DatasetSerializer.filter(criterion["table"], criterion["child"], nextTable, user)
+            try:
+                refColumn = Column.objects.get(table=nextTable, name=criterion["linkColumn"])
+            except Column.DoesNotExist:
+                return False
+
+            """
+                First filter datasets of the next table with criteria specified in the criterion's child
+            """
+            filteredDatasets = DatasetSerializer.filter(nextTable, nextTable.getDatasets(), criterion["child"], user)
+
+            """
+                Now keep only those datasets, which have references to the "datasets" passed as argument
+            """
+            links = DataTableToDataset.objects.filter(dataset__in=datasets)
+            dataTableIDs = list()
+            for link in links:
+                dataTableIDs.append(link.DataTable_id)
+
+            # dataTables contained in datasets which fulfill child-criterion
+            dataTables = DataTable.objects.filter(dataset__in=filteredDatasets, column=refColumn, pk__in=dataTableIDs)
+            datasetIDs = list()
+            for dataTable in dataTables:
+                datasetIDs.append(dataTable.dataset_id)
+
+            filteredDatasets = filteredDatasets.objects.filter(pk__in=datasetIDs)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
+
+            """
+                Finally, return a filtered version of 'datasets'.
+                That is, only those, which are referenced by datasets in filteredDatasets.
+            """
+
+            # dataTables contained in datasets which fulfill child-criterion and are in datasets with reference to passed 'datasets'
+            filteredDataTables = dataTables.filter(dataset__in=filteredDatasets)
+
+            filteredLinks = DataTableToDataset(DataTable__in=filteredDataTables)
+            finalDatasetIDs = list()
+            for filteredLink in filteredLinks:
+                finalDatasetIDs.append(filteredLink.dataset_id)
+
+            return datasets.objects.filter(pk__in=finalDatasetIDs)
