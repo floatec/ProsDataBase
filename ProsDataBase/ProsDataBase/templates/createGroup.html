@@ -30,7 +30,12 @@
 
     init();
     function init() {
+ $.getJSON('/api/myself/', function (data) {
+    if(!data.userManager){
+        window.location = '/table/';
 
+    }
+ });
 
         $("#groupAdmin").prepend("groups");
         $("#createGroup").prepend("create group");

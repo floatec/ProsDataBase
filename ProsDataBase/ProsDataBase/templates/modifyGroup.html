@@ -26,7 +26,12 @@
     <script language="JavaScript">
     init();
     function init(){
+ $.getJSON('/api/myself/', function (data) {
+    if(!data.userManager){
+        window.location = '/table/';
 
+    }
+ });
         var groupName = getGroupName();
          $("#groupCrumb").prepend("all groups");
             $("#modifyGroupCrumb").prepend(groupName);

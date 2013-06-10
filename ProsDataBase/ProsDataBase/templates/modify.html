@@ -105,7 +105,12 @@ function init() {
         async: false
 
     });
+$.getJSON('/api/myself/', function (data) {
+    if(!data.tableCreator){
+        window.location = '/table/';
 
+    }
+ });
 
     valid = true;
     // initialize variable

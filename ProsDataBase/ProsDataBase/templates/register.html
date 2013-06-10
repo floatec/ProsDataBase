@@ -8,30 +8,26 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/style.css">
 		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+
 		<link rel="stylesheet" href="/resources/demos/style.css" />
-		<script>
-			$(document).ready(function(){ 
-				$( '.btn' ).button({ disabled: false});
-			});
-		</script>
 		<style type="text/css">
-	
+
 		#content{
 			font-family: 'Arbutus Slab', serif;
 			text-align:left;
 			position:relative;
 			top:200px;
 			left:35%;
-		
-		
+
+
 		}
 		#RegisterBtnCell{
 			text-align:right;
-		
+
 		}
-	
+
 		</style>
-		
+
 	</head>
 	<body>
 		<div id="heading">
@@ -42,15 +38,58 @@
 			<div id="loginDiv">
 
 					<table>
-					
-					<tr><td><span>Username:</span></td><td><input type="text"></td></tr>
-					<tr><td><span>Passwort:</span></td><td><input type="password"></td></tr>
-					<tr><td><span>Confirm Passwort:</span></td><td><input type="password"></td></tr>
-					<tr><td colspan="2" id="RegisterBtnCell"><a href="/login"><input class="btn" type="submit" value="Register"></a><td></tr>
+
+					<tr><td><span>Username:</span></td><td><input id='username' type="text"></td></tr>
+					<tr><td><span>Passwort:</span></td><td><input id='password' type="password"></td></tr>
+					<tr><td><span>Confirm Passwort:</span></td><td><input id='passwordAgain' type="password"></td></tr>
+					<tr><td colspan="2" id="RegisterBtnCell"><button class='btn' id='registerBtn'>register</button><td></tr>
 					</table>
-					
+
 			</div>
-			
+
 		</div>
 	</body>
 </html>
+
+
+
+
+
+
+        <script>
+			$(document).ready(function(){ 
+				$( '.btn' ).button({ disabled: false});
+			});
+
+            $("#registerBtn").click(function(){
+alert("hallo");
+                 if(allowPassword($("#password").val(),$("#passwordAgain").val())){
+                     alert("hallo2");
+       var user = {};
+        user.password = $("#password").val();
+        user.username = $("#username").val();
+
+        $.ajax({
+        url: '/api/auth/session/',
+        type: 'post',
+        data: JSON.stringify(user),
+        contentType: 'application/json',
+        dataType: 'json'
+
+        });
+    }
+
+
+            });
+
+
+function allowPassword(val1,val2) {
+    if (val1 == val2) {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+}
+		</script>

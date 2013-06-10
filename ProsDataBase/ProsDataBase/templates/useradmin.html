@@ -36,7 +36,12 @@
 
     init();
     function init(){
+ $.getJSON('/api/myself/', function (data) {
+    if(!data.userManager){
+        window.location = '/table/';
 
+    }
+ });
     $("#userAdmin").prepend("admin users");
 
     $.getJSON('/api/userrights/', function (data) {
