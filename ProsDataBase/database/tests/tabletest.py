@@ -4,7 +4,7 @@ from database.tests.factory import *
 from database.views.api import *
 
 class TableTest(TestCase):
-    def test_serializeAll(self):
+    def test_showAllTables(self):
         # =================================================================
         # test serializer TableSerializer serializeAll()
         # {
@@ -57,10 +57,12 @@ class TableTest(TestCase):
         for array in [table["columns"] for table in result["tables"]]:
             length += len(array)
 
-        self.assertEquals(length, 12)
+        self.assertEquals(length, 10)
 
         print result
-    def test_serializeOne(self):
+
+    # AM ARSCH !!!!!!!!!
+    def test_showTable(self):
         # =================================================================
         #return the table with specified name, along with its columns and datasets.
         # {
@@ -77,7 +79,7 @@ class TableTest(TestCase):
         schmog.save()
 
         connect_User_With_Rights(schmog, table1)
-        result = TableSerializer.serializeOne(table1.name)
+        result = TableSerializer.serializeOne(table1.name,schmog)
 
         table1Cols = list()
         for col in table1.getColumns():
@@ -86,3 +88,16 @@ class TableTest(TestCase):
         print result
 
         self.assertTrue(table1.name in [table["name"] in result["name"]])
+
+    # SOLLTE SO EIGENTLICH KLAPPEN
+    def test_deleteTable(self):
+        table1 = create_table()
+
+        schmog = DBUser.objects.create_user(username="test")
+        schmog.save()
+
+        connect_User_With_Rights(schmog, table1)
+
+        deleteTable(table1.name,schmog)
+
+        self.assertTrue(table1.deleted)
