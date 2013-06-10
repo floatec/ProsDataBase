@@ -31,7 +31,12 @@
     init();
     function init(){
 
+ $.getJSON('/api/myself/', function (data) {
+    if(!data.admin){
+        window.location = '/table/';
 
+    }
+ });
 
 
 

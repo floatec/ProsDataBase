@@ -33,7 +33,7 @@ $(document).ready(function () {
                 }
                 if (!data.userManager) {
                     $("#adminMenu").addClass('ui-state-disabled');
-                   $("#adminSubMenu").remove();
+                    $("#adminSubMenu").remove();
 
                 }
             }
@@ -88,5 +88,12 @@ function stringComparison(a, b) {
 }
 
 
-	
-		
+function allowPassword(val1,val2) {
+    if (val1 == val2) {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+}
