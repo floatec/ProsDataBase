@@ -437,7 +437,7 @@ class DatasetSerializer:
 
                 result["data"].append(dataObj)
 
-            return result
+        return result
 
     @staticmethod
     def serializeAll(tableRef, user):
@@ -525,5 +525,11 @@ class DatasetSerializer:
             return result
 
         else:  # filter with criteria on nested table
-            #refTable =
+            try:
+                nextTable = Table.objects.get(name=criterion["table"])
+            except Table.DoesNotExist:
+                return False
+            nextDatasets = nextTable.getDatasets()
+            dataTables = DataTable.objects.filter(table)
+            links = DataTableToDataset.filter()
             return DatasetSerializer.filter(criterion["table"], criterion["child"], nextTable, user)
