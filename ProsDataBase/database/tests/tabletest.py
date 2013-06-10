@@ -59,8 +59,6 @@ class TableTest(TestCase):
 
         self.assertEquals(length, 10)
 
-        print result
-
     # AM ARSCH !!!!!!!!!
     def test_showTable(self):
         # =================================================================
