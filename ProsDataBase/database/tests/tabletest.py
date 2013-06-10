@@ -25,8 +25,8 @@ class TableTest(TestCase):
         connect_User_With_Rights(schmog,table2)
 
         result =  TableSerializer.serializeAll(schmog)
-        length = 0
 
+        length = 0
         table1Cols = list()
         for col in table1.getColumns():
             table1Cols.append(col.name)

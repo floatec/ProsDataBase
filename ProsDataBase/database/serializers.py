@@ -294,6 +294,7 @@ class UserSerializer:
         result["tableCreator"] = user.tableCreator
         result["userManager"] = user.userManager
         result["active"] = user.is_active
+        result["admin"] = user.admin
 
         return result
 
@@ -380,7 +381,7 @@ class GroupSerializer:
 class DatasetSerializer:
 
     @staticmethod
-    def serializeOne(id, user):
+    def serializeOne(id, user, filter):
         """
         {
             "id": "2.2013_192_B",
@@ -435,15 +436,6 @@ class DatasetSerializer:
                         dataObj["value"] = unicode(item.content)
 
                 result["data"].append(dataObj)
-
-        # add datasets for table link column
-        links = DataTableToDataset.objects.filter(dataset=dataset)
-        for link in links:
-            dataTable = link.DataTable
-            dataObj = dict()
-            dataObj["column"] = dataTable.column.name
-            dataObj["type"] = Type.LINK
-            dataObj["value"] = list()
 
             return result
 
