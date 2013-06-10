@@ -18,7 +18,7 @@
 
 
         $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
-            var tableName = getTableName();
+            var tableName = decodeURIComponent(getTableName());
             var columns = data.columns;
 
             for (var i in columns) {
@@ -46,13 +46,14 @@
                      row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
                 }
                 if (columns[i].type == 5) {
-                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><span onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"></span><img class="icn" src="/static/img/search-icon.png">'
                 }
                 row += "</td></tr>"
                 $("#fields").append(row)
+                $(".icn").button();
             }
             $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
-            $("#tableCrumb").prepend(tableName);
+            $("#tableCrumb").prepend(decodeURIComponent(tableName));
             $("#insertCrumb").prepend("insert");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
 

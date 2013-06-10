@@ -24,11 +24,13 @@
 }
 
 #navigationMenu {
+
     background-color: #DFEFFC;
     position: absolute;
     top: 50px;
     float: left;
     min-width: 190px;
+    max-width:240px;
 }
 
 #buttonMenu {

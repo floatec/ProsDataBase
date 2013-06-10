@@ -92,7 +92,6 @@ function changeTo(number) {
 function init() {
 
 
-
     firstload = true;
     tableName = getTableName();
     $("#tableCrumb").prepend(decodeURIComponent(tableName));
@@ -105,12 +104,7 @@ function init() {
         async: false
 
     });
-$.getJSON('/api/myself/', function (data) {
-    if(!data.tableCreator){
-        window.location = '/table/';
 
-    }
- });
 
     valid = true;
     // initialize variable
@@ -158,9 +152,9 @@ $.getJSON('/api/myself/', function (data) {
                         columnObj = {};
                         columnObj.name = columnNames;
 
-                        if($(this).attr('columnid') != 'undefinded'){
-                        columnObj.id = $(this).attr('columnid');
-                        }
+
+                            columnObj.id = $(this).attr('columnid');
+
                         columnObj.rights = {};
                         var row = $(this).parent();
                         row = row.parent();
@@ -267,23 +261,13 @@ $.getJSON('/api/myself/', function (data) {
                     //fill it with rights for the whole table
 
                     $.ajax({
-                        url: '/api/table/'+getTableName()+'/',
+                        url: '/api/table/' + getTableName() + '/',
                         type: 'put',
                         data: JSON.stringify(jsonTbl),
                         contentType: 'application/json',
                         dataType: 'json',
-                        success: function(){
-
-                           $(".trcolumnClass").each(function(){
-
-                                $(this).remove();
-
-                        });
-                             createAllExistedColumn();
-                    }
-
+                        success: createAllExistedColumn()
                     });
-
                 }
             }
             if (ui.newPanel.attr('id') == 'tabs-2') {
@@ -299,8 +283,8 @@ $.getJSON('/api/myself/', function (data) {
                     var columnNames = $(this).val();
                     columnObj = {};
                     columnObj.name = columnNames;
-                    if($(this).attr('columnid') != 'undefinded'){
-                    columnObj.id = $(this).attr('columnid');
+                    if ($(this).attr('columnid') != 'undefinded') {
+                        columnObj.id = $(this).attr('columnid');
                     }
 
                     var row = $(this).parent();
@@ -336,14 +320,16 @@ $.getJSON('/api/myself/', function (data) {
                 });
                 console.log(jsonTbl);
                 $.ajax({
-                    url: '/api/table/'+getTableName()+'/',
+                    url: '/api/table/' + getTableName() + '/',
                     type: 'put',
                     data: JSON.stringify(jsonTbl),
                     contentType: 'application/json',
                     dataType: 'json',
-                    success:   createExistedUsers()
-                });
+                    success: createExistedUsers()
 
+
+
+                });
 
 
             }
@@ -423,16 +409,19 @@ $.getJSON('/api/myself/', function (data) {
             }
         }
     });
-      // initialize alertbox
+
+
+
+    // initialize alertbox
     $("#deleteExistedColumns").dialog({
         autoOpen: false,
         buttons: {
             "delete": function () {
-                 $.ajax({
-                    url: '/api/table/'+getTableName()+'/column/'+$("#row_"+lastID).find(".columnNameClass").val()+'/',
+                $.ajax({
+                    url: '/api/table/' + getTableName() + '/column/' + $("#row_" + lastID).find(".columnNameClass").val() + '/',
                     type: 'delete',
-                     success: $("#row_" + lastID).remove()
-                        });
+                    success: $("#row_" + lastID).remove()
+                });
                 $(this).dialog("close");
             },
             "back": function () {
@@ -482,8 +471,20 @@ $.getJSON('/api/myself/', function (data) {
     firstload = false;
 }
 
-function createAllExistedColumn(){
-     $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+function createAllExistedColumn() {
+     $.ajaxSetup({
+        async: false
+
+    });
+
+    $(".trcolumnClass").each(function () {
+
+        $(this).remove();
+
+    });
+
+
+    $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
 
         var category = data.category;
         $("#category option").filter(function () {
@@ -495,79 +496,80 @@ function createAllExistedColumn(){
 
 
         for (var key in columns) {
-            if(columns[key].type != 6){
-            createExistedColumnsRow(columns[key].id);
-            $("#field_" + columnID).val(columns[key].name);
+            if (columns[key].type != 6) {
+                createExistedColumnsRow(columns[key].id);
+                $("#field_" + columnID).val(columns[key].name);
 
-            if (columns[key].type == 0) {
-                $("#selectDataType_" + columnID).val(0);
-                $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'>");
-                $("#row_" + columnID).find(".length").val(columns[key].length);
-
-
-            }
-            else if (columns[key].type == 1) {
-                $("#selectDataType_" + columnID).val(1);
-                $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>min:<input type='text' value='0.0' class='min' size='10'>max:<input type='text' value='100.0' class='max' size='10'></td>");
-                $("#row_" + columnID).find(".min").val(columns[key].min);
-                $("#row_" + columnID).find(".max").val(columns[key].max);
+                if (columns[key].type == 0) {
+                    $("#selectDataType_" + columnID).val(0);
+                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'>");
+                    $("#row_" + columnID).find(".length").val(columns[key].length);
 
 
-            }
-            else if (columns[key].type == 2) {
-                $("#selectDataType_" + columnID).val(2);
-            }
-            else if (columns[key].type == 3) {
-                $("#selectDataType_" + columnID).val(3);
-                $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'><span id='choiceInputContent_" + columnID + "'></span></td>");
-                for (var i in columns[key].options) {
-
-                    countChoiceInputs++;
-                    $("#choiceInputContent_" + columnID).append("<input size='10' type='text' selectionid='" + columns[key].options[i].key + "' class='option' id='choiceInput_" + countChoiceInputs + "'>");
-                    $("#choiceInput_" + countChoiceInputs).val(columns[key].options[i].value);
-                    // to delete the input fields with escape and delete
-                    $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
-                        if (e.keyCode == 46 || e.keyCode == 27) {
-                            $(this).remove();
-                        }
-                    })
                 }
-                $("#selectDataTypeCell_" + columnID).append("<button id='addChoiceButton_" + columnID + "'>+</button>");
+                else if (columns[key].type == 1) {
+                    $("#selectDataType_" + columnID).val(1);
+                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>min:<input type='text' value='0.0' class='min' size='10'>max:<input type='text' value='100.0' class='max' size='10'></td>");
+                    $("#row_" + columnID).find(".min").val(columns[key].min);
+                    $("#row_" + columnID).find(".max").val(columns[key].max);
 
-                $("#addChoiceButton_" + columnID).click(function () {
 
-                    lastID = getNumber(this.id);
-                    countChoiceInputs++;
-                    $("#choiceInputContent_" + lastID).append("<input size='10' type='text' class='option' id='choiceInput_" + countChoiceInputs + "'>");
-                    lastID = getNumber(this.id);
-                    // to delete the input fields with escape and delete
-                    $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
-                        if (e.keyCode == 46 || e.keyCode == 27) {
-                            $(this).remove();
-                        }
-                    })
-                });
-            }
-            else if (columns[key].type == 4) {
-                $("#selectDataType_" + columnID).val(4);
-            }
-            else if (columns[key].type == 5) {
-                var tbl = columns[key].table;
-                $("#selectDataType_" + columnID + " option").filter(function () {
-                    return this.text == tbl;
-                }).attr('selected', true);
-            }
+                }
+                else if (columns[key].type == 2) {
+                    $("#selectDataType_" + columnID).val(2);
+                }
+                else if (columns[key].type == 3) {
+                    $("#selectDataType_" + columnID).val(3);
+                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'><span id='choiceInputContent_" + columnID + "'></span></td>");
+                    for (var i in columns[key].options) {
 
-        }
+                        countChoiceInputs++;
+                        $("#choiceInputContent_" + columnID).append("<input size='10' type='text' selectionid='" + columns[key].options[i].key + "' class='option' id='choiceInput_" + countChoiceInputs + "'>");
+                        $("#choiceInput_" + countChoiceInputs).val(columns[key].options[i].value);
+                        // to delete the input fields with escape and delete
+                        $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
+                            if (e.keyCode == 46 || e.keyCode == 27) {
+                                $(this).remove();
+                            }
+                        })
+                    }
+                    $("#selectDataTypeCell_" + columnID).append("<button id='addChoiceButton_" + columnID + "'>+</button>");
+
+                    $("#addChoiceButton_" + columnID).click(function () {
+
+                        lastID = getNumber(this.id);
+                        countChoiceInputs++;
+                        $("#choiceInputContent_" + lastID).append("<input size='10' type='text' class='option' id='choiceInput_" + countChoiceInputs + "'>");
+                        lastID = getNumber(this.id);
+                        // to delete the input fields with escape and delete
+                        $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
+                            if (e.keyCode == 46 || e.keyCode == 27) {
+                                $(this).remove();
+                            }
+                        })
+                    });
+                }
+                else if (columns[key].type == 4) {
+                    $("#selectDataType_" + columnID).val(4);
+                }
+                else if (columns[key].type == 5) {
+                    var tbl = columns[key].table;
+                    $("#selectDataType_" + columnID + " option").filter(function () {
+                        return this.text == tbl;
+                    }).attr('selected', true);
+                }
+
+            }
         }
 
 
     });
+ $.ajaxSetup({
+        async: true
 
-
+    });
 
 }
-
 
 
 function removeEmptyColumns() {
@@ -874,6 +876,8 @@ $("#addUserToRights").click(function () {
 
 function createExistedUsers() {
 
+
+    createAllExistedColumn();
     $.getJSON('/api/table/' + tableName + '/rights/', function (data) {
 
         var actors = data.actors;
@@ -970,7 +974,6 @@ function createExistedUsers() {
 
     });
 
-
 }
 
 function toggleAll(element, type) {
@@ -997,8 +1000,8 @@ $("#createTableButton").click(function () {
     var jsonTbl = {};
     //fill json object with name of the table
     jsonTbl.name = $("#tblName").val();
-    if($(this).attr('columnid') != 'undefinded'){
-    jsonTbl.id = $(this).attr('columnid');
+    if ($(this).attr('columnid') != 'undefinded') {
+        jsonTbl.id = $(this).attr('columnid');
     }
     jsonTbl.category = $("#category").find(":selected").text();
     //fill it with all columns
@@ -1116,7 +1119,7 @@ $("#createTableButton").click(function () {
     //fill it with rights for the whole table
 
     $.ajax({
-        url: '/api/table/'+getTableName()+'/',
+        url: '/api/table/' + getTableName() + '/',
         type: 'put',
         data: JSON.stringify(jsonTbl),
         contentType: 'application/json',

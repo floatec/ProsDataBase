@@ -58,8 +58,10 @@ function decode_pros(string) {
 function logoutUser() {
     $.ajax({
         url: '/api/auth/session/',
-        type: 'delete'
-        // success: window.location = "/login/"
+        type: 'delete',
+        success: function(){
+            window.location = "/login/";
+        }
     });
 }
 function split(val) {
