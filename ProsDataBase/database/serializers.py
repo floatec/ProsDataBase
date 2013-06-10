@@ -381,7 +381,7 @@ class GroupSerializer:
 class DatasetSerializer:
 
     @staticmethod
-    def serializeOne(id, user, filter):
+    def serializeOne(id, user):
         """
         {
             "id": "2.2013_192_B",
@@ -459,13 +459,26 @@ class DatasetSerializer:
     def serializeBy(request, tableName, user):
         """
         {
-            "column": "columnname",
-            "child": {
-                "column": "columnInRelatedTable",
-                "child": {
-                    "column": "columnname2", "min": 12, "max": 20
+            "filter":[
+                {
+                    "column": "columnname", "table":"tablename","linkColumn":"columnname",
+                    "child": {
+                        "column": "columnInRelatedTable", "table":"tablename","linkColumn":"columnname",
+                        "child": {
+                            "column": "columnname2", "min": 12, "max": 20
+                        }
+                    }
+                },
+                {
+                    "column": "columnname", "table":"tablename","linkColumn":"columnname",
+                    "child": {
+                        "column": "columnInRelatedTable", "table":"tablename","linkColumn":"columnname",
+                        "child": {
+                            "column": "columnname2", "min": 12, "max": 20
+                        }
+                    }
                 }
-            }
+            ]
         }
         """
         try:
@@ -473,35 +486,44 @@ class DatasetSerializer:
         except Table.DoesNotExist:
             return None
 
-        try:
-            column = table.getColumns().get(name=request["column"])
-        except Column.DoesNotExist:
-            return None
+        resultSet = table.getDatasets()
+        for criterion in request["filter"]:
+            resultSet = filter(resultSet, criterion, user)
+            if not resultSet:
+                return None
 
-        if "child" not in request:  # filter only with criteria on this table
+        return resultSet
+
+    @staticmethod
+    def filter(table, datasets, criterion, user, simple):
+        try:
+            column = table.getColumns(). filter(name=criterion["name"])
+        except Column.DoesNotExist:
+            return False
+
+        if "child" not in criterion:  # filter only with criteria on this table
             result = dict()
             result["datasets"] = list()
 
-            ownDatasets = Dataset.objects.filter(table=table)
             if column.type.type == Type.TEXT:
-                dataTexts = DataText.objects.filter(dataset__in=ownDatasets, content__contains=request["substr"])
+                dataTexts = DataText.objects.filter(dataset__in=datasets, content__contains=criterion["substr"])
                 for data in dataTexts:
                     result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
             if column.type.type == Type.NUMERIC:
-                dataNumerics = DataNumeric.objects.filter(dataset__in=ownDatasets, content__gte=request["min"], content__lte=request["max"])
+                dataNumerics = DataNumeric.objects.filter(dataset__in=datasets, content__gte=criterion["min"], content__lte=criterion["max"])
                 for data in dataNumerics:
                     result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
             if column.type.type == Type.DATE:
-                dataDates = DataDate.objects.filter(dataset__in=ownDatasets, content__gte=request["min"], content__lte=request["max"])
+                dataDates = DataDate.objects.filter(dataset__in=datasets, content__gte=criterion["min"], content__lte=criterion["max"])
                 for data in dataDates:
                     result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
             if column.type.type == Type.SELECTION:
-                dataSelections = DataSelection.objects.filter(dataset__in=ownDatasets, content__in=request["options"])
+                dataSelections = DataSelection.objects.filter(dataset__in=datasets, content__in=criterion["options"])
                 for data in dataSelections:
                     result["datasets"].append(DatasetSerializer.serializeOne(data.dataset.datasetID, user))
 
             return result
 
         else:  # filter with criteria on nested table
-            nextTable = column.type.getType().table.name
-            return DatasetSerializer.serializeBy(request["child"], nextTable, user)
+            #refTable =
+            return DatasetSerializer.filter(criterion["table"], criterion["child"], nextTable, user)
