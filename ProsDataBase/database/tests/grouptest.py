@@ -64,4 +64,17 @@ class GroupTest(TestCase):
 
         result = GroupSerializer.serializeOne(group)
 
+        # =================================================================
+        # tests the users in the result are the same users in the group
+        # =================================================================
+        groupMember = list()
+        for m in Membership.objects.filter(group=group):
+            groupMember.append((m.user.username))
+
+        for user in groupMember:
+            self.assertTrue(user in result["users"])
+
+        # =================================================================
+        # test the quantity of the result is correct
+        # =================================================================
         self.assertEquals(len(result["users"]), 1000)

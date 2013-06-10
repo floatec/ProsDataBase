@@ -5,23 +5,10 @@ from database.views.api import *
 
 class UserTest(TestCase):
     def test_showAllUser(self):
+        listofuser = create_User(101)
+        listofuser2 = create_User(101)
 
-        group1 = create_Group()
-        group2 = create_Group()
-        result =  UserSerializer.serializeAll()
-
-        listofUsers1 = list()
-        for m1 in Membership.objects.filter(group=group1):
-            listofUsers1.append(m1.user.username)
-
-        listofUsers2 = list()
-        for m2 in Membership.objects.filter(group=group2):
-            listofUsers2.append(m2.user.username)
-
-        if group["name"] == group1.name:
-            self.assertEquals(listofUsers1, group["users"])
-        elif group["name"] == group2.name:
-            self.assertEquals(listofUsers2, group["users"])
+        result = UserSerializer.serializeAll()
 
         # ===================================================
         # tests the count of the users
@@ -29,8 +16,21 @@ class UserTest(TestCase):
         length = 0
         for user in result["users"]:
             length += 1
-        self.assertEquals(length, 1000)
+        self.assertEquals(length, 200)
 
         # ===================================================
         # test the users are in the result
         # ===================================================
+        for user in listofuser:
+            self.assertTrue(user.username in result["users"])
+
+        for user in listofuser2:
+            self.assertTrue(user.username in result["users"])
+
+    # DER SCHEISS GEHT NEEED
+    def test_showOneUser(self):
+        users = create_User(2)
+
+        result = UserSerializer.serializeOne(user)
+
+        print users
