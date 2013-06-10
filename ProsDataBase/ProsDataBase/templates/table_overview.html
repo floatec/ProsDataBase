@@ -40,14 +40,12 @@
 
                 var content="";
                 var isInCategory = false;
+                var content = "<span id='"+allCatagories[i]+"' class='categoryHeadline'>"+allCatagories[i]+":</span><br /><br /><div class='"+allCatagories[i]+"'>";
                 for (var key in tables) {
 
                     if (allCatagories[i] == tables[key].category) {
-                         isInCategory = true;
-                        if (isInCategory){
-                            var content = "<span class='categoryHeadline'>"+allCatagories[i]+":</span><br /><br /><div class='"+allCatagories[i]+"'>";
-                        }
 
+                        isInCategory = true;
                         var tablename = tables[key].name;
                         // fill Navigation-Bar
                         $("#navigationMenuContent").append("<li><a href='/detailview/" + tables[key].name + "'>" + tables[key].name + "</a></li>");
@@ -64,9 +62,9 @@
                 }
                 content+="</div>";
                 $("#content").append(content);
-
-
-
+                   if(!isInCategory){
+                $("#"+allCatagories[i]).remove();
+                   }
    }
         });
 

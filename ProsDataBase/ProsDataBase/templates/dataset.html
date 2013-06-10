@@ -46,7 +46,7 @@
                      row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
                 }
                 if (columns[i].type == 5) {
-                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"></span><img class="icn" src="/static/img/search-icon.png">'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"></span><img onClick="searchElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" src="/static/img/search-icon.png">'
                 }
                 row += "</td></tr>"
                 $("#fields").append(row)
@@ -148,7 +148,11 @@
             myWindow.popup = true;
 
         }
-
+        function searchElement(table,field){
+              myWindow = window.open('/select_dataset/' + table, "_blank", "height=600,width=800,modal=yes,alwaysRaised=yes");
+            myWindow.field = field;
+            myWindow.popup = true;
+        }
 
     </script>
 {% endblock %}
