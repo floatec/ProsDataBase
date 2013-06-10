@@ -24,7 +24,7 @@
     <div id="filter">
   <h3>filter</h3><div>
   <div id="filterView">
-<button onClick="addFilter('#filterView',global.table)" >+</button>
+<button onClick="addFilter('#filterView',global.table)" >+</button><button onclick="laodFiltered()">Filter</button>
   </div>
 </div>
     </div>
@@ -40,7 +40,7 @@
 
         function addFilter(view,tableName){
             filter++;
-            $(view).append("<div id='filter'></div>")
+            $(view).append("<div class='filter'></div>")
             addFilterOption($(view).children().last(), tableName)
         }
 
@@ -53,10 +53,10 @@
 
             }
             if($(select).find(":selected").val()==0 || $(select).find(":selected").attr("refType")==0){
-               $(select).next().html("<input type='text' placeholder='tex...'>")
+               $(select).next().html("<input type='text' class='text' placeholder='tex...'>")
             }
             if($(select).find(":selected").val()==1|| $(select).find(":selected").attr("refType")==1){
-               $(select).next().html("Min:<input type='text' name='min'  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' size='4'>Max:<input  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' name='max' type='text' size='4'>")
+               $(select).next().html("Min:<input type='text' class='min'  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' size='4'>Max:<input  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' class='max' type='text' size='4'>")
 
             }
             if($(select).find(":selected").val()==3 || $(select).find(":selected").attr("refType")==3){
@@ -72,7 +72,7 @@
                $(select).next().html("<input type='checkbox'>")
             }
             if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
-               $(select).next().html("Min:<input type='text' name='min' placeholder='1990-05-26 23:42'>Max:<input name='max' type='text' placeholder='1990-05-26 23:42'>")
+               $(select).next().html("Min:<input type='text' class='min' placeholder='1990-05-26 23:42'>Max:<input class='max' type='text' placeholder='1990-05-26 23:42'>")
 
             }
           }
@@ -135,6 +135,45 @@
                     createTable(data.columns, tableName, insertTo, '/api/table/' + tableName + '/dataset/', obj);
                 }
             });
+        }
+        function laodFiltered() {
+            var obj = {}
+            obj.filter=[]
+            var filterRows=$(".filter")
+            filterRows.each(function(){
+                var child=filterinnerobj(this);
+                obj.filter.push(child)
+            })
+            console.log(obj);
+        }
+        function filterinnerobj(par){
+            var child={}
+                var elem=$(par).children(":first");
+                var span=$(elem.next())
+                child.colum=elem.find(":SELECTED").text()
+
+                if(elem.find(":SELECTED").val()<5||elem.find(":SELECTED").attr("reftype")!="undefined"){
+
+                       console.log(span.find(".min"))
+                    if(span.find(".min").length!=0&&span.find(".min").val()!=""){
+                        child.min=span.find(".min").val();
+                    }
+                    if(span.find(".max").length!=0&&span.find(".max").val()!=""){
+                        child.max=span.find(".max").val();
+                    }
+                    if(span.find(".text").length!=0&&span.find(".text").val()!=""){
+
+                        child.substring=$(span.find(".text")).val();
+                    }
+                    if(span.find(":SELECTED").length!=0){
+
+                        child.option=span.find(":SELECTED").text();
+                    }
+                }else{
+                    child.table=elem.find(":SELECTED").attr("table");
+                    child.child=filterinnerobj(span);
+                }
+             return child
         }
 
         function createTable(columns, tableName, insertTo, url, post) {
