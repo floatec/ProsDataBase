@@ -53,11 +53,15 @@ function init(){
                     }
                     row += '</select>'
                 }
+                  if (columns[i].type == 4) {
+                     row += '<input class="'+columns[i].name+'" name="' + encode_pros(columns[i].name) + '" type="checkbox" placeholder="text">'
+                }
                 if (columns[i].type == 5) {
-                    row += '<span id="' + columns[i].name + '"></span><span onClick="newElement(\'' + columns[i].table + '\',\'' + columns[i].name + '\')" class="ui-icon ui-icon-plusthick" style="display:inline-block;"></span><span class="ui-icon ui-icon-search" style="display:inline-block;"></span>'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"></span><img class="icn" src="/static/img/search-icon.png">'
                 }
                 row += "</td></tr>"
-                $("#fields").append(row)
+                $("#fields").append(row);
+                $(".icn").button();
             }
             $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true,changeYear: true });
             $("#tableCrumb").prepend(tableName);
@@ -79,6 +83,7 @@ function init(){
 
                 }
                 else if(dataset[key].type == 4){
+                    $("."+dataset[key].column).checked = dataset[key].value;
 
                 }
                  else if(dataset[key].type == 5){

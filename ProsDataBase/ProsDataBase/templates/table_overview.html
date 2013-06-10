@@ -39,11 +39,14 @@
                 var tables = tabledata.tables
 
                 var content="";
-
-                var content = "<span class='categoryHeadline'>"+allCatagories[i]+":</span><br /><br /><div class='"+allCatagories[i]+"'>";
+                var isInCategory = false;
                 for (var key in tables) {
 
                     if (allCatagories[i] == tables[key].category) {
+                         isInCategory = true;
+                        if (isInCategory){
+                            var content = "<span class='categoryHeadline'>"+allCatagories[i]+":</span><br /><br /><div class='"+allCatagories[i]+"'>";
+                        }
 
                         var tablename = tables[key].name;
                         // fill Navigation-Bar
@@ -61,6 +64,8 @@
                 }
                 content+="</div>";
                 $("#content").append(content);
+
+
 
    }
         });

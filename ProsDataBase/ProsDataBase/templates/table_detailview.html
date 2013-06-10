@@ -94,7 +94,7 @@
             subtable = 0;
             filter = 0;
             global={}
-            var tableName = getTableName();
+            var tableName = decodeURIComponent(getTableName());
             global.table=tableName
             $("#naviheader").append(tableName)
             var columns = [];
@@ -102,7 +102,7 @@
                 columns = data.columns;
                 createTable(columns, tableName, $("#headTable"), '/api/table/' + tableName + '/',undefined);
             });
-            $("#tableCrumb").prepend(tableName);
+            $("#tableCrumb").prepend(decodeURIComponent(tableName));
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
             $("#insertData").attr('href', '/dataset/' + tableName + '/');
             $("#modifyStructure").attr('href', '/modify/' + tableName + '/');
