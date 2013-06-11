@@ -153,6 +153,7 @@
                 createTable(columns, global.table, $("#headTable"), '/api/table/' + global.table + '/dataset/filter/',obj);
             });
         }
+        //creates filter object
         function filterinnerobj(par){
 
                 var elem=$(par).children(":first");
@@ -202,8 +203,10 @@
             //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
             tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
             for (var key in columns) {
+                if(columns[key].type<6){
                 tableHead.append("<th>" + columns[key].name + "</th>");
                 $("#navigationMenuContent").append("<li><a href='#" + columns[key].name + "'>" + columns[key].name + "</a></li>");
+                }
             }
 
             table.append(tableHead)
@@ -279,6 +282,9 @@
                         $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'>edit</a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
 
                         for (var p in columns) {
+                                if(columns[p].type==6){
+                                    continue
+                             }
                             var sete = false
                             for (var i in allDatasets[key].data) {
                                 if (allDatasets[key].data[i].column == columns[p].name) {
