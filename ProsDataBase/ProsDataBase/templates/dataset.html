@@ -124,7 +124,7 @@
 
                 success: function (data) {
                     if (true) {
-                        $(window.opener.document).find('#' + field).append("<span class='value'>" + data.id + "</span> ");
+                        $(window.opener.document).find('#' + field).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span> ");
                     }
                 }
 
@@ -133,6 +133,13 @@
 
         });
 
+
+        function deleteTableType(element){
+
+            $(element).next().remove();
+            $(element).remove();
+
+        }
 
         function getTableName() {
             var tableName = window.location.href;

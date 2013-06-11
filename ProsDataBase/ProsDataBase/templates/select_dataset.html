@@ -104,7 +104,7 @@
 
             jQuery("#filter").accordion({
 
-      heightStyle: "content", autoHeight: false, clearStyle: true,
+      heightStyle: "content", autoHeight: false, clearStyle: true
 
     });
             addFilter("#filterView",tableName)
@@ -116,7 +116,6 @@
             var tableName = tableName
             $.ajax({
                 url: '/api/table/' + tableName + '/structure/',
-
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (data) {
@@ -203,13 +202,8 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (data) {
-                    allDatasets = data.datasets;
+                    var allDatasets = data.datasets;
                     console.log(allDatasets);
-
-                    allDatasets = data.datasets;
-                    console.log(data);
-
-
                     for (var key in allDatasets) {
 
 
