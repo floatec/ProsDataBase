@@ -58,7 +58,7 @@
 
         <button id="addColumn">+</button>
         <br/><br/>
-
+        <button id='createTableButtonPage1'>save</button>
 
     </div>
     <div id="tabs-2">
@@ -68,7 +68,7 @@
         <br/>
 
         <div id="allUserRights"></div>
-        <button id='createTableButton'>save</button>
+        <button id='createTableButtonPage2'>save</button>
 
 
     </div>
@@ -123,6 +123,7 @@ function init() {
     datatypes[2] = "date";
     datatypes[3] = "selection";
     datatypes[4] = "yes or no";
+    allowToggle = false;
     // initialize tabs
     $("#tabs").tabs({
         collapsible: false,
@@ -134,208 +135,30 @@ function init() {
 
                 return false;
             }
-            if (ui.newPanel.attr('id') == 'tabs-1') {
-                if (!firstload) {
+            if (allowToggle) {
+                if (ui.newPanel.attr('id') == 'tabs-1') {
+                    if (!firstload) {
+                        createAllExistedColumnFirst();
+                        allowToggle = false;
+                    }
+
+                }
 
 
-
-
-                    //object to send
-                    var jsonTbl = {};
-                    //fill json object with name of the table
-                    jsonTbl.name = $("#tblName").val();
-                    jsonTbl.category = $("#category").find(":selected").text();
-                    //fill it with all columns
-                    jsonTbl.columns = [];
-                    $(".columnNameClass").each(function () {
-                        var columnNames = $(this).val();
-                        columnObj = {};
-                        columnObj.name = columnNames;
-
-
-                            columnObj.id = $(this).attr('columnid');
-
-                        columnObj.rights = {};
-                        var row = $(this).parent();
-                        row = row.parent();
-                        var thisDataType = parseInt($(row.find(".dataType")[0]).val());
-
-                        columnObj.type = thisDataType;
-                        if (thisDataType == 0) {
-                            columnObj.length = parseInt($(row.find(".length")[0]).val());
-
-                        }
-                        else if (thisDataType == 1) {
-                            columnObj.min = parseInt($(row.find(".min")[0]).val());
-                            columnObj.max = parseInt($(row.find(".max")[0]).val());
-                        }
-                        else if (thisDataType == 2) {
-                        }
-                        else if (thisDataType == 3) {
-                            columnObj.options = [];
-
-                            $(row.find(".option")).each(function () {
-
-                                var inputObj = {};
-                                inputObj.key = getNumber(this.id);
-                                inputObj.value = $(this).val();
-                                columnObj.options.push(inputObj);
-
-
-                            });
-
-                        }
-                        else if (thisDataType == 4) {
-
-
-                        }
-                        else {
-                            columnObj.table = $(row.find(".dataType")).find(":selected").text();
-                        }
-                        var users = [];
-                        var groups = [];
-
-
-                        $(".rightsTable").each(function () {
-
-
-                            var name = this.id;
-
-                            var userObj = {};
-                            userObj.name = name;
-                            var tempRights = [];
-                            if ($(this).find("." + encode_pros(columnNames)).find(".read").is(':checked')) {
-                                tempRights.push('read');
-                            }
-                            if ($(this).find("." + encode_pros(columnNames)).find(".modify").is(':checked')) {
-                                tempRights.push('modify');
-                            }
-                            userObj.rights = tempRights;
-                            if ($.isInArray(name, allUsers)) {
-                                users.push(userObj);
-                            }
-                            else if ($.isInArray(name, allGroups)) {
-                                groups.push(userObj);
-
-                            }
-
-                        });
-                        columnObj.rights.users = users;
-                        columnObj.rights.groups = groups;
-                        jsonTbl.columns.push(columnObj);
-                    });
-
-                    jsonTbl.rights = {};
-                    var users = [];
-                    var groups = [];
-
-                    $(".rightsTable").each(function () {
-                        var userObj = {};
-                        var userGroupName = this.id;
-                        userObj.name = this.id;
-
-                        userObj.rights = [];
-
-                        if (($(this).find((".rightsAdmin")).is(':checked'))) {
-                            userObj.rights.push('rightsAdmin');
-                        }
-                        if (($(this).find((".insert")).is(':checked'))) {
-                            userObj.rights.push('insert');
-                        }
-                        if (($(this).find((".delete")).is(':checked'))) {
-                            userObj.rights.push('delete');
-                        }
-                        if (($(this).find((".viewLog")).is(':checked'))) {
-                            userObj.rights.push('viewLog');
-                        }
-                        if ($.isInArray(userGroupName, allUsers)) {
-                            users.push(userObj);
-                        }
-                        else if ($.isInArray(userGroupName, allGroups)) {
-                            groups.push(userObj);
-                        }
-                    });
-                    jsonTbl.rights.users = users;
-                    jsonTbl.rights.groups = groups;
-                    console.log(jsonTbl);
-                    //fill it with rights for the whole table
-
-                    $.ajax({
-                        url: '/api/table/' + getTableName() + '/',
-                        type: 'put',
-                        data: JSON.stringify(jsonTbl),
-                        contentType: 'application/json',
-                        dataType: 'json',
-                        success: createAllExistedColumn()
-                    });
+                if (ui.newPanel.attr('id') == 'tabs-2') {
+                    $(".rightsTable").remove();
+                    createExistedUsers();
+                    allowToggle = false;
                 }
             }
-            if (ui.newPanel.attr('id') == 'tabs-2') {
-                $(".rightsTable").remove();
-                //object to send
-                var jsonTbl = {};
-                //fill json object with name of the table
-                jsonTbl.name = $("#tblName").val();
-                jsonTbl.category = $("#category").find(":selected").text();
-                //fill it with all columns
-                jsonTbl.columns = [];
-                $(".columnNameClass").each(function () {
-                    var columnNames = $(this).val();
-                    columnObj = {};
-                    columnObj.name = columnNames;
-                    if ($(this).attr('columnid') != 'undefinded') {
-                        columnObj.id = $(this).attr('columnid');
-                    }
-
-                    var row = $(this).parent();
-                    row = row.parent();
-                    var thisDataType = parseInt($(row.find(".dataType")[0]).val());
-
-                    columnObj.type = thisDataType;
-                    if (thisDataType == 0) {
-                        columnObj.length = parseInt($(row.find(".length")[0]).val());
-                    }
-                    else if (thisDataType == 1) {
-                        columnObj.min = parseInt($(row.find(".min")[0]).val());
-                        columnObj.max = parseInt($(row.find(".max")[0]).val());
-                    }
-                    else if (thisDataType == 2) {
-                    }
-                    else if (thisDataType == 3) {
-                        columnObj.options = [];
-                        $(row.find(".option")).each(function () {
-                            var inputObj = {};
-                            inputObj.key = getNumber(this.id);
-                            inputObj.value = $(this).val();
-                            columnObj.options.push(inputObj);
-                        });
-                    }
-                    else if (thisDataType == 4) {
-                    }
-                    else {
-                        columnObj.table = $(row.find(".dataType")).find(":selected").text();
-                    }
-
-                    jsonTbl.columns.push(columnObj);
-                });
-                console.log(jsonTbl);
-                $.ajax({
-                    url: '/api/table/' + getTableName() + '/',
-                    type: 'put',
-                    data: JSON.stringify(jsonTbl),
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    success: createExistedUsers()
-
-
-
-                });
-
-
+            else {
+                alert("save first, before switching page!");
+                return false;
             }
         },
         activate: function (event, ui) {
             if (ui.newPanel.attr('id') == 'tabs-1') {
+
                 $("#tab_header_1").removeClass("headerTabIanctive");
                 $("#tab_header_2").addClass("headerTabIanctive")
                 $("#naviContentList").remove();
@@ -347,6 +170,7 @@ function init() {
 
             }
             else if (ui.newPanel.attr('id') == 'tabs-2') {
+
                 $("#tab_header_1").addClass("headerTabIanctive")
                 $("#tab_header_2").removeClass("headerTabDeactive")
                 $("#naviHeadline").remove();
@@ -411,7 +235,6 @@ function init() {
     });
 
 
-
     // initialize alertbox
     $("#deleteExistedColumns").dialog({
         autoOpen: false,
@@ -466,27 +289,20 @@ function init() {
         async: true
 
     });
-
-    createAllExistedColumn();
+    createAllExistedColumnFirst();
     firstload = false;
+
 }
 
-function createAllExistedColumn() {
-     $.ajaxSetup({
-        async: false
 
-    });
-
-    $(".trcolumnClass").each(function () {
+function createAllExistedColumn(data){
+          $(".trcolumnClass").each(function () {
 
         $(this).remove();
 
     });
 
-
-    $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
-
-        var category = data.category;
+       var category = data.category;
         $("#category option").filter(function () {
             return this.text == category;
         }).attr('selected', true);
@@ -563,9 +379,18 @@ function createAllExistedColumn() {
         }
 
 
-    });
- $.ajaxSetup({
-        async: true
+}
+
+
+function createAllExistedColumnFirst() {
+
+
+
+
+
+    $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+
+        createAllExistedColumn(data)
 
     });
 
@@ -876,8 +701,6 @@ $("#addUserToRights").click(function () {
 
 function createExistedUsers() {
 
-
-    createAllExistedColumn();
     $.getJSON('/api/table/' + tableName + '/rights/', function (data) {
 
         var actors = data.actors;
@@ -994,8 +817,84 @@ function toggleAll(element, type) {
     );
 }
 
-$("#createTableButton").click(function () {
 
+$("#createTableButtonPage1").click(function () {
+
+    allowToggle = true;
+//object to send
+    var jsonTbl = {};
+    //fill json object with name of the table
+    jsonTbl.name = $("#tblName").val();
+    if ($(this).attr('columnid') != 'undefinded') {
+        jsonTbl.id = $(this).attr('columnid');
+    }
+    jsonTbl.category = $("#category").find(":selected").text();
+    //fill it with all columns
+    jsonTbl.columns = [];
+    $(".columnNameClass").each(function () {
+        var columnNames = $(this).val();
+
+        columnObj = {};
+        columnObj.name = columnNames;
+
+        columnObj.id = $(this).attr('columnid');
+
+        var row = $(this).parent();
+        row = row.parent();
+        var thisDataType = parseInt($(row.find(".dataType")[0]).val());
+
+        columnObj.type = thisDataType;
+        if (thisDataType == 0) {
+            columnObj.length = parseInt($(row.find(".length")[0]).val());
+
+        }
+        else if (thisDataType == 1) {
+            columnObj.min = parseInt($(row.find(".min")[0]).val());
+            columnObj.max = parseInt($(row.find(".max")[0]).val());
+        }
+        else if (thisDataType == 2) {
+        }
+        else if (thisDataType == 3) {
+            columnObj.options = [];
+
+            $(row.find(".option")).each(function () {
+
+                var inputObj = {};
+                inputObj.key = getNumber(this.id);
+                inputObj.value = $(this).val();
+                columnObj.options.push(inputObj);
+
+            });
+
+        }
+        else if (thisDataType == 4) {
+
+        }
+        else {
+            columnObj.table = $(row.find(".dataType")).find(":selected").text();
+        }
+        console.log(columnObj);
+        jsonTbl.columns.push(columnObj);
+    });
+    console.log(jsonTbl);
+    //fill it with rights for the whole table
+
+    $.ajax({
+        url: '/api/table/' + getTableName() + '/',
+        type: 'put',
+        data: JSON.stringify(jsonTbl),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: createAllExistedColumn
+    });
+
+    console.log(jsonTbl);
+    //window.location.href = '/table/';
+
+
+});
+$("#createTableButtonPage2").click(function () {
+    allowToggle = true;
     //object to send
     var jsonTbl = {};
     //fill json object with name of the table
