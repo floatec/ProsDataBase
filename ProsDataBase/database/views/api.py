@@ -125,6 +125,8 @@ def datasets(request, tableName):
 def filterDatasets(request, tableName):
     if request.method == 'POST':
         datasets = DatasetSerializer.serializeBy(json.loads(request.raw_post_data), tableName, request.user)
+        if datasets is None:
+            return HttpResponse(content="An error occured", status=500)
         return HttpResponse(json.dumps(datasets), content_type="application/json")
 
 

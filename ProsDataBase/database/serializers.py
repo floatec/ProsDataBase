@@ -486,6 +486,9 @@ class DatasetSerializer:
         except Table.DoesNotExist:
             return None
 
+        if len(request["filter"]) == 0:
+            return DatasetSerializer.serializeAll(table, user)
+
         resultSet = table.getDatasets()
         for criterion in request["filter"]:
             resultSet = DatasetSerializer.filter(table, resultSet, criterion, user)
@@ -494,14 +497,14 @@ class DatasetSerializer:
 
         result = dict()
         result["datasets"] = list()
-        for dataset in resultSet.objects:
+        for dataset in resultSet:
             result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
         return result
 
     @staticmethod
     def filter(table, datasets, criterion, user):
         try:
-            column = table.getColumns().filter(name=criterion["name"])
+            column = table.getColumns().get(name=criterion["column"])
         except Column.DoesNotExist:
             return False
 
@@ -511,45 +514,49 @@ class DatasetSerializer:
                 datasetIDs = list()
                 for dataText in dataTexts:
                     datasetIDs.append(dataText.dataset_id)
-                return datasets.objects.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs)
 
-            elif column.type.type == Type.NUERMIC:
+            elif column.type.type == Type.NUMERIC:
                 if "min" in criterion and "max" in criterion:
                     dataNumerics = DataNumeric.objects.filter(dataset__in=datasets, content__gte=criterion["min"], content__lte=criterion["max"])
                 elif "min" in criterion:
                     dataNumerics = DataNumeric.objects.filter(dataset__in=datasets, content__gte=criterion["min"])
-                else:  # "max" in criterion
+                elif "max" in criterion:
                     dataNumerics = DataNumeric.objects.filter(dataset__in=datasets, content__lte=criterion["max"])
+                else:  # no filtering
+                    return datasets
                 datasetIDs = list()
                 for dataNumeric in dataNumerics:
                     datasetIDs.append(dataNumeric.dataset_id)
-                return datasets.objects.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs)
 
             elif column.type.type == Type.DATE:
                 if "min" in criterion and "max" in criterion:
                     dataDates = DataDate.objects.filter(dataset__in=datasets, content__gte=criterion["min"], content__lte=criterion["max"])
                 elif "min" in criterion:
                     dataDates = DataDate.objects.filter(dataset__in=datasets, content__gte=criterion["min"])
-                else:  # "max" in criterion
+                elif "max" in criterion:
                     dataDates = DataDate.objects.filter(dataset__in=datasets, content__lte=criterion["max"])
+                else:  # no filtering
+                    return datasets
                 datasetIDs = list()
                 for dataDate in dataDates:
                     datasetIDs.append(dataDate.dataset_id)
-                return datasets.objects.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs)
 
             elif column.type.type == Type.SELECTION:
                 dataSelections = DataSelection.objects.filter(dataset__in=datasets, content=criterion["option"])
                 datasetIDs = list()
                 for dataSelection in dataSelections:
                     datasetIDs.append(dataSelection.dataset_id)
-                return datasets.objects.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs)
 
             elif column.type.type == Type.BOOL:
                 dataBools = DataBool.objects.filter(dataset__in=datasets, content=criterion["boolean"])
                 datasetIDs = list()
                 for dataBool in dataBools:
                     datasetIDs.append(dataBool.dataset_id)
-                return datasets.objects.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs)
 
             elif column.type.type == Type.TABLE:
                 typeTable = column.type.getType()
@@ -583,7 +590,7 @@ class DatasetSerializer:
                     for dataTable in dataTables:
                         datasetIDs.append(dataTable.dataset_id)
 
-                    filteredDatasets = filteredDatasets.objects.filter(pk__in=datasetIDs)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
+                    filteredDatasets = filteredDatasets.filter(pk__in=datasetIDs)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
 
                     """
                         Finally, return a filtered version of 'datasets'.
@@ -598,7 +605,7 @@ class DatasetSerializer:
                     for filteredLink in filteredLinks:
                         finalDatasetIDs.append(filteredLink.dataset_id)
 
-                    return datasets.objects.filter(pk__in=finalDatasetIDs)
+                    return datasets.filter(pk__in=finalDatasetIDs)
 
                 else:  # filter over column in table
                     refTable = typeTable.table
@@ -652,7 +659,7 @@ class DatasetSerializer:
                     datasetIDs = list()
                     for dataTable in dataTables:
                         datasetIDs.append(dataTable.dataset_id)
-                    return datasets.objects.filter(pk__in=datasetIDs)
+                    return datasets.filter(pk__in=datasetIDs)
 
             else:  # no matching column type
                 return False
