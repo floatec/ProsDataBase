@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 from models import *
 from forms import *
-
+from serializers import *
 
 def createTable(request):
     """
@@ -188,7 +188,7 @@ def deleteTable(name, user):
 
     columns = list()
     for column in table.columns.all():
-        answer = tablefactory.deleteColumn(table.name, column.name, user)
+        answer = deleteColumn(table.name, column.name, user)
         if answer != 'OK':
             return answer
 
@@ -462,4 +462,5 @@ def modifyTable(request, name):
             if answer != 'OK':
                 return HttpResponse(content=answer, status=400)
 
-    return HttpResponse(content="Successfully modified table", status=200)
+    result = TableSerializer.serializeStructure(table.name)
+    return HttpResponse(json.dumps(result), content_type="application/json")
