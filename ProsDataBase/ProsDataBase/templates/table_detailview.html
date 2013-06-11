@@ -145,6 +145,11 @@
                 obj.filter.push(child)
             })
             console.log(obj);
+            $("#headTable").html("")
+            $.getJSON('/api/table/' + global.table + '/structure/', function (data) {
+                columns = data.columns;
+                createTable(columns, global.table, $("#headTable"), '/api/table/' + global.table + '/dataset/filter/',obj);
+            });
         }
         function filterinnerobj(par){
             var child={}
