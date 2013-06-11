@@ -96,9 +96,7 @@
                 createTable(columns, tableName, $("#headTable"), '/api/table/' + tableName + '/',undefined);
             });
             $("#tableCrumb").prepend(tableName);
-            $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
-            $("#insertData").attr('href', '/dataset/' + tableName + '/');
-            $("#modifyStructure").attr('href', '/modify/' + tableName + '/');
+
             $("#deleteData").click(function () {
 
 
