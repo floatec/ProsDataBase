@@ -16,12 +16,12 @@ def generate_random_number(length=2, chars=digits):
     number = ''.join([choice(chars) for k in xrange(length)])
     return number
 
-def create_table(**kwargs):
+def create_table(user):
     # ============================================================
     # creates a simple table with two columns and
     # two datasets filed with 3 values
     # ============================================================
-    testUser = DBUser.objects.create_user(username=generate_random_username())
+    testUser = user
     testUser.save()
 
     category = dict()

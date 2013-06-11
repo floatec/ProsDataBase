@@ -2,6 +2,7 @@ from django.test import TestCase
 from database.models import *
 from database.tests.factory import *
 from database.views.api import *
+from database.tablefactory import *
 
 class TableTest(TestCase):
     def test_showAllTables(self):
@@ -18,8 +19,8 @@ class TableTest(TestCase):
         schmog = DBUser.objects.create_user(username="test")
         schmog.save()
 
-        table1 = create_table()
-        table2 = create_table()
+        table1 = create_table(schmog)
+        table2 = create_table(schmog)
 
         connect_User_With_Rights(schmog,table1)
         connect_User_With_Rights(schmog,table2)
@@ -59,7 +60,7 @@ class TableTest(TestCase):
 
         self.assertEquals(length, 10)
 
-    # AM ARSCH !!!!!!!!!
+    # !!!!!!
     def test_showTable(self):
         # =================================================================
         #return the table with specified name, along with its columns and datasets.
@@ -71,10 +72,12 @@ class TableTest(TestCase):
         #     ]
         # }
         # =================================================================
-        table1 = create_table()
+
 
         schmog = DBUser.objects.create_user(username="test")
         schmog.save()
+
+        table1 = create_table(schmog)
 
         connect_User_With_Rights(schmog, table1)
         result = TableSerializer.serializeOne(table1.name,schmog)
@@ -83,19 +86,22 @@ class TableTest(TestCase):
         for col in table1.getColumns():
             table1Cols.append(col.name)
 
-        print result
+        print table1.name
 
-        self.assertTrue(table1.name in [table["name"] in result["name"]])
+        self.assertFalse(table1.name in result["name"])
 
     # SOLLTE SO EIGENTLICH KLAPPEN
     def test_deleteTable(self):
-        table1 = create_table()
 
         schmog = DBUser.objects.create_user(username="test")
         schmog.save()
 
+        table1 = create_table(schmog)
+
         connect_User_With_Rights(schmog, table1)
 
         deleteTable(table1.name,schmog)
-
+        # ==============================================================
+        # tests the table is flaged as deleted
+        # ==============================================================
         self.assertTrue(table1.deleted)
