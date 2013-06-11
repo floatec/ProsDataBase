@@ -169,6 +169,46 @@ def createColumn(col, table, user):
         return 'OK'
 
 
+def deleteTable(name, user):
+    try:
+        table = Table.objects.get(name=name)
+    except Table.DoesNotExist:
+        HttpResponse(content="Could not find table with name " + name + ".", status=400)
+
+    if table.deleted:
+        HttpResponse(content="Table with name " + name + " does not exist.", status=400)
+
+    datasets = list()
+    for dataset in table.datasets.all():
+        datasets.append(dataset)
+        dataset.deleted = True
+        dataset.modified = datetime.now()
+        dataset.modifier = user
+        dataset.save()
+
+    columns = list()
+    for column in table.columns.all():
+        answer = tablefactory.deleteColumn(table.name, column.name, user)
+        if answer != 'OK':
+            return answer
+
+    table.deleted = True
+    table.modified = datetime.now()
+    table.modifier = user
+    table.name = table.name + "_DELETED_" + str(datetime.now())
+    table.save()
+
+    for col in columns:
+        col.table = table
+        col.save()
+
+    for dataset in datasets:
+        dataset.table = table
+        dataset.save()
+
+    return HttpResponse(json.dumps({"deleted": table.name}), status=200)
+
+
 def deleteColumn(tableName, columnName, user):
     try:
         table = Table.objects.get(name=tableName)

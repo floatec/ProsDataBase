@@ -488,7 +488,7 @@ class DatasetSerializer:
 
         resultSet = table.getDatasets()
         for criterion in request["filter"]:
-            resultSet = filter(resultSet, criterion, user)
+            resultSet = DatasetSerializer.filter(table, resultSet, criterion, user)
             if not resultSet:
                 return None
 
