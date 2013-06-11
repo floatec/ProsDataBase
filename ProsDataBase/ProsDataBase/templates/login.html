@@ -10,7 +10,7 @@
 		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 		<link rel="stylesheet" href="/resources/demos/style.css" />
 		<script>
-			$(document).ready(function(){ 
+			$(document).ready(function(){
 				$( '.btn' ).button({ disabled: false});
 			});
             function login(){
@@ -35,46 +35,74 @@
             }
 		</script>
 		<style type="text/css">
-		
-		#content{
-			
-		left:0px;
-		width: 50%;
-		
-		}
-	
-	
+
+
+
+
 		</style>
-		
+
 	</head>
 	<body>
-		<div id="heading">
-		<h1>ProsDataBase</h1>
-		<hr>
+		<div id="heading" style="background: none repeat scroll 0 0 #DDDDDD; border-bottom: 1px solid; padding: 10px; position: relative; width: 100%;">
+		    <img src="../static/img/prosdata_small.png" height="70px" width="140px"/>
 		</div>
+        <div id="loginContent" style="min-height: 300px; margin: 0px auto; position: relative; width: 930px; top: 50px;">
+                <div id="loginText" style="position: absolute; left: 0px;  width: 450px;">
+                    <img src="../static/img/prosdatabase.png" height="200px" width="200px"/>
+                    <p>
+                        juthrugshtuissil
+                    </p>
+                    <p style="margin: 0px;">
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt
+                        ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+                        dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+                        Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                    </p>
+                </div>
+                <div id="loginForm" style="background: none repeat scroll 0 0 #EEEEEE; padding: 25px; border-radius: 15px 15px 15px 15px; border: 1px solid rgb(136, 136, 136); position: absolute; right: 0px;">
+                    <div id="loginDiv">
+                        <div id="error" style="display:none; color:#FFFFF;background-color: red">Error at login</div>
+                        <table>
+                            <tr><td>Username:</td><td><input id="user" type="text" style="float: right; width: 200px;"></td></tr>
+                            <tr><td>Password:</td><td><input id="pw" type="password" style="float: right; width: 200px;"></td></tr>
+                        </table>
+                        <div id="registerDiv" style="float: right; margin-left: 5px; margin-top: 15px;">
+                            <a href="/register"><input class="btn" type="button" value="Register"></a>
+                         </div>
+                        <div id="Login" style="float: right; margin-top: 15px;">
+                            <a href="#" onClick="login()"><input class="btn" type="submit" value="Login"></a>
+                        </div>
+                    </div>
+                </div>
+            <div id="RegisterForm" style="background: none repeat scroll 0 0 #EEEEEE; padding: 25px; border-radius: 15px 15px 15px 15px; border: 1px solid rgb(136, 136, 136); position: absolute; right: 0px; right: -45px;top:275px;">
 
-			<table  width="100%"><tr><td>
-			<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt
-			ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
-			dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-			Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-			et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-			Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-			</td><td width="50%">
-				<div id="loginDiv">
-                    <div id="error" style="display:none; color:#FFFFF;background-color: red">Error at login</div>
-					<table>
 
-                    <tr><td>Username:</td><td><input id="user" type="text"></td></tr>
-					<tr><td>Password:</td><td><input id="pw" type="password"></td></tr>
-					</table>
-                    <a href="#" onClick="login()"><input class="btn" type="submit" value="Login"></a>
-				</div>
-				<div id="registerDiv">
-					
-					<a href="/register"><input class="btn" type="button" value="Register"></a>
-				</div>
-			</td></tr></table>
+        <table>
 
+            <tr>
+                <td><span>Username:</span></td>
+                <td><input id='username' type="text"></td>
+            </tr>
+            <tr>
+                <td><span>Passwort:</span></td>
+                <td><input id='password' type="password"></td>
+            </tr>
+            <tr>
+                <td><span>Confirm Passwort:</span></td>
+                <td><input id='passwordAgain' type="password"></td>
+            </tr>
+            <tr>
+                <td colspan="2" id="RegisterBtnCell">
+                    <button class='btn' id='registerBtn'>Register</button>
+                <td>
+            </tr>
+        </table>
+
+
+
+            </div>
+        </div>
 	</body>
 </html>
