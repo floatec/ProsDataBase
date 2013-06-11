@@ -491,8 +491,11 @@ class DatasetSerializer:
 
         resultSet = table.getDatasets()
         for criterion in request["filter"]:
+            if "column" not in criterion:
+                continue
             resultSet = DatasetSerializer.filter(table, resultSet, criterion, user)
             if not resultSet:
+                print "resultSet is None"
                 return None
 
         result = dict()
@@ -508,7 +511,7 @@ class DatasetSerializer:
         except Column.DoesNotExist:
             return False
 
-        if "child" not in criterion:  # filter only with criteria on this table
+        if "linkColumn" not in criterion:  # filter only with criteria on this table
             if column.type.type == Type.TEXT:
                 dataTexts = DataText.objects.filter(dataset__in=datasets, content__contains=criterion["substring"])
                 datasetIDs = list()
@@ -567,46 +570,31 @@ class DatasetSerializer:
                     except Table.DoesNotExist:
                         return False
                     try:
-                        refColumn = Column.objects.get(table=nextTable, name=criterion["linkColumn"])
+                        #refColumn = Column.objects.get(table=nextTable, name=criterion["linkColumn"])
+                        refColumn = Column.objects.get(table=nextTable, name=criterion["child"]["column"])
                     except Column.DoesNotExist:
                         return False
 
-                    """
-                        First filter datasets of the next table with criteria specified in the criterion's child
-                    """
+                    # First filter datasets of the next table with criteria specified in the criterion's child
                     filteredDatasets = DatasetSerializer.filter(nextTable, nextTable.getDatasets(), criterion["child"], user)
+                    print filteredDatasets
 
-                    """
-                        Now keep only those datasets, which have references to the "datasets" passed as argument
-                    """
-                    links = DataTableToDataset.objects.filter(dataset__in=datasets)
+                    # Now keep only those datasets, which have references to the "datasets" passed as argument
+                    links = DataTableToDataset.objects.filter(dataset__in=filteredDatasets)
                     dataTableIDs = list()
                     for link in links:
                         dataTableIDs.append(link.DataTable_id)
 
                     # dataTables contained in datasets which fulfill child-criterion
-                    dataTables = DataTable.objects.filter(dataset__in=filteredDatasets, column=refColumn, pk__in=dataTableIDs)
+                    dataTables = DataTable.objects.filter(dataset__in=datasets, pk__in=dataTableIDs)
+
                     datasetIDs = list()
                     for dataTable in dataTables:
                         datasetIDs.append(dataTable.dataset_id)
+                    print datasetIDs
+                    datasets = datasets.filter(pk__in=datasetIDs)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
 
-                    filteredDatasets = filteredDatasets.filter(pk__in=datasetIDs)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
-
-                    """
-                        Finally, return a filtered version of 'datasets'.
-                        That is, only those, which are referenced by datasets in filteredDatasets.
-                    """
-
-                    # dataTables contained in datasets which fulfill child-criterion and are in datasets with reference to passed 'datasets'
-                    filteredDataTables = dataTables.filter(dataset__in=filteredDatasets)
-
-                    filteredLinks = DataTableToDataset(DataTable__in=filteredDataTables)
-                    finalDatasetIDs = list()
-                    for filteredLink in filteredLinks:
-                        finalDatasetIDs.append(filteredLink.dataset_id)
-
-                    return datasets.filter(pk__in=finalDatasetIDs)
-
+                    return datasets
                 else:  # filter over column in table
                     refTable = typeTable.table
 

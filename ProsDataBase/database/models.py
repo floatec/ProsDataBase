@@ -225,6 +225,14 @@ class DataTable(Data):
     def content(self):
         return self.linkToDatasets.all()
 
+    def __unicode__(self):
+        links = DataTableToDataset.objects.filter(DataTable=self)
+        datasetIDs = list()
+        for link in links:
+            datasetIDs.append(link.dataset_id)
+
+        return "link from " + self.dataset.__unicode__() + " to " + self.column.type.getType().table.name + ": " + unicode(datasetIDs)
+
 
 class DataTableToDataset(models.Model):
     DataTable = models.ForeignKey('DataTable', related_name="linkToDatasets")
