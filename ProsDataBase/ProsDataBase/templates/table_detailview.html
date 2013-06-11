@@ -47,10 +47,13 @@
         function updateFilerOption(select,tableName){
              console.log($(select).find(":selected").attr("value"))
 
-            if($(select).find(":selected").val()==5){
+            if($(select).find(":selected").val()>=5){
                console.log("hallo")
                 addFilterOption($(select).next(), $(select).find(":selected").attr("table"))
 
+            }
+            if($(select).find(":selected").val()==-1){
+                 $(select).next().html("");
             }
             if($(select).find(":selected").val()==0 || $(select).find(":selected").attr("refType")==0){
                $(select).next().html("<input type='text' class='text' placeholder='tex...'>")
@@ -84,7 +87,7 @@
                 columns = $(data.columns);
                 columns.each(function(){
                     console.log(this)
-                    $(view).find("select").append("<option refType='"+JSON.stringify(this.refType)+"' options='"+JSON.stringify(this.options)+"' table='"+this.table+"' value='"+this.type+"'>"+this.name+"</option>")
+                    $(view).find("select").append("<option  link='"+this.link+"' refType='"+JSON.stringify(this.refType)+"' options='"+JSON.stringify(this.options)+"' table='"+this.table+"' value='"+this.type+"'>"+this.name+"</option>")
                 })
                });
         }
@@ -180,9 +183,12 @@
                         }
                     }else {
                         child.table=elem.find(":SELECTED").attr("table");
+                        if(elem.find(":SELECTED").val()==6){
+                            child.link=elem.find(":SELECTED").attr("link");
+                        }
                         var chi=filterinnerobj(span);
                         if(chi!=null){
-                        child.child=chi
+                            child.child=chi
                         }else{
                             return null
                         }
