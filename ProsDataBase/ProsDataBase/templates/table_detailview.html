@@ -142,7 +142,9 @@
             var filterRows=$(".filter")
             filterRows.each(function(){
                 var child=filterinnerobj(this);
+                if(child!=null){
                 obj.filter.push(child)
+                }
             })
             console.log(obj);
             $("#headTable").html("")
@@ -152,11 +154,12 @@
             });
         }
         function filterinnerobj(par){
-            var child={}
+
                 var elem=$(par).children(":first");
                 var span=$(elem.next())
 
                 if(elem.find(":SELECTED").val()>=0) {
+                     var child={}
                     child.column=elem.find(":SELECTED").text()
                     if(elem.find(":SELECTED").val()<5||elem.find(":SELECTED").attr("reftype")!="undefined"){
                            console.log(span.find(".min"))
@@ -176,7 +179,12 @@
                         }
                     }else {
                         child.table=elem.find(":SELECTED").attr("table");
-                        child.child=filterinnerobj(span);
+                        var chi=filterinnerobj(span);
+                        if(chi!=null){
+                        child.child=chi
+                        }else{
+                            return null
+                        }
                     }
                 }
              return child
