@@ -121,7 +121,8 @@ class TableSerializer:
         for typeTable in typeTables:
             typesColumn = Column.objects.get(type=typeTable.type)
             if typeTable.column is None:
-                colStructs.append({"name": typesColumn.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name})
+                linkCol = Column.objects.get(type=typeTable.type)
+                colStructs.append({"name": typesColumn.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "link": linkCol.name})
 
         result = dict()
         result["category"] = table.category.name
@@ -461,7 +462,7 @@ class DatasetSerializer:
         {
             "filter":[
                 {
-                    "column": "columnname", "table":"tablename","linkColumn":"columnname",
+                    "column": "columnname", "table":"tablename","link":"columnname",
                     "child": {
                         "column": "columnInRelatedTable", "table":"tablename","linkColumn":"columnname",
                         "child": {
@@ -470,7 +471,7 @@ class DatasetSerializer:
                     }
                 },
                 {
-                    "column": "columnname", "table":"tablename","linkColumn":"columnname",
+                    "column": "columnname", "table":"tablename","link":"columnname",
                     "child": {
                         "column": "columnInRelatedTable", "table":"tablename","linkColumn":"columnname",
                         "child": {
@@ -511,7 +512,7 @@ class DatasetSerializer:
         except Column.DoesNotExist:
             return False
 
-        if "linkColumn" not in criterion:  # filter only with criteria on this table
+        if "link" not in criterion:  # filter only with criteria on this table
             if column.type.type == Type.TEXT:
                 dataTexts = DataText.objects.filter(dataset__in=datasets, content__contains=criterion["substring"])
                 datasetIDs = list()
@@ -570,7 +571,7 @@ class DatasetSerializer:
                     except Table.DoesNotExist:
                         return False
                     try:
-                        #refColumn = Column.objects.get(table=nextTable, name=criterion["linkColumn"])
+                        #refColumn = Column.objects.get(table=nextTable, name=criterion["link"])
                         refColumn = Column.objects.get(table=nextTable, name=criterion["child"]["column"])
                     except Column.DoesNotExist:
                         return False
@@ -658,7 +659,7 @@ class DatasetSerializer:
             except Table.DoesNotExist:
                 return False
             try:
-                refColumn = Column.objects.get(table=nextTable, name=criterion["linkColumn"])
+                refColumn = Column.objects.get(table=nextTable, name=criterion["link"])
             except Column.DoesNotExist:
                 return False
 
