@@ -156,8 +156,8 @@
                 var elem=$(par).children(":first");
                 var span=$(elem.next())
                 child.colum=elem.find(":SELECTED").text()
-
-                if(elem.find(":SELECTED").val()>=0&&(elem.find(":SELECTED").val()<5||elem.find(":SELECTED").attr("reftype")!="undefined")){
+                if(elem.find(":SELECTED").val()>=0){
+                if((elem.find(":SELECTED").val()<5||elem.find(":SELECTED").attr("reftype")!="undefined")){
 
                        console.log(span.find(".min"))
                     if(span.find(".min").length!=0&&span.find(".min").val()!=""){
@@ -177,6 +177,7 @@
                 }else{
                     child.table=elem.find(":SELECTED").attr("table");
                     child.child=filterinnerobj(span);
+                }
                 }
              return child
         }
