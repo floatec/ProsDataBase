@@ -111,15 +111,15 @@ def column(request, tableName, columnName):
 
 def datasets(request, tableName):
     if request.method == 'POST':
-        if request.user.mayReadTable(tableName):
-            return showDatasets(request, tableName, request.user)
-        else:
-            return HttpResponse("Permission denied", status=403)
+        #if request.user.mayReadTable(tableName):
+        return showDatasets(request, tableName) # request.user)
+        #else:
+        #    return HttpResponse("Permission denied", status=403)
     if request.method == 'DELETE':
-        if request.user.mayDeleteTable(tableName):
-            return deleteDatasets(request, tableName)
-        else:
-            return HttpResponse("Permission denied", status=403)
+        #if request.user.mayDeleteTable(tableName):
+        return deleteDatasets(request, tableName)
+       # else:
+       #     return HttpResponse("Permission denied", status=403)
 
 
 def filterDatasets(request, tableName):
@@ -544,12 +544,13 @@ def insertData(request, tableName):
     newDataset.save()
 
     for col in jsonRequest["columns"]:
+        if "value" not in col:
+            continue
         try:
             column = Column.objects.get(name=col["name"], table=theTable)
         except Column.DoesNotExist:
             HttpResponse(content="Could not find a column with name " + col["name"] + "in table " + tableName + ".", status=400)
             continue
-        print "col " + col["name"]
         if not column.type.getType().isValid(col["value"]):
             return HttpResponse(content="input " + unicode(col["value"]) + " for column " + column.name + " is not valid.", status=400)
 
