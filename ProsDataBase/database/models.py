@@ -235,7 +235,7 @@ class DataTable(Data):
 
 
 class DataTableToDataset(models.Model):
-    DataTable = models.ForeignKey('DataTable', related_name="linkToDatasets")
+    DataTable = models.ForeignKey('DataTable', related_name="link")
     dataset = models.ForeignKey('Dataset')
 
 # ===============================

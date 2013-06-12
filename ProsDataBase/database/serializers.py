@@ -67,18 +67,18 @@ class TableSerializer:
         return result
 
     @staticmethod
-    def serializeStructure(tableName):
+    def serializeStructure(tableName, user):
         """
         return the table with its columns and the column's datatypes as well as ranges
 
         {
           "category": "categoryname"
           "columns": [
-            {"name": "columnname0", "type": 0, "length": 100},
-            {"name": "columnname1", "type": 1, "min": "a decimal", "max": "a decimal"},
-            {"name": "columnname2", "type": 2, "min": "a date", "max": "a date"},
-            {"name": "columnname3", "type": 3, "options": {"0": "opt1", "1": "opt2", "2": "opt3"},
-            {"name": "columnname4", "type": 4, "table": "tablename", "shownColumn": "PSA"},
+            {"name": "columnname0", "type": 0, "length": 100, "modify": false},
+            {"name": "columnname1", "type": 1, "min": "a decimal", "max": "a decimal", "modify": false},
+            {"name": "columnname2", "type": 2, "min": "a date", "max": "a date", "modify": false},
+            {"name": "columnname3", "type": 3, "options": {"0": "opt1", "1": "opt2", "2": "opt3", "modify": false},
+            {"name": "columnname4", "type": 4, "table": "tablename", "shownColumn": "PSA", "modify": false},
           ]
         }
         """
@@ -92,27 +92,32 @@ class TableSerializer:
             if col.deleted:
                 continue
             comment = col.comment if col.comment is not None else ""
+            try:
+                rightList = RightListForColumn.objects.get(column=col, user=user)
+            except RightListForColumn.DoesNotExist:
+                return None
+
             type = col.type.type
             if type is Type.TEXT:
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment, "modify": rightList.modify})
             elif type is Type.NUMERIC:
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "modify": rightList.modify})
             elif type is Type.DATE:
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "modify": rightList.modify})
 
             elif type is Type.SELECTION:
                 options = list()
                 for value in col.type.getType().values():
                     options.append({"key": value.index, "value": value.content})
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.SELECTION, "options": options, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.SELECTION, "options": options, "comment": comment, "modify": rightList.modify})
             elif type is Type.BOOL:
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.BOOL, "comment": comment})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.BOOL, "comment": comment, "modify": rightList.modify})
             elif type is Type.TABLE:
                 if col.type.getType().column is not None:
                     refCol = col.type.getType().column
-                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol.name, "refType": refCol.type.type, "comment": comment})
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol.name, "refType": refCol.type.type, "comment": comment, "modify": rightList.modify})
                 else:
-                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment})
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment, "modify": rightList.modify})
             else:
                 return None
 
@@ -382,7 +387,7 @@ class GroupSerializer:
 class DatasetSerializer:
 
     @staticmethod
-    def serializeOne(id, user):
+    def serializeOne(id, withLink, user):
         """
         {
             "id": "2.2013_192_B",
@@ -438,7 +443,22 @@ class DatasetSerializer:
 
                 result["data"].append(dataObj)
 
+        if not withLink:  # dont add link to dataset in which this dataset is referenced
+            return result
+
+        links = DataTableToDataset.objects.filter(dataset=dataset)
+        dataTableIDs = list()
+        for link in links:
+            dataTableIDs.append(link.DataTable_id)
+        dataTables = DataTable.objects.filter(pk__in=dataTableIDs)
+        datasetIDs = list()
+        for dataTable in dataTables:
+            datasetIDs.append(dataTable.dataset_id)
+
+        dataObj = dict()
+        dataObj["column"] = "hi"
         return result
+
 
     @staticmethod
     def serializeAll(tableRef, user):
@@ -452,7 +472,7 @@ class DatasetSerializer:
         for dataset in datasets:
             if dataset.deleted:
                 continue
-            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
+            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, False, user))
 
         return result
 
