@@ -27,47 +27,40 @@
 
     <div id="loginNameMenu">
 
-
-
         <ul id="subMenuList">
             <li><a href="/settings/">Settings</a></li>
             <li><a id='adminMenu' href="#">Admin</a>
-
-<ul id='adminSubMenu'>
-<li id='groupManagement'><a href="/groupadmin/">groups</a></li>
-<li id='userManagement'><a href="/useradmin/">users</a></li>
-<li id='categoryManagement'><a href="/categories/">categories</a></li>
-</ul>
+                <ul id='adminSubMenu' style="right: 180px; z-index: 3;">
+                    <li id='groupManagement'><a href="/groupadmin/">groups</a></li>
+                    <li id='userManagement'><a href="/useradmin/">users</a></li>
+                    <li id='categoryManagement'><a href="/categories/">categories</a></li>
+                </ul>
             </li>
             <li onClick='logoutUser()'><a href='#'>Logout</a></li>
         </ul>
 
     </div>
 </div>
-        <span id="buttonMenu">
-                    {% block menu %}
-                    {% endblock %}
+<div class="wrapButtonMenu">
+    <span class="labelButtonMenu">Options:</span>
+    <span id="buttonMenu">
+        {% block menu %}
+        {% endblock %}
+    </span>
+</div>
 
-                </span>
-
-<div >
-    <div style="">
-
+<div class="wrapContent">
         <div id="navigationMenu">
-
-
             {% block navigation %}
             {% endblock %}
         </div>
-    </div>
-
-
-    <div id="content">
-        {% block content %}
-        {% endblock %}
-    </div>
+<div class="wrapContent2">
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
 </div>
-
+</div>
 {% endblock %}
 
 
