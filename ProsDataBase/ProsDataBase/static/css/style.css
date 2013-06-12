@@ -178,11 +178,10 @@
     background-color: #EEE;
     border: 4px solid #BBB;
     color: #00458A;
-    float: left;
+    display: inline-block;
     height: 300px;
     margin-bottom: 20px;
     margin-right: 15px;
-    position: relative;
     text-align: center;
     text-decoration: none;
     width: 280px;
@@ -265,13 +264,17 @@ Only for Login and Register Page
 }
 
 #LoginRegisterDiv {
-
-
-
-
-
-
 }
+
+.categoryDiv{
+    position: relative;
+ display: block;
+}
+.categoryHeadline{
+    display: block;
+}
+
+
 
 #registerDiv {
 
