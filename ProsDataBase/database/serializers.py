@@ -72,6 +72,7 @@ class TableSerializer:
         return the table with its columns and the column's datatypes as well as ranges
 
         {
+          "rightsAdmin": true,
           "category": "categoryname"
           "columns": [
             {"name": "columnname0", "type": 0, "length": 100, "modify": false},
@@ -130,6 +131,8 @@ class TableSerializer:
                 colStructs.append({"name": typesColumn.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "link": linkCol.name})
 
         result = dict()
+        tableRights = RightListForTable.objects.get(user=user, table=table)
+        result["rightsAdmin"] = tableRights.rightsAdmin
         result["category"] = table.category.name
         result["columns"] = colStructs
         return result
@@ -445,12 +448,34 @@ class DatasetSerializer:
         return result
 
     @staticmethod
-    def serializeOneWithLinks(datasetID, columns, user):
+    def serializeOneWithLinks(datasetID, tables, user):
         # first serialize data from all ordinary columns
+        try:
+            dataset = Dataset.objects.get(datasetID=datasetID)
+        except Dataset.DoesNotExist:
+            return None
         result = DatasetSerializer.serializeOne(datasetID, user)
 
         # now add datasets from the filter which reference this dataset
+        links = DataTableToDataset.objects.filter(dataset=dataset)
+        dataTableIDs = list()
+        for link in links:
+            dataTableIDs.append(link.dataset_id)
 
+        for table in tables:
+            refDataTables = DataTable.objects.filter(pk__in=dataTableIDs, dataset__in=table.getDatasets())
+            refDatasetIDs = list()
+            for refDataTable in refDataTables:
+                refDatasetIDs.append(refDataTable.dataset.datasetID)
+
+            dataObj = dict()
+            dataObj["column"] = dataset.table.name + "in" + table.name
+            dataObj["type"] = Type.LINK
+            dataObj["value"] = refDatasetIDs
+
+            result["data"].append(dataObj)
+
+        return result
 
     @staticmethod
     def serializeAll(tableRef, user):
