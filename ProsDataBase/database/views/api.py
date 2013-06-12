@@ -454,7 +454,7 @@ def showDatasets(request, tableName):
     result = dict()
     result["datasets"] = list()
     for obj in jsonRequest["datasets"]:
-        result["datasets"].append(DatasetSerializer.serializeOne(obj["id"], False, request.user))
+        result["datasets"].append(DatasetSerializer.serializeOne(obj["id"], request.user))
 
     return HttpResponse(json.dumps(result), content_type="application/json")
 
@@ -472,7 +472,7 @@ def showDataset(tableName, datasetID, user):
     if dataset.deleted:
         return HttpResponse("The requested dataset does not exist.", status=400)
     else:
-        dataset = DatasetSerializer.serializeOne(datasetID, False, user)
+        dataset = DatasetSerializer.serializeOne(datasetID, user)
         return HttpResponse(json.dumps(dataset), content_type="application/json")
 
 

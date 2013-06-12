@@ -387,7 +387,7 @@ class GroupSerializer:
 class DatasetSerializer:
 
     @staticmethod
-    def serializeOne(id, withLink, user):
+    def serializeOne(id, user):
         """
         {
             "id": "2.2013_192_B",
@@ -442,22 +442,14 @@ class DatasetSerializer:
                         dataObj["value"] = unicode(item.content)
 
                 result["data"].append(dataObj)
-
-        if not withLink:  # dont add link to dataset in which this dataset is referenced
-            return result
-
-        links = DataTableToDataset.objects.filter(dataset=dataset)
-        dataTableIDs = list()
-        for link in links:
-            dataTableIDs.append(link.DataTable_id)
-        dataTables = DataTable.objects.filter(pk__in=dataTableIDs)
-        datasetIDs = list()
-        for dataTable in dataTables:
-            datasetIDs.append(dataTable.dataset_id)
-
-        dataObj = dict()
-        dataObj["column"] = "hi"
         return result
+
+    @staticmethod
+    def serializeOneWithLinks(datasetID, columns, user):
+        # first serialize data from all ordinary columns
+        result = DatasetSerializer.serializeOne(datasetID, user)
+
+        # now add datasets from the filter which reference this dataset
 
 
     @staticmethod
@@ -472,7 +464,7 @@ class DatasetSerializer:
         for dataset in datasets:
             if dataset.deleted:
                 continue
-            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, False, user))
+            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
 
         return result
 
