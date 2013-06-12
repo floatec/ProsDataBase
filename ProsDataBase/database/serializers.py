@@ -72,6 +72,7 @@ class TableSerializer:
         return the table with its columns and the column's datatypes as well as ranges
 
         {
+          "admin": true
           "rightsAdmin": true,
           "category": "categoryname"
           "columns": [
@@ -132,6 +133,7 @@ class TableSerializer:
 
         result = dict()
         tableRights = RightListForTable.objects.get(user=user, table=table)
+        result["admin"] = user.admin
         result["rightsAdmin"] = tableRights.rightsAdmin
         result["category"] = table.category.name
         result["columns"] = colStructs
