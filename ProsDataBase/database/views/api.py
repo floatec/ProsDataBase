@@ -109,6 +109,11 @@ def column(request, tableName, columnName):
             return HttpResponse("Successfully deleted column " + columnName + " from table " + tableName + ".", status=200)
 
 
+def export(request, tableName):
+    if request.method == 'POST':
+        return tablefactory.exportTable(json.loads(request), tableName, request.user)
+
+
 def datasets(request, tableName):
     if request.method == 'POST':
         #if request.user.mayReadTable(tableName):
@@ -132,7 +137,7 @@ def filterDatasets(request, tableName):
 
 def dataset(request, tableName, datasetID):
     if request.method == 'GET':
-        return showDataset(tableName, datasetID)
+        return showDataset(tableName, datasetID, user)
     elif request.method == 'PUT':
         return modifyData(request, tableName, datasetID)
     elif request.method == 'DELETE':
