@@ -30,6 +30,7 @@
     min-width: 190px;
     max-width:240px;
     position: relative;
+    bottom: 70px;
 }
 
 #buttonMenu {
@@ -336,7 +337,7 @@ Only for Login and Register Page
 
 .wrapContent{
     position: absolute;
-    top: 50px;
+    top: 120px;
     width: 90%;
 }
 
