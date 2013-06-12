@@ -1,5 +1,6 @@
 __author__ = 'tieni'
 
+import csv
 import json
 import sys
 from django.http import HttpResponse
@@ -464,3 +465,47 @@ def modifyTable(request, name):
 
     result = TableSerializer.serializeStructure(table.name)
     return HttpResponse(json.dumps(result), content_type="application/json")
+
+
+def exportTable(request, tableName, user):
+    try:
+        table = Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(content="Could not find table with name " + tableName + ".", status=400)
+
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.now()) + "csv'"
+
+    writer = csv.writer(response)
+    writer.writerow([table.name + " from " + str(datetime.now())])
+    writer.writerow(request["columns"])
+
+    row = list()
+    for datasetID in request["datasets"]:
+        try:
+            dataset = Dataset.objects.get(datasetID=datasetID)
+        except Dataset.DoesNotExist:
+            return HttpResponse(content="Could not find dataset with ID " + datasetID + ".", status=400)
+
+        for colName in request["columns"]:
+            try:
+                column = Column.objects.get(name=colName, table=table)
+            except Column.DoesNotExist:
+                return HttpResponse(content="Could not find column with name " + colName + " in table " + tableName + ".", status=400)
+            if column.type.type == Type.TEXT:
+                text = dataset.datatext.all().get(column=column)
+                row.append(text.content)
+            elif column.type.type == Type.NUMERIC:
+                num = dataset.datanumeric.all().get(column=column)
+                row.append(num.content)
+            elif column.type.type == Type.DATE:
+                date = dataset.datadate.all().get(column=column)
+                row.append(date.content)
+            elif column.type.type == Type.SELECTION:
+                selection = dataset.dataselection.all().get(column=column)
+                row.append(selection.content)
+            elif column.type.type == Type.BOOL:
+                bool = dataset.databool.all().get(column=column)
+                row.append(bool.content)
+            elif column.type.type == Type.TABLE:
+                dataTable = dataset.datatext.all().get(column=column)

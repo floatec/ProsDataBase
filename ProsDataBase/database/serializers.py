@@ -460,11 +460,16 @@ class DatasetSerializer:
 
         # now add datasets from the filter which reference this dataset
         links = DataTableToDataset.objects.filter(dataset=dataset)
+        print links
         dataTableIDs = list()
         for link in links:
             dataTableIDs.append(link.dataset_id)
 
-        for table in tables:
+        for tableName in tables:
+            try:
+                table = Table.objects.get(name=tableName)
+            except Table.DoesNotExist:
+                continue
             refDataTables = DataTable.objects.filter(pk__in=dataTableIDs, dataset__in=table.getDatasets())
             refDatasetIDs = list()
             for refDataTable in refDataTables:
@@ -474,7 +479,7 @@ class DatasetSerializer:
             dataObj["column"] = dataset.table.name + "in" + table.name
             dataObj["type"] = Type.LINK
             dataObj["value"] = refDatasetIDs
-
+            print dataObj
             result["data"].append(dataObj)
 
         return result
@@ -528,11 +533,13 @@ class DatasetSerializer:
 
         if len(request["filter"]) == 0:
             return DatasetSerializer.serializeAll(table, user)
-
+        linkedTables = list()
         resultSet = table.getDatasets()
         for criterion in request["filter"]:
             if "column" not in criterion:
                 continue
+            if "link" in criterion:
+                linkedTables.append(criterion["table"])
             resultSet = DatasetSerializer.filter(table, resultSet, criterion, user)
             if not resultSet:
                 print "resultSet is None"
@@ -541,7 +548,10 @@ class DatasetSerializer:
         result = dict()
         result["datasets"] = list()
         for dataset in resultSet:
-            result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
+            if len(linkedTables) > 0:
+                result["datasets"].append(DatasetSerializer.serializeOneWithLinks(dataset.datasetID, linkedTables, user))
+            else:
+                result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
         return result
 
     @staticmethod
@@ -692,7 +702,6 @@ class DatasetSerializer:
                 return False
 
         else:  # filter with criteria on nested table
-            print "good"
             try:
                 nextTable = Table.objects.get(name=criterion["table"])
             except Table.DoesNotExist:

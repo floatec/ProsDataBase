@@ -46,24 +46,25 @@ urlpatterns = patterns(
 
     # APIs for table requests
     (r'^api/table/$', "database.views.api.tables"),
-    (r'^api/table/(?P<name>[\w ]+)/$', "database.views.api.table"),
-    (r'^api/table/(?P<name>[\w ]+)/structure/$', "database.views.api.tableStructure"),
-    (r'^api/table/(?P<tableName>[\w ]+)/rights/$', "database.views.api.tableRights"),
+    (r'^api/table/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/$', "database.views.api.table"),
+    (r'^api/table/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/structure/$', "database.views.api.tableStructure"),
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/rights/$', "database.views.api.tableRights"),
 
-    (r'^api/table/(?P<tableName>[\w ]+)/column/(?P<columnName>[\w ]+)/$', "database.views.api.column"),
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/column/(?P<columnName>[\w| |\d|.|_|\-|\(|\)]+)/$', "database.views.api.column"),
 
     # APIs for dataset requests
-    (r'^api/table/(?P<tableName>[\w ]+)/dataset/$', "database.views.api.datasets"),
-    (r'^api/table/(?P<tableName>[\w ]+)/dataset/filter/$', "database.views.api.filterDatasets"),
-    (r'^api/table/(?P<tableName>[\w ]+)/dataset/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', "database.views.api.dataset"),
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/dataset/$', "database.views.api.datasets"),
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/dataset/filter/$', "database.views.api.filterDatasets"),
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/dataset/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', "database.views.api.dataset"),
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/export/$', "database.views.api.export"),
 
 
     # APIs for user/group requests
     (r'^api/user/$', "database.views.api.users"),
-    (r'^api/user/(?P<name>[\w]+)/$', 'database.views.api.user'),
+    (r'^api/user/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/$', 'database.views.api.user'),
     (r'^api/userrights/$', 'database.views.api.userRights'),
     (r'^api/group/$', "database.views.api.groups"),
-    (r'^api/group/(?P<name>[\w ]+)/$', "database.views.api.group"),
+    (r'^api/group/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/$', "database.views.api.group"),
     (r'^api/auth/session/$', "database.views.api.session"),
 
     # APIs for active user requests
