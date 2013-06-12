@@ -30,11 +30,31 @@ class UserTest(TestCase):
     # Jetzt passts
     def test_showOneUser(self):
         user1 = DBUser.objects.create_user(username="Spongebob")
+        user2 = DBUser.objects.create_user(username="Patrick", tableCreator=True,admin=True,userManager=True)
+
         user1.save()
+        user2.save()
 
         result = UserSerializer.serializeOne(user1.username)
+        result2 = UserSerializer.serializeOne(user2.username)
 
         print result
+
+        # ===================================================
+        # test the user have the same name in the result
+        # ===================================================
+        self.assertTrue(user1.username in result["name"])
+        self.assertTrue(user1.is_active)
+        self.assertFalse(user1.tableCreator)
+        self.assertFalse(user1.admin)
+        self.assertFalse(user1.userManager)
+
+        self.assertTrue(user2.username in result2["name"])
+        self.assertTrue(user2.is_active)
+        self.assertTrue(user2.tableCreator)
+        self.assertTrue(user2.admin)
+        self.assertTrue(user2.userManager)
+
 
     # User der keine createTable-Rechte hat kann eine Tabelle erstellen
     def test_showUserRights(self):
