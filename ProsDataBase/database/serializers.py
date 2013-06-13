@@ -135,6 +135,9 @@ class TableSerializer:
         tableRights = RightListForTable.objects.get(user=user, table=table)
         result["admin"] = user.admin
         result["rightsAdmin"] = tableRights.rightsAdmin
+        result["viewLog"] = tableRights.viewLog
+        result["delete"] = tableRights.delete
+        result["insert"] = tableRights.insert
         result["category"] = table.category.name
         result["columns"] = colStructs
         return result
