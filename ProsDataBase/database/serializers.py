@@ -476,7 +476,7 @@ class DatasetSerializer:
             refDataTables = DataTable.objects.filter(pk__in=dataTableIDs, dataset__in=table.getDatasets())
             refDatasetIDs = list()
             for refDataTable in refDataTables:
-                refDatasetIDs.append(refDataTable.dataset.datasetID)
+                refDatasetIDs.append({"id": refDataTable.dataset.datasetID})
 
             # get the name of the column, in which this dataset is referenced in the other table
             columns = table.getColumns()

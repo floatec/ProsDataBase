@@ -52,13 +52,12 @@ def modifyCategories(request):
 def deleteCategory(name):
     try:
         category = Category.objects.get(name=name)
-        try:
-            Table.objects.filter(category=category)
+        tables = Table.objects.filter(category=category)
+        if len(tables) > 0:
             return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_DELETE, "message": "Please put the tables of this group into another category first."}]}), content_type="application/json")
-        except Table.DoesNotExist:
-            category.delete()
+        category.delete()
     except Category.DoesNotExist:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_DELETE, "message": "Category with name " + name + " does not exist."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_DELETE, "message": "Category with name " + name + " does not exist."}]}), content_type="application/json")
 
     return HttpResponse(json.dumps({"success": "Deleted category " + name + "."}), content_type="application/json")
 
@@ -279,9 +278,8 @@ def deleteTable(name, user):
 
     errors = list()
     # Only delete this table if it is not referenced by any other table.
-    try:
-        typeTables = TypeTable.objects.filter(table=table)
-        # No exception raised, so there are references.
+    typeTables = TypeTable.objects.filter(table=table)
+    if len(typeTables) > 0:  # there are references.
         # Get names of tables referencing this table for error display
         tableNames = set()
         for typeTable in typeTables:
@@ -290,7 +288,7 @@ def deleteTable(name, user):
 
         errors.append({"error": "Please delete references to this table in tables " + str(tableNames) + " first."})
 
-    except TypeTable.DoesNotExist:  # no reference exists, so delete the table
+    else:  # no reference exists, so delete the table
         datasets = list()
         for dataset in table.datasets.all():
             datasets.append(dataset)
@@ -334,7 +332,7 @@ def deleteColumn(tableName, columnName, user):
     except Table.DoesNotExist:
         return {"code": Error.TABLE_NOTFOUND, "message": "Could not find table with name " + tableName + "."}
     try:
-        column = table.getColumns().filter(name=columnName)
+        column = table.getColumns().get(name=columnName)
     except Column.DoesNotExist:
         return {"code": Error.COLUMN_NOTFOUND, "message": "Could not find column with name " + columnName + " in table " + tableName + "."}
 
@@ -385,6 +383,7 @@ def deleteDatasets(request, tableName):
     errors = list()
     for id in jsonRequest:
         answer = deleteDataset(id, request.user)
+        print answer
         if not answer:
             errors.append(answer)
 
@@ -407,10 +406,10 @@ def deleteDataset(datasetID, user):
             return {"code": Error.DATASET_NOTFOUND, "message": "Could not find dataset with id " + dataset.datasetID + "."}
     except Dataset.DoesNotExist:
             return {"code": Error.DATASET_NOTFOUND, "message": "Could not find dataset with id " + dataset.datasetID + "."}
-    try:  # only delete if dataset is not referenced by another table
-        links = DataTableToDataset.objects.filter(dataset=dataset)
 
-        # no exception raised, so this dataset is used by another table.
+    # only delete if dataset is not referenced by another table
+    links = DataTableToDataset.objects.filter(dataset=dataset)
+    if len(links) > 0:  # this dataset is used by another table.
         # get names of tables which reference this dataset for error display
         dataTableIDs = list()
         for link in links:
@@ -424,14 +423,14 @@ def deleteDataset(datasetID, user):
         for dataset in datasets:
             tables.add(dataset.table.name)
 
-    except DataTableToDataset.DoesNotExist:  # no references in other tables, so delete this dataset
-        dataset.deleted = True
-        dataset.modified = datetime.now()
-        dataset.modifier = user
-        dataset.save()
-        return True
+            return {"code": Error.DATASET_REF, "message": "Could not delete dataset with id " + dataset.datasetID + ". Please delete references to it in following tables first: " + str(tables) + "."}
 
-    return {"code": Error.DATASET_REF, "message": "Could not delete dataset with id " + dataset.datasetID + ". Please delete references to it in following tables first: " + str(tables) + "."}
+    # no references in other tables, so delete this dataset
+    dataset.deleted = True
+    dataset.modified = datetime.now()
+    dataset.modifier = user
+    dataset.save()
+    return True
 
 
 def createTableRights(rights, table):
