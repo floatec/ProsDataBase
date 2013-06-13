@@ -348,7 +348,7 @@
                         counter++;
 
                     }
-                    // cleanUpTable($("#tab" + tableID))
+                   cleanUpTable($("#tab" + tableID))
                 }
 
                 });
@@ -420,24 +420,42 @@
 
     function cleanUpTable(table){
         var found=[]
-        var rows=$($(table).last().children())
+        //get all tr
+        var rows=$($($(table).children("tbody")).children())
+
         rows.each( function(i, value){
 
-            $(value).each( function(v, chi){
+            //get all tds
+            $(value).children().each( function(v, chi){
                 console.log($(chi))
-               if(($(chi).html()==""||$(chi).html()=="&nbsp;")&&$(chi).is('td')){
+               if(($(chi).html()!=""&&$(chi).html()!="&nbsp;")&&$(chi).is('td')){
                    found.push(v);
                }
             });
         });
-        /*for (var i in rows){
-            chi=$(rows[i]).children()
-            for( var v in chi){
-               if(found.indexOf(v)){
-                  // $(chi[v]).css("display","none")
+        console.log(found)
+        //remove empty cols
+       rows.each( function(i, value){
+
+            //get all tds
+            $(value).children().each( function(v, chi){
+                console.log($(chi))
+               if(found.indexOf(v)==-1){
+                   console.log(v)
+                   $(chi).css("display","none")
                }
-            }
-        }*/
+            });
+        });
+        //remove ehader
+        $($(table).children("thead")).children().each( function(v, chi){
+                console.log($(chi))
+               if(found.indexOf(v)==-1){
+                   console.log(v)
+                   $(chi).css("display","none")
+               }
+            });
+
+
     }
     </script>
 {% endblock %}

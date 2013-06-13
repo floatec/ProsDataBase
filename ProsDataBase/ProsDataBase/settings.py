@@ -48,7 +48,7 @@ LANGUAGES = (
     ('en', ugettext('English')),
     )
 
-LOCALE_PATHS = (os.path.join(PROJECT_PATH, 'ProsDataBase', 'locale'), )
+LOCALE_PATHS = (os.path.join(PROJECT_PATH, '..', 'locale'), )
 
 SITE_ID = 1
 
