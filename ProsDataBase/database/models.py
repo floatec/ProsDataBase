@@ -157,7 +157,7 @@ class Dataset(models.Model):
                 return field
 
     def __unicode__(self):
-        return unicode(self.table) + " id " + unicode(self.id)
+        return unicode(self.table) + " id " + unicode(self.datasetID)
 
 
 class Category(models.Model):
