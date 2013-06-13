@@ -98,7 +98,7 @@ class TableSerializer:
                 rightList = RightListForColumn.objects.get(column=col, user=user)
                 modify = rightList.modify
             except RightListForColumn.DoesNotExist:
-                modify = False
+                modify = True
 
             type = col.type.type
             if type is Type.TEXT:
