@@ -102,6 +102,12 @@
             $("#naviheader").append(tableName)
             var columns = [];
             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+                if(!data.admin){
+                if(!data.rightsAdmin){
+                      $("#modifyStructure").remove();
+
+                }
+                }
                 columns = data.columns;
                 createTable(columns, tableName, $("#headTable"), '/api/table/' + tableName + '/',undefined);
             });
@@ -117,7 +123,7 @@
             jQuery("#filter").accordion({
          active: false,
     collapsible: true,
-      heightStyle: "content", autoHeight: false, clearStyle: true,
+      heightStyle: "content", autoHeight: false, clearStyle: true
 
     });
             addFilter("#filterView",tableName)
@@ -152,8 +158,11 @@
             console.log(obj);
             $("#headTable").html("")
             $.getJSON('/api/table/' + global.table + '/structure/', function (data) {
+
+
                 columns = data.columns;
                 createTable(columns, global.table, $("#headTable"), '/api/table/' + global.table + '/dataset/filter/',obj);
+
             });
         }
         //creates filter object

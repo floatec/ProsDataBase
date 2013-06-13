@@ -30,6 +30,7 @@
     min-width: 190px;
     max-width:240px;
     position: relative;
+    bottom: 70px;
 }
 
 #buttonMenu {
@@ -169,7 +170,7 @@
     font-family: 'Arbutus Slab', serif;
     left: 270px;
     position: absolute;
-    top: 100px;
+    top: 0px;
     min-width: 50%;
 }
 
@@ -336,8 +337,8 @@ Only for Login and Register Page
 
 .wrapContent{
     position: absolute;
-    top: 50px;
-    width: 22%;
+    top: 120px;
+    width: 90%;
 }
 
 /*

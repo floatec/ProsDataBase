@@ -1,5 +1,6 @@
 $(document).ready(function () {
     $.getJSON('/api/myself/', function (data) {
+        admin = data;
         if (data == null) {
             window.location = "/login/";
         }

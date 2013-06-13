@@ -10,7 +10,7 @@
     <a class="crumb" href='#' id='tableCrumb'> <span></span></a>
 {% endblock %}
 {% block menu %}
-    <a class='buttonMenuButton' id='insertData' href='#'>Select Dataset</a>
+    <a class='buttonMenuButton' id='selectData' href='#'>Select Dataset</a>
 {% endblock %}
 
 {% block content %}
@@ -27,10 +27,7 @@
 {% endblock %}
 {% block javascript %}
     <script language="JavaScript">
-
-
         init();
-
         function addFilter(view,tableName){
             filter++;
             $(view).append("<div id='filter'></div>")
@@ -80,9 +77,6 @@
         }
 
         function init() {
-
-
-
             counter = 0;
             subtable = 0;
             filter = 0;
@@ -171,6 +165,25 @@
             });*/
 
         }
+
+$("#selectData").click(function(){
+   sendData();
+
+
+});
+function sendData(){
+
+
+            $(".contentRow").each(function () {
+                var datasetID = $(this).find(".datasetClassCell").html();
+                if ($(this).find(".selectDataset").is(':checked')) {
+                     $(window.opener.document).find('#' + field).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" + datasetID + "</span> ");
+
+                }
+
+            });
+
+}
 
         function toggleAll(element) {
 
