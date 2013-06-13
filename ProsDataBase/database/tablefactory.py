@@ -171,6 +171,10 @@ def createColumn(col, table, user):
 
 
 def deleteTable(name, user):
+    """
+    Set the delete flag for this table and all its columns and datasets.
+    Renames the table to: tablename_DELETED_currentdatetime, so that a new table with this name can be created.
+    """
     try:
         table = Table.objects.get(name=name)
     except Table.DoesNotExist:
@@ -179,38 +183,56 @@ def deleteTable(name, user):
     if table.deleted:
         HttpResponse(content="Table with name " + name + " does not exist.", status=400)
 
-    datasets = list()
-    for dataset in table.datasets.all():
-        datasets.append(dataset)
-        dataset.deleted = True
-        dataset.modified = datetime.now()
-        dataset.modifier = user
-        dataset.save()
+    # Only delete this table if it is not referenced by any other table.
+    try:
+        typeTables = TypeTable.objects.filter(table=table)
+        # No exception raised, so there are references.
+        # Get names of tables referencing this table for error display
+        tableNames = set()
+        for typeTable in typeTables:
+            column = Column.objects.get(type=typeTable.type)
+            tableNames.add(column.table.name)
 
-    columns = list()
-    for column in table.columns.all():
-        answer = deleteColumn(table.name, column.name, user)
-        if answer != 'OK':
-            return answer
+        return HttpResponse(json.dumps({"error": "Please delete references to this table in tables " + str(tableNames) + " first."}), status=400)
 
-    table.deleted = True
-    table.modified = datetime.now()
-    table.modifier = user
-    table.name = table.name + "_DELETED_" + str(datetime.now())
-    table.save()
+    except TypeTable.DoesNotExist:  # no reference exists, so delete the table
+        datasetFails = list()
+        datasets = list()
+        for dataset in table.datasets.all():
+            datasets.append(dataset)
+            answer = deleteDataset(table.name, dataset.datasetID, user)
+            if "error" in json.loads(answer):
+                datasetFails.append(dataset.datasetID)
 
-    for col in columns:
-        col.table = table
-        col.save()
+        columns = list()
+        for column in table.columns.all():
+            answer = deleteColumn(table.name, column.name, user)
+            if answer != 'OK':
+                return answer
 
-    for dataset in datasets:
-        dataset.table = table
-        dataset.save()
+        table.deleted = True
+        table.modified = datetime.now()
+        table.modifier = user
+        table.name = table.name + "_DELETED_" + str(datetime.now())
+        table.save()
 
-    return HttpResponse(json.dumps({"deleted": table.name}), status=200)
+        # the foreign keys to this table must be updated, since the table was renamed
+        for col in columns:
+            col.table = table
+            col.save()
+
+        for dataset in datasets:
+            dataset.table = table
+            dataset.save()
+
+        return HttpResponse(json.dumps({"deleted": table.name}), status=200)
 
 
 def deleteColumn(tableName, columnName, user):
+    """
+    Set the delete flag for this column and all its data fields.
+    Renames the column to: columnname_DELETED_currentdatetime, so that a new column with this name can be created.
+    """
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
@@ -220,20 +242,23 @@ def deleteColumn(tableName, columnName, user):
     except Column.DoesNotExist:
         return HttpResponse("Could not find column with name " + columnName + " in table " + tableName + ".", status=400)
 
+    #  find all data fields related to this column to set their delete flag
     if column.type.type == Type.TEXT:
         data = DataText.objects.filter(column=column)
-    if column.type.type == Type.NUMERIC:
+    elif column.type.type == Type.NUMERIC:
         data = DataNumeric.objects.filter(column=column)
-    if column.type.type == Type.DATE:
+    elif column.type.type == Type.DATE:
         data = DataDate.objects.filter(column=column)
-    if column.type.type == Type.SELECTION:
+    elif column.type.type == Type.SELECTION:
         data = DataSelection.objects.filter(column=column)
-    if column.type.type == Type.BOOL:
+    elif column.type.type == Type.BOOL:
         data = DataBool.objects.filter(column=column)
-    if column.type.type == Type.TABLE:
+    elif column.type.type == Type.TABLE:
         data = DataTable.objects.filter(column=column)
 
+    items = list()
     for item in data:
+        items.append(item)
         item.deleted = True
         item.modified = datetime.now()
         item.modifier = user
@@ -245,7 +270,80 @@ def deleteColumn(tableName, columnName, user):
     column.modifier = user
     column.save()
 
+    # the foreign keys must be updated, since the column was renamed
+    for item in items:
+        item.column = column
+        item.save()
+
     return 'OK'
+
+
+def deleteDatasets(request, tableName):
+    try:
+        Table.objects.get(name=tableName)
+    except Table.DoesNotExist:
+        return HttpResponse(json.dumps({"error": "Could not find table " + tableName + " to delete from."}), content_type="application/json", status=400)
+
+    jsonRequest = json.loads(request.raw_post_data)
+
+    deleted = list()
+    fails = list()
+    references = list()
+    for id in jsonRequest:
+        answer = deleteDataset(id, request.user)
+        if answer == "not found":
+            fails.append(id)
+        elif "references" in answer:
+            references.append({"id": id, "references": answer["references"]})
+
+    response = dict()
+    if len(fails) > 0:
+        response["not found"] = fails
+    if len(references) > 0:
+        response["referenced"] = references
+    else:
+        response["success"] = deleted
+    return HttpResponse(json.dumps(response), content_type="application/json", status=200)
+
+
+def deleteDataset(datasetID, user):
+    """
+    Set the delete flag for this dataset. Returns an error if it is referenced by other tables.
+
+    It is not necessary to set the delete flag of containing data fields, as the whole dataset is not serialized
+    anyway if its delete flag is set.
+    """
+    try:
+        dataset = Dataset.objects.get(datasetID=datasetID)
+        if dataset.deleted:
+            return "not found"
+    except Dataset.DoesNotExist:
+        return "not found"
+    try:  # only delete if dataset is not referenced by another table
+        links = DataTableToDataset.objects.filter(dataset=dataset)
+
+        # no exception raised, so this dataset is used by another table.
+        # get names of tables which reference this dataset for error display
+        dataTableIDs = list()
+        for link in links:
+            dataTableIDs.append(link.DataTable_id)
+        dataTables = DataTable.objects.filter(pk__in=dataTableIDs)
+        datasetIDs = list()
+        for dataTable in dataTables:
+            datasetIDs.append(dataTable.dataset.datasetID)
+        datasets = Dataset.objects.filter(datasetID__in=datasetIDs)
+        tables = set()
+        for dataset in datasets:
+            tables.add(dataset.table.name)
+
+    except DataTableToDataset.DoesNotExist:  # no references in other tables, so delete this dataset
+        dataset.deleted = True
+        dataset.modified = datetime.now()
+        dataset.modifier = user
+        dataset.save()
+        return "success"
+
+    return {"references": list(tables)}
 
 
 def createTableRights(rights, table):
@@ -463,7 +561,7 @@ def modifyTable(request, name):
             if answer != 'OK':
                 return HttpResponse(content=answer, status=400)
 
-    result = TableSerializer.serializeStructure(table.name)
+    result = TableSerializer.serializeStructure(table.name, request.user)
     return HttpResponse(json.dumps(result), content_type="application/json")
 
 
