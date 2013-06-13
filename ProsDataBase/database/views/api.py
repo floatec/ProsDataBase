@@ -117,7 +117,7 @@ def export(request, tableName):
 def datasets(request, tableName):
     if request.method == 'POST':
         #if request.user.mayReadTable(tableName):
-        return showDatasets(request, tableName) # request.user)
+        return showDatasets(request, tableName)  # request.user)
         #else:
         #    return HttpResponse("Permission denied", status=403)
     if request.method == 'DELETE':
@@ -160,19 +160,13 @@ def login(request):
     user = auth.authenticate(username=jsonRequest["username"], password=jsonRequest["password"])
     if user is not None and user.is_active:
         auth.login(request, user)
-        #return HttpResponseRedirect("table/")
-        return HttpResponse('{"status":"ok"}')
+        return HttpResponse(json.dumps({"status": "ok"}), content_type="application/json")
     else:
-        if user is None:
-            return HttpResponse('{"status":"not_ok"}')
-        if not user.is_active:
-        #return HttpResponseRedirect("invalid/")
-            return HttpResponse('{"status":"not_ok"}')
+        return HttpResponse(json.dumps({"status": "not_ok"}), content_type="application/json")
 
 
 def logoff(request):
     auth.logout(request)
-    #return HttpResponseRedirect("loggedoff/")
     return HttpResponse("logged off")
 
 

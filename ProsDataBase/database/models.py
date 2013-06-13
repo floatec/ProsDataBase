@@ -229,7 +229,7 @@ class DataTable(Data):
         links = DataTableToDataset.objects.filter(DataTable=self)
         datasetIDs = list()
         for link in links:
-            datasetIDs.append(link.dataset_id)
+            datasetIDs.append(link.dataset.datasetID)
 
         return "link from " + self.dataset.__unicode__() + " to " + self.column.type.getType().table.name + ": " + unicode(datasetIDs)
 
@@ -237,6 +237,9 @@ class DataTable(Data):
 class DataTableToDataset(models.Model):
     DataTable = models.ForeignKey('DataTable', related_name="link")
     dataset = models.ForeignKey('Dataset')
+
+    def __unicode__(self):
+        return self.DataTable.__unicode__()
 
 # ===============================
 # ----- TYPE TABLES -------------
