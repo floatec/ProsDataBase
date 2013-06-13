@@ -96,30 +96,31 @@ class TableSerializer:
             comment = col.comment if col.comment is not None else ""
             try:
                 rightList = RightListForColumn.objects.get(column=col, user=user)
+                modify = rightList.modify
             except RightListForColumn.DoesNotExist:
-                return None
+                modify = False
 
             type = col.type.type
             if type is Type.TEXT:
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment, "modify": rightList.modify})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment, "modify": modify})
             elif type is Type.NUMERIC:
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "modify": rightList.modify})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "modify": modify})
             elif type is Type.DATE:
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "modify": rightList.modify})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "modify": modify})
 
             elif type is Type.SELECTION:
                 options = list()
                 for value in col.type.getType().values():
                     options.append({"key": value.index, "value": value.content})
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.SELECTION, "options": options, "comment": comment, "modify": rightList.modify})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.SELECTION, "options": options, "comment": comment, "modify": modify})
             elif type is Type.BOOL:
-                colStructs.append({"id": col.id, "name": col.name, "type": Type.BOOL, "comment": comment, "modify": rightList.modify})
+                colStructs.append({"id": col.id, "name": col.name, "type": Type.BOOL, "comment": comment, "modify": modify})
             elif type is Type.TABLE:
                 if col.type.getType().column is not None:
                     refCol = col.type.getType().column
-                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol.name, "refType": refCol.type.type, "comment": comment, "modify": rightList.modify})
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol.name, "refType": refCol.type.type, "comment": comment, "modify": modify})
                 else:
-                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment, "modify": rightList.modify})
+                    colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "comment": comment, "modify": modify})
             else:
                 return None
 
@@ -140,6 +141,9 @@ class TableSerializer:
         result["insert"] = tableRights.insert
         result["category"] = table.category.name
         result["columns"] = colStructs
+        print "result"
+        print result
+
         return result
 
     @staticmethod
