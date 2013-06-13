@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 
 
 {% block navigation %}
@@ -14,8 +14,8 @@
     <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
 {% endblock %}
 {% block menu %}
-    <a class='buttonMenuButton' id='insertData' href='#'>Insert Data</a>
-    <a class='buttonMenuButton' id='deleteData' href='#'>Delete Data</a>
+    <a class='buttonMenuButton' id='insertData' href='#'>{% trans "Insert" %}</a>
+    <a class='buttonMenuButton' id='deleteData' href='#'>Delete</a>
     <a class='buttonMenuButton'>Export</a>
     <a class='buttonMenuButton' id='modifyStructure'>Modify Structure</a>
 {% endblock %}
@@ -56,7 +56,7 @@
                  $(select).next().html("");
             }
             if($(select).find(":selected").val()==0 || $(select).find(":selected").attr("refType")==0){
-               $(select).next().html("<input type='text' class='text' placeholder='tex...'>")
+               $(select).next().html("<input type='text' class='text' placeholder='text...'>")
             }
             if($(select).find(":selected").val()==1|| $(select).find(":selected").attr("refType")==1){
                $(select).next().html("Min:<input type='text' class='min'  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' size='4'>Max:<input  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' class='max' type='text' size='4'>")
@@ -145,7 +145,7 @@
                 }
             });
         }
-        function laodFiltered() {
+        function genFilterObj(){
             var obj = {}
             obj.filter=[]
             var filterRows=$(".filter")
@@ -156,6 +156,10 @@
                 }
             })
             console.log(obj);
+            return obj
+        }
+        function laodFiltered() {
+            var obj=genFilterObj();
             $("#headTable").html("")
             $.getJSON('/api/table/' + global.table + '/structure/', function (data) {
 
@@ -218,7 +222,7 @@
             //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
             tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
             for (var key in columns) {
-                if(columns[key].type<6){
+               {
                 tableHead.append("<th>" + columns[key].name + "</th>");
                 $("#navigationMenuContent").append("<li><a href='#" + columns[key].name + "'>" + columns[key].name + "</a></li>");
                 }
@@ -297,9 +301,6 @@
                         $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'>edit</a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
 
                         for (var p in columns) {
-                                if(columns[p].type==6){
-                                    continue
-                             }
                             var sete = false
                             for (var i in allDatasets[key].data) {
                                 if (allDatasets[key].data[i].column == columns[p].name) {
@@ -344,6 +345,7 @@
                         counter++;
 
                     }
+                    // cleanUpTable($("#tab" + tableID))
                 }
 
                 });
@@ -396,6 +398,26 @@
             }
         });
 
+    function cleanUpTable(table){
+        var found=[]
+        var rows=$($(table).last().children())
+        rows.each( function(i, value){
 
+            $(value).each( function(v, chi){
+                console.log($(chi))
+               if(($(chi).html()==""||$(chi).html()=="&nbsp;")&&$(chi).is('td')){
+                   found.push(v);
+               }
+            });
+        });
+        /*for (var i in rows){
+            chi=$(rows[i]).children()
+            for( var v in chi){
+               if(found.indexOf(v)){
+                  // $(chi[v]).css("display","none")
+               }
+            }
+        }*/
+    }
     </script>
 {% endblock %}
