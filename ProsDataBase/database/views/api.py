@@ -69,12 +69,12 @@ def categories(request):
     if request.method == 'GET':
         return showCategories()
     if request.method == 'PUT':
-        return modifyCategories(request)
+        return tablefactory.modifyCategories(request)
 
 
 def category(request, name):
     if request.method == 'DELETE':
-        return deleteCategory(name)
+        return tablefactory.deleteCategory(name)
 
 
 def tables(request):
@@ -88,7 +88,7 @@ def table(request, name):
     if request.method == 'GET':
         return showTable(name, request.user)
     if request.method == 'POST':
-        return insertData(request, name)
+        return tablefactory.insertData(request, name)
     if request.method == 'PUT':
         return tablefactory.modifyTable(request, name)
     if request.method == "DELETE":
@@ -139,7 +139,7 @@ def dataset(request, tableName, datasetID):
     if request.method == 'GET':
         return showDataset(tableName, datasetID, user)
     elif request.method == 'PUT':
-        return modifyData(request, tableName, datasetID)
+        return tablefactory.modifyData(request, tableName, datasetID)
 
 
 def register(request):
@@ -368,62 +368,6 @@ def showCategories():
     return HttpResponse(json.dumps(categories), content_type="application/json")
 
 
-def modifyCategories(request):
-    """
-    {
-        "categories": [{"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}]
-    }
-    """
-    request = json.loads(request.raw_post_data)
-
-    oldNotFound = list()
-    newExists = list()
-    for cat in request["categories"]:
-        if "old" in cat:
-            try:
-                catForChange = Category.objects.get(name=cat["old"])
-            except Category.DoesNotExist:
-                oldNotFound.append(cat["old"])
-
-            try:  # check if category with name already exists. Only save new name, if not existent yet
-                Category.objects.get(name=cat["new"])
-                newExists.append(cat["new"])
-            except Category.DoesNotExist:
-                catForChange.name = cat["new"]
-                catForChange.save()
-
-        else:
-            try:  # check if category with name already exists. Only save new name, if not existent yet
-                Category.objects.get(name=cat["new"])
-                newExists.append(cat["new"])
-            except Category.DoesNotExist:
-                newCatF = CategoryForm({"name": cat["new"]})
-                if newCatF.is_valid():
-                    newCat = newCatF.save()
-                    newCat.save()
-
-    if len(oldNotFound) > 0:
-        if len(newExists) > 0:
-            return HttpResponse({"notFound": oldNotFound, "newExists": newExists}, content_type="application/json")
-        return HttpResponse({"notFound": oldNotFound}, content_type="application/json")
-
-    return HttpResponse(content="Saved changes successfully.", status=200)
-
-
-def deleteCategory(name):
-    try:
-        category = Category.objects.get(name=name)
-        try:
-            Table.objects.filter(category=category)
-            return HttpResponse(content="Please put the tables of this group into another category first.")
-        except Table.DoesNotExist:
-            category.delete()
-    except Category.DoesNotExist:
-        return HttpResponse(content="Category with name " + name + " does not exist.")
-
-    return HttpResponse(content="Deleted category " + name + ".", status=400)
-
-
 def showTableRights(name):
     rights = TableSerializer.serializeRightsFor(name)
     return HttpResponse(json.dumps(rights), content_type="application/json")
@@ -465,253 +409,6 @@ def showDataset(tableName, datasetID, user):
     else:
         dataset = DatasetSerializer.serializeOne(datasetID, user)
         return HttpResponse(json.dumps(dataset), content_type="application/json")
-
-
-def insertData(request, tableName):
-    """
-    Insert a dataset into a table.
-
-    Receives data in json format:
-    {
-        "columns": [
-            {"name": "colname1", "value": "val1"},
-            {"name": "colname2", "value": ["3.2013_44_T", "3.2013_43_Q", "3.2013_45_L"], "table": "referencedTableName"} // for TypeTable columns
-        ]
-    }
-    """
-    jsonRequest = json.loads(request.raw_post_data)
-    try:
-        theTable = Table.objects.get(name=tableName)
-    except Table.DoesNotExist:
-        return HttpResponse(content="table with name " + tableName + " not found.", status=400)
-
-    datasetF = DatasetForm({"created": datetime.now()})
-    if not datasetF.is_valid():
-        return HttpResponse(content="Error creating a new dataset.", status=500)
-
-    newDataset = datasetF.save(commit=False)
-    newDataset.table = theTable
-    newDataset.creator = request.user
-    newDataset.save()
-    newDataset.datasetID = theTable.generateDatasetID(newDataset)
-    newDataset.save()
-
-    for col in jsonRequest["columns"]:
-        if "value" not in col:
-            continue
-        try:
-            column = Column.objects.get(name=col["name"], table=theTable)
-        except Column.DoesNotExist:
-            HttpResponse(content="Could not find a column with name " + col["name"] + "in table " + tableName + ".", status=400)
-            continue
-        if not column.type.getType().isValid(col["value"]):
-            return HttpResponse(content="input " + unicode(col["value"]) + " for column " + column.name + " is not valid.", status=400)
-
-        if column.type.type == Type.TEXT:
-            textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
-            if textF.is_valid():
-                newData = textF.save(commit=False)
-
-        elif column.type.type == Type.NUMERIC:
-            numF = DataNumericForm({"created": datetime.now(), "content": col["value"]})
-            if numF.is_valid():
-                newData = numF.save(commit=False)
-
-        elif column.type.type == Type.DATE:
-            dateF = DataDateForm({"created": datetime.now(), "content": col["value"]})
-            if dateF.is_valid():
-                newData = dateF.save(commit=False)
-
-        elif column.type.type == Type.SELECTION:
-            selF = DataSelectionForm({"created": datetime.now(), "content": col["value"]})
-            if selF.is_valid():
-                newData = selF.save(commit=False)
-
-        elif column.type.type == Type.BOOL:
-            boolF = DataBoolForm({"created": datetime.now(), "content": col["value"]})
-            if boolF.is_valid():
-                newData = boolF.save(commit=False)
-
-        elif column.type.type == Type.TABLE:
-            dataTblF = DataTableForm({"created": datetime.now()})
-            if dataTblF.is_valid():
-                newData = dataTblF.save(commit=False)
-
-        if newData is None:
-            return HttpResponse(content="Could not add data for column + " + col["name"] + ". The content type was not valid.", status=400)
-
-        else:
-            newData.creator = request.user
-            newData.column = column
-            newData.dataset = newDataset
-            newData.save()
-
-        if column.type.type == Type.TABLE and newData is not None:
-            for index in col["value"]:  # find all datasets for this
-                try:
-                    dataset = Dataset.objects.get(datasetID=index)
-                except Dataset.DoesNotExist:
-                    return HttpResponse(content="dataset with id " + index + " could not be found in table " + column.type.getType().table.name + ".", status=400)
-                else:
-                    link = DataTableToDataset()
-                    link.DataTable = newData
-                    link.dataset = dataset
-                    link.save()
-
-    return HttpResponse(json.dumps({"id": newDataset.datasetID}), content_type="application/json", status=200)
-
-
-def modifyData(request, tableName, datasetID):
-    """
-    Modify a table's dataset.
-
-    Receives data in json format:
-    {
-        "columns": [
-            {"column": "column1", "value": 0},
-            {"column": "column2", "value": "2013-12-07 22:07:00"},
-            {"column": "column3", "value": ["3.2013_44_T", "3.2013_43_Q", "3.2013_45_L"]}
-        ]
-    }
-    """
-    jsonRequest = json.loads(request.raw_post_data)
-    try:
-        theTable = Table.objects.get(name=tableName)
-    except Table.DoesNotExist:
-        return HttpResponse(content="table with name" + tableName + " not found.", status=400)
-    try:
-        dataset = Dataset.objects.get(datasetID=datasetID)
-    except Dataset.DoesNotExist:
-        return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + tableName + ".", status=400)
-
-    dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
-    newData = None
-    for col in jsonRequest["columns"]:
-        try:
-            column = Column.objects.get(name=col["name"], table=theTable)
-        except Column.DoesNotExist:
-            return HttpResponse("Could not find column with name " + col["name"] + ".", status=400)
-            continue
-
-        if not column.type.getType().isValid(col["value"]):
-            return HttpResponse(content="input " + unicode(col["value"]) + " for column " + column.name + " is not valid.", status=400)
-
-        if column.type.type == Type.TEXT:
-            try:
-                text = dataset.datatext.get(column=column)
-                text.modified = datetime.now()
-                text.modifier = request.user
-                text.content = col["value"]
-                text.save()
-            except DataText.DoesNotExist:
-                dataCreatedNewly = True
-                textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
-                if textF.is_valid():
-                    newData = textF.save(commit=False)
-
-        elif column.type.type == Type.NUMERIC:
-            try:
-                num = dataset.datanumeric.get(column=column)
-                num.modified = datetime.now()
-                num.modifier = request.user
-                num.content = col["value"]
-                num.save()
-            except DataNumeric.DoesNotExist:
-                dataCreatedNewly = True
-                numF = DataNumericForm({"created": datetime.now(), "content": col["value"]})
-                if numF.is_valid():
-                    newData = numF.save(commit=False)
-
-        elif column.type.type == Type.DATE:
-            try:
-                date = dataset.datadate.get(column=column)
-                date.modified = datetime.now()
-                date.modifier = request.user
-                date.content = col["value"]
-                date.save()
-            except DataDate.DoesNotExist:
-                dataCreatedNewly = True
-                dateF = DataDateForm({"created": datetime.now(), "content": col["value"]})
-                if dateF.is_valid():
-                    newData = dateF.save(commit=False)
-
-        elif column.type.type == Type.SELECTION:
-            try:
-                sel = dataset.dataselection.get(column=column)
-                sel.modified = datetime.now()
-                sel.modifier = request.user
-                sel.content = col["value"]
-                sel.save()
-            except DataSelection.DoesNotExist:
-                dataCreatedNewly = True
-                selF = DataSelectionForm({"created": datetime.now(), "content": col["value"]})
-                if selF.is_valid():
-                    newData = selF.save(commit=False)
-
-        elif column.type.type == Type.BOOL:
-            try:
-                bool = dataset.databool.get(column=column)
-                bool.modified = datetime.now()
-                bool.modifier = request.user
-                bool.content = col["value"]
-                bool.save()
-            except DataBool.DoesNotExist:
-                dataCreatedNewly = True
-                boolF = DataBoolForm({"created": datetime.now(), "content": col["value"]})
-                if boolF.is_valid():
-                    newData = boolF.save(commit=False)
-
-        elif column.type.type == Type.TABLE:
-            try:
-                dataTbl = dataset.datatable.get(column=column)
-                links = DataTableToDataset.objects.filter(DataTable=dataTbl)
-                setIDs = list()
-                #  remove all links between dataTable and datasets which are not listed in col["value"]
-                for link in links:
-                    setIDs.append(link.dataset_id)
-                    if link.dataset_id not in col["value"]:
-                        link.delete()
-
-                #  now add any link that does not exist yet
-                for id in [index for index in col["value"] if index not in setIDs]:  # this list comprehension returns the difference col["value"] - setIDs
-                    try:
-                        newDataset = Dataset.objects.get(datasetID=id)
-                        newLink = DataTableToDataset()
-                        newLink.DataTable = dataTbl
-                        newLink.dataset = newDataset
-                        newLink.save()
-                    except Dataset.DoesNotExist:
-                        return HttpResponse(content="Could not find dataset with id " + id + ".", status=400)
-
-            except DataTable.DoesNotExist:
-                dataCreatedNewly = True
-                dataTblF = DataTableForm({"created": datetime.now()})
-                if dataTblF.is_valid():
-                    newData = dataTblF.save(commit=False)
-
-        if dataCreatedNewly:
-            if newData is None:
-                return HttpResponse(content="Could not add data to column " + col["name"] + ". The content type was invalid.", status=400)
-
-            else:
-                newData.creator = request.user
-                newData.column = column
-                newData.dataset = Dataset.objects.get(datasetID=datasetID)
-                newData.save()
-
-            # this must be performed at the end, because DatatableToDataset receives newData, which has to be saved first
-            if column.type.type == Type.TABLE and newData is not None:
-                for index in col["value"]:  # find all datasets for this
-                    try:
-                        dataset = Dataset.objects.get(pk=index)
-                        link = DataTableToDataset()
-                        link.DataTable = newData
-                        link.dataset = dataset
-                        link.save()
-                    except Dataset.DoesNotExist:
-                        return HttpResponse(content="Could not find dataset with id " + index + ".", status=400)
-
-    return HttpResponse(json.dumps({"id": dataset.datasetID}), status=200)
 
 
 def showAllTables(user):
