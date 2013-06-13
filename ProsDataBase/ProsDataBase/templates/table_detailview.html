@@ -16,7 +16,7 @@
 {% block menu %}
     <a class='buttonMenuButton' id='insertData' href='#'>{% trans "Insert" %}</a>
     <a class='buttonMenuButton' id='deleteData' href='#'>Delete</a>
-    <a class='buttonMenuButton'>Export</a>
+    <a class='buttonMenuButton' id='exporteData'>Export</a>
     <a class='buttonMenuButton' id='modifyStructure'>Modify Structure</a>
 {% endblock %}
 
@@ -119,7 +119,10 @@
 
 
             });
+            $("#exportData").click(function(){
 
+                exportDatasets();
+            });
             jQuery("#filter").accordion({
          active: false,
     collapsible: true,
@@ -359,7 +362,7 @@
             var datasetIDs = [];
             $(".contentRow").each(function () {
 
-                if ($(this).find(".selectDataset").is(':checked')) {
+               if ($(this).children(":first").find("input:checkbox").is(':checked')) {
                     $(this).remove();
                     datasetIDs.push($(this).find(".datasetClassCell").text());
 
@@ -377,7 +380,24 @@
 
 
         }
+         function exportDatasets() {
+                  var datasetIDs = [];
+            $(".contentRow").each(function () {
+              if ($(this).children(":first").find("input:checkbox").is(':checked')) {
+             //if ($(this).find(".selectDataset").is(':checked')) {
+              datasetIDs.push($(this).find(".datasetClassCell").text());
 
+         }
+            });
+               $.ajax({
+                url: '/api/table/' + getTableName() + '/export/',
+                type: 'delete',
+                data: JSON.stringify(datasetIDs),
+                contentType: 'application/json',
+                dataType: 'json'
+            });
+
+         }
         $("#deleteData").click(function () {
             $("#deleteAlertBox").dialog("open");
 

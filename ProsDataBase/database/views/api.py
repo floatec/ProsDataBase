@@ -117,12 +117,12 @@ def export(request, tableName):
 def datasets(request, tableName):
     if request.method == 'POST':
         #if request.user.mayReadTable(tableName):
-        return showDatasets(request, tableName) # request.user)
+        return showDatasets(request, tableName)  # request.user)
         #else:
         #    return HttpResponse("Permission denied", status=403)
     if request.method == 'DELETE':
         #if request.user.mayDeleteTable(tableName):
-        return deleteDatasets(request, tableName)
+        return tablefactory.deleteDatasets(request, tableName)
        # else:
        #     return HttpResponse("Permission denied", status=403)
 
@@ -140,8 +140,6 @@ def dataset(request, tableName, datasetID):
         return showDataset(tableName, datasetID, user)
     elif request.method == 'PUT':
         return modifyData(request, tableName, datasetID)
-    elif request.method == 'DELETE':
-        return deleteDataset(tableName, datasetID, request.user)
 
 
 def register(request):
@@ -160,19 +158,13 @@ def login(request):
     user = auth.authenticate(username=jsonRequest["username"], password=jsonRequest["password"])
     if user is not None and user.is_active:
         auth.login(request, user)
-        #return HttpResponseRedirect("table/")
-        return HttpResponse('{"status":"ok"}')
+        return HttpResponse(json.dumps({"status": "ok"}), content_type="application/json")
     else:
-        if user is None:
-            return HttpResponse('{"status":"not_ok"}')
-        if not user.is_active:
-        #return HttpResponseRedirect("invalid/")
-            return HttpResponse('{"status":"not_ok"}')
+        return HttpResponse(json.dumps({"status": "not_ok"}), content_type="application/json")
 
 
 def logoff(request):
     auth.logout(request)
-    #return HttpResponseRedirect("loggedoff/")
     return HttpResponse("logged off")
 
 
@@ -473,49 +465,6 @@ def showDataset(tableName, datasetID, user):
     else:
         dataset = DatasetSerializer.serializeOne(datasetID, user)
         return HttpResponse(json.dumps(dataset), content_type="application/json")
-
-
-def deleteDatasets(request, tableName):
-    try:
-        Table.objects.get(name=tableName)
-    except Table.DoesNotExist:
-        return HttpResponse(content="Could not find table " + tableName + " to delete from.", status=400)
-
-    jsonRequest = json.loads(request.raw_post_data)
-    deleted = list()
-    for id in jsonRequest:
-        try:
-            dataset = Dataset.objects.get(datasetID=id)
-        except Dataset.DoesNotExist:
-            continue
-        if dataset.deleted:
-            continue
-        dataset.deleted = True
-        dataset.modifed = datetime.now()
-        dataset.modifier = request.user
-        dataset.save()
-        deleted.append(id)
-
-    return HttpResponse(json.dumps({"deleted": deleted}), content_type="application/json")
-
-
-def deleteDataset(tableName, datasetID, user):
-    try:
-        table = Table.objects.get(name=tableName)
-    except Table.DoesNotExist:
-        return HttpResponse(content="Could not find table " + tableName + " to delete from.", status=400)
-    try:
-        dataset = Dataset.objects.get(datasetID=datasetID, table=table)
-    except Dataset.DoesNotExist:
-        return HttpResponse(content="Could not find dataset with id " + datasetID + " in table " + tableName + ".", status=400)
-
-    if dataset.deleted:
-        return HttpResponse(content="Dataset with id " + datasetID + " does not exist.", status=400)
-    dataset.deleted = True
-    dataset.modified = datetime.now()
-    dataset.modifier = user
-    dataset.save()
-    return HttpResponse("Successfully deleted dataset with id " + datasetID + " from table " + tableName + ".", status=200)
 
 
 def insertData(request, tableName):

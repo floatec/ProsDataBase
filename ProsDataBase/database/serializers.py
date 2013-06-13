@@ -135,6 +135,9 @@ class TableSerializer:
         tableRights = RightListForTable.objects.get(user=user, table=table)
         result["admin"] = user.admin
         result["rightsAdmin"] = tableRights.rightsAdmin
+        result["viewLog"] = tableRights.viewLog
+        result["delete"] = tableRights.delete
+        result["insert"] = tableRights.insert
         result["category"] = table.category.name
         result["columns"] = colStructs
         return result
@@ -447,6 +450,7 @@ class DatasetSerializer:
                         dataObj["value"] = unicode(item.content)
 
                 result["data"].append(dataObj)
+
         return result
 
     @staticmethod
@@ -460,10 +464,9 @@ class DatasetSerializer:
 
         # now add datasets from the filter which reference this dataset
         links = DataTableToDataset.objects.filter(dataset=dataset)
-        print links
         dataTableIDs = list()
         for link in links:
-            dataTableIDs.append(link.dataset_id)
+            dataTableIDs.append(link.DataTable_id)
 
         for tableName in tables:
             try:
@@ -476,10 +479,10 @@ class DatasetSerializer:
                 refDatasetIDs.append(refDataTable.dataset.datasetID)
 
             dataObj = dict()
-            dataObj["column"] = dataset.table.name + "in" + table.name
+            dataObj["column"] = dataset.table.name + " in " + table.name
             dataObj["type"] = Type.LINK
             dataObj["value"] = refDatasetIDs
-            print dataObj
+
             result["data"].append(dataObj)
 
         return result
@@ -542,7 +545,6 @@ class DatasetSerializer:
                 linkedTables.append(criterion["table"])
             resultSet = DatasetSerializer.filter(table, resultSet, criterion, user)
             if not resultSet:
-                print "resultSet is None"
                 return None
 
         result = dict()
@@ -552,6 +554,7 @@ class DatasetSerializer:
                 result["datasets"].append(DatasetSerializer.serializeOneWithLinks(dataset.datasetID, linkedTables, user))
             else:
                 result["datasets"].append(DatasetSerializer.serializeOne(dataset.datasetID, user))
+
         return result
 
     @staticmethod
