@@ -478,8 +478,14 @@ class DatasetSerializer:
             for refDataTable in refDataTables:
                 refDatasetIDs.append(refDataTable.dataset.datasetID)
 
+            # get the name of the column, in which this dataset is referenced in the other table
+            columns = table.getColumns()
+            for col in columns:
+                if col.type.getType().table == dataset.table:
+                    columnName = col.name
+                    break
             dataObj = dict()
-            dataObj["column"] = dataset.table.name + " in " + table.name
+            dataObj["column"] = columnName + " in " + table.name
             dataObj["type"] = Type.LINK
             dataObj["value"] = refDatasetIDs
 
