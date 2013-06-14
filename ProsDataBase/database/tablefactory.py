@@ -158,7 +158,7 @@ def createColumn(col, table, user):
         else:
             for obj in savedObjs:
                 obj.delete()
-            return {"code": Error.TYPE_CREATE, "message": _("Could not create text type for column ")+col["name"] + _(". Abort.")}
+            return {"code": Error.TYPE_CREATE, "message": _("Could not create text type for column ") + col["name"] + _(". Abort.")}
 
     elif col["type"] == Type.NUMERIC:
         type["min"] = col["min"] if "min" in col else -sys.maxint
@@ -173,7 +173,7 @@ def createColumn(col, table, user):
         else:
             for obj in savedObjs:
                 obj.delete()
-            return {"code": Error.TYPE_CREATE, "message": _("Could not create numeric type for column ")+col["name"] + _(". Abort.")}
+            return {"code": Error.TYPE_CREATE, "message": _("Could not create numeric type for column ") + col["name"] + _(". Abort.")}
 
     elif col["type"] == Type.DATE:
         if "min" in col:
@@ -242,6 +242,7 @@ def createColumn(col, table, user):
     column = dict()
     column["name"] = col["name"]
     column["created"] = datetime.now()
+    column["comment"] = col["comment"]
     columnF = ColumnForm(column)
     if columnF.is_valid():
         newColumn = columnF.save(commit=False)
@@ -594,10 +595,12 @@ def modifyTable(request, name):
         if column.name != col["name"]:
             try:
                 Column.objects.get(name=col["name"], table=table)
-                return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_CREATE, "message": _("Column with name ")+ col["name"] + _(" already exists.")}]}), content_type="application/json")
+                return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_CREATE, "message": _("Column with name ") + col["name"] + _(" already exists.")}]}), content_type="application/json")
             except Column.DoesNotExist:
                 column.name = col["name"]
-                column.save()
+
+        column.comment = col["comment"]
+        column.save()
 
         colType = column.type
         if colType.type == Type.TEXT:
