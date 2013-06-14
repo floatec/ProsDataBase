@@ -103,8 +103,8 @@ def tableRights(request, tableName):
 def column(request, tableName, columnName):
     if request.method == 'DELETE':
         answer = tablefactory.deleteColumn(tableName, columnName, request.user)
-        if answer != 'OK':
-            return answer
+        if not answer:
+            return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
         else:
             return HttpResponse("Successfully deleted column " + columnName + " from table " + tableName + ".", status=200)
 
