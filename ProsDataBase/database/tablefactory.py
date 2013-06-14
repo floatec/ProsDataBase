@@ -47,8 +47,7 @@ def modifyCategories(request):
 
     if len(errors) > 0:
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
-
-    return HttpResponse(json.dumps({"success": _("Saved changes successfully.")}), content_type="application/json")
+    return HttpResponse(json.dumps({"success": _("Saved changes successfully.").__unicode__()}), content_type="application/json")
 
 
 def deleteCategory(name):
@@ -379,7 +378,7 @@ def deleteDatasets(request, tableName):
     try:
         Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table ") + tableName + _(" to delete from.")}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table ").__unicode__() + tableName + _(" to delete from.").__unicode__()}]}), content_type="application/json")
 
     jsonRequest = json.loads(request.raw_post_data)
 
@@ -393,7 +392,7 @@ def deleteDatasets(request, tableName):
     if len(errors) > 0:
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
     else:
-        return HttpResponse(json.dumps({"success": _("Successfully deleted all datasets.")}), content_type="application/json")
+        return HttpResponse(json.dumps({"success": _("Successfully deleted all datasets.").__unicode__()}), content_type="application/json")
 
 
 def deleteDataset(datasetID, user):
@@ -736,7 +735,7 @@ def insertData(request, tableName):
                 newData = dateF.save(commit=False)
 
         elif column.type.type == Type.SELECTION:
-            selVal = SelectionValue.objects.get(type=column.type.getType(), content=col["value"])
+            selVal = SelectionValue.objects.get(typeSelection=column.type.getType(), content=col["value"])
             selF = DataSelectionForm({"created": datetime.now(), "content": col["value"], "key": selVal.index})
             if selF.is_valid():
                 newData = selF.save(commit=False)

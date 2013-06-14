@@ -5,7 +5,7 @@
 <a id="tab_header_1" href="#tabs-1" class="headerTab" onClick='changeTo(0)'>{% trans "Step 1" %}</a><a id="tab_header_2"
                                                                                          href="#tabs-2"
                                                                                          class="headerTab headerTabDeactive"
-                                                                                         onClick='changeTo(1)'>{% trans "Step 1" %}</a>
+                                                                                         onClick='changeTo(1)'>{% trans "Step 2" %}</a>
 {% endblock %}
 
 {% block header %}
@@ -85,7 +85,7 @@ function init() {
     firstload = true;
     tableName = getTableName();
     $("#tableCrumb").prepend(decodeURIComponent(tableName));
-    $("#modifyCrumb").prepend("modify");
+    $("#modifyCrumb").prepend("{% trans "Modify"%}");
     $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
     $("#modifyCrumb").attr('href', '/modify/' + tableName + '/');
     $("#tblName").val(decodeURIComponent(tableName));

@@ -28,6 +28,9 @@
         allCatagories = categories;
 
         $.getJSON('/api/table/', function (tabledata) {
+            if(allCatagories.length==0){
+                showErrors([{message: "{%  trans "You don't have the right to view any table." %}"}])
+            }
             for (var i in allCatagories) {
 
 

@@ -327,7 +327,11 @@
                  }
                     allDatasets = data.datasets;
                     console.log(allDatasets);
+                    if(allDatasets.length==0){
+                            clearErrors()
+                            showErrors([{message: "{%  trans "No Datasets are Matching" %}"}])
 
+                    }
                     allDatasets = data.datasets;
                     console.log(data);
 
