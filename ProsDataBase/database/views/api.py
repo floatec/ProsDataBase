@@ -270,7 +270,6 @@ def modifyGroup(request, name):
         "users": ["John Doe","Alex Anonymus"],
         "admins": ["admin1", "admin2"],
         "tableCreator": true,
-        "groupCreator": false
     }
     """
     try:
