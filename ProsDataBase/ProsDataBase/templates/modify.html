@@ -720,10 +720,10 @@ function createExistedUsers() {
             countCheckboxes++;
 
             if (actors[i].tableRights.rightsAdmin) {
-                inputsToappend += "<td class='all' nowrap='true'><input type='checkbox' checked='checked' class='rightsAdmin' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' checked='checked' class='rightsAdmin' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
             }
             else {
-                inputsToappend += "<td class='all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
             }
             countCheckboxes++;
             if (actors[i].tableRights.insert) {
@@ -770,10 +770,10 @@ function createExistedUsers() {
                 if (classColumnName == actors[i].columnRights[p].name) {
 
                     if (actors[i].columnRights[p].rights.read) {
-                        stringToappend += "<td nowrap='true'  class='" + classColumnName + "'><input type='checkbox' checked='checked' class='read' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+                        stringToappend += "<td nowrap='true'  class='forever " + classColumnName + "'><input type='checkbox' checked='checked' class='read' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
                     }
                     else {
-                        stringToappend += "<td nowrap='true' class='" + classColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+                        stringToappend += "<td nowrap='true' class='forever " + classColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
                     }
                     countCheckboxes++;
                     if (actors[i].columnRights[p].rights.modify) {
@@ -1060,7 +1060,7 @@ function getTableName() {
 {% endblock %}
 
 {% block css %}
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
-background: greenyellow;
+.forever .ui-state-active{
+    background: greenyellow;
 }
 {% endblock %}

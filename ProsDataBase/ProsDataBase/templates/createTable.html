@@ -429,7 +429,7 @@ $("#addUserToRights").click(function () {
         var inputsToappend ="";
         $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
          countCheckboxes++;
-        inputsToappend+= "<td class='all' nowrap='true'><input  type='checkbox' class='rightsAdmin' id='check"+countCheckboxes+"' /><label title='modify structure' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/key-icon.png'></label>";
+        inputsToappend+= "<td class='forever all' nowrap='true'><input  type='checkbox' class='rightsAdmin' id='check"+countCheckboxes+"' /><label title='modify structure' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/key-icon.png'></label>";
         countCheckboxes++;
          inputsToappend+= "<input type='checkbox' class='insert' id='check"+countCheckboxes+"' /><label title='insert datasets' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/pencil-icon.png'></label>";
         countCheckboxes++;
@@ -448,7 +448,7 @@ $("#addUserToRights").click(function () {
             var stringToappend = "";
             $("#descriptionRow_" + rightColumnID).append("<td>" + columnNames[i] + "</td>");
             countCheckboxes++;
-            stringToappend+="<td nowrap='true' class='"+ClassColumnName+"'><input type='checkbox' class='read' id='check"+countCheckboxes+"' /><label title='read' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
+            stringToappend+="<td nowrap='true' class='forever "+ClassColumnName+"'><input type='checkbox' class='read' id='check"+countCheckboxes+"' /><label title='read' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
             countCheckboxes++;
               stringToappend+="<input type='checkbox' class='modify' id='check"+countCheckboxes+"' /><label title='modify' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
             $("#iconsRow_" + userName).append(stringToappend);
@@ -634,7 +634,8 @@ $("#createTableButton").click(function () {
 {% endblock %}
 
 {% block css %}
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
+
+   .forever .ui-state-active{
     background: greenyellow;
 }
 {% endblock %}
