@@ -1,6 +1,16 @@
 {% extends "base.html" %}
+{% load i18n %}
+ 
 {% block cssHeader %}
     <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
+
+{% endblock %}
+{% block navigation %}
+
+<div>{% trans "Groups" %}</div>
+<ul id="navigationMenuContent">
+
+</ul>
 
 {% endblock %}
 
