@@ -107,6 +107,17 @@
                       $("#modifyStructure").remove();
 
                 }
+
+                if(!data.insert){
+                    $("#insertData").remove();
+
+                }
+                if(!data.delete){
+
+                     $("#deleteData").remove();
+
+                }
+
                 }
                 columns = data.columns;
                 createTable(columns, tableName, $("#headTable"), '/api/table/' + tableName + '/',undefined);
@@ -115,10 +126,7 @@
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
             $("#insertData").attr('href', '/dataset/' + tableName + '/');
             $("#modifyStructure").attr('href', '/modify/' + tableName + '/');
-            $("#deleteData").click(function () {
 
-
-            });
             $("#exportData").click(function(){
 
                 exportDatasets();
@@ -166,9 +174,9 @@
             $("#headTable").html("")
             $.getJSON('/api/table/' + global.table + '/structure/', function (data) {
 
-
                 columns = data.columns;
                 createTable(columns, global.table, $("#headTable"), '/api/table/' + global.table + '/dataset/filter/',obj);
+
 
             });
         }
@@ -360,22 +368,30 @@
         function deleteDataSet() {
 
             var datasetIDs = [];
-            $(".contentRow").each(function () {
 
-               if ($(this).children(":first").find("input:checkbox").is(':checked')) {
+              var rows=$($("#tab1").last().children().children())
+            console.log(rows);
+            rows.each( function(){
+         if ($(this).first().find("input:checkbox").is(':checked')) {
                     $(this).remove();
-                    datasetIDs.push($(this).find(".datasetClassCell").text());
+                    datasetIDs.push($(this).find("td:eq(2)").text());
 
                 }
 
-            });
 
+        });
+
+            console.log(datasetIDs);
             $.ajax({
                 url: '/api/table/' + getTableName() + '/dataset/',
                 type: 'delete',
                 data: JSON.stringify(datasetIDs),
                 contentType: 'application/json',
-                dataType: 'json'
+                dataType: 'json',
+                success: function(data){
+
+
+                }
             });
 
 
@@ -398,6 +414,7 @@
             });
 
          }
+
         $("#deleteData").click(function () {
             $("#deleteAlertBox").dialog("open");
 
