@@ -1,13 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% block navigation %}
-    <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
-    <div>{% trans "Groups" %}</div>
-    <ul id="navigationMenuContent">
-
-    </ul>
+{% block cssHeader %}
+          <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
 
 {% endblock %}
+
 {% block header %}
     <a class="crumb" href='/categories/' id='categoryAdmin'> <span>></span></a>
 

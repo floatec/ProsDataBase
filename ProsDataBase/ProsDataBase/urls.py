@@ -27,6 +27,7 @@ urlpatterns = patterns(
     (r'^group/(?P<groupname>[\w ]+)/$', TemplateView.as_view(template_name="modifyGroup.html")),
     (r'^modify/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="modify.html")),
     (r'^createTable/$', TemplateView.as_view(template_name="createTable.html")),
+    (r'^tableHistory/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="tableHistory.html")),
     (r'^useradmin/$', TemplateView.as_view(template_name="useradmin.html")),
     (r'^categories/$', TemplateView.as_view(template_name="categoryadmin.html")),
     (r'^createGroup/$', TemplateView.as_view(template_name="createGroup.html")),
