@@ -33,8 +33,8 @@ class UserTest(TestCase):
 
     # Jetzt passts
     def test_showOneUser(self):
-        user1 = create_UserWithName("Spongebob")
-        user2 = create_UserWithName("Patrick")
+        user1 = create_RandomUser()
+        user2 = create_RandomUser()
         user2.tableCreator=True
         user2.admin=True
         user2.userManager=True
@@ -52,7 +52,7 @@ class UserTest(TestCase):
         # ===================================================
         self.assertTrue(user1.username in result["name"])
         self.assertTrue(user1.is_active)
-        self.assertFalse(user1.tableCreator)
+        self.assertTrue(user1.tableCreator)
         self.assertFalse(user1.admin)
         self.assertFalse(user1.userManager)
 

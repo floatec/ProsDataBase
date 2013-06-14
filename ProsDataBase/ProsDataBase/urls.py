@@ -3,7 +3,7 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.conf import settings
-
+from django.views.generic import RedirectView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -21,6 +21,7 @@ urlpatterns = patterns(
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    (r'^$', RedirectView.as_view(url='/table/')),
     (r'^detailview/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="table_detailview.html")),
     (r'^select_dataset/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="select_dataset.html")),
     (r'^modifyDataset/(?P<table_id>[\w ]+)/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', TemplateView.as_view(template_name="modifyDataset.html")),

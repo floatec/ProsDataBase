@@ -112,7 +112,7 @@ def column(request, tableName, columnName):
 
 def export(request, tableName):
     if request.method == 'POST':
-        return tablefactory.exportTable(json.loads(request), tableName, request.user)
+        return tablefactory.exportTable(json.loads(request.raw_post_data), tableName)
 
 
 def datasets(request, tableName):

@@ -24,7 +24,7 @@
 {% block body %}
 <div id=header>
         <div id='helpLinkDiv'>
-        <a id='helpLink' href='/help/'>?</a>
+        <a id='helpLink' href='/help/'>&nbsp;? </a>
         </div>
         <a href="/table/" class="crumb">{% trans "Home" %}<span>></span></a>{% block header %}{% endblock %}
         <div id="loginNameMenu">
@@ -56,7 +56,9 @@
             {% block navigation %}
             {% endblock %}
         </div>
+
         <div id="content">
+        <div id="errorblock"></div>
             {% block content %}
             {% endblock %}
         </div>

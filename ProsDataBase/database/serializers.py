@@ -433,7 +433,7 @@ class DatasetSerializer:
 
                 if dataObj["type"] == Type.TABLE:
                     dataObj["value"] = list()
-                    for link in DataTableToDataset.objects.filter(DataTable=item):
+                    for link in TableLink.objects.filter(dataTable=item):
                         valObj = dict()
                         valObj["id"] = link.dataset.datasetID
                         typeTable = item.column.type.getType()
@@ -467,10 +467,10 @@ class DatasetSerializer:
         result = DatasetSerializer.serializeOne(datasetID, user)
 
         # now add datasets from the filter which reference this dataset
-        links = DataTableToDataset.objects.filter(dataset=dataset)
+        links = TableLink.objects.filter(dataset=dataset)
         dataTableIDs = list()
         for link in links:
-            dataTableIDs.append(link.DataTable_id)
+            dataTableIDs.append(link.dataTable_id)
 
         for tableName in tables:
             try:
@@ -646,10 +646,10 @@ class DatasetSerializer:
                     print filteredDatasets
 
                     # Now keep only those datasets, which have references to the "datasets" passed as argument
-                    links = DataTableToDataset.objects.filter(dataset__in=filteredDatasets)
+                    links = TableLink.objects.filter(dataset__in=filteredDatasets)
                     dataTableIDs = list()
                     for link in links:
-                        dataTableIDs.append(link.DataTable_id)
+                        dataTableIDs.append(link.dataTable_id)
 
                     # dataTables contained in datasets which fulfill child-criterion
                     dataTables = DataTable.objects.filter(dataset__in=datasets, pk__in=dataTableIDs)
@@ -705,10 +705,10 @@ class DatasetSerializer:
                             refDatasetIDs.append(refDataBool.dataset_id)
 
                     refDatasets = Dataset.objects.filter(pk__in=refDatasetIDs)
-                    links = DataTableToDataset.objects.filter(dataset__in=refDatasets)
+                    links = TableLink.objects.filter(dataset__in=refDatasets)
                     dataTableIDs = list()
                     for link in links:
-                        dataTableIDs.append(link.DataTable_id)
+                        dataTableIDs.append(link.dataTable_id)
                     dataTables = DataTable.objects.filter(pk__in=dataTableIDs)
                     datasetIDs = list()
                     for dataTable in dataTables:
@@ -735,10 +735,10 @@ class DatasetSerializer:
             """
                 Now keep only those datasets, which have references to the "datasets" passed as argument
             """
-            links = DataTableToDataset.objects.filter(dataset__in=datasets)
+            links = TableLink.objects.filter(dataset__in=datasets)
             dataTableIDs = list()
             for link in links:
-                dataTableIDs.append(link.DataTable_id)
+                dataTableIDs.append(link.dataTable_id)
 
             # dataTables contained in datasets which fulfill child-criterion
             dataTables = DataTable.objects.filter(dataset__in=filteredDatasets, column=refColumn, pk__in=dataTableIDs)
@@ -756,7 +756,7 @@ class DatasetSerializer:
             # dataTables contained in datasets which fulfill child-criterion and are in datasets with reference to passed 'datasets'
             filteredDataTables = dataTables.filter(dataset__in=filteredDatasets)
 
-            filteredLinks = DataTableToDataset.objects.filter(DataTable__in=filteredDataTables)
+            filteredLinks = TableLink.objects.filter(dataTable__in=filteredDataTables)
             finalDatasetIDs = list()
             for filteredLink in filteredLinks:
                 finalDatasetIDs.append(filteredLink.dataset_id)
