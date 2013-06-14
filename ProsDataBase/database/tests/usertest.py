@@ -1,12 +1,16 @@
 from django.test import TestCase
 from database.models import *
 from database.tests.factory import *
-from database.views.api import *
+from database.views.api import login
 
 class UserTest(TestCase):
     def test_showAllUser(self):
-        listofuser = create_User(101)
-        listofuser2 = create_User(101)
+        listofuser = list()
+        listofuser2 = list()
+
+        for i in range(1,101):
+            listofuser.append(create_RandomUser())
+            listofuser2.append(create_RandomUser())
 
         result = UserSerializer.serializeAll()
 
@@ -29,16 +33,19 @@ class UserTest(TestCase):
 
     # Jetzt passts
     def test_showOneUser(self):
-        user1 = DBUser.objects.create_user(username="Spongebob")
-        user2 = DBUser.objects.create_user(username="Patrick", tableCreator=True,admin=True,userManager=True)
+        user1 = create_UserWithName("Spongebob")
+        user2 = create_UserWithName("Patrick")
+        user2.tableCreator=True
+        user2.admin=True
+        user2.userManager=True
+        user2.is_active = False
 
-        user1.save()
-        user2.save()
 
         result = UserSerializer.serializeOne(user1.username)
         result2 = UserSerializer.serializeOne(user2.username)
 
         print result
+        print result2
 
         # ===================================================
         # test the user have the same name in the result
@@ -50,7 +57,7 @@ class UserTest(TestCase):
         self.assertFalse(user1.userManager)
 
         self.assertTrue(user2.username in result2["name"])
-        self.assertTrue(user2.is_active)
+        self.assertFalse(user2.is_active)
         self.assertTrue(user2.tableCreator)
         self.assertTrue(user2.admin)
         self.assertTrue(user2.userManager)
@@ -58,11 +65,11 @@ class UserTest(TestCase):
 
     # User der keine createTable-Rechte hat kann eine Tabelle erstellen
     def test_showUserRights(self):
-        user1 = DBUser.objects.create_user(username="Gunther", tableCreator=True)
-        user1.save()
+        user1 = create_UserWithName("Gunther")
+        user1.tableCreator=True
+        user1.save
 
-        user2 = DBUser.objects.create_user(username="Mammut")
-        user2.save()
+        user2 = create_UserWithName("Mammut")
 
         table = create_table(user1)
 
@@ -70,6 +77,8 @@ class UserTest(TestCase):
         connect_User_With_Rights(user2,table)
 
         result = UserSerializer.serializeAllWithRights()
+
+        print result
 
         # ================================================================
         # tests the name of the users
@@ -91,3 +100,10 @@ class UserTest(TestCase):
                 self.assertTrue(user["active"])
                 self.assertFalse(user["admin"])
                 self.assertFalse(user["userManager"])
+
+    def test_login(self):
+        user = create_UserWithName("Tim","abc")
+
+        self.client.login(username="Tim",password="abc")
+
+        self.assertTrue(login(request=user))
