@@ -9,6 +9,7 @@ from django.contrib import auth
 from ..serializers import *
 from ..forms import *
 from .. import tablefactory
+from django.utils.translation import ugettext_lazy as _
 
 
 def session(request):
@@ -106,7 +107,7 @@ def column(request, tableName, columnName):
         if not answer:
             return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
         else:
-            return HttpResponse("Successfully deleted column " + columnName + " from table " + tableName + ".", status=200)
+            return HttpResponse(_("Successfully deleted column ") + columnName + _(" from table ") + tableName + ".", status=200)
 
 
 def export(request, tableName):
@@ -131,7 +132,7 @@ def filterDatasets(request, tableName):
     if request.method == 'POST':
         datasets = DatasetSerializer.serializeBy(json.loads(request.raw_post_data), tableName, request.user)
         if datasets is None:
-            return HttpResponse(content="An error occured", status=500)
+            return HttpResponse(content=_("An error occured"), status=500)
         return HttpResponse(json.dumps(datasets), content_type="application/json")
 
 
@@ -146,7 +147,7 @@ def register(request):
     jsonRequest = json.loads(request.raw_post_data)
     try:
         DBUser.objects.get(username=jsonRequest["username"])
-        return HttpResponse("user with name " + jsonRequest["username"] + " already exists.", status=400)
+        return HttpResponse(_("user with name ") + jsonRequest["username"] + _(" already exists."), status=400)
     except DBUser.DoesNotExist:
         user = DBUser.objects.create_user(username=jsonRequest["username"], password=jsonRequest["password"])
         user.save()
@@ -158,14 +159,14 @@ def login(request):
     user = auth.authenticate(username=jsonRequest["username"], password=jsonRequest["password"])
     if user is not None and user.is_active:
         auth.login(request, user)
-        return HttpResponse(json.dumps({"status": "ok"}), content_type="application/json")
+        return HttpResponse(json.dumps({_("status"): "ok"}), content_type="application/json")
     else:
-        return HttpResponse(json.dumps({"status": "not_ok"}), content_type="application/json")
+        return HttpResponse(json.dumps({_("status"): "not_ok"}), content_type="application/json")
 
 
 def logoff(request):
     auth.logout(request)
-    return HttpResponse("logged off")
+    return HttpResponse(_("logged off"))
 
 
 def showAllUsers():
@@ -176,7 +177,7 @@ def showAllUsers():
 def showOneUser(name):
     user = UserSerializer.serializeOne(name)
     if user is None:
-        return HttpResponse("User does not exist", status=400)
+        return HttpResponse(_("User does not exist"), status=400)
     else:
         return HttpResponse(json.dumps(user), content_type="application/json")
 
@@ -194,7 +195,7 @@ def modifyUserRights(request):
         try:
             user = DBUser.objects.get(username=userObj["name"])
         except DBUser.DoesNotExist:
-            HttpResponse("Could not find user with name " + userObj["name"] + ".", status=400)
+            HttpResponse(_("Could not find user with name ") + userObj["name"] + ".", status=400)
 
         if userObj["tableCreator"] != user.tableCreator\
                 or userObj["userManager"] != user.userManager\
@@ -207,7 +208,7 @@ def modifyUserRights(request):
         if modified:
             user.save()
 
-    return HttpResponse("Successfully modified user rights.", status=200)
+    return HttpResponse(_("Successfully modified user rights."), status=200)
 
 
 def showAllGroups():
@@ -228,7 +229,7 @@ def addGroup(request):
         groupNames.append(name)
 
     if request["name"] in groupNames:
-        HttpResponse(content="Group with name " + request["name"] + " already exists.", status=400)
+        HttpResponse(content=_("Group with name ") + request["name"] + _(" already exists."), status=400)
 
     groupF = DBGroupForm({"name": request["name"]})
     if groupF.is_valid():
@@ -259,8 +260,8 @@ def addGroup(request):
             membership.save()
 
     if len(failed) > 0:
-        return HttpResponse({"error": "following users could not be added to the group: " + str(failed) + ". Have you misspelled them?"}, content_type="application/json")
-    return HttpResponse("Successfully saved group " + request["name"] + ".", status=200)
+        return HttpResponse({"error": _("following users could not be added to the group: ") + str(failed) + _(". Have you misspelled them?")}, content_type="application/json")
+    return HttpResponse(_("Successfully saved group ") + request["name"] + ".", status=200)
 
 
 def modifyGroup(request, name):
@@ -275,13 +276,13 @@ def modifyGroup(request, name):
     try:
         group = DBGroup.objects.get(name=name)
     except DBGroup.DoesNotExist:
-        return HttpResponse(content="Could not find group with name " + name + ".", status=400)
+        return HttpResponse(content=_("Could not find group with name ") + name + ".", status=400)
 
     request = json.loads(request.raw_post_data)
     if request["name"] != group.name:
         try:
             DBGroup.objects.get(name=request["name"])
-            return HttpResponse(content="A group with name " + request["name"] + " already exists.", status=400)
+            return HttpResponse(content=_("A group with name ") + request["name"] + _(" already exists."), status=400)
         except DBGroup.DoesNotExist:
             group.name = request["name"]
 
@@ -326,19 +327,19 @@ def modifyGroup(request, name):
         membership = Membership.objects.get(user=theUser)
         membership.delete()
 
-    return HttpResponse("Successfully modifed group " + name + ".", status=200)
+    return HttpResponse(_("Successfully modifed group ") + name + ".", status=200)
 
 
 def deleteGroup(request, name):
     try:
         group = DBGroup.objects.get(name=name)
     except DBGroup.DoesNotExist:
-        return HttpResponse(content="Could not find group with name " + name + ".", status=400)
+        return HttpResponse(content=_("Could not find group with name ") + name + ".", status=400)
 
     Membership.objects.filter(group=group).delete()
     group.delete()
 
-    return HttpResponse(content="Successfully deleted group " + name + ".", status=200)
+    return HttpResponse(content=_("Successfully deleted group ") + name + ".", status=200)
 
 
 def showMyUser(user):
@@ -359,7 +360,7 @@ def changeMyPassword(request):
     jsonRequest = json.loads(request.raw_post_data)
     request.user.set_password(jsonRequest["password"])
     request.user.save()
-    return HttpResponse("Saved password successfully.", status=200)
+    return HttpResponse(_("Saved password successfully."), status=200)
 
 
 def showCategories():
@@ -382,7 +383,7 @@ def showDatasets(request, tableName):
     try:
         Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(content="Could not find table with name " + tableName + ".", status=400)
+        return HttpResponse(content=_("Could not find table with name ") + tableName + ".", status=400)
 
     jsonRequest = json.loads(request.raw_post_data)
     result = dict()
@@ -397,14 +398,14 @@ def showDataset(tableName, datasetID, user):
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(content="Table with name " + tableName + " could not be found.", status=400)
+        return HttpResponse(content=_("Table with name ") + tableName + _(" could not be found."), status=400)
     try:
         dataset = Dataset.objects.get(datasetID=datasetID, table=table)
     except Dataset.DoesNotExist:
-        return HttpResponse(content="dataset with id " + datasetID + " could not be found in table " + tableName + ".", status=400)
+        return HttpResponse(content=_("dataset with id ") + datasetID + _(" could not be found in table ") + tableName + ".", status=400)
 
     if dataset.deleted:
-        return HttpResponse("The requested dataset does not exist.", status=400)
+        return HttpResponse(_("The requested dataset does not exist."), status=400)
     else:
         dataset = DatasetSerializer.serializeOne(datasetID, user)
         return HttpResponse(json.dumps(dataset), content_type="application/json")

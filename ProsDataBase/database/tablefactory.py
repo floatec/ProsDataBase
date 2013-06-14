@@ -26,11 +26,11 @@ def modifyCategories(request):
             try:
                 catForChange = Category.objects.get(name=cat["old"])
             except Category.DoesNotExist:
-                errors.append({"code": Error.CATEGORY_NOTFOUND, "message": "Could not find category " + cat["old"] + "."})
+                errors.append({"code": Error.CATEGORY_NOTFOUND, "message": _("Could not find category ") + cat["old"] + "."})
 
             try:  # check if category with name already exists. Only save new name, if not existent yet
                 Category.objects.get(name=cat["new"])
-                errors.append({"code": Error.CATEGORY_CREATE, "message": "Category with name " + cat["new"] + " already exists."})
+                errors.append({"code": Error.CATEGORY_CREATE, "message": _("Category with name ") + cat["new"] + _(" already exists.")})
             except Category.DoesNotExist:
                 catForChange.name = cat["new"]
                 catForChange.save()
@@ -38,7 +38,7 @@ def modifyCategories(request):
         else:
             try:  # check if category with name already exists. Only save new name, if not existent yet
                 Category.objects.get(name=cat["new"])
-                errors.append({"code": Error.CATEGORY_CREATE, "message": "Category with name " + cat["new"] + " already exists."})
+                errors.append({"code": Error.CATEGORY_CREATE, "message": _("Category with name ") + cat["new"] + _(" already exists.")})
             except Category.DoesNotExist:
                 newCatF = CategoryForm({"name": cat["new"]})
                 if newCatF.is_valid():
@@ -48,7 +48,7 @@ def modifyCategories(request):
     if len(errors) > 0:
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
 
-    return HttpResponse(json.dumps({"success": "Saved changes successfully."}), content_type="application/json")
+    return HttpResponse(json.dumps({"success": _("Saved changes successfully.")}), content_type="application/json")
 
 
 def deleteCategory(name):
@@ -56,12 +56,12 @@ def deleteCategory(name):
         category = Category.objects.get(name=name)
         tables = Table.objects.filter(category=category)
         if len(tables) > 0:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_DELETE, "message": "Please put the tables of this group into another category first."}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_DELETE, "message": _("Please put the tables of this group into another category first.")}]}), content_type="application/json")
         category.delete()
     except Category.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_DELETE, "message": "Category with name " + name + " does not exist."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_DELETE, "message": _("Category with name ") + name + _(" does not exist.")}]}), content_type="application/json")
 
-    return HttpResponse(json.dumps({"success": "Deleted category " + name + "."}), content_type="application/json")
+    return HttpResponse(json.dumps({"success": _("Deleted category ") + name + "."}), content_type="application/json")
 
 
 def createTable(request):
@@ -116,7 +116,7 @@ def createTable(request):
     else:
         for obj in savedObjs:
             obj.delete()
-        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": "Failed to create table. Please contact the developers."}]}))
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("Failed to create table. Please contact the developers.")}]}))
 
     # add to table 'RightlistForTable' for user
     answer = createTableRights(jsonRequest["rights"], newTable)
@@ -159,7 +159,7 @@ def createColumn(col, table, user):
         else:
             for obj in savedObjs:
                 obj.delete()
-            return {"code": Error.TYPE_CREATE, "message": "Could not create text type for column " + col["name"] + ". Abort."}
+            return {"code": Error.TYPE_CREATE, "message": _("Could not create text type for column ")+col["name"] + _(". Abort.")}
 
     elif col["type"] == Type.NUMERIC:
         type["min"] = col["min"] if "min" in col else -sys.maxint
@@ -174,7 +174,7 @@ def createColumn(col, table, user):
         else:
             for obj in savedObjs:
                 obj.delete()
-            return {"code": Error.TYPE_CREATE, "message": "Could not create numeric type for column " + col["name"] + ". Abort."}
+            return {"code": Error.TYPE_CREATE, "message": _("Could not create numeric type for column ")+col["name"] + _(". Abort.")}
 
     elif col["type"] == Type.DATE:
         if "min" in col:
@@ -192,7 +192,7 @@ def createColumn(col, table, user):
             else:
                 for obj in savedObjs:
                     obj.delete()
-                return {"code": Error.TYPE_CREATE, "message": "Could not create date type for column " + col["name"] + ". Abort."}
+                return {"code": Error.TYPE_CREATE, "message": _("Could not create date type for column ") + col["name"] + _(". Abort.")}
         else:
             typeDate = TypeDate()
             typeDate.type = newDatatype
@@ -209,7 +209,7 @@ def createColumn(col, table, user):
         else:
             for obj in savedObjs:
                 obj.delete()
-            return {"code": Error.TYPE_CREATE, "message": "Could not create selection type for column " + col["name"] + ". Abort."}
+            return {"code": Error.TYPE_CREATE, "message": _("Could not create selection type for column ") + col["name"] + _(". Abort.")}
 
         for option in col["options"]:
             selValF = SelectionValueForm({"index": option["key"], "content": option["value"]})
@@ -221,7 +221,7 @@ def createColumn(col, table, user):
             else:
                 for obj in savedObjs:
                     obj.delete()
-                return {"code": Error.TYPE_CREATE, "message": "Could not create selection value for column " + col["name"] + ". Abort."}
+                return {"code": Error.TYPE_CREATE, "message": _("Could not create selection value for column ") + col["name"] + _(". Abort.")}
 
     elif col["type"] == Type.BOOL:
         typeBool = TypeBool()
@@ -253,14 +253,14 @@ def createColumn(col, table, user):
     else:
         for obj in savedObjs:
             obj.delete()
-        return {"code": Error.COLUMN_CREATE, "message": "Could not create column " + col["name"] + ". Abort."}
+        return {"code": Error.COLUMN_CREATE, "message": _("Could not create column ") + col["name"] + _(". Abort.")}
     # new rights
     if "rights" in col:
         answer = createColumnRights(col["rights"], newColumn)
         if not answer:
             for obj in savedObjs:
                 obj.delete()
-            return {"code": Error.TYPE_CREATE, "message": "Could not create column rights for column " + col["name"] + ". Abort."}
+            return {"code": Error.TYPE_CREATE, "message": _("Could not create column rights for column ") + col["name"] + _(". Abort.")}
 
     return True
 
@@ -273,10 +273,10 @@ def deleteTable(name, user):
     try:
         table = Table.objects.get(name=name)
     except Table.DoesNotExist:
-        HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "Could not find table with name " + name + "."}]}))
+        HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name " + name + ".")}]}))
 
     if table.deleted:
-        HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "Could not find table with name " + name + "."}]}))
+        HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name " + name + ".")}]}))
 
     errors = list()
     # Only delete this table if it is not referenced by any other table.
@@ -288,7 +288,7 @@ def deleteTable(name, user):
             column = Column.objects.get(type=typeTable.type)
             tableNames.add(column.table.name)
 
-        errors.append({"error": "Please delete references to this table in tables " + str(tableNames) + " first."})
+        errors.append({"error": _("Please delete references to this table in tables ") + str(tableNames) + _(" first.")})
 
     else:  # no reference exists, so delete the table
         datasets = list()
@@ -321,7 +321,7 @@ def deleteTable(name, user):
 
         if len(errors) > 0:
             return HttpResponse({"errors": errors}, content_type="application/json")
-        return HttpResponse(json.dumps({"success": "Successfully deleted table " + table.name + "."}), status=200)
+        return HttpResponse(json.dumps({"success": _("Successfully deleted table ") + table.name + "."}), status=200)
 
 
 def deleteColumn(tableName, columnName, user):
@@ -332,11 +332,11 @@ def deleteColumn(tableName, columnName, user):
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return {"code": Error.TABLE_NOTFOUND, "message": "Could not find table with name " + tableName + "."}
+        return {"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name " + tableName + ".")}
     try:
         column = table.getColumns().get(name=columnName)
     except Column.DoesNotExist:
-        return {"code": Error.COLUMN_NOTFOUND, "message": "Could not find column with name " + columnName + " in table " + tableName + "."}
+        return {"code": Error.COLUMN_NOTFOUND, "message": _("Could not find column with name ") + columnName + _(" in table " )+ tableName + "."}
 
     #  find all data fields related to this column to set their delete flag
     if column.type.type == Type.TEXT:
@@ -378,7 +378,7 @@ def deleteDatasets(request, tableName):
     try:
         Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "Could not find table " + tableName + " to delete from."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table ") + tableName + _(" to delete from.")}]}), content_type="application/json")
 
     jsonRequest = json.loads(request.raw_post_data)
 
@@ -392,7 +392,7 @@ def deleteDatasets(request, tableName):
     if len(errors) > 0:
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
     else:
-        return HttpResponse(json.dumps({"success": "Successfully deleted all datasets."}), content_type="application/json")
+        return HttpResponse(json.dumps({"success": _("Successfully deleted all datasets.")}), content_type="application/json")
 
 
 def deleteDataset(datasetID, user):
@@ -405,9 +405,9 @@ def deleteDataset(datasetID, user):
     try:
         dataset = Dataset.objects.get(datasetID=datasetID)
         if dataset.deleted:
-            return {"code": Error.DATASET_NOTFOUND, "message": "Could not find dataset with id " + dataset.datasetID + "."}
+            return {"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ") + dataset.datasetID + "."}
     except Dataset.DoesNotExist:
-            return {"code": Error.DATASET_NOTFOUND, "message": "Could not find dataset with id " + dataset.datasetID + "."}
+            return {"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ")+ dataset.datasetID + "."}
 
     # only delete if dataset is not referenced by another table
     links = DataTableToDataset.objects.filter(dataset=dataset)
@@ -425,7 +425,7 @@ def deleteDataset(datasetID, user):
         for dataset in datasets:
             tables.add(dataset.table.name)
 
-            return {"code": Error.DATASET_REF, "message": "Could not delete dataset with id " + dataset.datasetID + ". Please delete references to it in following tables first: " + str(tables) + "."}
+            return {"code": Error.DATASET_REF, "message": _("Could not delete dataset with id ") + dataset.datasetID + _(". Please delete references to it in following tables first: ") + str(tables) + "."}
 
     # no references in other tables, so delete this dataset
     dataset.deleted = True
@@ -456,7 +456,7 @@ def createTableRights(rights, table):
             else:
                 for obj in savedObjects:
                     obj.delete()
-                return {"code": Error.RIGHTS_TABLE_CREATE, "message": "Failed to create table rights."}
+                return {"code": Error.RIGHTS_TABLE_CREATE, "message": _("Failed to create table rights.")}
 
     # for groups
     for item in rights["groups"]:
@@ -477,7 +477,7 @@ def createTableRights(rights, table):
             else:
                 for obj in savedObjects:
                     obj.delete()
-                return {"code": Error.RIGHTS_TABLE_CREATE, "message": "Could not create table rights."}
+                return {"code": Error.RIGHTS_TABLE_CREATE, "message": _("Could not create table rights.")}
     return True
 
 
@@ -503,7 +503,7 @@ def createColumnRights(rights, column):
             else:
                 for obj in savedObjs:
                     obj.delete()
-                return {"code": Error.RIGHTS_COLUMN_CREATE, "message": "Failed to create column rights."}
+                return {"code": Error.RIGHTS_COLUMN_CREATE, "message": _("Failed to create column rights.")}
     # for groups
     for item in rights["groups"]:
         rightList = dict()
@@ -523,7 +523,7 @@ def createColumnRights(rights, column):
             else:
                 for obj in savedObjs:
                     obj.delete()
-                return {"code": Error.RIGHTS_COLUMN_CREATE, "message": "Failed to create column rights."}
+                return {"code": Error.RIGHTS_COLUMN_CREATE, "message": _("Failed to create column rights.")}
     return True
 
 
@@ -555,7 +555,7 @@ def modifyTable(request, name):
     try:
         table = Table.objects.get(name=name)
     except Table.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "Could not find table " + name + " to delete from."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table ")+ name + _(" to delete from.")}]}), content_type="application/json")
 
     jsonRequest = json.loads(request.raw_post_data)
     if jsonRequest["name"] != name:
@@ -568,7 +568,7 @@ def modifyTable(request, name):
         try:
             category = Category.objects.get(name=jsonRequest["category"])
         except Category.DoesNotExist:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_NOTFOUND, "message": "Could not find category " + jsonRequest["category"] + "."}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_NOTFOUND, "message": _("Could not find category ") + jsonRequest["category"] + "."}]}), content_type="application/json")
 
         table.category = category
         table.save()
@@ -590,11 +590,11 @@ def modifyTable(request, name):
         try:
             column = Column.objects.get(pk=col["id"])
         except Column.DoesNotExist:
-            HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": "Could not find column."}]}), content_type="application/json")
+            HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": _("Could not find column.")}]}), content_type="application/json")
         if column.name != col["name"]:
             try:
                 Column.objects.get(name=col["name"], table=table)
-                return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_CREATE, "message": "Column with name " + col["name"] + " already exists."}]}), content_type="application/json")
+                return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_CREATE, "message": _("Column with name ")+ col["name"] + _(" already exists.")}]}), content_type="application/json")
             except Column.DoesNotExist:
                 column.name = col["name"]
                 column.save()
@@ -625,7 +625,7 @@ def modifyTable(request, name):
         elif colType.type == Type.SELECTION:
             typeSel = colType.getType()
             if len([option["value"] for option in col["options"]]) > len(set([option["value"] for option in col["options"]])):
-                return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_CREATE, "message": "found duplicate selection values."}]}), content_type="application/json")
+                return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_CREATE, "message": _("found duplicate selection values.")}]}), content_type="application/json")
             for option in col["options"]:
                 try:
                     value = SelectionValue.objects.get(index=option["key"], typeSelection=typeSel)
@@ -649,11 +649,11 @@ def modifyTable(request, name):
                 for refColumn in refColumns:
                     refColNames.append(refColumn.name)
                 if col["column"] not in refColNames:
-                    return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_REF, "message": "Column " + col["column"] + " does not exist in referenced table " + col["table"] + "."}]}), content_type="application/json")
+                    return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_REF, "message": _("Column ")+ col["column"] + _(" does not exist in referenced table ") + col["table"] + "."}]}), content_type="application/json")
                 try:
                     refColumn = Column.objects.get(name=col["column"])
                 except Column.DoesNotExist:
-                    return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": "Column " + col["column"] + " does not exist."}]}), content_type="application/json")
+                    return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": _("Column ")+ col["column"] + _(" does not exist.")}]}), content_type="application/json")
                 typeTable.column = refColumn
             else:
                 typeTable.column = None
@@ -684,13 +684,13 @@ def insertData(request, tableName):
     try:
         theTable = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": "Failed to create table. Please contact the developers."}]}))
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("Failed to create table. Please contact the developers.")}]}))
 
     savedObjs = list()
 
     datasetF = DatasetForm({"created": datetime.now()})
     if not datasetF.is_valid():
-        return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_CREATE, "message": "Error creating a new dataset."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_CREATE, "message": _("Error creating a new dataset.")}]}), content_type="application/json")
 
     newDataset = datasetF.save(commit=False)
     newDataset.table = theTable
@@ -708,12 +708,12 @@ def insertData(request, tableName):
         except Column.DoesNotExist:
             for obj in savedObjs:
                 obj.delete()
-            HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": "Could not find a column with name " + col["name"] + "in table " + tableName + ". Abort."}]}), content_type="application/json")
+            HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": _("Could not find a column with name ") + col["name"] + _("in table ") + tableName + _(". Abort.")}]}), content_type="application/json")
             continue
         if not column.type.getType().isValid(col["value"]):
             for obj in savedObjs:
                 obj.delete()
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": "input " + unicode(col["value"]) + " for column " + column.name + " is not valid. Abort."}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": _("input ") + unicode(col["value"]) + _(" for column ") + column.name + _(" is not valid. Abort.")}]}), content_type="application/json")
 
         if column.type.type == Type.TEXT:
             textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
@@ -748,7 +748,7 @@ def insertData(request, tableName):
         if newData is None:
             for obj in savedObjs:
                 obj.delete()
-            return HttpResponse(json.dumps({"errors": [{"code": Error.DATAFIELD_CREATE, "message": "Could not add data for column + " + col["name"] + ". The content type was not valid. Abort."}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.DATAFIELD_CREATE, "message": _("Could not add data for column") + col["name"] + _(". The content type was not valid. Abort.")}]}), content_type="application/json")
 
         else:
             newData.creator = request.user
@@ -762,7 +762,7 @@ def insertData(request, tableName):
                 try:
                     dataset = Dataset.objects.get(datasetID=index)
                 except Dataset.DoesNotExist:
-                    return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": "dataset with id " + index + " could not be found in table " + column.type.getType().table.name + ". Abort."}]}), content_type="application/json")
+                    return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("dataset with id ") + index + _(" could not be found in table ") + column.type.getType().table.name + _(". Abort.")}]}), content_type="application/json")
                 else:
                     link = DataTableToDataset()
                     link.DataTable = newData
@@ -790,11 +790,11 @@ def modifyData(request, tableName, datasetID):
     try:
         theTable = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": "Failed to create table. Please contact the developers."}]}))
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("Failed to create table. Please contact the developers.")}]}))
     try:
         dataset = Dataset.objects.get(datasetID=datasetID)
     except Dataset.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": "Could not find dataset with id " + datasetID + " in table " + tableName + "."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ") + datasetID + _(" in table ") + tableName + "."}]}), content_type="application/json")
 
     dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
     newData = None
@@ -802,11 +802,11 @@ def modifyData(request, tableName, datasetID):
         try:
             column = Column.objects.get(name=col["name"], table=theTable)
         except Column.DoesNotExist:
-            HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": "Could not find column with name " + col["name"] + "."}]}), content_type="application/json")
+            HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": _("Could not find column with name ") + col["name"] + "."}]}), content_type="application/json")
             continue
 
         if not column.type.getType().isValid(col["value"]):
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": "input " + unicode(col["value"]) + " for column " + column.name + " is not valid."}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": _("input ") + unicode(col["value"]) + _(" for column ") + column.name + _(" is not valid.")}]}), content_type="application/json")
 
         if column.type.type == Type.TEXT:
             try:
@@ -893,7 +893,7 @@ def modifyData(request, tableName, datasetID):
                         newLink.dataset = newDataset
                         newLink.save()
                     except Dataset.DoesNotExist:
-                        return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": "Could not find dataset with id " + id + "."}]}), content_type="application/json")
+                        return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ") + id + "."}]}), content_type="application/json")
 
             except DataTable.DoesNotExist:
                 dataCreatedNewly = True
@@ -903,7 +903,7 @@ def modifyData(request, tableName, datasetID):
 
         if dataCreatedNewly:
             if newData is None:
-                return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_NOTYPE, "message": "Could not add data to column " + col["name"] + ". The content type was invalid."}]}), content_type="application/json")
+                return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_NOTYPE, "message": _("Could not add data to column ") + col["name"] + _(". The content type was invalid.")}]}), content_type="application/json")
 
             else:
                 newData.creator = request.user
@@ -921,7 +921,7 @@ def modifyData(request, tableName, datasetID):
                         link.dataset = dataset
                         link.save()
                     except Dataset.DoesNotExist:
-                        return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": "Could not find dataset with id " + index + "."}]}), content_type="application/json")
+                        return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ") + index + "."}]}), content_type="application/json")
 
     return HttpResponse(json.dumps({"id": dataset.datasetID}), status=200)
 
@@ -930,13 +930,13 @@ def exportTable(request, tableName, user):
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(content="Could not find table with name " + tableName + ".", status=400)
+        return HttpResponse(content=_("Could not find table with name ") + tableName + ".", status=400)
 
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.now()) + "csv'"
+    response["Content-Disposition"] = _("attachment; filename='") + table.name + "_" + str(datetime.now()) + "csv'"
 
     writer = csv.writer(response)
-    writer.writerow([table.name + " from " + str(datetime.now())])
+    writer.writerow([table.name + _(" from ") + str(datetime.now())])
     writer.writerow(request["columns"])
 
     row = list()
@@ -944,13 +944,13 @@ def exportTable(request, tableName, user):
         try:
             dataset = Dataset.objects.get(datasetID=datasetID)
         except Dataset.DoesNotExist:
-            return HttpResponse(content="Could not find dataset with ID " + datasetID + ".", status=400)
+            return HttpResponse(content=_("Could not find dataset with ID ") + datasetID + ".", status=400)
 
         for colName in request["columns"]:
             try:
                 column = Column.objects.get(name=colName, table=table)
             except Column.DoesNotExist:
-                return HttpResponse(content="Could not find column with name " + colName + " in table " + tableName + ".", status=400)
+                return HttpResponse(content=_("Could not find column with name ")+ colName + _(" in table ") + tableName + ".", status=400)
             if column.type.type == Type.TEXT:
                 text = dataset.datatext.all().get(column=column)
                 row.append(text.content)
