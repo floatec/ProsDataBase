@@ -21,8 +21,7 @@ def create_table(user):
     # creates a simple table with two columns and
     # two datasets filed with 3 values
     # ============================================================
-    testUser = user
-    testUser.save()
+
 
     category = dict()
     category["name"] = "Allgemein"
@@ -38,10 +37,13 @@ def create_table(user):
     tabF = TableForm(table)
     if tabF.is_valid():
         newTable = tabF.save(commit=False)
-        newTable.creator = testUser
+        newTable.creator = user
         newTable.category = newCategory
         newTable.save()
 
+    return newTable
+
+def create_columns(table, user):
     # ============================================================
     # - create a texttype
     # ============================================================
@@ -103,17 +105,16 @@ def create_table(user):
     tabletype = Type(name="Table", type=5)
     tabletype.save()
 
-
-    for i in range(0,5):
+    for i in range(0,4):
         columns = dict()
-        columnsArray = ["TEXT" + newTable.name, "NUMERIC" + newTable.name, "DATE" + newTable.name,
-                        "SELECTION" + newTable.name, "BOOLEAN" + newTable.name, "TABLE" + newTable.name ]
+        columnsArray = ["TEXT" + table.name, "NUMERIC" + table.name, "DATE" + table.name,
+                        "SELECTION" + table.name, "BOOLEAN" + table.name, "TABLE" + table.name ]
         columns["name"] = columnsArray[i]
         columns["created"] = datetime.now()
         columnsF = ColumnForm(columns)
         if columnsF.is_valid():
             newColumns = columnsF.save(commit=False)
-            newColumns.table = newTable
+            newColumns.table = table
             if i == 0:
                 newColumns.type = texttype
             if i == 1:
@@ -126,7 +127,7 @@ def create_table(user):
                 newColumns.type = booleantype
             #if i == 5:
              #   newColumns.type = tabletype
-            newColumns.creator = testUser
+            newColumns.creator = user
             newColumns.save()
 
             dataSets = dict()
@@ -135,10 +136,10 @@ def create_table(user):
             if dataSetsF.is_valid():
                 newDataSets = dataSetsF.save(commit=False)
                 newDataSets.column = newColumns
-                newDataSets.creator = testUser
-                newDataSets.table = newTable
+                newDataSets.creator = user
+                newDataSets.table = table
                 newDataSets.save()
-                newDataSets.datasetID = newTable.generateDatasetID(newDataSets)
+                newDataSets.datasetID = table.generateDatasetID(newDataSets)
                 newDataSets.save()
                 # ============================================================
                 # - the 1st column have a text data type
@@ -153,7 +154,7 @@ def create_table(user):
                             newDataText = dataTextF.save(commit=False)
                             newDataText.column = newColumns
                             newDataText.dataset = newDataSets
-                            newDataText.creator = testUser
+                            newDataText.creator = user
                             newDataText.save()
                 # ============================================================
                 # - the 2nd column have a numeric data type
@@ -168,7 +169,7 @@ def create_table(user):
                             newDataNummeric = dataNumericF.save(commit=False)
                             newDataNummeric.column = newColumns
                             newDataNummeric.dataset = newDataSets
-                            newDataNummeric.creator = testUser
+                            newDataNummeric.creator = user
                             newDataNummeric.save()
                 # ============================================================
                 # -- the 3rd column have a date data type
@@ -183,7 +184,7 @@ def create_table(user):
                             newDataDate = dataDateF.save(commit=False)
                             newDataDate.column = newColumns
                             newDataDate.dataset = newDataSets
-                            newDataDate.creator = testUser
+                            newDataDate.creator = user
                             newDataDate.save()
                 # ============================================================
                 # -- the 4th column have a Selection data type
@@ -201,7 +202,7 @@ def create_table(user):
                             newDataSelection = dataSelectionF.save(commit=False)
                             newDataSelection.column = newColumns
                             newDataSelection.dataset = newDataSets
-                            newDataSelection.creator = testUser
+                            newDataSelection.creator = user
                             newDataSelection.save()
                 # ============================================================
                 # -- the 5th column have a boolean data type
@@ -219,7 +220,7 @@ def create_table(user):
                             newDataBoolean = dataBooleanF.save(commit=False)
                             newDataBoolean.column = newColumns
                             newDataBoolean.dataset = newDataSets
-                            newDataBoolean.creator = testUser
+                            newDataBoolean.creator = user
                             newDataBoolean.save()
                 # ============================================================
                 # -- the 6th column have a table datatype
@@ -320,7 +321,7 @@ def create_table(user):
 #                    dataTableToDataSets2 = DataTableToDataset(DataTable=newDataTable, dataset=newDataSetsOP2)
 #                    dataTableToDataSets2.save()
 
-    return newTable
+    return newColumns
 
 def create_Group(**kwargs):
     # ============================================================
@@ -347,13 +348,15 @@ def create_Group(**kwargs):
     GroupSerializer.serializeOne(groupA["name"])
     return newDBGroup
 
-def create_User(number):
-    listofUsers = list()
-    for i in range(1,number):
-        user = DBUser.objects.create_user(username=generate_random_username())
-        user.save()
-        listofUsers.append(user)
-    return listofUsers
+def create_UserWithName(name, password):
+    user = DBUser.objects.create_user(username=name, password=password)
+    user.save()
+    return user
+
+def create_RandomUser():
+    user = DBUser.objects.create_user(username=generate_random_username(), tableCreator=True)
+    user.save()
+    return user
 
 def connect_User_With_Rights(user, table):
     # ============================================================
