@@ -1,6 +1,12 @@
 {% extends "base.html" %}
+{% load i18n %}
+{% block cssHeader %}
+          <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
+
+{% endblock %}
+
 {% block navigation %}
-    <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
+
     <div>Gruppen</div>
     <ul id="navigationMenuContent">
 
@@ -16,7 +22,7 @@
 {% endblock %}
 
 {% block menu %}
-<a class='buttonMenuButton' href="/createGroup/">create group</a>
+<a class='buttonMenuButton' href="/createGroup/">{% trans "create group" %}</a>
 
 
 {% endblock %}

@@ -14,21 +14,23 @@
     <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
 {% endblock %}
 {% block menu %}
-    <a class='buttonMenuButton' id='insertData' href='#'>{% trans "Insert" %}</a>
-    <a class='buttonMenuButton' id='deleteData' href='#'>Delete</a>
-    <a class='buttonMenuButton' id='exporteData'>Export</a>
-    <a class='buttonMenuButton' id='modifyStructure'>Modify Structure</a>
+    <a class='buttonMenuButton' id='insertData' href='#'>{%trans "Insert" %}</a>
+    <a class='buttonMenuButton' id='deleteData' href='#'>{%trans "Delete" %}</a>
+    <a class='buttonMenuButton' id='exportData'href='#'>{%trans "Export" %}</a>
+    <a class='buttonMenuButton' id='modifyStructure'href='#'>{%trans "Modify Structure" %}</a>
+    <a class='buttonMenuButton' id='viewLog' href='#'>Log</a>
+
 {% endblock %}
 
 {% block content %}
     <div id="filter">
-  <h3>filter</h3><div>
+  <h3>{% trans "filter" %}</h3><div>
   <div id="filterView">
-<button onClick="addFilter('#filterView',global.table)" >+</button><button onclick="laodFiltered()">Filter</button>
+<button onClick="addFilter('#filterView',global.table)" >+</button><button onclick="laodFiltered()"href='#'>{%trans "Filter" %}</button>
   </div>
 </div>
     </div>
-    <div id="deleteAlertBox">Are you sure to delete this item(s)?</div>
+    <div id="deleteAlertBox"href='#'>{% trans "Are you sure to delete this item(s)?" %}</div>
     <div id="headTable"></div>
 
 {% endblock %}
@@ -102,7 +104,7 @@
             global={}
             var tableName = decodeURIComponent(getTableName());
             global.table=tableName
-            $("#naviheader").append(tableName)
+            $("#naviheader").append(tableName);
             var columns = [];
             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
                 if(!data.admin){
@@ -120,6 +122,9 @@
                      $("#deleteData").remove();
 
                 }
+                if(!data.viewLog){
+                    $("#viewLog").remove();
+                }
 
                 }
                 columns = data.columns;
@@ -129,7 +134,7 @@
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
             $("#insertData").attr('href', '/dataset/' + tableName + '/');
             $("#modifyStructure").attr('href', '/modify/' + tableName + '/');
-
+            $("#viewLog").attr('href', '/tableHistory/' + tableName + '/')
             $("#exportData").click(function(){
 
                 exportDatasets();

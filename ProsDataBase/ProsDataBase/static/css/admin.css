@@ -5,7 +5,7 @@
     font-weight: bold;
     z-index: 1;
     background-color: #ABC8E2;
-    height: 30px;
+    height: 35px;
     padding: 10px;
 }
 
@@ -23,14 +23,14 @@
     left: 15px;
 }
 
-#navigationMenu {
 
+#navigationMenu {
     background-color: #DFEFFC;
+    bottom: 66px;
     margin-right: 30px;
+    max-width: 240px;
     min-width: 190px;
-    max-width:240px;
     position: relative;
-    bottom: 70px;
 }
 
 #buttonMenu {
@@ -47,23 +47,24 @@
     margin-right: 5px;
     padding-left: 5px;
     padding-right: 5px;
-    color: #00458A;
+    color: #B9181E;
     border-left-style: solid;
-    border-left-color: #B9181E;
+    border-left-color: #00458A;
     border-left-width: 5px;
     border-right-style: solid;
-    border-right-color: #B9181E;
+    border-right-color: #00458A;
     border-right-width: 5px;
 }
 
+
 #search {
+    height: 30px;
+    margin-left: 1px;
+    margin-right: 20px;
     margin-top: 1px;
     padding-left: 15px;
     padding-right: 15px;
-    width: 200px;
-    height: 23px;
-    margin-left: 1px;
-    margin-right: 20px;
+    width: 192px;
 }
 
 #searchDiv {
@@ -91,8 +92,9 @@
 }
 
 #loginNameMenu {
-    font-size: 14px;
     float: right;
+    font-size: 14px;
+    position: relative;
     width: 171px;
     z-index: 2;
 }
@@ -110,7 +112,7 @@
 }
 
 .crumb {
-    color: #00458A;
+    color: #B9181E;
     font-size: 26px;
     display: inline;
 }
@@ -120,7 +122,7 @@
 
 }
 .crumb span {
-    color: #B9181E;
+    color: #00458A;
 }
 
 .headerTab {
@@ -130,12 +132,12 @@
     padding-left: 10px;
     font-size: 20px;
     display: inline;
-    color: #B9181E;
+    color: #00458A;
     border-left-style: solid;
-    border-left-color: #B9181E;
+    border-left-color: #00458A;
     border-left-width: 5px;
     border-right-style: solid;
-    border-right-color: #B9181E;
+    border-right-color: #00458A;
     border-right-width: 5px;
 }
 

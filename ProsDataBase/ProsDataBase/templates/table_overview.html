@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block navigation %}
 
 {% endblock %}
@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block menu %}
-<a href="/createTable/" id='createTableButton' class="buttonMenuButton">new table</a>
+<a href="/createTable/" id='createTableButton' class="buttonMenuButton">{%trans "Create new table" %}</a>
 
 {% endblock %}
 

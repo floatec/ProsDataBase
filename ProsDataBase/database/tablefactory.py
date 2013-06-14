@@ -6,8 +6,10 @@ import sys
 from django.http import HttpResponse
 
 from models import *
+from serializers import TableSerializer
 from forms import *
 from response import *
+from django.utils.translation import ugettext_lazy as _
 
 
 def modifyCategories(request):
@@ -133,7 +135,7 @@ def createTable(request):
 
     if len(errors) > 0:
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
-    return HttpResponse("Successfully created table " + table["name"], status=200)
+    return HttpResponse(_("Successfully created table ") + table["name"], status=200)
 
 
 def createColumn(col, table, user):
@@ -662,7 +664,8 @@ def modifyTable(request, name):
             if not answer:
                 return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
 
-    return HttpResponse(json.dumps({"success": "Successfully modified table " + name + "."}), content_type="application/json")
+    result = TableSerializer.serializeStructure(name, request.user)
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 
 def insertData(request, tableName):

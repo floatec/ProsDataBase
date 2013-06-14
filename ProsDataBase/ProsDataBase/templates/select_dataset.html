@@ -1,5 +1,5 @@
 {% extends "base_popup.html" %}
-
+{% load i18n %}
 
 
 {% block navigation %}
@@ -10,18 +10,18 @@
     <a class="crumb" href='#' id='tableCrumb'> <span></span></a>
 {% endblock %}
 {% block menu %}
-    <a class='buttonMenuButton' id='selectData' href='#'>Select Dataset</a>
+    <a class='buttonMenuButton' id='selectData' href='#'>{% trans "Select dataset" %}</a>
 {% endblock %}
 
 {% block content %}
     <div id="filter">
-  <h3>filter</h3><div>
+  <h3>{% trans "Filter" %}</h3><div>
   <div id="filterView">
 <button onClick="addFilter('#filterView',global.table)" >+</button>
   </div>
 </div>
     </div>
-    <div id="deleteAlertBox">Are you sure to delete this item(s)?</div>
+    <div id="deleteAlertBox">{% trans "Are you sure to delete this item(s)?" %}</div>
     <div id="headTable"></div>
 
 {% endblock %}
