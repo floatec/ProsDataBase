@@ -21,8 +21,6 @@ def create_table(user):
     # creates a simple table with two columns and
     # two datasets filed with 3 values
     # ============================================================
-
-
     category = dict()
     category["name"] = "Allgemein"
     categoryF = CategoryForm(category)

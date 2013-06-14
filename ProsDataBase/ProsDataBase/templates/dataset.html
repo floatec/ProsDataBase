@@ -123,6 +123,17 @@
                 dataType: 'json',
 
                 success: function (data) {
+
+
+            if(data.errors!=undefined){
+              showErrors(data.errors)
+               return
+            }
+            if(data.success!=undefined){
+                showSuccess(data.success)
+
+            }
+
                     if (true) {
                         $(window.opener.document).find('#' + field).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span> ");
                     }

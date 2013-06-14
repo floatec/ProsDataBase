@@ -44,6 +44,15 @@
 	//var groups = jQuery.parseJSON( '{"groups":[{"name":"Arzt","users":["Paul","Snuggles"]},{"name":"Student","dataDescr":["Egon","Walter"]},{"name":"Hiwi","dataDescr":["Inge","Hans"]}]}' ).groups;
     $.getJSON('/api/group/', function (data) {
 
+            if(data.errors!=undefined){
+                    showErrors(data.errors)
+
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
+
+             }
+
         allGroups = data.groups;
        for (var key in allGroups) {
 		var groupname = allGroups[key].name;

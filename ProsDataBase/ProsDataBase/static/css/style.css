@@ -15,6 +15,22 @@ body{
 }
 
 
+.error{
+    border-color: red;
+    color: red;
+    border-style: solid;
+    padding: 2px;
+    margin: 2px;
+}
+
+.success{
+    border-color: green;
+    color: green;
+    border-style: solid;
+    padding: 2px;
+    margin: 2px;
+}
+
 #page {
     position: relative;
     margin: 0px auto;
@@ -37,7 +53,7 @@ body{
 }
 
 #buttonMenu {
-    background-color: #EEE;
+
     float: left;
     height: 30px;
     padding-top: 5px;
@@ -57,6 +73,10 @@ body{
     border-right-style: solid;
     border-right-color: #B9181E;
     border-right-width: 5px;
+    border-color: #00458A;
+    border-style: solid;
+    background-color: #EEE;
+    border-radius: 5px;
 }
 
 
@@ -81,7 +101,9 @@ body{
 }
 #helpLink{
     font-size:20px;
-
+    color: #00458A;
+    border-style: solid;
+    border-radius: 5px;
 }
 .helpTextDiv {
     background-color: #EEE;

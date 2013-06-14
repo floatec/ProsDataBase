@@ -283,16 +283,25 @@ function init() {
 
 
 function createAllExistedColumn(data){
-          $(".trcolumnClass").each(function () {
+        if(data.errors!=undefined){
+            showErrors(data.errors)
+            return
+        }
+        if(data.success!=undefined){
+                showSuccess(data.success)
 
-        $(this).remove();
+       }
 
-    });
+        $(".trcolumnClass").each(function () {
+            $(this).remove();
+        });
 
        var category = data.category;
-        $("#category option").filter(function () {
-            return this.text == category;
-        }).attr('selected', true);
+        $("#category option").each(function () {
+            if(this.text == category){
+                this.selected=true;
+            }
+        });
 
 
         var columns = data.columns;
@@ -357,9 +366,11 @@ function createAllExistedColumn(data){
                 }
                 else if (columns[key].type == 5) {
                     var tbl = columns[key].table;
-                    $("#selectDataType_" + columnID + " option").filter(function () {
-                        return this.text == tbl;
-                    }).attr('selected', true);
+                    $("#selectDataType_" + columnID + " option").each(function () {
+                        if(this.text == tbl){
+                            this.selected=true;
+                        }
+                    });
                 }
 
             }
