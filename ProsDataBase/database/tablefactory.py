@@ -210,7 +210,7 @@ def createColumn(col, table, user):
             for obj in savedObjs:
                 obj.delete()
             return {"code": Error.TYPE_CREATE, "message": _("Could not create selection type for column ") + col["name"] + _(". Abort.")}
-            count = 0
+        count = 0
         for option in col["options"]:
             selValF = SelectionValueForm({"index": count, "content": option["value"]})
             if selValF.is_valid():
