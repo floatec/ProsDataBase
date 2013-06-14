@@ -6,6 +6,7 @@ import sys
 from django.http import HttpResponse
 
 from models import *
+from serializers import TableSerializer
 from forms import *
 from response import *
 
@@ -662,7 +663,8 @@ def modifyTable(request, name):
             if not answer:
                 return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
 
-    return HttpResponse(json.dumps({"success": "Successfully modified table " + name + "."}), content_type="application/json")
+    result = TableSerializer.serializeStructure(name, request.user)
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 
 def insertData(request, tableName):
