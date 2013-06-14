@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 
 {% block navigation %}
-<div>tables</div>
-<ul id="navigationMenuContent">
-
-</ul>
 
 {% endblock %}
 
@@ -19,28 +15,28 @@
 
 {% block javascript %}
 <script language="JavaScript">
- $.getJSON('/api/category/', function (data) {
+    $.getJSON('/api/category/', function (data) {
         createTables(data.categories);
 
 
-        });
-
+    });
 
 
     //function to create and fill tables
     function createTables(categories) {
 
-               allCatagories = categories;
+        allCatagories = categories;
 
-            $.getJSON('/api/table/', function (tabledata) {
-               for (var i in allCatagories) {
+        $.getJSON('/api/table/', function (tabledata) {
+            for (var i in allCatagories) {
 
 
                 var tables = tabledata.tables
 
-                var content="";
+                var content = "";
                 var isInCategory = false;
-                var content = "<div class='"+allCatagories[i]+" categoryDiv'><span id='"+allCatagories[i]+"' class='categoryHeadline'>"+allCatagories[i]+":</span>";
+                var content = "<div class='" + allCatagories[i] + " categoryDiv'><span id='" + allCatagories[i] + "' class='categoryHeadline'>" + allCatagories[i] + ":</span>";
+                $("#navigationMenu").append("<div id='"+allCatagories[i]+"_Div'>" + allCatagories[i] + "</div><ul id='navigationMenuContent_" + allCatagories[i] + "'></ul>");
                 for (var key in tables) {
 
                     if (allCatagories[i] == tables[key].category) {
@@ -48,24 +44,29 @@
                         isInCategory = true;
                         var tablename = tables[key].name;
                         // fill Navigation-Bar
-                        $("#navigationMenuContent").append("<li><a href='/detailview/" + tables[key].name + "'>" + tables[key].name + "</a></li>");
+                        $("#navigationMenuContent_" + allCatagories[i]).append("<li><a href='/detailview/" + tables[key].name + "'>" + tables[key].name + "</a></li>");
                         // create tables
 
-                        content+="<a href='/detailview/" + tables[key].name + "'><div class='overViewDiv' id='table" + key + "'>";
+                        content += "<a href='/detailview/" + tables[key].name + "'><div class='overViewDiv' id='table" + key + "'>";
                         content += "<div id='overViewHeader'>" + tablename + "</div>";
                         for (var rows in tables[key].columns) {
-                           content+="<div class='overViewContentDiv'>" + tables[key].columns[rows] + "</div>";
+                            content += "<div class='overViewContentDiv'>" + tables[key].columns[rows] + "</div>";
                         }
                         content += "</div></a>";
 
                     }
                 }
-                content+="</div>";
+                content += "</div>";
                 $("#content").append(content);
-                   if(!isInCategory){
-                $("#"+allCatagories[i]).remove();
-                   }
-   }
+                if (!isInCategory) {
+                    $("#"+ allCatagories[i] + "_Div").remove();
+                    $("#navigationMenuContent_"+allCatagories[i]).remove();
+                    $("#" + allCatagories[i]).remove();
+
+                }
+            }
+
+             $("#navigationMenu").accordion( "refresh" );
         });
 
     }

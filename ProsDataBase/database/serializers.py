@@ -549,11 +549,12 @@ class DatasetSerializer:
         linkedTables = list()
         resultSet = table.getDatasets()
         for criterion in request["filter"]:
-            if "column" not in criterion:
+            if "column" not in criterion:  # the user has deselected a column
                 continue
-            if "link" in criterion:
-                linkedTables.append(criterion["table"])
+            if "link" in criterion:  # the user wants to filter over referencing tables
+                linkedTables.append(criterion["table"])  # remember the referencing tables, to display columns for them
             resultSet = DatasetSerializer.filter(table, resultSet, criterion, user)
+
             if not resultSet:
                 return None
 
@@ -570,6 +571,9 @@ class DatasetSerializer:
     @staticmethod
     def filter(table, datasets, criterion, user):
         if "link" not in criterion:  # filter only with criteria on this table
+            #  check if the user filters over a specific dataset id. As this is not a column, it must be handled differently
+            if "datasetID" in criterion:
+                return datasets.filter(datasetID=criterion["datasetID"])
             try:
                 column = table.getColumns().get(name=criterion["column"])
             except Column.DoesNotExist:
