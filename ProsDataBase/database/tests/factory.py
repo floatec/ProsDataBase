@@ -313,11 +313,11 @@ def create_columns(table, user):
 #                        newDataTable.creator = testUser
 #                        newDataTable.save()
 
-#                    dataTableToDataSets = DataTableToDataset(DataTable=newDataTable, dataset=newDataSetsOP)
-#                    dataTableToDataSets.save()
+#                    TableLink = TableLink(dataTable=newDataTable, dataset=newDataSetsOP)
+#                    TableLink.save()
 
-#                    dataTableToDataSets2 = DataTableToDataset(DataTable=newDataTable, dataset=newDataSetsOP2)
-#                    dataTableToDataSets2.save()
+#                    TableLink2 = TableLink(dataTable=newDataTable, dataset=newDataSetsOP2)
+#                    TableLink2.save()
 
     return newColumns
 
