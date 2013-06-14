@@ -76,6 +76,7 @@ body{
     border-color: #00458A;
     border-style: solid;
     background-color: #EEE;
+    border-radius: 5px;
 }
 
 
@@ -100,7 +101,9 @@ body{
 }
 #helpLink{
     font-size:20px;
-
+    color: #00458A;
+    border-style: solid;
+    border-radius: 5px;
 }
 .helpTextDiv {
     background-color: #EEE;
