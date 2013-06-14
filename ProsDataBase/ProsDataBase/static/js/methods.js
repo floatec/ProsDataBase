@@ -102,3 +102,13 @@ function allowPassword(val1,val2) {
     }
 
 }
+function showErrors(errors){
+    for (var i in errors){
+        $("#errorblock").append("<div class='error'>"+errors[i].message+"</div>")
+    }
+}
+function showSuccess(success){
+
+        $("#errorblock").append("<div class='success'>"+success+"</div>")
+
+}

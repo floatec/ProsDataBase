@@ -9,7 +9,21 @@
     padding: 10px;
 }
 
+.error{
+    border-color: red;
+    color: red;
+    border-style: solid;
+    padding: 2px;
+    margin: 2px;
+}
 
+.success{
+    border-color: green;
+    color: green;
+    border-style: solid;
+    padding: 2px;
+    margin: 2px;
+}
 
 #page {
     position: relative;
@@ -34,7 +48,7 @@
 }
 
 #buttonMenu {
-    background-color: #EEE;
+
     float: left;
     height: 30px;
     padding-top: 5px;
@@ -54,6 +68,9 @@
     border-right-style: solid;
     border-right-color: #B9181E;
     border-right-width: 5px;
+    border-color: #00458A;
+    border-style: solid;
+    background-color: #EEE;
 }
 
 #search {

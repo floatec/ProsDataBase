@@ -153,7 +153,14 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (data) {
+                if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
 
+             }
                 columns = data.columns;
                     createTable(data.columns, tableName, insertTo, '/api/table/' + tableName + '/dataset/', obj);
                 }
@@ -305,6 +312,14 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (data) {
+                    if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+                   if(data.success!=undefined){
+                     showSuccess(data.success)
+
+                 }
                     allDatasets = data.datasets;
                     console.log(allDatasets);
 
@@ -395,7 +410,14 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function(data){
+if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
 
+             }
 
                 }
             });
@@ -416,7 +438,17 @@
                 type: 'delete',
                 data: JSON.stringify(datasetIDs),
                 contentType: 'application/json',
-                dataType: 'json'
+                dataType: 'json',
+                   success:function(data){
+                       if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
+
+             }
+                   }
             });
 
          }

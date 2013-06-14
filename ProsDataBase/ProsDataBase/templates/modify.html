@@ -294,11 +294,18 @@ function init() {
 
 
 function createAllExistedColumn(data){
-          $(".trcolumnClass").each(function () {
+        if(data.errors!=undefined){
+            showErrors(data.errors)
+            return
+        }
+        if(data.success!=undefined){
+                showSuccess(data.success)
 
-        $(this).remove();
+       }
 
-    });
+        $(".trcolumnClass").each(function () {
+            $(this).remove();
+        });
 
        var category = data.category;
         $("#category option").filter(function () {

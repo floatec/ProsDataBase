@@ -120,7 +120,17 @@ $("#saveUsers").click(function(){
         type: 'post',
         data: JSON.stringify(jsonObj),
         contentType: 'application/json',
-        dataType: 'json'
+        dataType: 'json',
+        success:function (){
+            if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
+
+             }
+        }
 
     });
 

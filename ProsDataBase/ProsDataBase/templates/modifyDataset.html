@@ -256,13 +256,18 @@ function getTableName(){
                 data: JSON.stringify(jsonDataset),
                 contentType: 'application/json',
                 dataType: 'json'
-               /*
+               /
                 success:function(data){
-                        if(popup){
-                         $(window.opener.document).find('#'+field).append(data.id);
-                        }
+                        if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
+
+             }
                 }
-                */
+
             });
         // window.location.href = '/detailview/'+getTableName();+'/';
         });
