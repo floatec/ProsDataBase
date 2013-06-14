@@ -1,24 +1,24 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block header %}
     <a class="crumb" href='#' id='groupCrumb'> <span>></span></a>
     <a class="crumb" href='#' id='modifyGroupCrumb'> <span>></span></a>
 {% endblock %}
 
 {% block content %}
-<div id="deleteAlertBox">Are you sure to delete this group?</div>
-<button id='deleteGroup'>delete group</button><br/><br />
-<span>group name:</span><br/>
+<div id="deleteAlertBox">{% trans "Are you sure to delete this group?" %}</div>
+<button id='deleteGroup'>{% trans "delete group" %}</button><br/><br />
+<span>{% trans "group name" %}</span><br/>
 <input type="text" id="groupName"><br/><br/>
-<span>create tables:</span>
+<span>{% trans "create tables" %}</span>
 <input type="checkbox" id="createTables"><br/><br />
-<span>add administrators:</span><br/>
+<span>{% trans "add administrators" %}</span><br/>
 <textarea rows="4" cols="50" id="allAdmins">
 </textarea><br />
-<span>add users:</span><br/>
+<span>{% trans "add users" %}</span><br/>
 <textarea rows="4" cols="50" id="allUsers">
 </textarea><br/>
-<button id='saveGroup'>save</button>
+<button id='saveGroup'>{% trans "save" %}</button>
 {% endblock %}
 
 
@@ -170,7 +170,17 @@ function getAllUsers(users){
         type: 'put',
         data: JSON.stringify(groupObj),
         contentType: 'application/json',
-        dataType: 'json'
+        dataType: 'json',
+        success: function(data){
+            if(data.errors!=undefined){
+                showErrors(data.errors)
+                return
+            }
+            if(data.success!=undefined){
+                showSuccess(data.success)
+
+            }
+        }
     });
  });
     function getUsers(users){

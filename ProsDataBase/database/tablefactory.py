@@ -6,8 +6,10 @@ import sys
 from django.http import HttpResponse
 
 from models import *
+from serializers import TableSerializer
 from forms import *
 from response import *
+from django.utils.translation import ugettext_lazy as _
 
 
 def modifyCategories(request):
@@ -133,7 +135,7 @@ def createTable(request):
 
     if len(errors) > 0:
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
-    return HttpResponse("Successfully created table " + table["name"], status=200)
+    return HttpResponse(_("Successfully created table ") + table["name"], status=200)
 
 
 def createColumn(col, table, user):
@@ -208,14 +210,15 @@ def createColumn(col, table, user):
             for obj in savedObjs:
                 obj.delete()
             return {"code": Error.TYPE_CREATE, "message": "Could not create selection type for column " + col["name"] + ". Abort."}
-
+        count = 0
         for option in col["options"]:
-            selValF = SelectionValueForm({"index": option["key"], "content": option["value"]})
+            selValF = SelectionValueForm({"index": count, "content": option["value"]})
             if selValF.is_valid():
                 selVal = selValF.save(commit=False)
                 selVal.typeSelection = typeSel
                 selVal.save()
                 savedObjs.append(selVal)
+                count += 1
             else:
                 for obj in savedObjs:
                     obj.delete()
@@ -625,17 +628,17 @@ def modifyTable(request, name):
             if len([option["value"] for option in col["options"]]) > len(set([option["value"] for option in col["options"]])):
                 return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_CREATE, "message": "found duplicate selection values."}]}), content_type="application/json")
             for option in col["options"]:
-                try:
+                if "key" in option:
                     value = SelectionValue.objects.get(index=option["key"], typeSelection=typeSel)
                     value.content = option["value"]
                     value.save()
-                except SelectionValue.DoesNotExist:  # this is a new selection value
+                else:  # this is a new selection value
                     typeSel.count += 1
                     typeSel.save()
-                    selValF = SelectionValueForm({"index": option["key"], "content": option["value"]})
+                    selValF = SelectionValueForm({"index": typeSel.count, "content": option["value"]})
                     if selValF.is_valid():
-                        selVal = selValF.save()
-                        selVal.typeselection = typeSel
+                        selVal = selValF.save(commit=False)
+                        selVal.typeSelection = typeSel
                         selVal.save()
 
         elif colType.type == Type.TABLE:
@@ -662,7 +665,8 @@ def modifyTable(request, name):
             if not answer:
                 return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
 
-    return HttpResponse(json.dumps({"success": "Successfully modified table " + name + "."}), content_type="application/json")
+    result = TableSerializer.serializeStructure(name, request.user)
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 
 def insertData(request, tableName):
@@ -923,26 +927,26 @@ def modifyData(request, tableName, datasetID):
     return HttpResponse(json.dumps({"id": dataset.datasetID}), status=200)
 
 
-def exportTable(request, tableName, user):
+def exportTable(request, tableName):
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
         return HttpResponse(content="Could not find table with name " + tableName + ".", status=400)
 
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.now()) + "csv'"
+    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.now()) + ".csv'"
 
     writer = csv.writer(response)
     writer.writerow([table.name + " from " + str(datetime.now())])
-    writer.writerow(request["columns"])
+    writer.writerow(["system ID"] + request["columns"])
 
-    row = list()
     for datasetID in request["datasets"]:
         try:
             dataset = Dataset.objects.get(datasetID=datasetID)
         except Dataset.DoesNotExist:
             return HttpResponse(content="Could not find dataset with ID " + datasetID + ".", status=400)
-
+        row = list()
+        row.append(datasetID)
         for colName in request["columns"]:
             try:
                 column = Column.objects.get(name=colName, table=table)
@@ -963,5 +967,9 @@ def exportTable(request, tableName, user):
             elif column.type.type == Type.BOOL:
                 bool = dataset.databool.all().get(column=column)
                 row.append(bool.content)
-            elif column.type.type == Type.TABLE:
-                dataTable = dataset.datatext.all().get(column=column)
+            #elif column.type.type == Type.TABLE:
+            #    dataTable = dataset.datatext.all().get(column=column)
+            #    row.append(data)
+        writer.writerow(row)
+
+    return response

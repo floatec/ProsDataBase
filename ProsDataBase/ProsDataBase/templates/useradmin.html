@@ -1,8 +1,15 @@
-{% extends "base.html" %}
 
+{% extends "base.html" %}
+{% load i18n %}
+{% block cssHeader %}
+          <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
+
+{% endblock %}
+<link rel="stylesheet" type="text/css" href="/static/css/admin.css">
 {% block navigation %}
-    <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
+
         <div>users</div>
+        <div>{% trans "Users" %}</div>
  <ul id="navigationMenuContent">
 
 			</ul>
@@ -15,18 +22,18 @@
 {% endblock %}
 {% block content %}
 <table id='userTable' class='datasets'>
-    <caption>user rights</caption>
+    <caption>{% trans "User Rights" %}</caption>
     <thead>
-        <th>user</th>
-        <th>enabled</th>
-        <th>create tables</th>
-        <th>user admin</th>
+        <th>{% trans "User" %}</th>
+        <th>{% trans "Enabled" %}</th>
+        <th>{% trans "Create tables" %}</th>
+        <th>{% trans "User admin" %}</th>
     </thead>
 
 
 </table>
         <br />
-<button id='saveUsers'>save</button>
+<button id='saveUsers'>{% trans "Save" %}</button>
 {% endblock %}
 
 {% block menu %}
@@ -120,7 +127,17 @@ $("#saveUsers").click(function(){
         type: 'post',
         data: JSON.stringify(jsonObj),
         contentType: 'application/json',
-        dataType: 'json'
+        dataType: 'json',
+        success:function (){
+            if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
+
+             }
+        }
 
     });
 
@@ -130,4 +147,9 @@ $("#saveUsers").click(function(){
 
 
 </script>
+{% endblock %}
+{% block css %}
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
+    background: greenyellow;
+}
 {% endblock %}

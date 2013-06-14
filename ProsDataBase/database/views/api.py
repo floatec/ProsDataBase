@@ -103,15 +103,15 @@ def tableRights(request, tableName):
 def column(request, tableName, columnName):
     if request.method == 'DELETE':
         answer = tablefactory.deleteColumn(tableName, columnName, request.user)
-        if answer != 'OK':
-            return answer
+        if not answer:
+            return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
         else:
             return HttpResponse("Successfully deleted column " + columnName + " from table " + tableName + ".", status=200)
 
 
 def export(request, tableName):
     if request.method == 'POST':
-        return tablefactory.exportTable(json.loads(request), tableName, request.user)
+        return tablefactory.exportTable(json.loads(request.raw_post_data), tableName)
 
 
 def datasets(request, tableName):
@@ -270,7 +270,6 @@ def modifyGroup(request, name):
         "users": ["John Doe","Alex Anonymus"],
         "admins": ["admin1", "admin2"],
         "tableCreator": true,
-        "groupCreator": false
     }
     """
     try:

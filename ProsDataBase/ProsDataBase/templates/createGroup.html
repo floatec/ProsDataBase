@@ -1,28 +1,34 @@
 {% extends "base.html" %}
+{% load i18n %}
+ 
+{% block cssHeader %}
+    <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
 
+{% endblock %}
 {% block navigation %}
-     <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
-<div>groups</div>
+
+<div>{% trans "Groups" %}</div>
 <ul id="navigationMenuContent">
 
 </ul>
 
 {% endblock %}
+
 {% block header %}
 <a class="crumb" href='/groupadmin/' id='groupAdmin'> <span>></span></a>
 <a class="crumb" href='/createGroup/' id='createGroup'> <span>></span></a>
 {% endblock %}
 {% block content %}
-<span>group name:</span><br/>
+<span>{% trans "Group name:" %}</span><br/>
 <input type="text" id="groupName"><br/><br/>
-<span>create tables:</span>
+<span>{% trans "Create tables:" %}</span>
 <input type="checkbox" id="createTables"><br/><br />
 <textarea rows="4" cols="50" id="allAdmins">
 </textarea><br />
-<span>add users:</span><br/>
+<span>{% trans "Add users:" %}</span><br/>
 <textarea rows="4" cols="50" id="allUsers">
 </textarea><br/>
-<button id='createGroupButton'>create</button>
+<button id='createGroupButton'>{% trans "Create" %}</button>
 {% endblock %}
 
 
@@ -133,7 +139,16 @@
         type: 'post',
         data: JSON.stringify(groupObj),
         contentType: 'application/json',
-        dataType: 'json'
+        dataType: 'json',
+        success: function(data){
+            if(data.errors!=undefined){
+            showErrors(data.errors)
+            return
+            }
+            if(data.success!=undefined){
+                showSuccess(data.success)
+            }
+        }
     });
 
 

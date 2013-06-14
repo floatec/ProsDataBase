@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-13 12:49+0200\n"
+"POT-Creation-Date: 2013-06-14 12:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,344 @@ msgstr ""
 msgid "English"
 msgstr ""
 
+#: ProsDataBase/templates/base.html:27
+msgid "Home"
+msgstr ""
+
+#: ProsDataBase/templates/base.html:30
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: ProsDataBase/templates/base.html:31
+msgid "Admin"
+msgstr "Admin"
+
+#: ProsDataBase/templates/base.html:33
+#: ProsDataBase/templates/categoryadmin.html:5
+msgid "Groups"
+msgstr "Gruppen"
+
+#: ProsDataBase/templates/base.html:34 ProsDataBase/templates/settings.html:4
+#: ProsDataBase/templates/useradmin.html:5
+msgid "Users"
+msgstr "Benutzer"
+
+#: ProsDataBase/templates/base.html:35
+msgid "Categories"
+msgstr "Kategorien"
+
+#: ProsDataBase/templates/base.html:38
+msgid "Logout"
+msgstr "Ausloggen"
+
+#: ProsDataBase/templates/categoryadmin.html:17
+#: ProsDataBase/templates/select_dataset.html:24
+#: ProsDataBase/templates/table_detailview.html:31
+msgid "Are you sure to delete this item(s)?"
+msgstr "Wollen Sie diese(s) Element(e) wirklich löschen?"
+
+#: ProsDataBase/templates/categoryadmin.html:21
+#: ProsDataBase/templates/modify.html:53 ProsDataBase/templates/modify.html:63
+#: ProsDataBase/templates/modifyGroup.html:21
+#: ProsDataBase/templates/settings.html:22
+msgid "save"
+msgstr "speichern"
+
+#: ProsDataBase/templates/createGroup.html:16
+msgid "Group name:"
+msgstr "Gruppenname"
+
+#: ProsDataBase/templates/createGroup.html:18
+msgid "Create tables:"
+msgstr "Tabellen erstellen"
+
+#: ProsDataBase/templates/createGroup.html:22
+msgid "Add users:"
+msgstr "Benutzer hinzufügen"
+
+#: ProsDataBase/templates/createGroup.html:25
+#: ProsDataBase/templates/createTable.html:12
+msgid "Create"
+msgstr "Erstellen"
+
+#: ProsDataBase/templates/createTable.html:4
+#: ProsDataBase/templates/createTable.html:25
+#: ProsDataBase/templates/modify.html:8 ProsDataBase/templates/modify.html:32
+msgid "Step 1"
+msgstr "Schritt 1"
+
+#: ProsDataBase/templates/createTable.html:7
+#: ProsDataBase/templates/createTable.html:26
+#: ProsDataBase/templates/modify.html:33
+msgid "Step 2"
+msgstr "Schritt 2"
+
+#: ProsDataBase/templates/createTable.html:16
+#: ProsDataBase/templates/modify.html:18
+msgid "Help"
+msgstr "Hilfe"
+
+#: ProsDataBase/templates/createTable.html:16
+msgid ""
+"Please specify the table name. Note, that it should be unique in the "
+"database.Now specify the table\\'s columns, their content types and "
+"additional information. <br />Following content types exist:<br />Text: "
+"accepts any text and numbers. Is optionally restricted by length.<br /"
+">Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally "
+"restricted by a minimum and maximum value.<br />Date: accepts date and time "
+"input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: "
+"accepts either yes or no.<br />Choice: accepts any value from a list of "
+"options specified by you. Values can contain any text and numbers.<br />[a "
+"table]: additionally to the above content types you can choose an already "
+"existing table. In this column users can select datasets from the specified "
+"table to be displayed in this table. They can also dynamically create new "
+"datasets for the selected table.</div>"
+msgstr ""
+"Bitte wählen Sie einen Tabellennamen aus. Beachten Sie, dass die "
+"Tabellenbezeichnung nur einmal in der Datenbank vorkommen kann. <br/"
+">Anschließend wählen Sie bitte die gewünschten Spalten aus, sowie deren "
+"Inhaltstypen und fügen sie gegebenenfalls Informationen hinzu.<br> Es gibt "
+"folgende Inhaltstypen:<br/> Text:vorgesehen für 'Textzeichen und Zahlen. "
+"Optional können Sie die Länge des Texts bestimmen. <br/>Numerisch: "
+"vorgesehen für Fließkommazahlen, wie z.B. 23 oder 3.14. Optionalkönnen hier "
+"Grenzwerte festgelegt werden, durch Minimum und Maximum. <br/>Datum: "
+"vorgesehen für Datum und Zeit.Optional können auch hier Minimum und Maximum "
+"ausgewählt werden. <br/>Ja / Nein:vorgesehen für Auswählfelder die mit Ja "
+"oder Nein zu beantworten sind.<br/> Auswahlfeld: vorgesehen für beliebige "
+"Werte,die zuvor von Ihnen ausgewählt wurden. Die Werte können alle "
+"beliebigen Texte und Nummern beinhalten.<br/>Alternativ zu den genannten "
+"Inhaltstypen können Sie eine bereits bestehendeTabelle auswählen. Sie haben "
+"die Möglichkeit, Spalten eines gewählten Datensatz einer speziellenTabelle, "
+"um sie in der Tabelle, die Sie gerade erstellen, anzeigen zu lassen. "
+"Ebenfalls können Sie dynamisch neueDatensätze für die ausgewählte Tabelle "
+"erstellen."
+
+#: ProsDataBase/templates/createTable.html:21
+#: ProsDataBase/templates/modify.html:25
+msgid "Are you sure to delete this item?"
+msgstr "Wollen Sie dieses Element wirklich löschen?"
+
+#: ProsDataBase/templates/createTable.html:29
+msgid "Tablename:"
+msgstr "Tabellenname:"
+
+#: ProsDataBase/templates/createTable.html:31
+#, fuzzy
+msgid "Select Category"
+msgstr "Kategorie auswählen"
+
+#: ProsDataBase/templates/createTable.html:36
+#: ProsDataBase/templates/modify.html:45
+msgid "column"
+msgstr "Spalte"
+
+#: ProsDataBase/templates/createTable.html:37
+#: ProsDataBase/templates/modify.html:46
+msgid "content type"
+msgstr "Inhaltstyp"
+
+#: ProsDataBase/templates/createTable.html:44
+msgid "next"
+msgstr "weiter"
+
+#: ProsDataBase/templates/createTable.html:54
+msgid "create"
+msgstr "Erstellen"
+
+#: ProsDataBase/templates/groupadmin.html:20
+msgid "create group"
+msgstr "Gruppe erstellen"
+
+#: ProsDataBase/templates/login.html:68
+msgid "Error at login"
+msgstr "Fehler beim Einloggen"
+
+#: ProsDataBase/templates/login.html:71
+msgid "User:"
+msgstr "Benutzer:"
+
+#: ProsDataBase/templates/login.html:75
+#: ProsDataBase/templates/register.html:48
+msgid "Password:"
+msgstr "Passwort:"
+
+#: ProsDataBase/templates/modify.html:19
+msgid ""
+"Please specify the table name. Note,that it should be unique in the "
+"database. Now specify the table\\'s columns, their content types and "
+"additional information. <br/>Following content types exist:<br/>Text: "
+"accepts any text and numbers. Is optionally restricted by length.<br/"
+">Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally "
+"restricted by a minimum and maximum value.<br/>Date: accepts date and time "
+"input. Is optionally restricted by a minimum and maximum date.<br/>Yes/No: "
+"accepts either yes or no.<br/>Choice: accepts any value from a list of "
+"options specified by you. Values can contain any text and numbers.<br/>[a "
+"table]: additionally to the above content types you can choose an already "
+"existing table. In this column users can select datasets from the specified "
+"table to be displayed in this table. They can also dynamically create new "
+"datasets for the selected table."
+msgstr ""
+"Bitte wählen Sie einen Tabellennamen aus. Beachten Sie, dass die "
+"Tabellenbezeichnung nur einmal in der Datenbank vorkommen kann. <br/"
+">Anschließend wählen Sie bitte die gewünschten Spalten aus, sowie deren "
+"Inhaltstypen und fügen sie gegebenenfalls Informationen hinzu.<br> Es gibt "
+"folgende Inhaltstypen:<br/> Text:vorgesehen für 'Textzeichen und Zahlen. "
+"Optional können Sie die Länge des Texts bestimmen. <br/>Numerisch: "
+"vorgesehen für Fließkommazahlen, wie z.B. 23 oder 3.14. Optionalkönnen hier "
+"Grenzwerte festgelegt werden, durch Minimum und Maximum. <br/>Datum: "
+"vorgesehen für Datum und Zeit.Optional können auch hier Minimum und Maximum "
+"ausgewählt werden. <br/>Ja / Nein:vorgesehen für Auswählfelder die mit Ja "
+"oder Nein zu beantworten sind.<br/> Auswahlfeld: vorgesehen für beliebige "
+"Werte,die zuvor von Ihnen ausgewählt wurden. Die Werte können alle "
+"beliebigen Texte und Nummern beinhalten.<br/>Alternativ zu den genannten "
+"Inhaltstypen können Sie eine bereits bestehendeTabelle auswählen. Sie haben "
+"die Möglichkeit, Spalten eines gewählten Datensatz einer speziellenTabelle, "
+"um sie in der Tabelle, die Sie gerade erstellen, anzeigen zu lassen. "
+"Ebenfalls können Sie dynamisch neueDatensätze für die ausgewählte Tabelle "
+"erstellen."
+
+#: ProsDataBase/templates/modify.html:26
+msgid ""
+"Are you sure to delete this table? All data inside will be lost! Be careful "
+"with doing that!"
+msgstr ""
+"Wollen Sie diese Tabelle wirklich löschen? Alle Daten werden dabei "
+"migelöscht."
+
+#: ProsDataBase/templates/modify.html:28
+msgid ""
+"Are you sure to delete this column? Be careful! Containing data will be lost!"
+msgstr ""
+"Wollen Sie diese Spalte wirklich löschen? Beachten Sie, dass die "
+"dazugehörenden Daten verloren gehen!"
+
+#: ProsDataBase/templates/modify.html:36
+msgid "delete table"
+msgstr "Tabelle löschen"
+
+#: ProsDataBase/templates/modify.html:38
+msgid "tablename:"
+msgstr "Tabellenname:"
+
+#: ProsDataBase/templates/modify.html:40
+msgid "select category:"
+msgstr "Kategorie auswählen:"
+
+#: ProsDataBase/templates/modifyGroup.html:9
+#, fuzzy
+msgid "Are you sure to delete this group?"
+msgstr "Wollen Sie dieses Element wirklich löschen?"
+
+#: ProsDataBase/templates/modifyGroup.html:10
+#, fuzzy
+msgid "delete group"
+msgstr "Gruppe erstellen"
+
+#: ProsDataBase/templates/modifyGroup.html:11
+#, fuzzy
+msgid "group name"
+msgstr "Gruppenname"
+
+#: ProsDataBase/templates/modifyGroup.html:13
+#, fuzzy
+msgid "create tables"
+msgstr "Tabelle erstellen"
+
+#: ProsDataBase/templates/modifyGroup.html:15
+msgid "add administrators"
+msgstr "Administraoren hinzufügen"
+
+#: ProsDataBase/templates/modifyGroup.html:18
+#, fuzzy
+msgid "add users"
+msgstr "Benutzer hinzufügen"
+
+#: ProsDataBase/templates/register.html:44
+msgid "Username:"
+msgstr "Benutzername:"
+
+#: ProsDataBase/templates/register.html:52
+#, fuzzy
+msgid "Confirm Password:"
+msgstr "Passwort bestätigen:"
+
+#: ProsDataBase/templates/register.html:57
+msgid "Register"
+msgstr "Registrieren"
+
+#: ProsDataBase/templates/select_dataset.html:13
+msgid "Select dataset"
+msgstr "Datensatz auswählen"
+
+#: ProsDataBase/templates/select_dataset.html:18
+#: ProsDataBase/templates/table_detailview.html:27
+msgid "Filter"
+msgstr "Filtern"
+
+#: ProsDataBase/templates/settings.html:17
+msgid "old Password:"
+msgstr "altes Passwort:"
+
+#: ProsDataBase/templates/settings.html:18
+msgid "new Password:"
+msgstr "neues Passwort:"
+
+#: ProsDataBase/templates/settings.html:19
+#, fuzzy
+msgid "new Password again:"
+msgstr "neues Passwort bestätigen:"
+
 #: ProsDataBase/templates/table_detailview.html:17
 msgid "Insert"
 msgstr "Einfügen"
+
+#: ProsDataBase/templates/table_detailview.html:18
+msgid "Delete"
+msgstr "Löschen"
+
+#: ProsDataBase/templates/table_detailview.html:19
+msgid "Export"
+msgstr "Exportieren"
+
+#: ProsDataBase/templates/table_detailview.html:20
+msgid "Modify Structure"
+msgstr "Struktur ändern"
+
+#: ProsDataBase/templates/table_detailview.html:25
+#, fuzzy
+msgid "filter"
+msgstr "filtern"
+
+#: ProsDataBase/templates/table_overview.html:12
+msgid "Create new table"
+msgstr "Neue Tabelle erstellen"
+
+#: ProsDataBase/templates/useradmin.html:18
+msgid "User Rights"
+msgstr "Benutzerberechtigungen"
+
+#: ProsDataBase/templates/useradmin.html:20
+msgid "User"
+msgstr "Benutzer"
+
+#: ProsDataBase/templates/useradmin.html:21
+msgid "Enabled"
+msgstr "freigegeben"
+
+#: ProsDataBase/templates/useradmin.html:22
+msgid "Create tables"
+msgstr "Tabelle erstellen"
+
+#: ProsDataBase/templates/useradmin.html:23
+msgid "User admin"
+msgstr "Benutzeradmin"
+
+#: ProsDataBase/templates/useradmin.html:29
+msgid "Save"
+msgstr "speichern"
+
+#~ msgid "Logged in as"
+#~ msgstr "Angemeldet als"
+
+#~ msgid "Password"
+#~ msgstr "Passwort"

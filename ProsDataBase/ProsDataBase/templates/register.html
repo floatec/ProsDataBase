@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -21,7 +22,6 @@
 
         }
 
-
         #RegisterBtnCell {
             text-align: right;
 
@@ -31,30 +31,30 @@
 
 </head>
 <body>
-<div id="heading" style="background: none repeat scroll 0 0 #DDDDDD; padding-top: 2px;">
-    <h1>ProsDataBase</h1>
+<div id="heading">
+    <img src="../static/img/prosdata_small.png" height="70px" width="140px"/>
     <hr>
 </div>
 <div id="content">
-    <div id="loginDiv">
+    <div id="registerDiv">
 
         <table>
 
             <tr>
-                <td><span>Username:</span></td>
+                <td><span>{%trans "Username:" %}</span></td>
                 <td><input id='username' type="text"></td>
             </tr>
             <tr>
-                <td><span>Passwort:</span></td>
+                <td><span>{%trans "Password:" %}</span></td>
                 <td><input id='password' type="password"></td>
             </tr>
             <tr>
-                <td><span>Confirm Passwort:</span></td>
+                <td><span>{%trans "Confirm Password:" %}</span></td>
                 <td><input id='passwordAgain' type="password"></td>
             </tr>
             <tr>
                 <td colspan="2" id="RegisterBtnCell">
-                    <button class='btn' id='registerBtn'>Register</button>
+                    <button class='btn' id='registerBtn'>{%trans "Register" %}</button>
                 <td>
             </tr>
         </table>
@@ -84,8 +84,17 @@
                 type: 'post',
                 data: JSON.stringify(user),
                 contentType: 'application/json',
-                dataType: 'json'
+                dataType: 'json',
+                success: function(data){
+            if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
 
+             }
+            }
             });
         }
 
