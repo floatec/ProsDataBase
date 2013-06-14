@@ -34,7 +34,7 @@
 }
 
 #buttonMenu {
-    background-color: #CFE3FA;
+
     float: left;
     height: 30px;
     padding-top: 5px;
@@ -54,6 +54,7 @@
     border-right-style: solid;
     border-right-color: #00458A;
     border-right-width: 5px;
+    border-color: #B9181E;
 }
 
 
