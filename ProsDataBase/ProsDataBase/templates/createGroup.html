@@ -1,13 +1,9 @@
 {% extends "base.html" %}
-
-{% block navigation %}
-     <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
-<div>groups</div>
-<ul id="navigationMenuContent">
-
-</ul>
+{% block cssHeader %}
+    <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
 
 {% endblock %}
+
 {% block header %}
 <a class="crumb" href='/groupadmin/' id='groupAdmin'> <span>></span></a>
 <a class="crumb" href='/createGroup/' id='createGroup'> <span>></span></a>
