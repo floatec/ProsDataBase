@@ -5,11 +5,9 @@
     font-weight: bold;
     z-index: 1;
     background-color: #DDD;
-    height: 30px;
+    height: 35px;
     padding: 10px;
 }
-
-
 
 #page {
     position: relative;
@@ -24,13 +22,12 @@
 }
 
 #navigationMenu {
-
     background-color: #DFEFFC;
+    bottom: 66px;
     margin-right: 30px;
+    max-width: 240px;
     min-width: 190px;
-    max-width:240px;
     position: relative;
-    bottom: 70px;
 }
 
 #buttonMenu {
@@ -56,14 +53,15 @@
     border-right-width: 5px;
 }
 
+
 #search {
+    height: 30px;
+    margin-left: 1px;
+    margin-right: 20px;
     margin-top: 1px;
     padding-left: 15px;
     padding-right: 15px;
-    width: 200px;
-    height: 23px;
-    margin-left: 1px;
-    margin-right: 20px;
+    width: 192px;
 }
 
 #searchDiv {
@@ -78,11 +76,26 @@
     width: 230px;
     padding: 7px;
 }
-    .ui-timepicker-div .ui-widget-header{ margin-bottom: 8px; }
-    .ui-timepicker-div dl{ text-align: left; }
-    .ui-timepicker-div dl dt{ height: 25px; }
-    .ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
-    .ui-timepicker-div td { font-size: 90%; }
+
+.ui-timepicker-div .ui-widget-header {
+    margin-bottom: 8px;
+}
+
+.ui-timepicker-div dl {
+    text-align: left;
+}
+
+.ui-timepicker-div dl dt {
+    height: 25px;
+}
+
+.ui-timepicker-div dl dd {
+    margin: -25px 0 10px 65px;
+}
+
+.ui-timepicker-div td {
+    font-size: 90%;
+}
 
 .helpTextDiv h1 {
     color: #00458A;
@@ -90,13 +103,17 @@
     text-align: center;
 }
 
+
 #loginNameMenu {
-    font-size: 14px;
     float: right;
+    font-size: 14px;
+    position: relative;
     width: 171px;
     z-index: 2;
 }
-.ui-menu-item{
+
+
+.ui-menu-item {
     z-index: 2;
 }
 
@@ -114,12 +131,13 @@
     font-size: 26px;
     display: inline;
 }
-.categoryHeadline{
+
+.categoryHeadline {
     color: #00458A;
     font-size: 26px;
 
-
 }
+
 .crumb span {
     color: #B9181E;
 }
@@ -173,7 +191,6 @@
     top: 0px;
     min-width: 50%;
 }
-
 
 .overViewDiv {
     background-color: #EEE;
@@ -254,9 +271,42 @@ Only for Login and Register Page
 
 */
 
+#heading{
+    background: none repeat scroll 0 0 #DDDDDD;
+    border-bottom: 0px solid;
+    padding: 10px;
+    position: relative;
+    width: 100%;
+    height: 74px;
+}
+
 #RegisterBtnCell {
     text-align: right;
+}
 
+#loginInfoText {
+    margin: 50px;
+    position: relative;
+    width: 50%;
+}
+
+#loginContent {
+    background: none repeat scroll 0 0 #EEEEEE;
+    border: 1px solid #888888;
+    border-radius: 15px 15px 15px 15px;
+    float: right;
+    margin-left: 5px;
+    padding: 20px;
+    position: absolute;
+    right: 216px;
+    top: 135px;
+
+}
+
+#loginText {
+    position: absolute;
+    left: 0px;
+    width: 450px;
 }
 
 #infoDiv {
@@ -265,22 +315,27 @@ Only for Login and Register Page
 }
 
 #LoginRegisterDiv {
+
 }
 
-.categoryDiv{
+.categoryDiv {
     position: relative;
- display: block;
-}
-.categoryHeadline{
     display: block;
 }
 
-
+.categoryHeadline {
+    display: block;
+}
 
 #registerDiv {
-
-
-
+    background: none repeat scroll 0 0 #EEEEEE;
+    border: 1px solid #888888;
+    border-radius: 15px 15px 15px 15px;
+    float: right;
+    margin-left: 5px;
+    padding: 20px;
+    position: absolute;
+    right: 216px;
 }
 
 .datasets {
@@ -316,26 +371,25 @@ Only for Login and Register Page
     text-align: center;
 }
 
-
 /*
 * BEGIN: new classes
 */
 
-.wrapButtonMenu{
+.wrapButtonMenu {
     left: 270px;
     padding-top: 5px;
     position: absolute;
     top: 65px;
 }
 
-.labelButtonMenu{
+.labelButtonMenu {
     float: left;
     line-height: 30px;
     margin-right: 15px;
     padding-top: 3px;
 }
 
-.wrapContent{
+.wrapContent {
     position: absolute;
     top: 120px;
     width: 90%;
@@ -344,3 +398,16 @@ Only for Login and Register Page
 /*
 * END: new classes
 */
+
+/*
+* Bilder
+*/
+
+#LoginPic {
+    left: 300px;
+    position: relative;
+    top: 20px;
+    width: 30%;
+}
+
+

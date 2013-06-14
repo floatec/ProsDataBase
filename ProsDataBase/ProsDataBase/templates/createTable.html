@@ -1,47 +1,47 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block menu %}
-<a id="tab_header_1" href="#tabs-1" class="headerTab" onClick='changeTo(0)'>step 1</a><a id="tab_header_2"
+<a id="tab_header_1" href="#tabs-1" class="headerTab" onClick='changeTo(0)'>{% trans "Step 1" %}</a><a id="tab_header_2"
                                                                                          href="#tabs-2"
                                                                                          class="headerTab headerTabDeactive"
-                                                                                         onClick='changeTo(1)'>step
-    2</a>
+                                                                                         onClick='changeTo(1)'>{% trans "Step 2" %}
+    </a>
 {% endblock %}
 
 {% block header %}
-    <a href="/createTable/" class="crumb">create <span>></span></a>
+    <a href="/createTable/" class="crumb">{% trans "Create" %} <span>></span></a>
 {% endblock %}
 
      {% block help %}
-        <div class='helpTextDiv'><h1>Help</h1>Please specify the table name. Note, that it should be unique in the database.Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.</div>
+        <div class='helpTextDiv'><h1>{% trans "Help" %}</h1>{% trans "Please specify the table name. Note, that it should be unique in the database.Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.</div>" %}
      {% endblock %}
 
 
 {% block content %}
-<div id="deleteAlertBox">Are you sure to delete this item?</div>
+<div id="deleteAlertBox">{% trans "Are you sure to delete this item?" %}</div>
 
 <div id="tabs">
     <ul>
-        <li><a href="#tabs-1" id="tab_1">step 1</a></li>
-        <li><a href="#tabs-2" id="tab_2">step 2</a></li>
+        <li><a href="#tabs-1" id="tab_1">{% trans "Step 1" %}</a></li>
+        <li><a href="#tabs-2" id="tab_2">{% trans "Step 2" %}</a></li>
     </ul>
     <div id="tabs-1">
-        <span>tablename:</span><br/>
+        <span>{% trans "Tablename:" %}</span><br/>
         <input type="text" id="tblName"><br/><br/>
-        select category: <select id="category"></select><br/><br/>
+       {% trans "Select Category" %} <select id="category"></select><br/><br/>
         <table id="columnTable">
 
             <tr>
                 <td></td>
-                <td>column</td>
-                <td>content type</td>
+                <td>{% trans "column" %}</td>
+                <td>{% trans "content type" %}</td>
             </tr>
 
         </table>
 
         <button id="addColumn">+</button>
         <br/><br/>
-        <button id="nextButtonPage2">next</button>
+        <button id="nextButtonPage2">{% trans "next" %}</button>
 
 
     </div>
@@ -51,7 +51,7 @@
         <br/>
 
         <div id="allUserRights"></div>
-        <button id='createTableButton'>create</button>
+        <button id='createTableButton'>{% trans "create" %}</button>
 
 
     </div>

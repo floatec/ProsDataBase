@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block navigation %}
     <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
-        <div>users</div>
+        <div>{% trans "Users" %}</div>
  <ul id="navigationMenuContent">
 
 			</ul>
@@ -15,18 +15,18 @@
 {% endblock %}
 {% block content %}
 <table id='userTable' class='datasets'>
-    <caption>user rights</caption>
+    <caption>{% trans "User Rights" %}</caption>
     <thead>
-        <th>user</th>
-        <th>enabled</th>
-        <th>create tables</th>
-        <th>user admin</th>
+        <th>{% trans "User" %}</th>
+        <th>{% trans "Enabled" %}</th>
+        <th>{% trans "Create tables" %}</th>
+        <th>{% trans "User admin" %}</th>
     </thead>
 
 
 </table>
         <br />
-<button id='saveUsers'>save</button>
+<button id='saveUsers'>{% trans "Save" %}</button>
 {% endblock %}
 
 {% block menu %}

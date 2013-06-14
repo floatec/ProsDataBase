@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block navigation %}
-        <div>users</div>
+        <div>{% trans "Users" %}</div>
  <ul id="navigationMenuContent">
 
 			</ul>
@@ -14,12 +14,12 @@
 {% endblock %}
 {% block content %}
 <table id='userSettings'>
-    <tr><td>old Password:</td><td><input id='oldPw' type='password'></td></tr>
-    <tr><td>new Password:</td><td><input id='newPw' type='password'></td></tr>
-    <tr><td>new Password(again):</td><td><input id='confirmNewPw' type='password'></td></tr>
+    <tr><td>{% trans "old Password:" %}</td><td><input id='oldPw' type='password'></td></tr>
+    <tr><td>{% trans "new Password:" %}</td><td><input id='newPw' type='password'></td></tr>
+    <tr><td>{% trans "new Password again:" %}</td><td><input id='confirmNewPw' type='password'></td></tr>
 
 </table>
-<button id='saveSettingsButton'>save</button>
+<button id='saveSettingsButton'>{% trans "save" %}</button>
 
 {% endblock %}
 
