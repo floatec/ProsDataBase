@@ -637,7 +637,7 @@ def modifyTable(request, name):
                     selValF = SelectionValueForm({"index": option["key"], "content": option["value"]})
                     if selValF.is_valid():
                         selVal = selValF.save(commit=False)
-                        selVal.typeselection = typeSel
+                        selVal.typeSelection = typeSel
                         selVal.save()
 
         elif colType.type == Type.TABLE:
