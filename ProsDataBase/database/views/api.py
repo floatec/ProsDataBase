@@ -159,9 +159,9 @@ def login(request):
     user = auth.authenticate(username=jsonRequest["username"], password=jsonRequest["password"])
     if user is not None and user.is_active:
         auth.login(request, user)
-        return HttpResponse(json.dumps({_("status"): "ok"}), content_type="application/json")
+        return HttpResponse(json.dumps({"status": "ok"}), content_type="application/json")
     else:
-        return HttpResponse(json.dumps({_("status"): "not_ok"}), content_type="application/json")
+        return HttpResponse(json.dumps({"status": "not_ok"}), content_type="application/json")
 
 
 def logoff(request):
