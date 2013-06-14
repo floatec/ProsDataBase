@@ -58,6 +58,9 @@
             if($(select).find(":selected").val()==0 || $(select).find(":selected").attr("refType")==0){
                $(select).next().html("<input type='text' class='text' placeholder='text...'>")
             }
+            if($(select).find(":selected").val()==7 ){
+               $(select).next().html("<input type='text' class='datasetID' placeholder='ID'>")
+            }
             if($(select).find(":selected").val()==1|| $(select).find(":selected").attr("refType")==1){
                $(select).next().html("Min:<input type='text' class='min'  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' size='4'>Max:<input  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' class='max' type='text' size='4'>")
 
@@ -75,14 +78,14 @@
                $(select).next().html("<input type='checkbox'>")
             }
             if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
-               $(select).next().html("Min:<input type='text' class='min' placeholder='1990-05-26 23:42'>Max:<input class='max' type='text' placeholder='1990-05-26 23:42'>")
-
+               $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='1990-05-26 23:42'>Max:<input class='max  dateTimePicker' type='text' placeholder='1990-05-26 23:42'>")
+                    $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
             }
           }
 
         function addFilterOption(view, tableName){
             $(view).html("")
-            $(view).append("<select onChange='updateFilerOption(this)'><option value='-1'>---</option></select><span></span>");
+            $(view).append("<select onChange='updateFilerOption(this)'><option value='-1'>---</option><option value='7'>system ID</option></select><span></span>");
              $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
                 columns = $(data.columns);
                 columns.each(function(){
@@ -189,7 +192,7 @@
                 if(elem.find(":SELECTED").val()>=0) {
                      var child={}
                     child.column=elem.find(":SELECTED").text()
-                    if(elem.find(":SELECTED").val()<5||elem.find(":SELECTED").attr("reftype")!="undefined"){
+                    if(elem.find(":SELECTED").val()<5||elem.find(":SELECTED").val()==7||elem.find(":SELECTED").attr("reftype")!="undefined"){
                            console.log(span.find(".min"))
                         if(span.find(".min").length!=0&&span.find(".min").val()!=""){
                             child.min=span.find(".min").val();
@@ -200,6 +203,9 @@
                         if(span.find(".text").length!=0&&span.find(".text").val()!=""){
 
                             child.substring=$(span.find(".text")).val();
+                        }
+                        if(span.find(".datasetID").length!=0&&span.find(".datasetID").val()!=""){
+                            child.datasetID=$(span.find(".datasetID")).val();
                         }
                         if(span.find(":SELECTED").length!=0){
 
@@ -316,7 +322,7 @@
                             for (var i in allDatasets[key].data) {
                                 if (allDatasets[key].data[i].column == columns[p].name) {
 
-                                    if (allDatasets[key].data[i].type == 5) {
+                                    if (allDatasets[key].data[i].type >= 5) {
                                          if(columns[p].column==undefined){
                                                $("#datasetRow" + counter).append("<td><table onClick='laodSubTable(\"" + JSON.stringify(allDatasets[key].data[i].value).replace(/"/g,"\\\"") + "\",\"" + columns[p].table + "\",this.parentNode)'><caption>"+columns[p].table+"</caption></table></td>")
                                          }else{

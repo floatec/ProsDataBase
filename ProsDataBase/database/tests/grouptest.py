@@ -1,8 +1,6 @@
 from django.test import TestCase
 from database.models import *
 from database.tests.factory import *
-from database.views.api import *
-
 
 # funzt bisher alles
 class GroupTest(TestCase):
