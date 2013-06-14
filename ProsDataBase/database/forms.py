@@ -19,7 +19,7 @@ class CategoryForm(ModelForm):
 class ColumnForm(ModelForm):
     class Meta:
         model = Column
-        fields = ('name', 'created')
+        fields = ('name', 'created', 'comment')
 
 
 class DatasetForm(ModelForm):
