@@ -28,25 +28,34 @@
 {% block javascript %}
     <script language="JavaScript">
         init();
+
+        init();
+
         function addFilter(view,tableName){
             filter++;
-            $(view).append("<div id='filter'></div>")
+            $(view).append("<div class='filter'></div>")
             addFilterOption($(view).children().last(), tableName)
         }
 
         function updateFilerOption(select,tableName){
              console.log($(select).find(":selected").attr("value"))
 
-            if($(select).find(":selected").val()==5){
+            if($(select).find(":selected").val()>=5){
                console.log("hallo")
                 addFilterOption($(select).next(), $(select).find(":selected").attr("table"))
 
             }
+            if($(select).find(":selected").val()==-1){
+                 $(select).next().html("");
+            }
             if($(select).find(":selected").val()==0 || $(select).find(":selected").attr("refType")==0){
-               $(select).next().html("<input type='text' placeholder='tex...'>")
+               $(select).next().html("<input type='text' class='text' placeholder='text...'>")
+            }
+            if($(select).find(":selected").val()==7 ){
+               $(select).next().html("<input type='text' class='datasetID' placeholder='ID'>")
             }
             if($(select).find(":selected").val()==1|| $(select).find(":selected").attr("refType")==1){
-               $(select).next().html("Min:<input type='text' name='min'  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' size='4'>Max:<input  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' name='max' type='text' size='4'>")
+               $(select).next().html("Min:<input type='text' class='min'  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' size='4'>Max:<input  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' class='max' type='text' size='4'>")
 
             }
             if($(select).find(":selected").val()==3 || $(select).find(":selected").attr("refType")==3){
@@ -58,20 +67,23 @@
                 })
 
             }
+            if($(select).find(":selected").val()==4 || $(select).find(":selected").attr("refType")==4){
+               $(select).next().html("<input type='checkbox'>")
+            }
             if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
-               $(select).next().html("Min:<input type='text' name='min' placeholder='1990-05-26 23:42'>Max:<input name='max' type='text' placeholder='1990-05-26 23:42'>")
-
+               $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='1990-05-26 23:42'>Max:<input class='max  dateTimePicker' type='text' placeholder='1990-05-26 23:42'>")
+                    $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
             }
           }
 
         function addFilterOption(view, tableName){
             $(view).html("")
-            $(view).append("<select onChange='updateFilerOption(this)'><option value'-1'>---</option></select><span></span>");
+            $(view).append("<select onChange='updateFilerOption(this)'><option value='-1'>---</option><option value='7'>system ID</option></select><span></span>");
              $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
                 columns = $(data.columns);
                 columns.each(function(){
                     console.log(this)
-                    $(view).find("select").append("<option refType='"+JSON.stringify(this.refType)+"' options='"+JSON.stringify(this.options)+"' table='"+this.table+"' value='"+this.type+"'>"+this.name+"</option>")
+                    $(view).find("select").append("<option  link='"+this.link+"' refType='"+JSON.stringify(this.refType)+"' options='"+JSON.stringify(this.options)+"' table='"+this.table+"' value='"+this.type+"'>"+this.name+"</option>")
                 })
                });
         }
@@ -81,44 +93,119 @@
             subtable = 0;
             filter = 0;
             global={}
-            var tableName = getTableName();
+            var tableName = decodeURIComponent(getTableName());
             global.table=tableName
-            $("#naviheader").append(tableName)
+            $("#naviheader").append(tableName);
             var columns = [];
             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+                if(!data.admin){
+                if(!data.rightsAdmin){
+                      $("#modifyStructure").remove();
+
+                }
+
+                if(!data.insert){
+                    $("#insertData").remove();
+
+                }
+                if(!data.delete){
+
+                     $("#deleteData").remove();
+
+                }
+                if(!data.viewLog){
+                    $("#viewLog").remove();
+                }
+
+                }
                 columns = data.columns;
                 createTable(columns, tableName, $("#headTable"), '/api/table/' + tableName + '/',undefined);
             });
-            $("#tableCrumb").prepend(tableName);
+            $("#tableCrumb").prepend(decodeURIComponent(tableName));
+            $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
+            $("#insertData").attr('href', '/dataset/' + tableName + '/');
+            $("#modifyStructure").attr('href', '/modify/' + tableName + '/');
+            $("#viewLog").attr('href', '/tableHistory/' + tableName + '/')
+            $("#exportData").click(function(){
 
-            $("#deleteData").click(function () {
-
-
+                exportDatasets();
             });
-
             jQuery("#filter").accordion({
-
+         active: false,
+    collapsible: true,
       heightStyle: "content", autoHeight: false, clearStyle: true
 
     });
             addFilter("#filterView",tableName)
         }
-        function laodSubTable(datasets, tableName, insertTo) {
+           function genFilterObj(){
             var obj = {}
-            obj.datasets = JSON.parse(datasets)
-
-            var tableName = tableName
-            $.ajax({
-                url: '/api/table/' + tableName + '/structure/',
-                contentType: 'application/json',
-                dataType: 'json',
-                success: function (data) {
+            obj.filter=[]
+            var filterRows=$(".filter")
+            filterRows.each(function(){
+                var child=filterinnerobj(this);
+                if(child!=null){
+                obj.filter.push(child)
+                }
+            })
+            console.log(obj);
+            return obj
+        }
+        function laodFiltered() {
+            var obj=genFilterObj();
+            $("#headTable").html("")
+            $.getJSON('/api/table/' + global.table + '/structure/', function (data) {
 
                 columns = data.columns;
-                    createTable(data.columns, tableName, insertTo, '/api/table/' + tableName + '/dataset/', obj);
-                }
+                createTable(columns, global.table, $("#headTable"), '/api/table/' + global.table + '/dataset/filter/',obj);
+
+
             });
         }
+        //creates filter object
+        function filterinnerobj(par){
+
+                var elem=$(par).children(":first");
+                var span=$(elem.next())
+
+                if(elem.find(":SELECTED").val()>=0) {
+                     var child={}
+                    child.column=elem.find(":SELECTED").text()
+                    if(elem.find(":SELECTED").val()<5||elem.find(":SELECTED").val()==7||elem.find(":SELECTED").attr("reftype")!="undefined"){
+                           console.log(span.find(".min"))
+                        if(span.find(".min").length!=0&&span.find(".min").val()!=""){
+                            child.min=span.find(".min").val();
+                        }
+                        if(span.find(".max").length!=0&&span.find(".max").val()!=""){
+                            child.max=span.find(".max").val();
+                        }
+                        if(span.find(".text").length!=0&&span.find(".text").val()!=""){
+
+                            child.substring=$(span.find(".text")).val();
+                        }
+                        if(span.find(".datasetID").length!=0&&span.find(".datasetID").val()!=""){
+                            child.datasetID=$(span.find(".datasetID")).val();
+                        }
+                        if(span.find(":SELECTED").length!=0){
+
+                            child.option=span.find(":SELECTED").text();
+                        }
+                    }else {
+                        child.table=elem.find(":SELECTED").attr("table");
+                        if(elem.find(":SELECTED").val()==6){
+                            child.link=elem.find(":SELECTED").attr("link");
+                        }
+                        var chi=filterinnerobj(span);
+                        if(chi!=null){
+                            child.child=chi
+                        }else{
+                            return null
+                        }
+                    }
+                }
+             return child
+        }
+
 
         function createTable(columns, tableName, insertTo, url, post) {
             subtable++
@@ -132,8 +219,10 @@
             //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
             tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>system ID</th>");
             for (var key in columns) {
+               {
                 tableHead.append("<th>" + columns[key].name + "</th>");
                 $("#navigationMenuContent").append("<li><a href='#" + columns[key].name + "'>" + columns[key].name + "</a></li>");
+                }
             }
 
             table.append(tableHead)
@@ -165,6 +254,7 @@
             });*/
 
         }
+
 
 $("#selectData").click(function(){
    sendData();
@@ -204,7 +294,7 @@ function sendData(){
             return tableName;
         }
 
-        function createDatasets(tableID, tableName,columns, url, post) {
+           function createDatasets(tableID, tableName,columns, url, post) {
             var columns = columns
             var tableID = tableID
             var tableName = tableName;
@@ -215,19 +305,24 @@ function sendData(){
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (data) {
-                    var allDatasets = data.datasets;
+                    allDatasets = data.datasets;
                     console.log(allDatasets);
+
+                    allDatasets = data.datasets;
+                    console.log(data);
+
+
                     for (var key in allDatasets) {
 
 
-                        $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
+                        $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'>edit</a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
 
                         for (var p in columns) {
                             var sete = false
                             for (var i in allDatasets[key].data) {
                                 if (allDatasets[key].data[i].column == columns[p].name) {
 
-                                    if (allDatasets[key].data[i].type == 5) {
+                                    if (allDatasets[key].data[i].type >= 5) {
                                          if(columns[p].column==undefined){
                                                $("#datasetRow" + counter).append("<td><table onClick='laodSubTable(\"" + JSON.stringify(allDatasets[key].data[i].value).replace(/"/g,"\\\"") + "\",\"" + columns[p].table + "\",this.parentNode)'><caption>"+columns[p].table+"</caption></table></td>")
                                          }else{
@@ -241,7 +336,17 @@ function sendData(){
                                              tmp+="</table>"
                                              $("#datasetRow" + counter).append("<td>" + tmp + "</td>")
                                          }
+                                    }else if(allDatasets[key].data[i].type == 4){
+                                         tmp="<td style='align:center'>"
+                                        if(allDatasets[key].data[i].value=="True")
+                                         tmp+="&times;"
+                                        else
+                                        tmp+="&nbsp;"
+                                        tmp+= "</td>"
+                                         $("#datasetRow" + counter).append(tmp)
+
                                     } else {
+
                                         $("#datasetRow" + counter).append("<td>" + allDatasets[key].data[i].value + "&nbsp;</td>")
 
                                     }
@@ -257,6 +362,7 @@ function sendData(){
                         counter++;
 
                     }
+                   cleanUpTable($("#tab" + tableID))
                 }
 
                 });
@@ -264,36 +370,48 @@ function sendData(){
 
         }
 
+  function cleanUpTable(table){
+        var found=[]
+        //get all tr
+        var rows=$($($(table).children("tbody")).children())
 
-        function deleteDataSet() {
+        rows.each( function(i, value){
 
-            var datasetIDs = [];
-            $(".contentRow").each(function () {
-
-                if ($(this).find(".selectDataset").is(':checked')) {
-                    $(this).remove();
-                    datasetIDs.push($(this).find(".datasetClassCell").text());
-
-                }
-
+            //get all tds
+            $(value).children().each( function(v, chi){
+                console.log($(chi))
+               if(($(chi).html()!=""&&$(chi).html()!="&nbsp;")&&$(chi).is('td')){
+                   found.push(v);
+               }
             });
-
-            $.ajax({
-                url: '/api/table/' + getTableName() + '/dataset/',
-                type: 'delete',
-                data: JSON.stringify(datasetIDs),
-                contentType: 'application/json',
-                dataType: 'json'
-            });
-
-
-        }
-
-        $("#deleteData").click(function () {
-            $("#deleteAlertBox").dialog("open");
-
-
         });
+        console.log(found)
+        //remove empty cols
+       rows.each( function(i, value){
+
+            //get all tds
+            $(value).children().each( function(v, chi){
+                console.log($(chi))
+               if(found.indexOf(v)==-1){
+                   console.log(v)
+                   $(chi).css("display","none")
+               }
+            });
+        });
+        //remove ehader
+        $($(table).children("thead")).children().each( function(v, chi){
+                console.log($(chi))
+               if(found.indexOf(v)==-1){
+                   console.log(v)
+                   $(chi).css("display","none")
+               }
+            });
+
+
+    }
+
+
+
 
         // initialize alertbox
         $("#deleteAlertBox").dialog({
