@@ -22,11 +22,11 @@
 
 <body style="margin: -2px;top: 2px;padding: 2px;">
 {% block body %}
-    <div id=header>
-    <div id="searchDiv">
-        <input id="search" type="text" placeholder="search">
-    </div>
-    <a href="/table/" class="crumb">{% trans "Home" %}<span>></span></a>{% block header %}{% endblock %}
+<div id=header>
+        <div id='helpLinkDiv'>
+        <a id='helpLink' href='/help/'>?</a>
+        </div>
+        <a href="/table/" class="crumb">{% trans "Home" %}<span>></span></a>{% block header %}{% endblock %}
         <div id="loginNameMenu">
             <ul id="subMenuList">
                 <li><a href="/settings/">{% trans "Settings" %}</a></li>
@@ -43,15 +43,15 @@
         </div>
 </div>
     </div>
-    <div class="wrapButtonMenu">
+<div class="wrapButtonMenu">
 
     <span id="buttonMenu">
         {% block menu %}
         {% endblock %}
     </span>
-    </div>
+</div>
 
-    <div class="wrapContent">
+<div class="wrapContent">
         <div id="navigationMenu">
             {% block navigation %}
             {% endblock %}
@@ -62,12 +62,15 @@
             {% block content %}
             {% endblock %}
         </div>
-    </div>
+</div>
 {% endblock %}
 
 
-{% block help %}
-{% endblock %}
+     {% block help %}
+     {% endblock %}
+
+
+
 
 
 </body>
