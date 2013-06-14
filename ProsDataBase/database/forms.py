@@ -120,6 +120,18 @@ class TypeSelectionForm(ModelForm):
         model = TypeSelection
         fields = ('count', )
 
+
+# ===============================
+# ------- HISTORY TABLE ---------
+# ===============================
+
+
+class HistoryForm(ModelForm):
+    class Meta:
+        model = History
+        fields = ('date', 'status')
+
+
 # ===============================
 # ----- PERMISSION FORMS --------
 # ===============================

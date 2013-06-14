@@ -411,12 +411,12 @@ def deleteDataset(datasetID, user):
             return {"code": Error.DATASET_NOTFOUND, "message": "Could not find dataset with id " + dataset.datasetID + "."}
 
     # only delete if dataset is not referenced by another table
-    links = DataTableToDataset.objects.filter(dataset=dataset)
+    links = TableLink.objects.filter(dataset=dataset)
     if len(links) > 0:  # this dataset is used by another table.
         # get names of tables which reference this dataset for error display
         dataTableIDs = list()
         for link in links:
-            dataTableIDs.append(link.DataTable_id)
+            dataTableIDs.append(link.dataTable_id)
         dataTables = DataTable.objects.filter(pk__in=dataTableIDs)
         datasetIDs = list()
         for dataTable in dataTables:
@@ -632,6 +632,10 @@ def modifyTable(request, name):
                     value = SelectionValue.objects.get(index=option["key"], typeSelection=typeSel)
                     value.content = option["value"]
                     value.save()
+                    # change this selection value for all existing datasets.
+                    for datasel in DataSelection.objects.filter(dataset__in=table.getDatasets(), column=column):
+                        if datasel.key == option["key"]:
+                            datasel.content = option["value"]
                 else:  # this is a new selection value
                     typeSel.count += 1
                     typeSel.save()
@@ -732,7 +736,8 @@ def insertData(request, tableName):
                 newData = dateF.save(commit=False)
 
         elif column.type.type == Type.SELECTION:
-            selF = DataSelectionForm({"created": datetime.now(), "content": col["value"]})
+            selVal = SelectionValue.objects.get(type=column.type.getType(), content=col["value"])
+            selF = DataSelectionForm({"created": datetime.now(), "content": col["value"], "key": selVal.index})
             if selF.is_valid():
                 newData = selF.save(commit=False)
 
@@ -765,8 +770,8 @@ def insertData(request, tableName):
                 except Dataset.DoesNotExist:
                     return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": "dataset with id " + index + " could not be found in table " + column.type.getType().table.name + ". Abort."}]}), content_type="application/json")
                 else:
-                    link = DataTableToDataset()
-                    link.DataTable = newData
+                    link = TableLink()
+                    link.dataTable = newData
                     link.dataset = dataset
                     link.save()
                     savedObjs.append(link)
@@ -877,7 +882,7 @@ def modifyData(request, tableName, datasetID):
         elif column.type.type == Type.TABLE:
             try:
                 dataTbl = dataset.datatable.get(column=column)
-                links = DataTableToDataset.objects.filter(DataTable=dataTbl)
+                links = TableLink.objects.filter(dataTable=dataTbl)
                 setIDs = list()
                 #  remove all links between dataTable and datasets which are not listed in col["value"]
                 for link in links:
@@ -889,8 +894,8 @@ def modifyData(request, tableName, datasetID):
                 for id in [index for index in col["value"] if index not in setIDs]:  # this list comprehension returns the difference col["value"] - setIDs
                     try:
                         newDataset = Dataset.objects.get(datasetID=id)
-                        newLink = DataTableToDataset()
-                        newLink.DataTable = dataTbl
+                        newLink = TableLink()
+                        newLink.dataTable = dataTbl
                         newLink.dataset = newDataset
                         newLink.save()
                     except Dataset.DoesNotExist:
@@ -912,13 +917,13 @@ def modifyData(request, tableName, datasetID):
                 newData.dataset = Dataset.objects.get(datasetID=datasetID)
                 newData.save()
 
-            # this must be performed at the end, because DatatableToDataset receives newData, which has to be saved first
+            # this must be performed at the end, because TableLink receives newData, which has to be saved first
             if column.type.type == Type.TABLE and newData is not None:
                 for index in col["value"]:  # find all datasets for this
                     try:
                         dataset = Dataset.objects.get(pk=index)
-                        link = DataTableToDataset()
-                        link.DataTable = newData
+                        link = TableLink()
+                        link.dataTable = newData
                         link.dataset = dataset
                         link.save()
                     except Dataset.DoesNotExist:

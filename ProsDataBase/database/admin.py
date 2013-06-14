@@ -16,7 +16,7 @@ admin.site.register(DataSelection)
 admin.site.register(SelectionValue)
 admin.site.register(DataBool)
 admin.site.register(DataTable)
-admin.site.register(DataTableToDataset)
+admin.site.register(TableLink)
 
 admin.site.register(Type)
 admin.site.register(TypeText)
@@ -25,6 +25,8 @@ admin.site.register(TypeDate)
 admin.site.register(TypeSelection)
 admin.site.register(TypeBool)
 admin.site.register(TypeTable)
+
+admin.site.register(History)
 
 admin.site.register(DBUser)
 admin.site.register(DBGroup)

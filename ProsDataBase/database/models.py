@@ -201,6 +201,7 @@ class DataNumeric(Data):
 
 
 class DataSelection(Data):
+    key = models.IntegerField()
     content = models.CharField(max_length=100)
 
     def __unicode__(self):
@@ -226,7 +227,7 @@ class DataTable(Data):
         return self.linkToDatasets.all()
 
     def __unicode__(self):
-        links = DataTableToDataset.objects.filter(DataTable=self)
+        links = TableLink.objects.filter(dataTable=self)
         datasetIDs = list()
         for link in links:
             datasetIDs.append(link.dataset.datasetID)
@@ -234,12 +235,12 @@ class DataTable(Data):
         return "link from " + self.dataset.__unicode__() + " to " + self.column.type.getType().table.name + ": " + unicode(datasetIDs)
 
 
-class DataTableToDataset(models.Model):
-    DataTable = models.ForeignKey('DataTable', related_name="link")
+class TableLink(models.Model):
+    dataTable = models.ForeignKey('DataTable', related_name="link")
     dataset = models.ForeignKey('Dataset')
 
     def __unicode__(self):
-        return self.DataTable.__unicode__()
+        return self.dataTable.__unicode__()
 
 # ===============================
 # ----- TYPE TABLES -------------
@@ -353,7 +354,7 @@ class TypeBool(models.Model):
 
 class TypeTable(models.Model):
     type = models.OneToOneField('Type')
-    table = models.ForeignKey('Table')
+    table = models.ForeignKey('Table', to_field='name')
     column = models.ForeignKey('Column', blank=True, null=True)
 
     def isValid(self, input):
@@ -366,6 +367,29 @@ class TypeTable(models.Model):
 
     def __unicode__(self):
         return self.type.name
+
+
+# ===============================
+# ------- HISTORY TABLE ---------
+# ===============================
+
+
+class History(models.Model):
+    TABLE_CREATED = 0
+    TABLE_DELETED = 1
+    TABLE_MODIFIED = 2
+    DATASET_INSERTED = 3
+    DATASET_DELETED = 4
+    DATASET_MODIFIED = 5
+    EXPORT = 6
+
+    table = models.ForeignKey('Table', to_field='name', related_name='histories')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    date = models.DateTimeField()
+    status = models.IntegerField()
+    datasets = models.ManyToManyField('Dataset')
+    columns = models.ManyToManyField('Column')
+
 
 # ===============================
 # ----- PERMISSION TABLES -------
