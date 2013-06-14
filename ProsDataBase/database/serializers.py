@@ -579,7 +579,7 @@ class DatasetSerializer:
                 datasetIDs = list()
                 for dataText in dataTexts:
                     datasetIDs.append(dataText.dataset_id)
-                return datasets.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs, deleted=False)
 
             elif column.type.type == Type.NUMERIC:
                 if "min" in criterion and "max" in criterion:
@@ -593,7 +593,7 @@ class DatasetSerializer:
                 datasetIDs = list()
                 for dataNumeric in dataNumerics:
                     datasetIDs.append(dataNumeric.dataset_id)
-                return datasets.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs, deleted=False)
 
             elif column.type.type == Type.DATE:
                 if "min" in criterion and "max" in criterion:
@@ -607,21 +607,21 @@ class DatasetSerializer:
                 datasetIDs = list()
                 for dataDate in dataDates:
                     datasetIDs.append(dataDate.dataset_id)
-                return datasets.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs, deleted=False)
 
             elif column.type.type == Type.SELECTION:
                 dataSelections = DataSelection.objects.filter(dataset__in=datasets, content=criterion["option"])
                 datasetIDs = list()
                 for dataSelection in dataSelections:
                     datasetIDs.append(dataSelection.dataset_id)
-                return datasets.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs, deleted=False)
 
             elif column.type.type == Type.BOOL:
                 dataBools = DataBool.objects.filter(dataset__in=datasets, content=criterion["boolean"])
                 datasetIDs = list()
                 for dataBool in dataBools:
                     datasetIDs.append(dataBool.dataset_id)
-                return datasets.filter(pk__in=datasetIDs)
+                return datasets.filter(pk__in=datasetIDs, deleted=False)
 
             elif column.type.type == Type.TABLE:
                 typeTable = column.type.getType()
@@ -654,7 +654,7 @@ class DatasetSerializer:
                     for dataTable in dataTables:
                         datasetIDs.append(dataTable.dataset_id)
                     print datasetIDs
-                    datasets = datasets.filter(pk__in=datasetIDs)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
+                    datasets = datasets.filter(pk__in=datasetIDs, deleted=False)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
 
                     return datasets
                 else:  # filter over column in table
@@ -709,7 +709,7 @@ class DatasetSerializer:
                     datasetIDs = list()
                     for dataTable in dataTables:
                         datasetIDs.append(dataTable.dataset_id)
-                    return datasets.filter(pk__in=datasetIDs)
+                    return datasets.filter(pk__in=datasetIDs, deleted=False)
 
             else:  # no matching column type
                 return False
@@ -757,4 +757,4 @@ class DatasetSerializer:
             for filteredLink in filteredLinks:
                 finalDatasetIDs.append(filteredLink.dataset_id)
 
-            return datasets.filter(pk__in=finalDatasetIDs)
+            return datasets.filter(pk__in=finalDatasetIDs, deleted=False)
