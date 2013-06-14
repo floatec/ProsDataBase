@@ -386,7 +386,7 @@ class History(models.Model):
     table = models.ForeignKey('Table', to_field='name', related_name='histories')
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     date = models.DateTimeField()
-    status = models.IntegerField()
+    type = models.IntegerField()
     datasets = models.ManyToManyField('Dataset')
     columns = models.ManyToManyField('Column')
 

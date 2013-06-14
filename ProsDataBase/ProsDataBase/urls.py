@@ -51,8 +51,8 @@ urlpatterns = patterns(
     (r'^api/table/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/$', "database.views.api.table"),
     (r'^api/table/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/structure/$', "database.views.api.tableStructure"),
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/rights/$', "database.views.api.tableRights"),
-
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/column/(?P<columnName>[\w| |\d|.|_|\-|\(|\)]+)/$', "database.views.api.column"),
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/history/$', "database.views.api.history"),
 
     # APIs for dataset requests
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/dataset/$', "database.views.api.datasets"),

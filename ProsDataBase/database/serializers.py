@@ -283,6 +283,15 @@ class TableSerializer:
 
         return result
 
+    @staticmethod
+    def serializeHistory(tableName):
+        try:
+            table = Table.objects.get(name=tableName)
+        except Table.DoesNotExist:
+            return False
+
+        histories = History.objects.filter(table=table)
+
 
 class UserSerializer:
     @staticmethod

@@ -3,9 +3,9 @@
 
 from django.http import HttpResponse, HttpResponseRedirect
 import json
-from datetime import datetime
 from django.contrib import auth
 
+from ..response import *
 from ..serializers import *
 from ..forms import *
 from .. import tablefactory
@@ -113,6 +113,14 @@ def column(request, tableName, columnName):
 def export(request, tableName):
     if request.method == 'POST':
         return tablefactory.exportTable(json.loads(request.raw_post_data), tableName)
+
+
+def history(request, tableName):
+    if request.method == 'GET':
+        response = TableSerializer.serializeHistory(tableName)
+        if not response:
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "Could not find table with name " + tableName + "."}]}), content_type="application/json")
+        return HttpResponse(json.dumps(response), content_type="application/json")
 
 
 def datasets(request, tableName):
