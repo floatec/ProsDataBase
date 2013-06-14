@@ -335,7 +335,7 @@
                     for (var key in allDatasets) {
 
 
-                        $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'>edit</a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
+                        $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
 
                         for (var p in columns) {
                             var sete = false

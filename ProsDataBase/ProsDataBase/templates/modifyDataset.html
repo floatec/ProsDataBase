@@ -254,8 +254,8 @@ function getTableName(){
                 type: 'put',
                 data: JSON.stringify(jsonDataset),
                 contentType: 'application/json',
-                dataType: 'json'
-               /
+                dataType: 'json',
+
                 success:function(data){
                         if(data.errors!=undefined){
                     showErrors(data.errors)
