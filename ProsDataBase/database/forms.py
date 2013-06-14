@@ -129,7 +129,7 @@ class TypeSelectionForm(ModelForm):
 class HistoryForm(ModelForm):
     class Meta:
         model = History
-        fields = ('date', 'status')
+        fields = ('date', 'type')
 
 
 # ===============================
