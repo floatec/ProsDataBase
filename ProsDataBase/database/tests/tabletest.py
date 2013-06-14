@@ -80,15 +80,15 @@ class TableTest(TestCase):
         # =================================================================
 
 
-        schmog = create_RandomUser()
+        user = create_RandomUser()
 
-        table1 = create_table(schmog)
+        table1 = create_table(user)
 
-        column1 = create_columns(table1, schmog)
+        column1 = create_columns(table1, user)
 
-        connect_User_With_Rights(schmog, table1)
+        connect_User_With_Rights(user, table1)
 
-        result = TableSerializer.serializeOne(table1.name,schmog)
+        result = TableSerializer.serializeOne(table1.name,user)
 
         table1Cols = list()
         for col in table1.getColumns():
@@ -96,10 +96,13 @@ class TableTest(TestCase):
 
         self.assertEquals(table1.name, result["name"])
 
+        print result
+
     # SOLLTE SO EIGENTLICH KLAPPEN
     def test_deleteTable(self):
 
         user = create_RandomUser()
+
 
         table1 = create_table(user)
 
@@ -114,4 +117,6 @@ class TableTest(TestCase):
         # tests the table is flaged as deleted
         # ==============================================================
         #self.assertTrue(table1.deleted)
-        print result
+        #print result
+
+        print user
