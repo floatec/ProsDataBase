@@ -18,6 +18,7 @@
     <a class='buttonMenuButton' id='deleteData' href='#'>Delete</a>
     <a class='buttonMenuButton' id='exporteData'>Export</a>
     <a class='buttonMenuButton' id='modifyStructure'>Modify Structure</a>
+    <a class='buttonMenuButton' id='viewLog' href='#'>Log</a>
 {% endblock %}
 
 {% block content %}
@@ -102,7 +103,7 @@
             global={}
             var tableName = decodeURIComponent(getTableName());
             global.table=tableName
-            $("#naviheader").append(tableName)
+            $("#naviheader").append(tableName);
             var columns = [];
             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
                 if(!data.admin){
@@ -120,6 +121,9 @@
                      $("#deleteData").remove();
 
                 }
+                if(!data.viewLog){
+                    $("#viewLog").remove();
+                }
 
                 }
                 columns = data.columns;
@@ -129,7 +133,7 @@
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
             $("#insertData").attr('href', '/dataset/' + tableName + '/');
             $("#modifyStructure").attr('href', '/modify/' + tableName + '/');
-
+            $("#viewLog").attr('href', '/tableHistory/' + tableName + '/')
             $("#exportData").click(function(){
 
                 exportDatasets();

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+
+{% block header %}
+        <a class="crumb" href='/histroyCrumb/' id='historyCrumb'> <span>></span></a>
+
+
+{% endblock %}
+{% block content %}
+<table id='loggingTable' class='datasets'>
+    <caption>Logging</caption>
+    <thead>
+        <th>date</th>
+        <th>user</th>
+        <th>message</th>
+
+    </thead>
+
+
+</table>
+        <br />
+
+{% endblock %}
+
+{% block menu %}
+
+{% endblock %}
+{% block javascript %}
+<script language="JavaScript">
+
+    init();
+    function init(){
+
+    $("#historyCrumb").prepend("history Log");
+    $("#historyCrumb").attr('href', '/tableHistory/'+getTableName()+'/');
+
+}
+
+
+   function getTableName() {
+            var tableName = window.location.href;
+            var lastIndex = tableName.lastIndexOf('/');
+            var tableName = tableName.substr(0, lastIndex);
+            var lastIndex = tableName.lastIndexOf('/');
+            var tableName = tableName.substr(lastIndex + 1);
+            return tableName;
+        }
+</script>
+{% endblock %}

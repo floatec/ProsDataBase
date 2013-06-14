@@ -121,7 +121,7 @@ function init() {
     datatypes[2] = "date";
     datatypes[3] = "selection";
     datatypes[4] = "yes or no";
-    allowToggle = false;
+
     // initialize tabs
     $("#tabs").tabs({
         collapsible: false,
@@ -133,26 +133,23 @@ function init() {
 
                 return false;
             }
-            if (allowToggle) {
+
                 if (ui.newPanel.attr('id') == 'tabs-1') {
                     if (!firstload) {
                         createAllExistedColumnFirst();
-                        allowToggle = false;
-                    }
+                        sendJsonObjPage2();
 
                 }
 
-
+                }
                 if (ui.newPanel.attr('id') == 'tabs-2') {
+                    sendJsonObjPage1();
                     $(".rightsTable").remove();
                     createExistedUsers();
-                    allowToggle = false;
+
                 }
-            }
-            else {
-                alert("save first, before switching page!");
-                return false;
-            }
+
+
         },
         activate: function (event, ui) {
             if (ui.newPanel.attr('id') == 'tabs-1') {
@@ -826,7 +823,22 @@ function toggleAll(element, type) {
 
 $("#createTableButtonPage1").click(function () {
 
-    allowToggle = true;
+   sendJsonObjPage1();
+
+
+});
+$("#createTableButtonPage2").click(function () {
+   sendJsonObjPage2();
+
+});
+
+$("#deleteTable").click(function () {
+
+    $("#alertTableBox").dialog("open");
+
+});
+function sendJsonObjPage1(){
+
 //object to send
     var jsonTbl = {};
     //fill json object with name of the table
@@ -896,11 +908,9 @@ $("#createTableButtonPage1").click(function () {
 
     console.log(jsonTbl);
     //window.location.href = '/table/';
+}
+function sendJsonObjPage2(){
 
-
-});
-$("#createTableButtonPage2").click(function () {
-    allowToggle = true;
     //object to send
     var jsonTbl = {};
     //fill json object with name of the table
@@ -1033,16 +1043,7 @@ $("#createTableButtonPage2").click(function () {
 
     console.log(jsonTbl);
     //window.location.href = '/table/';
-
-});
-
-$("#deleteTable").click(function () {
-
-    $("#alertTableBox").dialog("open");
-
-});
-
-
+}
 function getTableName() {
     var tableName = window.location.href;
     var lastIndex = tableName.lastIndexOf('/');

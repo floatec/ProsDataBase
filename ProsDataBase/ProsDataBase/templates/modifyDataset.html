@@ -99,7 +99,7 @@ function init(){
                 }
                 if (columns[i].type == 5) {
                     if(columns[i].modify || struct.admin ){
-                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"></span><img class="icn" src="/static/img/search-icon.png">'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"></span><img class="icn" onClick="searchElement(\'' +  columns[i].table + '\',\'' + encode_pros( columns[i].name) + '\')" src="/static/img/search-icon.png">'
                     }
                     else{
                        row += '<span id="' + encode_pros(columns[i].name) + '"></span>'
@@ -134,15 +134,14 @@ function init(){
 
                 }
                  else if(dataset[key].type == 5){
-                    $("."+dataset[key].column).append('<span id="' + encode_pros(dataset[key].column) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + dataset[key].column + '\',\'' + encode_pros(dataset[key].column) + '\')" class="icn" style="display:inline-block;">');
-                    $("."+dataset[key].column).append('<img  onClick="searchElement(\'' + dataset[key].column + '\',\'' + encode_pros(dataset[key].column) + '\')" src="/static/img/search-icon.png" class="icn">');
                     for(var p in dataset[key].value){
-                    $("#"+dataset[key].column).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" +dataset[key].value[p].id+"</span> ");
+                        $("#"+dataset[key].column).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" +dataset[key].value[p].id+"</span> ");
                     }
                 }
 
 
             }
+
 
         });
 
