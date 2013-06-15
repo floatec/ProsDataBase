@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block cssHeader %}
-          <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
 
 {% endblock %}
 
@@ -27,15 +27,15 @@
         columnrow = 0;
         lastID = 0;
         init();
+        /*
+         initializing the page
+         */
         function init() {
-
             $.getJSON('/api/myself/', function (data) {
                 if (!data.admin) {
                     window.location = '/table/';
-
                 }
             });
-
 
             // initialize alertbox
             $("#deleteAlertBox").dialog({
@@ -47,7 +47,6 @@
                             type: 'delete',
                             success: $("#row_" + lastID).remove()
                         });
-
                         $(this).dialog("close");
                     },
                     "back": function () {
@@ -55,38 +54,22 @@
                     }
                 }
             });
-
-
             oldCategories = [];
             newCategories = [];
             $("#categoryAdmin").prepend("{% trans "categories" %}");
-
-
             $.getJSON('/api/category/', function (data) {
-
                 allCategories = data.categories;
-
-
                 for (key in allCategories) {
                     oldCategories.push(allCategories[key]);
                     columnrow++;
                     $("#allCategories").append("<tr class='oldEntry' id='row_" + columnrow + "'><td><input type='hidden' value='" + allCategories[key] + "'><button id='delete_" + columnrow + "'>-</button></td><td><input type='text' value='" + allCategories[key] + "'></td></tr>");
-
-
                     $("#delete_" + columnrow).click(function () {
                         lastID = getNumber(this.id);
                         $("#deleteAlertBox").dialog("open");
                     });
-
                 }
-
-
             });
-
-
         }
-
-
         $("#createInput").click(function () {
             columnrow++;
             $("#allCategories").append("<tr class='newEntry' id='row_" + columnrow + "'><td><button id='delete_" + columnrow + "'>-</button></td><td><input type='text' value=''></td></tr>");
@@ -94,12 +77,10 @@
                 lastID = getNumber(this.id);
                 $("#row_" + lastID).remove();
             });
-
         });
         $("#saveButton").click(function () {
             var allCategories = {};
             allCategories.categories = [];
-
             var old = $(".oldEntry");
             old.each(function () {
                 var changeObj = {}
@@ -109,9 +90,7 @@
                     changeObj.old = oldValue;
                     changeObj.new = newValue;
                     allCategories.categories.push(changeObj);
-
                 }
-
             });
             var newCategories = $(".newEntry");
             newCategories.each(function () {
@@ -125,25 +104,23 @@
                 data: JSON.stringify(allCategories),
                 contentType: 'application/json',
                 dataType: 'json',
-        success: function(data){
-            if(data.errors!=undefined){
-            showErrors(data.errors)
-            return
-            }
-            if(data.success!=undefined){
-                showSuccess(data.success)
-            }
-        }
+                success: function (data) {
+                    //errorhandling
+                    if (data.errors != undefined) {
+                        showErrors(data.errors)
+                        return
+                    }
+                    if (data.success != undefined) {
+                        showSuccess(data.success)
+                    }
+                }
             });
-
-
-            console.log(allCategories);
         });
 
-
-        //function to get the ID
+        /*
+        function to get the ID
+         */
         function getNumber(number) {
-
             return number.substring(number.lastIndexOf("_") + 1);
 
         }

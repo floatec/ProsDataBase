@@ -15,63 +15,56 @@
 
 {% block javascript %}
 <script language="JavaScript">
+    //get the categories
     $.getJSON('/api/category/', function (data) {
         createTables(data.categories);
-
-
     });
 
-
-    //function to create and fill tables
+    /*
+    function to create and fill tables
+    categories=table with all categories
+     */
     function createTables(categories) {
-
         allCatagories = categories;
-
+        //get all tables for the current user
         $.getJSON('/api/table/', function (tabledata) {
             if(allCatagories.length==0){
                 showErrors([{message: "{%  trans "You don't have the right to view any table." %}"}])
             }
+            //go thru all categories
             for (var i in allCatagories) {
-
-
                 var tables = tabledata.tables
-
                 var content = "";
                 var isInCategory = false;
                 var content = "<div class='" + allCatagories[i] + " categoryDiv'><span id='" + allCatagories[i] + "' class='categoryHeadline'>" + allCatagories[i] + ":</span>";
                 $("#navigationMenu").append("<div id='"+allCatagories[i]+"_Div'>" + allCatagories[i] + "</div><ul id='navigationMenuContent_" + allCatagories[i] + "'></ul>");
+                //search for all tables of this categiry
                 for (var key in tables) {
-
                     if (allCatagories[i] == tables[key].category) {
-
                         isInCategory = true;
                         var tablename = tables[key].name;
                         // fill Navigation-Bar
                         $("#navigationMenuContent_" + allCatagories[i]).append("<li><a href='/detailview/" + tables[key].name + "'>" + tables[key].name + "</a></li>");
                         // create tables
-
                         content += "<a href='/detailview/" + tables[key].name + "'><div class='overViewDiv' id='table" + key + "'>";
                         content += "<div id='overViewHeader'>" + tablename + "</div>";
                         for (var rows in tables[key].columns) {
                             content += "<div class='overViewContentDiv'>" + tables[key].columns[rows] + "</div>";
                         }
                         content += "</div></a>";
-
                     }
                 }
                 content += "</div>";
                 $("#content").append(content);
+                //if nothing is in this categoriry the category will be removed from the list
                 if (!isInCategory) {
                     $("#"+ allCatagories[i] + "_Div").remove();
                     $("#navigationMenuContent_"+allCatagories[i]).remove();
                     $("#" + allCatagories[i]).remove();
-
                 }
             }
-
              $("#navigationMenu").accordion( "refresh" );
         });
-
     }
 </script>
 {% endblock %}

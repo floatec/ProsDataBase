@@ -1,157 +1,149 @@
-
 {% extends "base.html" %}
 {% load i18n %}
 {% block cssHeader %}
-          <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
 
 {% endblock %}
 <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
 {% block navigation %}
 
-        <div>users</div>
-        <div>{% trans "Users" %}</div>
- <ul id="navigationMenuContent">
+    <div>users</div>
+    <div>{% trans "Users" %}</div>
+    <ul id="navigationMenuContent">
 
-			</ul>
+    </ul>
 
 {% endblock %}
 {% block header %}
-        <a class="crumb" href='/useradmin/' id='userAdmin'> <span>></span></a>
+    <a class="crumb" href='/useradmin/' id='userAdmin'> <span>></span></a>
 
 
 {% endblock %}
 {% block content %}
-<table id='userTable' class='datasets'>
-    <caption>{% trans "User Rights" %}</caption>
-    <thead>
+    <table id='userTable' class='datasets'>
+        <caption>{% trans "User Rights" %}</caption>
+        <thead>
         <th>{% trans "User" %}</th>
         <th>{% trans "Enabled" %}</th>
         <th>{% trans "Create tables" %}</th>
         <th>{% trans "User admin" %}</th>
-    </thead>
+        </thead>
 
 
-</table>
-        <br />
-<button id='saveUsers'>{% trans "Save" %}</button>
+    </table>
+    <br/>
+    <button id='saveUsers'>{% trans "Save" %}</button>
 {% endblock %}
 
 {% block menu %}
 
 {% endblock %}
 {% block javascript %}
-<script language="JavaScript">
+    <script language="JavaScript">
 
-    init();
-    function init(){
- $.getJSON('/api/myself/', function (data) {
-    if(!data.userManager){
-        window.location = '/table/';
+        init();
 
-    }
- });
-    $("#userAdmin").prepend("admin users");
-
-    $.getJSON('/api/userrights/', function (data) {
-
-       alphabeticalUsers = [];
-       for(var p in data.users){
-           alphabeticalUsers.push(data.users[p].name);
-       }
-       alphabeticalUsers.sort(stringComparison);
-
-      var allUsers = data.users;
-        var countCheckboxes = 0;
-        console.log(allUsers);
-        for(var i in alphabeticalUsers){
-        for (var key in allUsers) {
-            if(alphabeticalUsers[i] == allUsers[key].name){
-        $("#navigationMenuContent").append("<li><a href='#"+allUsers[key].name+"'>"+allUsers[key].name+"</a></li>");
-         countCheckboxes++;
-          var row = "<tr class='allRows'><td>"+allUsers[key].name+"</td>";
-            countCheckboxes++;
-
-
-            if(allUsers[key].active){
-                 row+= "<td><input checked='checked' class='enabled' type='checkbox' id='"+allUsers[key].name+"'><label title='un/lock user' for='"+allUsers[key].name+"'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
-            }
-            else{
-                row+= "<td><input type='checkbox' class='enabled' id='"+allUsers[key].name+"'><label title='un/lock user' for='"+allUsers[key].name+"'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
-            }
-              countCheckboxes++;
-            if(allUsers[key].tableCreator){
-                row+= "<td><input type='checkbox' checked='checked' id='check"+countCheckboxes+"' class='tableCreator'><label title='create tables' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
-            }
-            else{
-                 row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='tableCreator'><label title='create tables' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
-            }
-              countCheckboxes++;
-
-
-
-            if(allUsers[key].userManager){
-                row+= "<td><input type='checkbox' checked='checked' id='check"+countCheckboxes+"' class='userManager'><label title='manage users' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
-            }
-            else{
-                row+= "<td><input type='checkbox' id='check"+countCheckboxes+"' class='userManager'><label title='manage users' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
-            }
-
-          countCheckboxes++;
-            row += "</tr>";
-          $("#userTable").append(row);
-            $("input:checkbox").button();
-
-        }}
-
+        /*
+        load the page
+         */
+        function init() {
+            $.getJSON('/api/myself/', function (data) {
+                if (!data.userManager) {
+                    window.location = '/table/';
+                }
+            });
+            $("#userAdmin").prepend("admin users");
+            $.getJSON('/api/userrights/', function (data) {
+                alphabeticalUsers = [];
+                for (var p in data.users) {
+                    alphabeticalUsers.push(data.users[p].name);
+                }
+                alphabeticalUsers.sort(stringComparison);
+                var allUsers = data.users;
+                var countCheckboxes = 0;
+                console.log(allUsers);
+                for (var i in alphabeticalUsers) {
+                    //go true all users
+                    for (var key in allUsers) {
+                        if (alphabeticalUsers[i] == allUsers[key].name) {
+                            $("#navigationMenuContent").append("<li><a href='#" + allUsers[key].name + "'>" + allUsers[key].name + "</a></li>");
+                            countCheckboxes++;
+                            var row = "<tr class='allRows'><td>" + allUsers[key].name + "</td>";
+                            countCheckboxes++;
+                            //load all checkboxes
+                            if (allUsers[key].active) {
+                                row += "<td><input checked='checked' class='enabled' type='checkbox' id='" + allUsers[key].name + "'><label title='un/lock user' for='" + allUsers[key].name + "'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
+                            }
+                            else {
+                                row += "<td><input type='checkbox' class='enabled' id='" + allUsers[key].name + "'><label title='un/lock user' for='" + allUsers[key].name + "'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
+                            }
+                            countCheckboxes++;
+                            if (allUsers[key].tableCreator) {
+                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='tableCreator'><label title='create tables' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
+                            }
+                            else {
+                                row += "<td><input type='checkbox' id='check" + countCheckboxes + "' class='tableCreator'><label title='create tables' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
+                            }
+                            countCheckboxes++;
+                            if (allUsers[key].userManager) {
+                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='userManager'><label title='manage users' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+                            }
+                            else {
+                                row += "<td><input type='checkbox' id='check" + countCheckboxes + "' class='userManager'><label title='manage users' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+                            }
+                            countCheckboxes++;
+                            row += "</tr>";
+                            $("#userTable").append(row);
+                            $("input:checkbox").button();
+                        }
+                    }
+                }
+            });
         }
 
-    });
+        /*
+        the onclick handler to save the suer settings
+         */
+        $("#saveUsers").click(function () {
+            var jsonObj = {}
+            var allRows = $(".allRows");
+            jsonObj.users = [];
+            allRows.each(function () {
+                usersObj = {};
+                usersObj.name = $(this).find(".enabled").attr('id');
+                usersObj.active = $(this).find(".enabled").is(':checked');
+                usersObj.tableCreator = $(this).find(".tableCreator").is(':checked');
+                usersObj.userManager = $(this).find(".userManager").is(':checked');
+                jsonObj.users.push(usersObj);
+            });
 
-}
-$("#saveUsers").click(function(){
-
-    var jsonObj = {}
-    var allRows = $(".allRows");
-    jsonObj.users = [];
-    allRows.each(function(){
-       usersObj = {};
-        usersObj.name = $(this).find(".enabled").attr('id');
-        usersObj.active = $(this).find(".enabled").is(':checked');
-       usersObj.tableCreator = $(this).find(".tableCreator").is(':checked');
-        usersObj.userManager = $(this).find(".userManager").is(':checked');
-        jsonObj.users.push(usersObj);
-    });
-
-    $.ajax({
-        url:('/api/userrights/'),
-        type: 'post',
-        data: JSON.stringify(jsonObj),
-        contentType: 'application/json',
-        dataType: 'json',
-        success:function (){
-            if(data.errors!=undefined){
-                    showErrors(data.errors)
+            /*
+             get all users and generates the grid
+             */
+            $.ajax({
+                url: ('/api/userrights/'),
+                type: 'post',
+                data: JSON.stringify(jsonObj),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function () {
+                    //error handling
+                    if (data.errors != undefined) {
+                        showErrors(data.errors)
                         return
-               }
-               if(data.success!=undefined){
-                 showSuccess(data.success)
-
-             }
-        }
-
-    });
-
-
-});
-
-
-
-</script>
+                    }
+                    if (data.success != undefined) {
+                        showSuccess(data.success)
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}
 {% block css %}
 
-td label.ui-state-active{
+    td label.ui-state-active{
     background: greenyellow;
-}
+    }
 
 {% endblock %}
