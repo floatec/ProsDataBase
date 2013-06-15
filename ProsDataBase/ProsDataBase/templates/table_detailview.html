@@ -409,15 +409,11 @@
                     showErrors([
                         {message: "{%  trans "No Datasets are Matching" %}"}
                     ])
-
                 }
                 allDatasets = data.datasets;
                 console.log(data);
-
                 //go over all datsets
                 for (var key in allDatasets) {
-
-
                     $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
                     //do it column after culumn
                     for (var p in columns) {

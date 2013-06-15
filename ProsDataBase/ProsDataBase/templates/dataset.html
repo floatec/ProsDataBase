@@ -18,11 +18,14 @@
     $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
             var tableName = decodeURIComponent(getTableName());
             var columns = data.columns;
+            //itterate over all columns
             for (var i in columns) {
+                //ignore virtual coumns
                 if (columns[i].type == 6) {
                     continue
                 }
                 var row = "<tr class='allColumns'><td class='nameCell'>" + (columns[i].name) + "</td><td>"
+                //create type spezific inputs
                 if (columns[i].type == 0) {
                     row += '<input class="inputText" name="' + encode_pros(columns[i].name) + '" type="text" placeholder="text">'
                 }
@@ -49,47 +52,39 @@
                 $("#fields").append(row)
                 $(".icn").button();
             }
+            //breadcurmbs and stuff
             $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
             $("#tableCrumb").prepend(decodeURIComponent(tableName));
             $("#insertCrumb").prepend("{% trans "Insert" %}");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
-
             $("#insertCrumb").attr('href', '/dataset/' + tableName + '/');
 
         });
-
+          // onclick save handler
         $("#saveInsert").click(function () {
-
             var jsonDataset = {};
-
             jsonDataset.columns = [];
+            //itterate over all columns
             $(".allColumns").each(function () {
                 columnObj = {};
                 columnObj.name = decode_pros($(this).find(".nameCell").text());
                 if ($(this).find("input").length == 0) {
                     if ($(this).find("select").length == 0) {
                         value = []
-
                         if ($(this).find(".value").length != 0) {
-
                             $(this).find(".value").each(function () {
                                 value.push($(this).html())
                             });
                             columnObj.value = value
                         }
-
                     }
                     else {
-
                         columnObj.value = $(this).find(":selected").text();
-
                     }
-
                 }
                 else {
                     if ($(this).find(".dateClass").length != 0) {
                         columnObj.value = $(this).find("input").val();
-
                     }
                     else if ($(this).find(".inputNumber").length != 0) {
                         columnObj.value = parseFloat($(this).find("input").val());
@@ -106,12 +101,10 @@
                         }
                     }
                 }
-
-                jsonDataset.columns.push(columnObj);
-                console.log(jsonDataset);
-
+                if(columnObj.value!=""){
+                    jsonDataset.columns.push(columnObj);
+                }
             });
-            console.log(jsonDataset);
             $.ajax({
                 url: '/api/table/' + getTableName() + '/',
                 type: 'post',
