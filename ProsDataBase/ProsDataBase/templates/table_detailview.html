@@ -39,42 +39,57 @@
     <script language="JavaScript">
 
 
-        init();
+        init();//call to initalize all the stuff
 
+        /*
+        Adds Anoter Filter(Row in the Filter Arcordion)
+         */
         function addFilter(view,tableName){
             filter++;
             $(view).append("<br><button onClick='deleteFilter(this)'>-</button><div style='display:inline' class='filter'></div>")
             addFilterOption($(view).children().last(), tableName)
         }
-
+         /*
+        Removes Filter(Row in the Filter Arcordion)
+         */
         function deleteFilter(element){
             $(element).prev().remove();
             $(element).next().remove();
             $(element).remove();
-
         }
 
+        /*
+         Updates next Filter Level on change in the selection menu
+         */
         function updateFilerOption(select,tableName){
-             console.log($(select).find(":selected").attr("value"))
-
-            if($(select).find(":selected").val()>=5){
-               console.log("hallo")
-                addFilterOption($(select).next(), $(select).find(":selected").attr("table"))
-
-            }
+            //noting selected
             if($(select).find(":selected").val()==-1){
                  $(select).next().html("");
             }
-            if($(select).find(":selected").val()==0 || $(select).find(":selected").attr("refType")==0){
+            //text selected
+             if($(select).find(":selected").val()==0 || $(select).find(":selected").attr("refType")==0){
                $(select).next().html("<input type='text' class='text' placeholder='text...'>")
             }
+            //table in table, virtual col
+            if($(select).find(":selected").val()>=5){
+                addFilterOption($(select).next(), $(select).find(":selected").attr("table"))
+
+            }
+            //system id selected
             if($(select).find(":selected").val()==7 ){
                $(select).next().html("<input type='text' class='datasetID' placeholder='ID'>")
             }
+            //numeric selected
             if($(select).find(":selected").val()==1|| $(select).find(":selected").attr("refType")==1){
                $(select).next().html("Min:<input type='text' class='min'  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' size='4'>Max:<input  placeholder='0.0' onkeyup='this.value=this.value.replace(/[^\\d.]/,\"\")' class='max' type='text' size='4'>")
 
             }
+            //date selected
+            if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
+               $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='1990-05-26 23:42'>Max:<input class='max  dateTimePicker' type='text' placeholder='1990-05-26 23:42'>")
+                    $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
+            }
+            //selection selected
             if($(select).find(":selected").val()==3 || $(select).find(":selected").attr("refType")==3){
                $(select).next().html("<select></select>")
                 sel=$(select).next().find("select")
@@ -84,27 +99,29 @@
                 })
 
             }
+            // true false selected
             if($(select).find(":selected").val()==4 || $(select).find(":selected").attr("refType")==4){
                $(select).next().html("<input type='checkbox'>")
             }
-            if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
-               $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='1990-05-26 23:42'>Max:<input class='max  dateTimePicker' type='text' placeholder='1990-05-26 23:42'>")
-                    $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
-            }
-          }
 
+          }
+        /*
+        adds another filter opntion(next level) to an filter row
+         */
         function addFilterOption(view, tableName){
             $(view).html("")
             $(view).append("<select onChange='updateFilerOption(this)'><option value='-1'>---</option><option value='7'>system ID</option></select><span></span>");
              $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
                 columns = $(data.columns);
+                 //adds all columns to teh selection
                 columns.each(function(){
-                    console.log(this)
                     $(view).find("select").append("<option  link='"+this.link+"' refType='"+JSON.stringify(this.refType)+"' options='"+JSON.stringify(this.options)+"' table='"+this.table+"' value='"+this.type+"'>"+this.name+"</option>")
                 })
                });
         }
-
+        /*
+        initalize the page
+        */
         function init() {
             counter = 0;
             subtable = 0;
@@ -114,11 +131,12 @@
             global.table=tableName
             $("#naviheader").append(tableName);
             var columns = [];
+            //get the strcuutre
             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+                //remove icons for functions with no primissions
                 if(!data.admin){
                 if(!data.rightsAdmin){
                       $("#modifyStructure").remove();
-
                 }
 
                 if(!data.insert){

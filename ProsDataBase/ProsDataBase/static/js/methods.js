@@ -115,3 +115,12 @@ function showSuccess(success){
         $("#errorblock").append("<div class='success'>"+success+"</div>")
 
 }
+
+
+$.ajaxSetup({
+        error: function(x, e) {
+            {
+                $("#errorblock").append("<div class='error'>unexpected error</div>")
+            }
+        }
+    });
