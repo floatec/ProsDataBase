@@ -43,6 +43,7 @@
             <tr>
                 <td></td>
                 <td>{% trans "column" %}</td>
+                <td>comment</td>
                 <td>{% trans "content type" %}</td>
             </tr>
 
@@ -311,17 +312,17 @@ function createAllExistedColumn(data){
             if (columns[key].type != 6) {
                 createExistedColumnsRow(columns[key].id);
                 $("#field_" + columnID).val(columns[key].name);
-
+                $("#row_" + columnID).find(".comment").val(columns[key].comment);
                 if (columns[key].type == 0) {
                     $("#selectDataType_" + columnID).val(0);
-                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'>");
+                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' size='5' class='length' value='100'>");
                     $("#row_" + columnID).find(".length").val(columns[key].length);
 
 
                 }
                 else if (columns[key].type == 1) {
                     $("#selectDataType_" + columnID).val(1);
-                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>min:<input type='text' value='0.0' class='min' size='10'>max:<input type='text' value='100.0' class='max' size='10'></td>");
+                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>min:<input type='text' value='0.0' class='min' size='7'>max:<input type='text' value='100.0' class='max' size='7'></td>");
                     $("#row_" + columnID).find(".min").val(columns[key].min);
                     $("#row_" + columnID).find(".max").val(columns[key].max);
 
@@ -336,7 +337,7 @@ function createAllExistedColumn(data){
                     for (var i in columns[key].options) {
 
                         countChoiceInputs++;
-                        $("#choiceInputContent_" + columnID).append("<input size='10' type='text' selectionid='" + columns[key].options[i].key + "' class='option' id='choiceInput_" + countChoiceInputs + "'>");
+                        $("#choiceInputContent_" + columnID).append("<input size='7' type='text' selectionid='" + columns[key].options[i].key + "' class='option' id='choiceInput_" + countChoiceInputs + "'>");
                         $("#choiceInput_" + countChoiceInputs).val(columns[key].options[i].value);
                         // to delete the input fields with escape and delete
                         $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
@@ -351,7 +352,7 @@ function createAllExistedColumn(data){
 
                         lastID = getNumber(this.id);
                         countChoiceInputs++;
-                        $("#choiceInputContent_" + lastID).append("<input size='10' type='text' class='option' id='choiceInput_" + countChoiceInputs + "'>");
+                        $("#choiceInputContent_" + lastID).append("<input size='7' type='text' class='option' id='choiceInput_" + countChoiceInputs + "'>");
                         lastID = getNumber(this.id);
                         // to delete the input fields with escape and delete
                         $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
@@ -381,11 +382,6 @@ function createAllExistedColumn(data){
 
 
 function createAllExistedColumnFirst() {
-
-
-
-
-
     $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
       if(!data.admin){
 
@@ -438,7 +434,7 @@ function getAllColumnNames() {
 }
 function createExistedColumnsRow(columnid) {
     columnID++;
-    $("#columnTable").append("<tr class='trcolumnClass' id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' columnid='" + columnid + "' class='columnNameClass' id='field_" + columnID + "'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td></tr>");
+    $("#columnTable").append("<tr class='trcolumnClass' id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' columnid='" + columnid + "' class='columnNameClass' id='field_" + columnID + "'></td><td><input type='text' class='comment'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td></tr>");
 
     $("#field_" + columnID).change(function () {
         valid = true;
@@ -491,7 +487,7 @@ function createExistedColumnsRow(columnid) {
 
 function createNewColumnsRow() {
     columnID++;
-    $("#columnTable").append("<tr class='trcolumnClass' id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'></td></tr>");
+    $("#columnTable").append("<tr class='trcolumnClass' id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><input type='text' class='comment'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'></td></tr>");
 
     $("#field_" + columnID).change(function () {
         valid = true;
@@ -542,13 +538,13 @@ function createNewColumnsRow() {
         $("#selectDataTypeCell_" + lastID).remove();
         if ($("#selectDataType_" + lastID).val() == "1") {
             $("#selectDataTypeCell_" + lastID).remove();
-            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>min:<input type='text' value='0.0' class='min' size='10'>max:<input type='text' value='100.0' class='max' size='10'></td>");
+            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>min:<input type='text' value='0.0' class='min' size='7'>max:<input type='text' value='100.0' class='max' size='7'></td>");
 
         }
         //size for text datatype
         if ($("#selectDataType_" + lastID).val() == "0") {
             $("#selectDataTypeCell_" + lastID).remove();
-            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>length:<input type='text' class='length' value='100'></td>");
+            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>length:<input type='text' size='5' class='length' value='100'></td>");
         }
         if ($("#selectDataType_" + lastID).val() == "4") {
             $("#selectDataTypeCell_" + lastID).remove();
@@ -588,7 +584,7 @@ function createNewColumnsRow() {
 
                 lastID = getNumber(this.id);
                 countChoiceInputs++;
-                $("#choiceInputContent_" + lastID).append("<input size='10' type='text' class='option' id='choiceInput_" + countChoiceInputs + "'>");
+                $("#choiceInputContent_" + lastID).append("<input size='7' type='text' class='option' id='choiceInput_" + countChoiceInputs + "'>");
                 lastID = getNumber(this.id);
                 // to delete the input fields with escape and delete
                 $("#choiceInput_" + countChoiceInputs).keyup(function (e) {
@@ -862,6 +858,7 @@ function sendJsonObjPage1(){
 
         var row = $(this).parent();
         row = row.parent();
+         columnObj.comment = row.find(".comment").val();
         var thisDataType = parseInt($(row.find(".dataType")[0]).val());
 
         columnObj.type = thisDataType;
@@ -881,7 +878,10 @@ function sendJsonObjPage1(){
             $(row.find(".option")).each(function () {
 
                 var inputObj = {};
-                inputObj.key = getNumber(this.id);
+                if($(this).attr('selectionid')){
+                    inputObj.key = $(this).attr('selectionid');
+                }
+
                 inputObj.value = $(this).val();
                 columnObj.options.push(inputObj);
 
@@ -934,6 +934,7 @@ function sendJsonObjPage2(){
         columnObj.rights = {};
         var row = $(this).parent();
         row = row.parent();
+         columnObj.comment = row.find(".comment").val();
         var thisDataType = parseInt($(row.find(".dataType")[0]).val());
 
         columnObj.type = thisDataType;
@@ -953,7 +954,9 @@ function sendJsonObjPage2(){
             $(row.find(".option")).each(function () {
 
                 var inputObj = {};
-                inputObj.key = getNumber(this.id);
+               if($(this).attr('selectionid')){
+                    inputObj.key = $(this).attr('selectionid');
+                }
                 inputObj.value = $(this).val();
                 columnObj.options.push(inputObj);
 
