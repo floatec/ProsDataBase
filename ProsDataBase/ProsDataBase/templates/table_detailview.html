@@ -26,8 +26,9 @@
     <div id="filter">
   <h3>{% trans "filter" %}</h3><div>
   <div id="filterView">
-<button onClick="addFilter('#filterView',global.table)" >+</button><button onclick="laodFiltered()"href='#'>{%trans "Filter" %}</button>
   </div>
+        <button onClick="addFilter('#filterView',global.table)" >+</button><button onclick="laodFiltered()"href='#'>{%trans "Filter" %}</button>
+
 </div>
     </div>
     <div id="deleteAlertBox"href='#'>{% trans "Are you sure to delete this item(s)?" %}</div>
@@ -42,8 +43,15 @@
 
         function addFilter(view,tableName){
             filter++;
-            $(view).append("<div class='filter'></div>")
+            $(view).append("<br><button onClick='deleteFilter(this)'>-</button><div style='display:inline' class='filter'></div>")
             addFilterOption($(view).children().last(), tableName)
+        }
+
+        function deleteFilter(element){
+            $(element).prev().remove();
+            $(element).next().remove();
+            $(element).remove();
+
         }
 
         function updateFilerOption(select,tableName){
