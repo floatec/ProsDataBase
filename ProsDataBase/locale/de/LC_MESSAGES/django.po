@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-14 16:00+0200\n"
+"POT-Creation-Date: 2013-06-15 11:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,11 +58,17 @@ msgid "Are you sure to delete this item(s)?"
 msgstr "Wollen Sie diese(s) Element(e) wirklich löschen?"
 
 #: ProsDataBase/templates/categoryadmin.html:18
+#: ProsDataBase/templates/dataset.html:11
 #: ProsDataBase/templates/modify.html:53 ProsDataBase/templates/modify.html:63
 #: ProsDataBase/templates/modifyGroup.html:21
 #: ProsDataBase/templates/settings.html:21
 msgid "save"
 msgstr "speichern"
+
+#: ProsDataBase/templates/categoryadmin.html:62
+#, fuzzy
+msgid "categories"
+msgstr "Kategorien"
 
 #: ProsDataBase/templates/createGroup.html:22
 msgid "Group name:"
@@ -83,14 +89,13 @@ msgstr "Erstellen"
 
 #: ProsDataBase/templates/createTable.html:4
 #: ProsDataBase/templates/createTable.html:25
-#: ProsDataBase/templates/modify.html:5 ProsDataBase/templates/modify.html:8
-#: ProsDataBase/templates/modify.html:32
+#: ProsDataBase/templates/modify.html:5 ProsDataBase/templates/modify.html:32
 msgid "Step 1"
 msgstr "Schritt 1"
 
 #: ProsDataBase/templates/createTable.html:7
 #: ProsDataBase/templates/createTable.html:26
-#: ProsDataBase/templates/modify.html:33
+#: ProsDataBase/templates/modify.html:8 ProsDataBase/templates/modify.html:33
 msgid "Step 2"
 msgstr "Schritt 2"
 
@@ -144,7 +149,6 @@ msgid "Tablename:"
 msgstr "Tabellenname:"
 
 #: ProsDataBase/templates/createTable.html:31
-#, fuzzy
 msgid "Select Category"
 msgstr "Kategorie auswählen"
 
@@ -165,6 +169,11 @@ msgstr "weiter"
 #: ProsDataBase/templates/createTable.html:54
 msgid "create"
 msgstr "Erstellen"
+
+#: ProsDataBase/templates/dataset.html:57
+#: ProsDataBase/templates/table_detailview.html:17
+msgid "Insert"
+msgstr "Einfügen"
 
 #: ProsDataBase/templates/groupadmin.html:25
 msgid "create group"
@@ -242,8 +251,13 @@ msgid "tablename:"
 msgstr "Tabellenname:"
 
 #: ProsDataBase/templates/modify.html:40
-msgid "select category:"
+#, fuzzy
+msgid "select category"
 msgstr "Kategorie auswählen:"
+
+#: ProsDataBase/templates/modify.html:88
+msgid "Modify"
+msgstr "Ändern"
 
 #: ProsDataBase/templates/modifyGroup.html:9
 #, fuzzy
@@ -327,10 +341,6 @@ msgstr "Benutzer"
 msgid "message"
 msgstr "Nachricht"
 
-#: ProsDataBase/templates/table_detailview.html:17
-msgid "Insert"
-msgstr "Einfügen"
-
 #: ProsDataBase/templates/table_detailview.html:18
 msgid "Delete"
 msgstr "Löschen"
@@ -353,9 +363,17 @@ msgstr "Protokoll"
 msgid "filter"
 msgstr "filtern"
 
+#: ProsDataBase/templates/table_detailview.html:332
+msgid "No Datasets are Matching"
+msgstr "Keine Datensätze gefunden."
+
 #: ProsDataBase/templates/table_overview.html:12
 msgid "Create new table"
 msgstr "Neue Tabelle erstellen"
+
+#: ProsDataBase/templates/table_overview.html:32
+msgid "You don't have the right to view any table."
+msgstr "Sie haben auf keiner Tabelle Berechtigungen diese zu sehen."
 
 #: ProsDataBase/templates/useradmin.html:25
 msgid "User Rights"
@@ -381,73 +399,73 @@ msgstr "Benutzeradmin"
 msgid "Save"
 msgstr "speichern"
 
-#: database/tablefactory.py:29 database/tablefactory.py:571
+#: database/tablefactory.py:29 database/tablefactory.py:572
 msgid "Could not find category "
 msgstr "Kategorie wurde nicht gefunden."
 
 #: database/tablefactory.py:33 database/tablefactory.py:41
-#: database/tablefactory.py:62
+#: database/tablefactory.py:61
 #, fuzzy
 msgid "Category with name "
 msgstr "Kategorien"
 
 #: database/tablefactory.py:33 database/tablefactory.py:41
-#: database/tablefactory.py:597 database/views/api.py:150
-#: database/views/api.py:232 database/views/api.py:285
+#: database/tablefactory.py:598 database/views/api.py:158
+#: database/views/api.py:240 database/views/api.py:293
 msgid " already exists."
 msgstr "besteht bereits"
 
-#: database/tablefactory.py:51
+#: database/tablefactory.py:50
 msgid "Saved changes successfully."
 msgstr "Änderungen wurden erfolgreich gespeichert."
 
-#: database/tablefactory.py:59
+#: database/tablefactory.py:58
 msgid "Please put the tables of this group into another category first."
 msgstr ""
 "Bitte verschieben Sie zuerst die Tabellen dieser Gruppe in eine andere "
 "Kategorie."
 
-#: database/tablefactory.py:62 database/tablefactory.py:656
+#: database/tablefactory.py:61 database/tablefactory.py:663
 msgid " does not exist."
 msgstr "exisitiert nicht."
 
-#: database/tablefactory.py:64
+#: database/tablefactory.py:63
 #, fuzzy
 msgid "Deleted category "
 msgstr "Kategorie auswählen:"
 
-#: database/tablefactory.py:119 database/tablefactory.py:687
-#: database/tablefactory.py:793
+#: database/tablefactory.py:118 database/tablefactory.py:694
+#: database/tablefactory.py:801
 msgid "Failed to create table. Please contact the developers."
 msgstr ""
 "Tabelle erstellen fehlgeschlagen. Bitte wenden Sie sich an die Entwickler."
 
-#: database/tablefactory.py:138
+#: database/tablefactory.py:137
 #, fuzzy
 msgid "Successfully created table "
 msgstr "Tabelle erstellen"
 
-#: database/tablefactory.py:162
+#: database/tablefactory.py:161
 msgid "Could not create text type for column "
 msgstr "Der Textinhalt konnte nicht erstellt wurden."
 
-#: database/tablefactory.py:162 database/tablefactory.py:177
-#: database/tablefactory.py:195 database/tablefactory.py:212
-#: database/tablefactory.py:224 database/tablefactory.py:256
-#: database/tablefactory.py:263 database/tablefactory.py:711
-#: database/tablefactory.py:765
+#: database/tablefactory.py:161 database/tablefactory.py:176
+#: database/tablefactory.py:194 database/tablefactory.py:211
+#: database/tablefactory.py:224 database/tablefactory.py:257
+#: database/tablefactory.py:264 database/tablefactory.py:718
+#: database/tablefactory.py:773
 msgid ". Abort."
 msgstr ". Abbruch"
 
-#: database/tablefactory.py:177
+#: database/tablefactory.py:176
 msgid "Could not create numeric type for column "
 msgstr "Numerischer Typ für die Spalte konnte nicht erstellt werden."
 
-#: database/tablefactory.py:195
+#: database/tablefactory.py:194
 msgid "Could not create date type for column "
 msgstr "Datum Typ konnte nicht erstellt werden."
 
-#: database/tablefactory.py:212
+#: database/tablefactory.py:211
 msgid "Could not create selection type for column "
 msgstr "Auswahltyp konnte nicht erstellt werden."
 
@@ -455,173 +473,160 @@ msgstr "Auswahltyp konnte nicht erstellt werden."
 msgid "Could not create selection value for column "
 msgstr "Auswahlwert konnte nicht erstellt werden."
 
-#: database/tablefactory.py:256
+#: database/tablefactory.py:257
 msgid "Could not create column "
 msgstr "Spalte konnte nicht erstellt werden"
 
-#: database/tablefactory.py:263
+#: database/tablefactory.py:264
 msgid "Could not create column rights for column "
 msgstr "Spaltenrechte für die Spalte konnten nicht erstellt werden."
 
-#: database/tablefactory.py:276 database/tablefactory.py:279
-#: database/tablefactory.py:335 database/tablefactory.py:933
-#: database/views/api.py:386
+#: database/tablefactory.py:277 database/tablefactory.py:280
+#: database/tablefactory.py:336 database/tablefactory.py:941
+#: database/views/api.py:394
 msgid "Could not find table with name "
 msgstr "Eine Tabelle mit diesem Namen konnte nicht gefunden werden."
 
-#: database/tablefactory.py:291
+#: database/tablefactory.py:292
 msgid "Please delete references to this table in tables "
 msgstr "Bitte löschen Sie Referenzen von andren Tabellen zu dieser Tabelle."
 
-#: database/tablefactory.py:291
+#: database/tablefactory.py:292
 msgid " first."
 msgstr "zuerst."
 
-#: database/tablefactory.py:324
+#: database/tablefactory.py:325
 #, fuzzy
 msgid "Successfully deleted table "
 msgstr "Tabelle löschen"
 
-#: database/tablefactory.py:339 database/tablefactory.py:805
-#: database/tablefactory.py:953
+#: database/tablefactory.py:340 database/tablefactory.py:813
+#: database/tablefactory.py:961
 msgid "Could not find column with name "
 msgstr "'Eine Spalte mit diesem Namen wurde nicht gefunden."
 
-#: database/tablefactory.py:339 database/tablefactory.py:797
-#: database/tablefactory.py:953
+#: database/tablefactory.py:340 database/tablefactory.py:805
+#: database/tablefactory.py:961
 #, fuzzy
 msgid " in table "
 msgstr "in der Tabelle"
 
-#: database/tablefactory.py:381 database/tablefactory.py:558
+#: database/tablefactory.py:382 database/tablefactory.py:559
 msgid "Could not find table "
 msgstr "Die Tabelle konnte nicht gefunden werden."
 
-#: database/tablefactory.py:381 database/tablefactory.py:558
+#: database/tablefactory.py:382 database/tablefactory.py:559
 #, fuzzy
 msgid " to delete from."
 msgstr "löschen aus"
 
-#: database/tablefactory.py:395
+#: database/tablefactory.py:396
 msgid "Successfully deleted all datasets."
 msgstr "Alle Datensätze wurden erfolgreich gelöscht."
 
-#: database/tablefactory.py:408 database/tablefactory.py:410
-#: database/tablefactory.py:797 database/tablefactory.py:896
-#: database/tablefactory.py:924
+#: database/tablefactory.py:409 database/tablefactory.py:411
+#: database/tablefactory.py:805 database/tablefactory.py:904
+#: database/tablefactory.py:932
 msgid "Could not find dataset with id "
 msgstr "Datensätze mit ID's wurden nicht gefunden."
 
-#: database/tablefactory.py:428
+#: database/tablefactory.py:429
 msgid "Could not delete dataset with id "
 msgstr "Datensätze konnten nicht gelöscht werden"
 
-#: database/tablefactory.py:428
+#: database/tablefactory.py:429
 msgid ". Please delete references to it in following tables first: "
 msgstr "Bitte löschen Sie zuerst Referenzen zu weiteren Tabellen."
 
-#: database/tablefactory.py:459
+#: database/tablefactory.py:460
 #, fuzzy
 msgid "Failed to create table rights."
 msgstr "Rechte auf der Tabelle zu erstellen fehlgeschlagen."
 
-#: database/tablefactory.py:480
+#: database/tablefactory.py:481
 #, fuzzy
 msgid "Could not create table rights."
 msgstr "Tabellenrechte konnten nicht erstellt werden."
 
-#: database/tablefactory.py:506 database/tablefactory.py:526
+#: database/tablefactory.py:507 database/tablefactory.py:527
 msgid "Failed to create column rights."
 msgstr "Spaltenrechte erstellen fehlgeschlagen."
 
-#: database/tablefactory.py:593
+#: database/tablefactory.py:594
 msgid "Could not find column."
 msgstr "Spalte nicht gefunden."
 
-#: database/tablefactory.py:597
+#: database/tablefactory.py:598
 msgid "Column with name "
 msgstr "Spalte mit Namen"
 
-#: database/tablefactory.py:628
+#: database/tablefactory.py:631
 msgid "found duplicate selection values."
 msgstr "Es wurden doppelte Auswahlwerte gefunden."
 
-#: database/tablefactory.py:652 database/tablefactory.py:656
+#: database/tablefactory.py:659 database/tablefactory.py:663
 #, fuzzy
 msgid "Column "
 msgstr "Spalte"
 
-#: database/tablefactory.py:652
+#: database/tablefactory.py:659
 msgid " does not exist in referenced table "
 msgstr "existiert nicht in der referenzierten Tabelle"
 
-#: database/tablefactory.py:693
+#: database/tablefactory.py:700
 msgid "Error creating a new dataset."
 msgstr "Fehler beim Erstellen eines neuen Datensatzes."
 
-#: database/tablefactory.py:711
+#: database/tablefactory.py:718
 msgid "Could not find a column with name "
 msgstr "Es konnte keine Spalte mit Namen gefunden werden."
 
-#: database/tablefactory.py:711
+#: database/tablefactory.py:718
 #, fuzzy
 msgid "in table "
 msgstr "in der Tabelle"
 
-#: database/tablefactory.py:716 database/tablefactory.py:809
+#: database/tablefactory.py:723 database/tablefactory.py:817
 msgid "input "
 msgstr "Eingabe"
 
-#: database/tablefactory.py:716 database/tablefactory.py:809
+#: database/tablefactory.py:723 database/tablefactory.py:817
 #, fuzzy
 msgid " for column "
 msgstr "für die Spalte"
 
-#: database/tablefactory.py:716
+#: database/tablefactory.py:723
 msgid " is not valid. Abort."
 msgstr "ist nicht gültig. Der Vorgang wurde abgebrochen."
 
-#: database/tablefactory.py:751
+#: database/tablefactory.py:759
 #, fuzzy
 msgid "Could not add data for column"
 msgstr "Daten konnten nicht hinzugefügt werden."
 
-#: database/tablefactory.py:751
+#: database/tablefactory.py:759
 msgid ". The content type was not valid. Abort."
 msgstr ". Der Inhaltstyp war nicht gültig. Vorgang abgebrochen. "
 
-#: database/tablefactory.py:765 database/views/api.py:405
+#: database/tablefactory.py:773 database/views/api.py:413
 msgid "dataset with id "
 msgstr "Datensatz mit ID"
 
-#: database/tablefactory.py:765 database/views/api.py:405
+#: database/tablefactory.py:773 database/views/api.py:413
 msgid " could not be found in table "
 msgstr "konnte in der Tabelle nicht gefunden werden."
 
-#: database/tablefactory.py:809
+#: database/tablefactory.py:817
 msgid " is not valid."
 msgstr "ist nicht gültig."
 
-#: database/tablefactory.py:906
+#: database/tablefactory.py:914
 msgid "Could not add data to column "
 msgstr "Daten konnten nicht hinzugefügt werden."
 
-#: database/tablefactory.py:906
+#: database/tablefactory.py:914
 msgid ". The content type was invalid."
 msgstr "ungültiger Inhaltstyp"
-
-#: database/tablefactory.py:936
-msgid "attachment; filename='"
-msgstr "Anhang; Dateiname='"
-
-#: database/tablefactory.py:939
-msgid " from "
-msgstr "von"
-
-#: database/tablefactory.py:947
-#, fuzzy
-msgid "Could not find dataset with ID "
-msgstr "Datensätze mit der gewählten ID konnten nicht gefunden werden."
 
 #: database/views/api.py:110
 #, fuzzy
@@ -633,95 +638,104 @@ msgstr "Tabelle löschen"
 msgid " from table "
 msgstr "in der Tabelle"
 
-#: database/views/api.py:135
+#: database/views/api.py:143
 msgid "An error occured"
 msgstr "Ein Fehler ist aufgetreten."
 
-#: database/views/api.py:150
+#: database/views/api.py:158
 #, fuzzy
 msgid "user with name "
 msgstr "Kategorien"
 
-#: database/views/api.py:162 database/views/api.py:164
-msgid "status"
-msgstr "Status"
-
-#: database/views/api.py:169
+#: database/views/api.py:177
 msgid "logged off"
 msgstr "Ausgeloggt"
 
-#: database/views/api.py:180
+#: database/views/api.py:188
 #, fuzzy
 msgid "User does not exist"
 msgstr "exisitiert nicht."
 
-#: database/views/api.py:198
+#: database/views/api.py:206
 #, fuzzy
 msgid "Could not find user with name "
 msgstr "Eine Tabelle mit diesem Namen konnte nicht gefunden werden."
 
-#: database/views/api.py:211
+#: database/views/api.py:219
 #, fuzzy
 msgid "Successfully modified user rights."
 msgstr "Alle Datensätze wurden erfolgreich gelöscht."
 
-#: database/views/api.py:232
+#: database/views/api.py:240
 #, fuzzy
 msgid "Group with name "
 msgstr "Spalte mit Namen"
 
-#: database/views/api.py:263
+#: database/views/api.py:271
 msgid "following users could not be added to the group: "
 msgstr "Folgende Benutzer können nicht zu der Gruppe hinzugefügt werden:"
 
-#: database/views/api.py:263
+#: database/views/api.py:271
 msgid ". Have you misspelled them?"
 msgstr ". Haben Sie sich vielleicht vertippt?"
 
-#: database/views/api.py:264
+#: database/views/api.py:272
 #, fuzzy
 msgid "Successfully saved group "
 msgstr "Tabelle erstellen"
 
-#: database/views/api.py:279 database/views/api.py:337
+#: database/views/api.py:287 database/views/api.py:345
 #, fuzzy
 msgid "Could not find group with name "
 msgstr "'Eine Spalte mit diesem Namen wurde nicht gefunden."
 
-#: database/views/api.py:285
+#: database/views/api.py:293
 #, fuzzy
 msgid "A group with name "
 msgstr "Spalte mit Namen"
 
-#: database/views/api.py:330
+#: database/views/api.py:338
 #, fuzzy
 msgid "Successfully modifed group "
 msgstr "Tabelle löschen"
 
-#: database/views/api.py:342
+#: database/views/api.py:350
 #, fuzzy
 msgid "Successfully deleted group "
 msgstr "Tabelle löschen"
 
-#: database/views/api.py:363
+#: database/views/api.py:371
 #, fuzzy
 msgid "Saved password successfully."
 msgstr "Änderungen wurden erfolgreich gespeichert."
 
-#: database/views/api.py:401
+#: database/views/api.py:409
 #, fuzzy
 msgid "Table with name "
 msgstr "Kategorien"
 
-#: database/views/api.py:401
+#: database/views/api.py:409
 #, fuzzy
 msgid " could not be found."
 msgstr "konnte in der Tabelle nicht gefunden werden."
 
-#: database/views/api.py:408
+#: database/views/api.py:416
 #, fuzzy
 msgid "The requested dataset does not exist."
 msgstr "exisitiert nicht."
+
+#~ msgid "attachment; filename='"
+#~ msgstr "Anhang; Dateiname='"
+
+#~ msgid " from "
+#~ msgstr "von"
+
+#, fuzzy
+#~ msgid "Could not find dataset with ID "
+#~ msgstr "Datensätze mit der gewählten ID konnten nicht gefunden werden."
+
+#~ msgid "status"
+#~ msgstr "Status"
 
 #~ msgid "Gruppen"
 #~ msgstr "Gruppen"

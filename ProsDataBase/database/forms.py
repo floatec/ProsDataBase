@@ -66,7 +66,7 @@ class DataDateForm(ModelForm):
 class DataSelectionForm(ModelForm):
     class Meta:
         model = DataSelection
-        fields = ('created', 'content')
+        fields = ('created', 'content', 'key')
 
 
 class DataBoolForm(ModelForm):

@@ -59,7 +59,7 @@
 
             oldCategories = [];
             newCategories = [];
-            $("#categoryAdmin").prepend("categories");
+            $("#categoryAdmin").prepend("{% trans "categories" %}");
 
 
             $.getJSON('/api/category/', function (data) {

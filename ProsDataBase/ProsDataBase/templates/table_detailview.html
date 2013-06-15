@@ -26,8 +26,9 @@
     <div id="filter">
   <h3>{% trans "filter" %}</h3><div>
   <div id="filterView">
-<button onClick="addFilter('#filterView',global.table)" >+</button><button onclick="laodFiltered()"href='#'>{%trans "Filter" %}</button>
   </div>
+        <button onClick="addFilter('#filterView',global.table)" >+</button><button onclick="laodFiltered()"href='#'>{%trans "Filter" %}</button>
+
 </div>
     </div>
     <div id="deleteAlertBox"href='#'>{% trans "Are you sure to delete this item(s)?" %}</div>
@@ -42,8 +43,15 @@
 
         function addFilter(view,tableName){
             filter++;
-            $(view).append("<div class='filter'></div>")
+            $(view).append("<br><button onClick='deleteFilter(this)'>-</button><div style='display:inline' class='filter'></div>")
             addFilterOption($(view).children().last(), tableName)
+        }
+
+        function deleteFilter(element){
+            $(element).prev().remove();
+            $(element).next().remove();
+            $(element).remove();
+
         }
 
         function updateFilerOption(select,tableName){
@@ -250,11 +258,16 @@
             table.prepend("<caption  onClick='toggleTable(this.parentNode)'>" + tableName + "</capton>");
             //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
             tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
+            if($(insertTo).attr("id")=="headTable"){
+                $("#navigationMenuContent").html("")
+            }
             for (var key in columns) {
                {
                 tableHead.append("<th>" + columns[key].name + "</th>");
+                   if($(insertTo).attr("id")=="headTable"){
                 $("#navigationMenuContent").append("<li><a href='#" + columns[key].name + "'>" + columns[key].name + "</a></li>");
                 }
+               }
             }
 
             table.append(tableHead)
@@ -327,7 +340,11 @@
                  }
                     allDatasets = data.datasets;
                     console.log(allDatasets);
+                    if(allDatasets.length==0){
+                            clearErrors()
+                            showErrors([{message: "{%  trans "No Datasets are Matching" %}"}])
 
+                    }
                     allDatasets = data.datasets;
                     console.log(data);
 
