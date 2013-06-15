@@ -86,7 +86,7 @@ function init() {
     firstload = true;
     tableName = getTableName();
     $("#tableCrumb").prepend(decodeURIComponent(tableName));
-    $("#modifyCrumb").prepend("{% trans "Modify"%}");
+    $("#modifyCrumb").prepend(% trans "Modify" %};
     $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
     $("#modifyCrumb").attr('href', '/modify/' + tableName + '/');
     $("#tblName").val(decodeURIComponent(tableName));
