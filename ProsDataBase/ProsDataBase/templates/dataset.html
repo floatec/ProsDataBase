@@ -14,15 +14,12 @@
 
 {% block javascript %}
     <script language="JavaScript">
-
-
-
-        $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
+    //get structure of the current table
+    $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
             var tableName = decodeURIComponent(getTableName());
             var columns = data.columns;
-
             for (var i in columns) {
-                if(columns[i].type == 6){
+                if (columns[i].type == 6) {
                     continue
                 }
                 var row = "<tr class='allColumns'><td class='nameCell'>" + (columns[i].name) + "</td><td>"
@@ -43,7 +40,7 @@
                     row += '</select>'
                 }
                 if (columns[i].type == 4) {
-                     row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
+                    row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
                 }
                 if (columns[i].type == 5) {
                     row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"><img onClick="searchElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" src="/static/img/search-icon.png">'
@@ -102,9 +99,9 @@
                     }
                     else if ($(this).find(".check").length != 0) {
 
-                        if($(this).find("input").is(':checked')){
+                        if ($(this).find("input").is(':checked')) {
                             columnObj.value = true;
-                        }else{
+                        } else {
                             columnObj.value = false;
                         }
                     }
@@ -125,27 +122,28 @@
                 success: function (data) {
 
 
-            if(data.errors!=undefined){
-              showErrors(data.errors)
-               return
-            }
-            if(data.success!=undefined){
-                showSuccess(data.success)
+                    if (data.errors != undefined) {
+                        showErrors(data.errors)
+                        return
+                    }
+                    if (data.success != undefined) {
+                        showSuccess(data.success)
 
-            }
+                    }
 
-                    if (window.opener!=null) {
+                    if (window.opener != null) {
                         $(window.opener.document).find('#' + field).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span> ");
                         window.close();
-                    }else{
-                        window.href=window.location.href = '/detailview/'+getTableName();+'/';
+                    } else {
+                        window.href = window.location.href = '/detailview/' + getTableName();
+                        +'/';
                     }
                 }
             });
         });
 
 
-        function deleteTableType(element){
+        function deleteTableType(element) {
 
             $(element).next().remove();
             $(element).remove();
@@ -166,8 +164,8 @@
             myWindow.popup = true;
 
         }
-        function searchElement(table,field){
-              myWindow = window.open('/select_dataset/' + table, "_blank", "height=600,width=800,modal=yes,alwaysRaised=yes");
+        function searchElement(table, field) {
+            myWindow = window.open('/select_dataset/' + table, "_blank", "height=600,width=800,modal=yes,alwaysRaised=yes");
             myWindow.field = field;
             myWindow.popup = true;
         }
