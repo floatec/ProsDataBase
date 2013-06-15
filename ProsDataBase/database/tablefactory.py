@@ -115,7 +115,7 @@ def createTable(request):
     else:
         for obj in savedObjs:
             obj.delete()
-        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("Failed to create table. Please contact the developers.")}]}))
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("Failed to create table. Please contact the developers.").__unicode__()}]}))
 
     # add to table 'RightlistForTable' for user
     answer = createTableRights(jsonRequest["rights"], newTable)
