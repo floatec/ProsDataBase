@@ -471,8 +471,7 @@
      */
     function deleteDataSet() {
         var datasetIDs = [];
-        // todo its not always tab1!!!!!!!
-        var rows = $($("#tab1").last().children().children())
+        var rows = $($("#headTable").children().last().children().children())
         //generates array with all datasets how  are selected
         rows.each(function () {
             if ($(this).first().find("input:checkbox").is(':checked')) {
