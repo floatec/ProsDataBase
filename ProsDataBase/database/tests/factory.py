@@ -331,7 +331,7 @@ def create_Group(**kwargs):
     if groupF.is_valid():
         newDBGroup = groupF.save()
         newDBGroup.save()
-    for i in range(1,1001):
+    for i in range(1,10001):
         user = DBUser.objects.create_user(username=generate_random_username())
         user.save()
         m = dict()

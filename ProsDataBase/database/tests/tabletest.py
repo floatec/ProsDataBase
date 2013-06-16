@@ -110,13 +110,8 @@ class TableTest(TestCase):
 
         connect_User_With_Rights(user, table1)
 
-        result = TableSerializer.serializeAll(user)
-
-        #deleteTable(table1.name,user)
+        deleteTable(table1.name,user)
         # ==============================================================
         # tests the table is flaged as deleted
         # ==============================================================
-        #self.assertTrue(table1.deleted)
-        #print result
-
-        print user
+        self.assertTrue(table1.deleted)
