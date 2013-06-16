@@ -88,9 +88,10 @@ function init() {
     }
  });
 
-
+ // initialize variable
+    //checks if two column names are equal
     valid = true;
-    // initialize variable
+
     columnID = 0;
     countChoiceInputs = 0;
     rightColumnID = 1;
@@ -101,6 +102,7 @@ function init() {
     tables = [];
     datatypes = [];
     countCheckboxes = 0;
+    //fill datatypes array with standard datatypes
     datatypes[0] = "text";
     datatypes[1] = "number";
     datatypes[2] = "date";
@@ -146,7 +148,7 @@ function init() {
         changeTo(1);
     });
 
-
+    //get all users
     $.getJSON('/api/user/', function (data) {
 
         allUsers = data.users;
@@ -157,11 +159,12 @@ function init() {
 
 
     });
+    //get all groups
     $.getJSON('/api/group/', function (data) {
 
         allGroups = data.groups;
         for (var key in allGroups) {
-            allUserGroups.push(allGroups[key]);
+            allUserGroups.push(allGroups[key].name);
         }
 
     });
