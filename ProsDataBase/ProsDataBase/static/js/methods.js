@@ -1,3 +1,4 @@
+//some overall initial stuff
 $(document).ready(function () {
     $.getJSON('/api/myself/', function (data) {
         admin = data;
@@ -52,21 +53,27 @@ function encode_pros(string) {
     return string.replace(/ /g, "_-_");
 
 }
-
+//decode function
 function decode_pros(string) {
 
     return string.replace(/_-_/g, " ");
 
 }
+/*
+logout a user
+ */
 function logoutUser() {
     $.ajax({
         url: '/api/auth/session/',
         type: 'delete',
-        success: function(){
+        success: function () {
             window.location = "/login/";
         }
     });
 }
+/*
+Split sitng at coma
+*/
 function split(val) {
     return val.split(/,\s*/);
 }
@@ -74,8 +81,9 @@ function split(val) {
 function extractLast(term) {
     return split(term).pop();
 }
-//comparison to sort arrays alphabetically
-
+/*
+comparison to sort arrays alphabetically
+ */
 function stringComparison(a, b) {
     a = a.toLowerCase();
     a = a.replace(/ä/g, "a");
@@ -92,8 +100,10 @@ function stringComparison(a, b) {
     return(a == b) ? 0 : (a > b) ? 1 : -1;
 }
 
-
-function allowPassword(val1,val2) {
+/*
+checks f both passwords ar dientical
+ */
+function allowPassword(val1, val2) {
     if (val1 == val2) {
         return true;
     }
@@ -102,16 +112,36 @@ function allowPassword(val1,val2) {
     }
 
 }
-function showErrors(errors){
-    for (var i in errors){
-        $("#errorblock").append("<div class='error'>"+errors[i].message+"</div>")
+/*
+shows error messages
+errors=erray with error objects
+ */
+function showErrors(errors) {
+    for (var i in errors) {
+        $("#errorblock").append("<div class='error'>" + errors[i].message + "</div>")
     }
 }
-function clearErrors(){
-     $("#errorblock").html("")
+/*
+clears all errors an success messages
+ */
+function clearErrors() {
+    $("#errorblock").html("")
 }
-function showSuccess(success){
+/*
+ Adds a Success Message
+ success=Message
+ */
+function showSuccess(success) {
 
-        $("#errorblock").append("<div class='success'>"+success+"</div>")
+    $("#errorblock").append("<div class='success'>" + success + "</div>")
 
 }
+//errorhandling for internal server error...just in case of emergency
+$.ajaxSetup({
+    error: function (x, e) {
+        if (x.status == 500) {
+            $("#errorblock").append("<div class='error'>Failed to create table. Please contact the developers.</div>")
+        }
+    }
+});
+

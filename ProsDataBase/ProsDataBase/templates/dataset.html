@@ -16,18 +16,18 @@
 
 {% block javascript %}
     <script language="JavaScript">
-
-
-
-        $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
+    //get structure of the current table
+    $.getJSON('/api/table/' + getTableName() + '/structure/', function (data) {
             var tableName = decodeURIComponent(getTableName());
             var columns = data.columns;
-
+            //itterate over all columns
             for (var i in columns) {
-                if(columns[i].type == 6){
+                //ignore virtual coumns
+                if (columns[i].type == 6) {
                     continue
                 }
                 var row = "<tr class='allColumns'><td class='nameCell'>" + (columns[i].name) + "</td><td>"
+                //create type spezific inputs
                 if (columns[i].type == 0) {
                     row += '<input class="inputText" name="' + encode_pros(columns[i].name) + '" type="text" placeholder="text">'
                 }
@@ -45,7 +45,7 @@
                     row += '</select>'
                 }
                 if (columns[i].type == 4) {
-                     row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
+                    row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
                 }
                 if (columns[i].type == 5) {
                     row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"><img onClick="searchElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" src="/static/img/search-icon.png">'
@@ -62,47 +62,39 @@
                 $("#fields").append(row);
                 $(".icn").button();
             }
+            //breadcurmbs and stuff
             $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
             $("#tableCrumb").prepend(decodeURIComponent(tableName));
             $("#insertCrumb").prepend("{% trans "Insert" %}");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
-
             $("#insertCrumb").attr('href', '/dataset/' + tableName + '/');
 
         });
-
+          // onclick save handler
         $("#saveInsert").click(function () {
-
             var jsonDataset = {};
-
             jsonDataset.columns = [];
+            //itterate over all columns
             $(".allColumns").each(function () {
                 columnObj = {};
                 columnObj.name = decode_pros($(this).find(".nameCell").text());
                 if ($(this).find("input").length == 0) {
                     if ($(this).find("select").length == 0) {
                         value = []
-
                         if ($(this).find(".value").length != 0) {
-
                             $(this).find(".value").each(function () {
                                 value.push($(this).html())
                             });
                             columnObj.value = value
                         }
-
                     }
                     else {
-
                         columnObj.value = $(this).find(":selected").text();
-
                     }
-
                 }
                 else {
                     if ($(this).find(".dateClass").length != 0) {
                         columnObj.value = $(this).find("input").val();
-
                     }
                     else if ($(this).find(".inputNumber").length != 0) {
                         columnObj.value = parseFloat($(this).find("input").val());
@@ -112,19 +104,17 @@
                     }
                     else if ($(this).find(".check").length != 0) {
 
-                        if($(this).find("input").is(':checked')){
+                        if ($(this).find("input").is(':checked')) {
                             columnObj.value = true;
-                        }else{
+                        } else {
                             columnObj.value = false;
                         }
                     }
                 }
-
-                jsonDataset.columns.push(columnObj);
-                console.log(jsonDataset);
-
+                if(columnObj.value!=""){
+                    jsonDataset.columns.push(columnObj);
+                }
             });
-            console.log(jsonDataset);
             $.ajax({
                 url: '/api/table/' + getTableName() + '/',
                 type: 'post',
@@ -135,27 +125,28 @@
                 success: function (data) {
 
 
-            if(data.errors!=undefined){
-              showErrors(data.errors)
-               return
-            }
-            if(data.success!=undefined){
-                showSuccess(data.success)
+                    if (data.errors != undefined) {
+                        showErrors(data.errors)
+                        return
+                    }
+                    if (data.success != undefined) {
+                        showSuccess(data.success)
 
-            }
+                    }
 
-                    if (window.opener!=null) {
+                    if (window.opener != null) {
                         $(window.opener.document).find('#' + field).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span> ");
                         window.close();
-                    }else{
-                        window.href=window.location.href = '/detailview/'+getTableName();+'/';
+                    } else {
+                        window.href = window.location.href = '/detailview/' + getTableName();
+                        +'/';
                     }
                 }
             });
         });
 
 
-        function deleteTableType(element){
+        function deleteTableType(element) {
 
             $(element).next().remove();
             $(element).remove();
@@ -176,8 +167,8 @@
             myWindow.popup = true;
 
         }
-        function searchElement(table,field){
-              myWindow = window.open('/select_dataset/' + table, "_blank", "height=600,width=800,modal=yes,alwaysRaised=yes");
+        function searchElement(table, field) {
+            myWindow = window.open('/select_dataset/' + table, "_blank", "height=600,width=800,modal=yes,alwaysRaised=yes");
             myWindow.field = field;
             myWindow.popup = true;
         }
