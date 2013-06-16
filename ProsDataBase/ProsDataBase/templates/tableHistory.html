@@ -2,6 +2,8 @@
 {% load i18n %}
 
 {% block header %}
+
+        <a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
         <a class="crumb" href='/histroyCrumb/' id='historyCrumb'> <span>></span></a>
 
 
@@ -30,8 +32,9 @@
 
     init();
     function init(){
-
-    $("#historyCrumb").prepend("history Log");
+    $("#tableCrumb").prepend(encodeURIComponent(getTableName()));
+    $("#tableCrumb").attr('href','/detailview/'+getTableName()+'/')
+    $("#historyCrumb").prepend("Log");
     $("#historyCrumb").attr('href', '/tableHistory/'+getTableName()+'/');
 
 }
