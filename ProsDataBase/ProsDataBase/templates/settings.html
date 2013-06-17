@@ -28,7 +28,7 @@
 {% block javascript %}
 <script language="JavaScript">
 
-    $("#settingsCrumb").prepend("settings");
+    $("#settingsCrumb").prepend("{% trans "settings" %}");
 
 $("#saveSettingsButton").click(function(){
     if(allowPassword($("#newPw").val(),$("#confirmNewPw").val())){
