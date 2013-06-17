@@ -11,7 +11,10 @@ class DataSetTest(TestCase):
 
         column1 = create_columns(table1, user)
 
-        connect_User_With_Rights(user, table1)
+        connect_User_With_TableRights(user, table1)
+        connect_User_With_ColumnRights(user, column1)
+
+        table1.getColumns()
 
         result = TableSerializer.serializeOne(table1.name, user)
 
