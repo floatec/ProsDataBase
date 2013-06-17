@@ -88,10 +88,12 @@
                             columnObj.value = value
                         }
                     }
+                    //selection
                     else {
                         columnObj.value = $(this).find(":selected").text();
                     }
                 }
+                //input field
                 else {
                     if ($(this).find(".dateClass").length != 0) {
                         columnObj.value = $(this).find("input").val();
@@ -103,7 +105,6 @@
                         columnObj.value = $(this).find("input").val();
                     }
                     else if ($(this).find(".check").length != 0) {
-
                         if ($(this).find("input").is(':checked')) {
                             columnObj.value = true;
                         } else {
@@ -111,10 +112,12 @@
                         }
                     }
                 }
+                //only add if there is a value set
                 if(columnObj.value!=""){
                     jsonDataset.columns.push(columnObj);
                 }
             });
+            //send obj to server
             $.ajax({
                 url: '/api/table/' + getTableName() + '/',
                 type: 'post',
