@@ -174,7 +174,7 @@ def register(request):
     jsonRequest = json.loads(request.raw_post_data)
     try:
         DBUser.objects.get(username=jsonRequest["username"])
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("user with name ") + jsonRequest["username"] + _(" already exists.")}]}),content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("user with name ").__unicode__() + jsonRequest["username"] + _(" already exists.").__unicode__()}]}),content_type="application/json")
     except DBUser.DoesNotExist:
         user = DBUser.objects.create_user(username=jsonRequest["username"], password=jsonRequest["password"])
         user.save()
@@ -222,7 +222,7 @@ def modifyUserRights(request):
         try:
             user = DBUser.objects.get(username=userObj["name"])
         except DBUser.DoesNotExist:
-            HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find user with name ") + userObj["name"] + "."}]}), content_type="application/json")
+            HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find user with name ").__unicode__() + userObj["name"] + "."}]}), content_type="application/json")
 
         if userObj["tableCreator"] != user.tableCreator\
                 or userObj["userManager"] != user.userManager\
