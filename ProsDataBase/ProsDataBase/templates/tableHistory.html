@@ -14,6 +14,7 @@
     <thead>
         <th>{% trans "date" %}</th>
         <th>{% trans "user" %}</th>
+        <th>{% trans "type" %}</th>
         <th>{% trans "message" %}</th>
 
     </thead>
@@ -44,7 +45,7 @@
             var historyRow = ""
             for(var key in data.histories){
 
-                  historyRow += "<tr><td>"+data.histories[key].date+"</td><td>"+data.histories[key].user+"</td><td><ul>";
+                  historyRow += "<tr><td>"+data.histories[key].date+"</td><td>"+data.histories[key].user+"</td><td>"+data.histories[key].type+"</td><td><ul>";
                   for(var i in data.histories[key].messages){
                         historyRow +="<li>"+data.histories[key].messages[i]+"</li>";
 
