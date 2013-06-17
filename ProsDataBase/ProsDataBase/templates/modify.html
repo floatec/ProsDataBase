@@ -110,6 +110,7 @@ function init() {
     allColumnChoiceInputs = [];
     allUserGroups = [];
     columnNames = [];
+    allGroupNames = [];
     tables = [];
     datatypes = [];
     countCheckboxes = 0;
@@ -195,6 +196,8 @@ function init() {
 
         allGroups = data.groups;
         for (key in allGroups) {
+
+            allGroupNames.push(allGroups[key].name);
             allUserGroups.push(allGroups[key].name);
         }
 
@@ -999,7 +1002,7 @@ function sendJsonObjPage2(){
             if ($.isInArray(name, allUsers)) {
                 users.push(userObj);
             }
-            else if ($.isInArray(name, allGroups)) {
+            else if ($.isInArray(name, allGroupNames)) {
                 groups.push(userObj);
 
             }
@@ -1036,7 +1039,7 @@ function sendJsonObjPage2(){
         if ($.isInArray(userGroupName, allUsers)) {
             users.push(userObj);
         }
-        else if ($.isInArray(userGroupName, allGroups)) {
+        else if ($.isInArray(userGroupName, allGroupNames)) {
             groups.push(userObj);
         }
     });
