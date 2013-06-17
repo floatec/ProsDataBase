@@ -24,11 +24,17 @@ class TableTest(TestCase):
         table1 = create_table(schmog)
         table2 = create_table(schmog)
 
-        column1 = create_columns(table1, schmog)
-        column2 = create_columns(table2, schmog)
 
-        connect_User_With_Rights(schmog,table1)
-        connect_User_With_Rights(schmog,table2)
+        column1 = create_columnsWithPatients(table1, schmog)
+        column2 = create_columnsWithPatients(table2, schmog)
+
+        connect_User_With_TableRights(schmog,table1)
+        connect_User_With_TableRights(schmog,table2)
+
+        for col in table1.getColumns():
+            connect_User_With_ColumnRights(schmog,col)
+        for col in table2.getColumns():
+            connect_User_With_ColumnRights(schmog,col)
 
         result =  TableSerializer.serializeAll(schmog)
 
@@ -54,6 +60,7 @@ class TableTest(TestCase):
         # =================================================================
         # tests the name of the table
         # =================================================================
+        print [table["name"] for table in result["tables"]]
         self.assertTrue(table1.name in [table["name"] for table in result["tables"]])
         self.assertTrue(table2.name in [table["name"] for table in result["tables"]])
 
@@ -63,7 +70,8 @@ class TableTest(TestCase):
         for array in [table["columns"] for table in result["tables"]]:
             length += len(array)
 
-        #self.assertEquals(length, 10)
+
+        self.assertEquals(length, 8)
         print result
 
     # !!!!!! TABELLENNAME WIRD NICHT GEFUNDEN
@@ -84,17 +92,32 @@ class TableTest(TestCase):
 
         table1 = create_table(user)
 
-        column1 = create_columns(table1, user)
+        column1 = create_columnsWithPatients(table1, user)
 
-        connect_User_With_Rights(user, table1)
-
+        connect_User_With_TableRights(user, table1)
+        for column in table1.getColumns():
+            connect_User_With_ColumnRights(user, column)
         result = TableSerializer.serializeOne(table1.name,user)
-
+        print result
         table1Cols = list()
         for col in table1.getColumns():
             table1Cols.append(col.name)
 
         self.assertEquals(table1.name, result["name"])
+
+
+        datasets = table1.getDatasets()
+        for dataset in datasets:
+            id = dataset.datasetID
+
+            for datasetObj in result["datasets"]:
+                if datasetObj["id"] == id:
+                    for data in dataset.getData():
+                        for item in data:
+                            self.assertTrue(item.column.name in [column["column"] for column in datasetObj["data"]])
+                            for data in datasetObj["data"]:
+                                if data["column"] == item.column.name:
+                                    self.assertEquals(str(item.content), data["value"])
 
         print result
 
@@ -103,12 +126,11 @@ class TableTest(TestCase):
 
         user = create_RandomUser()
 
-
         table1 = create_table(user)
 
         column1 = create_columns(table1, user)
 
-        connect_User_With_Rights(user, table1)
+        connect_User_With_TableRights(user, table1)
 
         deleteTable(table1.name,user)
         # ==============================================================
