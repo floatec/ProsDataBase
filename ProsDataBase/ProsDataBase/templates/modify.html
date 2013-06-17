@@ -714,7 +714,7 @@ function createExistedUsers() {
         var actors = data.actors;
         for (var i in actors) {
             var userName = actors[i].name;
-
+            takenUserGroups.push(actors[i].name);
             //create rights-table
             $("#allUserRights").append("<table border='1' class='rightsTable' id='" + userName + "'><tr id='descriptionRow_" + rightColumnID + "'></tr><tr id='iconsRow_" + userName + "'></tr></table>");
             var inputsToappend = "";
