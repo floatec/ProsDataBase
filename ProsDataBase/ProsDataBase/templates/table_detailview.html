@@ -311,7 +311,7 @@
         //set caption and initial colapse event
         table.prepend("<caption  onClick='toggleTable(this.parentNode)'>" + tableName + "</capton>");
         //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
-        tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>data edit</th><th>system ID</th>");
+        tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>{% trans "data edit" %}</th><th>system ID</th>");
         //if it is the head element it shoudl clear the navigation
         if ($(insertTo).attr("id") == "headTable") {
             $("#navigationMenuContent").html("")

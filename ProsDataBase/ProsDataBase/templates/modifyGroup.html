@@ -33,7 +33,7 @@
     }
  });
         var groupName = getGroupName();
-         $("#groupCrumb").prepend("all groups");
+         $("#groupCrumb").prepend("{% trans "all groups" %}");
             $("#modifyGroupCrumb").prepend(groupName);
             $("#groupCrumb").attr('href', '/groupadmin/');
 
