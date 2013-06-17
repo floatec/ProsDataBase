@@ -21,7 +21,6 @@ from django.conf import settings
 from datetime import datetime
 from django.contrib.auth.models import AbstractUser, UserManager
 
-
 # ===============================
 # ----- STRUCTURE TABLES --------
 # ===============================
@@ -370,11 +369,11 @@ class TypeTable(models.Model):
 
 
 # ===============================
-# ------- HISTORY TABLE ---------
+# ------- HISTORY TABLES --------
 # ===============================
 
 
-class History(models.Model):
+class HistoryTable(models.Model):
     TABLE_CREATED = 0
     TABLE_DELETED = 1
     TABLE_MODIFIED = 2
@@ -387,9 +386,48 @@ class History(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     date = models.DateTimeField()
     type = models.IntegerField()
-    datasets = models.ManyToManyField('Dataset')
-    columns = models.ManyToManyField('Column')
 
+    def __unicode__(self):
+        text = "table log entry: " + str(self.date) + ". Table: " + self.table.name
+        if self.type == HistoryTable.TABLE_CREATED:
+            text += ". Event: TABLE CREATED."
+        if self.type == HistoryTable.TABLE_DELETED:
+            text += ". Event: TABLE DELETED."
+        if self.type == HistoryTable.TABLE_MODIFIED:
+            text += ". Event: TABLE MODIFIED."
+        if self.type == HistoryTable.DATASET_INSERTED:
+            text += ". Event: DATASET INSERTED."
+        if self.type == HistoryTable.DATASET_MODIFIED:
+            text += ". Event: DATASET MODIFIED."
+        if self.type == HistoryTable.DATASET_DELETED:
+            text += ". Event: DATASET DELETED."
+        return text
+
+
+class MessageTable(models.Model):
+    history = models.ForeignKey('HistoryTable', related_name='messages')
+    content = models.TextField()
+
+    def __unicode__(self):
+        return self.content
+
+
+class HistoryAuth(models.Model):
+    GROUP_CREATED = 0
+    GROUP_MEMBER_ADDED = 1
+    GROUP_MEMBER_REMOVED = 2
+    GROUP_MODIFIED = 3
+    GROUP_DELETED = 4
+    USER_REGISTERED = 5
+    USER_MODIFIED = 6
+
+    date = models.DateTimeField()
+    type = models.IntegerField()
+
+
+class MessageAuth(models.Model):
+    history = models.ForeignKey('HistoryAuth', related_name='messages')
+    content = models.TextField()
 
 # ===============================
 # ----- PERMISSION TABLES -------

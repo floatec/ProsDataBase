@@ -115,7 +115,7 @@ def export(request, tableName):
         return tablefactory.exportTable(json.loads(request.raw_post_data), tableName)
 
 
-def history(request, tableName):
+def tableHistory(request, tableName):
     if request.method == 'GET':
         response = TableSerializer.serializeHistory(tableName)
         if not response:
@@ -131,7 +131,8 @@ def datasets(request, tableName):
         #    return HttpResponse("Permission denied", status=403)
     if request.method == 'DELETE':
         #if request.user.mayDeleteTable(tableName):
-        return tablefactory.deleteDatasets(request, tableName)
+        tablefactory.deleteDatasets(request, tableName)
+
        # else:
        #     return HttpResponse("Permission denied", status=403)
 

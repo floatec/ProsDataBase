@@ -52,14 +52,14 @@ urlpatterns = patterns(
     (r'^api/table/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/structure/$', "database.views.api.tableStructure"),
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/rights/$', "database.views.api.tableRights"),
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/column/(?P<columnName>[\w| |\d|.|_|\-|\(|\)]+)/$', "database.views.api.column"),
-    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/history/$', "database.views.api.history"),
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/history/$', "database.views.api.tableHistory"),
 
     # APIs for dataset requests
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/dataset/$', "database.views.api.datasets"),
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/dataset/filter/$', "database.views.api.filterDatasets"),
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/dataset/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', "database.views.api.dataset"),
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/export/$', "database.views.api.export"),
-
+    (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/history/$', "database.views.api.tableHistory"),
 
     # APIs for user/group requests
     (r'^api/user/$', "database.views.api.users"),
