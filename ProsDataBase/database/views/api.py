@@ -178,7 +178,7 @@ def register(request):
     except DBUser.DoesNotExist:
         user = DBUser.objects.create_user(username=jsonRequest["username"], password=jsonRequest["password"])
         user.save()
-        return HttpResponseRedirect("/login/")
+        return HttpResponse(json.dumps({"success": _("Account is created").__unicode__()}), content_type="application/json")
 
 
 def login(request):
