@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-
+    <script src="/static/js/nouser.js"></script>
     <link rel="stylesheet" href="/resources/demos/style.css"/>
     <style type="text/css">
 
@@ -37,7 +37,7 @@
 </div>
 <div id="content">
     <div id="registerDiv">
-
+<div id="errorblock"></div>
         <table>
 
             <tr>
@@ -92,7 +92,7 @@
                }
                if(data.success!=undefined){
                  showSuccess(data.success)
-
+                     window.location.href = '/';
              }
             }
             });
