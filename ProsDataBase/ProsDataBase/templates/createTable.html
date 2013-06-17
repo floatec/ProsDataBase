@@ -105,11 +105,11 @@ function init() {
     datatypes = [];
     countCheckboxes = 0;
     //fill datatypes array with standard datatypes
-    datatypes[0] = "text";
-    datatypes[1] = "number";
-    datatypes[2] = "date";
-    datatypes[3] = "selection";
-    datatypes[4] = "yes or no";
+    datatypes[0] = "{% trans "text" %}";
+    datatypes[1] = "{% trans "number" %}";
+    datatypes[2] = "{% trans "date" %}";
+    datatypes[3] = "{% trans "selection" %}";
+    datatypes[4] = "{% trans "yes or no" %}";
     // initialize tabs
     $("#tabs").tabs({
         collapsible: false,
