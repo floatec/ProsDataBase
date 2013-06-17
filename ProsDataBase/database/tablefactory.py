@@ -301,6 +301,7 @@ def deleteTable(name, user):
 
         columns = list()
         for column in table.columns.all():
+            columns.append(column)
             answer = deleteColumn(table.name, column.name, user)
             if not answer:
                 errors.append(answer)
