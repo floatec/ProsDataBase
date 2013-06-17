@@ -126,7 +126,7 @@ def column(request, tableName, columnName):
         if not answer:
             return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
         else:
-            return HttpResponse(_("Successfully deleted column ") + columnName + _(" from table ") + tableName + ".", status=200)
+            return HttpResponse(json.dumps({"success" : _("Successfully deleted column ").__unicode__() + columnName + _(" from table ").__unicode__() + tableName + "."}), content_type="application/json")
 
 
 def export(request, tableName):
@@ -138,7 +138,7 @@ def history(request, tableName):
     if request.method == 'GET':
         response = TableSerializer.serializeHistory(tableName)
         if not response:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name ") + tableName + "."}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name ").__unicode__() + tableName + "."}]}), content_type="application/json")
         return HttpResponse(json.dumps(response), content_type="application/json")
 
 
@@ -159,7 +159,7 @@ def filterDatasets(request, tableName):
     if request.method == 'POST':
         datasets = DatasetSerializer.serializeBy(json.loads(request.raw_post_data), tableName, request.user)
         if datasets is None:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("An error occured")}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("An error occured").__unicode__()}]}), content_type="application/json")
         return HttpResponse(json.dumps(datasets), content_type="application/json")
 
 
@@ -174,7 +174,7 @@ def register(request):
     jsonRequest = json.loads(request.raw_post_data)
     try:
         DBUser.objects.get(username=jsonRequest["username"])
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("user with name ") + jsonRequest["username"] + _(" already exists.")}]}),content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("user with name ").__unicode__() + jsonRequest["username"] + _(" already exists.").__unicode__()}]}),content_type="application/json")
     except DBUser.DoesNotExist:
         user = DBUser.objects.create_user(username=jsonRequest["username"], password=jsonRequest["password"])
         user.save()
@@ -204,7 +204,7 @@ def showAllUsers():
 def showOneUser(name):
     user = UserSerializer.serializeOne(name)
     if user is None:
-        return HttpResponse(json.dumps({"errors": [{"code": -1, "message": _("User does not exist")}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": -1, "message": _("User does not exist").__unicode__()}]}), content_type="application/json")
     else:
         return HttpResponse(json.dumps(user), content_type="application/json")
 
@@ -222,7 +222,7 @@ def modifyUserRights(request):
         try:
             user = DBUser.objects.get(username=userObj["name"])
         except DBUser.DoesNotExist:
-            HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find user with name ") + userObj["name"] + "."}]}), content_type="application/json")
+            HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find user with name ").__unicode__() + userObj["name"] + "."}]}), content_type="application/json")
 
         if userObj["tableCreator"] != user.tableCreator\
                 or userObj["userManager"] != user.userManager\
@@ -234,8 +234,8 @@ def modifyUserRights(request):
         user.is_active = userObj["active"]
         if modified:
             user.save()
-        #TODO JSON
-    return HttpResponse(_("Successfully modified user rights."), content_type="application/json")
+
+    return HttpResponse(json.dumps({"success" : _("Successfully modified user rights.").__unicode__()}), content_type="application/json")
 
 
 def showAllGroups():
@@ -256,7 +256,7 @@ def addGroup(request):
         groupNames.append(name)
 
     if request["name"] in groupNames:
-        HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Group with name ") + request["name"] + _(" already exists.")}]}), content_type="application/json")
+        HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Group with name ").__unicode__() + request["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
 
     groupF = DBGroupForm({"name": request["name"]})
     if groupF.is_valid():
@@ -288,8 +288,8 @@ def addGroup(request):
 
     if len(failed) > 0:
         return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message":  _("following users could not be added to the group: ") + str(failed) + _(". Have you misspelled them?")}]}), content_type="application/json")
-    #TODO JSON
-    return HttpResponse(_("Successfully saved group ") + request["name"] + ".", status=200)
+
+    return HttpResponse(json.dumps({"success" : _("Successfully saved group ").__unicode__() + request["name"] + "."}),content_type="application/json")
 
 
 def modifyGroup(request, name):
@@ -304,13 +304,13 @@ def modifyGroup(request, name):
     try:
         group = DBGroup.objects.get(name=name)
     except DBGroup.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find group with name ") + name + "."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find group with name ").__unicode__() + name + "."}]}), content_type="application/json")
 
     request = json.loads(request.raw_post_data)
     if request["name"] != group.name:
         try:
             DBGroup.objects.get(name=request["name"])
-            return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("A group with name ") + request["name"] + _(" already exists.")}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("A group with name ").__unicode__() + request["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
         except DBGroup.DoesNotExist:
             group.name = request["name"]
 
@@ -355,19 +355,19 @@ def modifyGroup(request, name):
         membership = Membership.objects.get(user=theUser)
         membership.delete()
     #TODO JSON
-    return HttpResponse(_("Successfully modifed group ") + name + ".", status=200)
+    return HttpResponse(json.dumps({"success" : _("Successfully modifed group ").__unicode__() + name + "."}), content_type="applciation/json")
 
 
 def deleteGroup(request, name):
     try:
         group = DBGroup.objects.get(name=name)
     except DBGroup.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find group with name ") + name + "."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find group with name ").__unicode__() + name + "."}]}), content_type="application/json")
 
     Membership.objects.filter(group=group).delete()
     group.delete()
     #TODO JSON
-    return HttpResponse(content=_("Successfully deleted group ") + name + ".", status=200)
+    return HttpResponse(json.dumps({"success" : _("Successfully deleted group ").__unicode__() + name + "."}), content_type="application/json")
 
 
 def showMyUser(user):
@@ -389,7 +389,7 @@ def changeMyPassword(request):
     request.user.set_password(jsonRequest["password"])
     request.user.save()
     #TODO JSON
-    return HttpResponse(_("Saved password successfully."), status=200)
+    return HttpResponse(json.dumps({"success" : _("Saved password successfully.")}),content_type="application/jon")
 
 
 def showCategories():
@@ -412,7 +412,7 @@ def showDatasets(request, tableName):
     try:
         Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find table with name ") + tableName + "."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find table with name ").__unicode__() + tableName + "."}]}), content_type="application/json")
 
     jsonRequest = json.loads(request.raw_post_data)
     result = dict()
@@ -427,14 +427,14 @@ def showDataset(tableName, datasetID, user):
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Table with name ") + tableName + _(" could not be found.")}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Table with name ").__unicode__() + tableName + _(" could not be found.").__unicode__()}]}), content_type="application/json")
     try:
         dataset = Dataset.objects.get(datasetID=datasetID, table=table)
     except Dataset.DoesNotExist:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("dataset with id ") + datasetID + _(" could not be found in table ") + tableName + "."}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("dataset with id ").__unicode__() + datasetID + _(" could not be found in table ").__unicode__() + tableName + "."}]}), content_type="application/json")
 
     if dataset.deleted:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("The requested dataset does not exist.")}]}),content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("The requested dataset does not exist.").__unicode__()}]}),content_type="application/json")
     else:
         dataset = DatasetSerializer.serializeOne(datasetID, user)
         return HttpResponse(json.dumps(dataset), content_type="application/json")
@@ -443,7 +443,7 @@ def showDataset(tableName, datasetID, user):
 def showAllTables(user):
     tables = TableSerializer.serializeAll(user)
     return HttpResponse(json.dumps(tables), content_type="application/json") if tables is not None \
-        else HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Table could not be found")}]}),content_type="application/json")
+        else HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Table could not be found").__unicode__()}]}),content_type="application/json")
 
 
 def showTable(name, user):
