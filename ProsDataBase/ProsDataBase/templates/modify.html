@@ -16,15 +16,18 @@
 
 {% block help %}
 <div class='helpTextDiv'><h1>{% trans "Help" %}</h1>
+    <!-- todo: translation (paddy)-->
     {% trans "Please specify the table name. Note,that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br/>Following content types exist:<br/>Text: accepts any text and numbers. Is optionally restricted by length.<br/>Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br/>Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br/>Yes/No: accepts either yes or no.<br/>Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br/>[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table."%}
 </div>
 {% endblock %}
 
 
 {% block content %}
+    <!--todo: translation (paddy) -->
 <div id="deleteAlertBox">{% trans "Are you sure to delete this item?" %}</div>
 <div id="alertTableBox">{% trans "Are you sure to delete this table? All data inside will be lost! Be careful with doing that!" %}
 </div>
+   <!--todo: translation (paddy) -->
 <div id="deleteExistedColumns">{% trans "Are you sure to delete this column? Be careful! Containing data will be lost!" %}</div>
 
 <div id="tabs">
@@ -43,7 +46,7 @@
             <tr>
                 <td></td>
                 <td>{% trans "column" %}</td>
-                <td>comment</td>
+                <td>{% trans "comment" %}</td>
                 <td>{% trans "content type" %}</td>
             </tr>
 
@@ -154,6 +157,7 @@ function init() {
                 $("#naviHeadline").remove();
                 $("#naviContentSpan").remove();
                 $(".helpTextDiv").empty();
+                //todo: translation (paddy)
                 $(".helpTextDiv").html('<h1>Help</h1>Please specify the table name. Note, that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.');
 
 
@@ -166,6 +170,7 @@ function init() {
                 $("#naviContentSpan").remove();
                 $("#naviContentList").remove();
                 $(".helpTextDiv").empty();
+                //todo: translation (paddy)
                 $(".helpTextDiv").html('<h1>Help</h1>Finally, assign read, insert, modify and delete rights to users and groups:Search for users or groups in the input field and toggle their rights for each column.The "All"-section allows fast rights assignment for all columns.');
 
 
@@ -316,7 +321,7 @@ function createAllExistedColumn(data){
                 $("#row_" + columnID).find(".comment").val(columns[key].comment);
                 if (columns[key].type == 0) {
                     $("#selectDataType_" + columnID).val(0);
-                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' size='5' class='length' value='100'>");
+                    $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'>");
                     $("#row_" + columnID).find(".length").val(columns[key].length);
 
 
@@ -488,7 +493,7 @@ function createExistedColumnsRow(columnid) {
 
 function createNewColumnsRow() {
     columnID++;
-    $("#columnTable").append("<tr class='trcolumnClass' id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><input type='text' class='comment'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' class='length' value='100'></td></tr>");
+    $("#columnTable").append("<tr class='trcolumnClass' id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><input type='text' class='comment'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' class='length' value='100'></td></tr>");
 
     $("#field_" + columnID).change(function () {
         valid = true;
@@ -545,7 +550,7 @@ function createNewColumnsRow() {
         //size for text datatype
         if ($("#selectDataType_" + lastID).val() == "0") {
             $("#selectDataTypeCell_" + lastID).remove();
-            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>length:<input type='text' size='5' class='length' value='100'></td>");
+            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'></td>");
         }
         if ($("#selectDataType_" + lastID).val() == "4") {
             $("#selectDataTypeCell_" + lastID).remove();
@@ -558,8 +563,8 @@ function createNewColumnsRow() {
             var tableName = $("#selectDataType_" + lastID).find(":selected").text();
             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
                 var input = "";
-                input += "<td id='selectDataTypeCell_" + lastID + "'>select value: <select>";
-                input += "<option>all</option>"
+                input += "<td id='selectDataTypeCell_" + lastID + "'>{% trans "select value" %}: <select>";
+                input += "<option>{% trans "all" %}</option>"
                 allColumns = data.columns;
                 for (var key in allColumns) {
                     input += "<option>";
@@ -668,17 +673,17 @@ $("#addUserToRights").click(function () {
         var inputsToappend = "";
         $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
         countCheckboxes++;
-        inputsToappend += "<td class='all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='modify structure' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+        inputsToappend += "<td class='all forever' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='{% trans "modify table" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label title='insert datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label title='{% trans "insert data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label title='delete datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label title='{% trans "delete data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label title='view log' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label title='{% trans "view log" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label title='read all data' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+        inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label title='{% trans "read all data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label title='modify all data' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+        inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label title='{% trans "modify all data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
         $("#iconsRow_" + userName).append(inputsToappend);
         countCheckboxes++;
         var columnNames = getAllColumnNames();
@@ -687,9 +692,9 @@ $("#addUserToRights").click(function () {
             var stringToappend = "";
             $("#descriptionRow_" + rightColumnID).append("<td>" + columnNames[i] + "</td>");
             countCheckboxes++;
-            stringToappend += "<td nowrap='true' class='" + ClassColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label title='read' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+            stringToappend += "<td nowrap='true' class='forever " + ClassColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label title='{% trans "read" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
             countCheckboxes++;
-            stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label title='modify' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+            stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label title='{% trans "modify" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
             $("#iconsRow_" + userName).append(stringToappend);
             countCheckboxes++;
         }
@@ -709,7 +714,7 @@ function createExistedUsers() {
         var actors = data.actors;
         for (var i in actors) {
             var userName = actors[i].name;
-
+            takenUserGroups.push(actors[i].name);
             //create rights-table
             $("#allUserRights").append("<table border='1' class='rightsTable' id='" + userName + "'><tr id='descriptionRow_" + rightColumnID + "'></tr><tr id='iconsRow_" + userName + "'></tr></table>");
             var inputsToappend = "";
@@ -717,43 +722,43 @@ function createExistedUsers() {
             countCheckboxes++;
 
             if (actors[i].tableRights.rightsAdmin) {
-                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' checked='checked' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='modify structure' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' checked='checked' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='{% trans "modify table" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
             }
             else {
-                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='modify structure' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='{% trans "modify table" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
             }
             countCheckboxes++;
             if (actors[i].tableRights.insert) {
 
-                inputsToappend += "<input type='checkbox' checked='checked' class='insert' id='check" + countCheckboxes + "' /><label title='insert datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' checked='checked' class='insert' id='check" + countCheckboxes + "' /><label title='{% trans "insert data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
             }
             else {
-                inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label title='insert datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label title='{% trans "insert data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
 
             }
             countCheckboxes++;
             if (actors[i].tableRights.delete) {
-                inputsToappend += "<input type='checkbox' checked='checked' class='delete' id='check" + countCheckboxes + "' /><label  title='delete datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' checked='checked' class='delete' id='check" + countCheckboxes + "' /><label  title='{% trans "delete data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
 
             }
             else {
-                inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label  title='delete datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label  title='{% trans "delete data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
 
             }
 
             countCheckboxes++;
             if (actors[i].tableRights.viewLog) {
-                inputsToappend += "<input type='checkbox' checked='checked' class='viewLog' id='check" + countCheckboxes + "' /><label title='view log' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' checked='checked' class='viewLog' id='check" + countCheckboxes + "' /><label title='{% trans "view log" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
             }
             else {
 
-                inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label title='view log' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label title='{% trans "view log" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
             }
 
             countCheckboxes++;
-            inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label title='read all data' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+            inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label title='{% trans "read all data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
             countCheckboxes++;
-            inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label title='modify all data' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+            inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label title='{% trans "modify all data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
             $("#iconsRow_" + userName).append(inputsToappend);
             countCheckboxes++;
             var columnNames = getAllColumnNames();
@@ -767,18 +772,18 @@ function createExistedUsers() {
                 if (classColumnName == actors[i].columnRights[p].name) {
 
                     if (actors[i].columnRights[p].rights.read) {
-                        stringToappend += "<td nowrap='true'  class='forever " + classColumnName + "'><input type='checkbox' checked='checked' class='read' id='check" + countCheckboxes + "' /><label title='read' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+                        stringToappend += "<td nowrap='true'  class='forever " + classColumnName + "'><input type='checkbox' checked='checked' class='read' id='check" + countCheckboxes + "' /><label title='{% trans "read" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
                     }
                     else {
-                        stringToappend += "<td nowrap='true' class='forever " + classColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label title='read' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+                        stringToappend += "<td nowrap='true' class='forever " + classColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label title='{% trans "read" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
                     }
                     countCheckboxes++;
                     if (actors[i].columnRights[p].rights.modify) {
 
-                        stringToappend += "<input type='checkbox' checked='checked' class='modify' id='check" + countCheckboxes + "' /><label title='modify' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+                        stringToappend += "<input type='checkbox' checked='checked' class='modify' id='check" + countCheckboxes + "' /><label title='{% trans "modify" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
                     }
                     else {
-                        stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label title='modify' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+                        stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label title='{% trans "modify" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
 
                     }
                     $("#iconsRow_" + userName).append(stringToappend);

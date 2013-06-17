@@ -7,8 +7,8 @@
 {% block content %}
     <input type="hidden" id="newID" value="42">
     <table id="fields" border="0" class='datasets'>
-        <caption>insert</caption>
-       <thead><th>name</th><th>content</th><th>comment</th></thead>
+        <caption>{% trans "insert" %}</caption>
+       <thead><th>{% trans "name" %}</th><th>{% trans "content" %}</th><th>{% trans "comment" %}</th></thead>
     </table><br/>
     <input type="button" id='saveInsert' value="{% trans "save" %}">
 {% endblock %}
