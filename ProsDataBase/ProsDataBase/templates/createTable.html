@@ -13,7 +13,8 @@
 {% endblock %}
 
      {% block help %}
-        <div class='helpTextDiv'><h1>{% trans "Help" %}</h1>{% trans "Please specify the table name. Note, that it should be unique in the database.Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.</div>" %}
+         <!--TODO: übersetzung (paddy) -->
+        <div class='helpTextDiv'><h1>{% trans "Help" %}</h1>{% trans "Please specify the table name. Note, that it should be unique in the database.Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table." %}</div>
      {% endblock %}
 
 
@@ -28,13 +29,13 @@
     <div id="tabs-1">
         <span>{% trans "Tablename:" %}</span><br/>
         <input type="text" id="tblName"><br/><br/>
-       {% trans "Select Category" %} <select id="category"></select><br/><br/>
+       {% trans "Select Category" %}: <select id="category"></select><br/><br/>
         <table id="columnTable">
 
             <tr>
                 <td></td>
                 <td>{% trans "column" %}</td>
-                <td>comment</td>
+                <td>{% trans "comment" %}</td>
                 <td>{% trans "content type" %}</td>
 
             </tr>
@@ -48,7 +49,7 @@
 
     </div>
     <div id="tabs-2">
-        <input type="text" id="inputUserGroup">
+        {% trans "User" %}<input type="text" id="inputUserGroup">
         <button id="addUserToRights">+</button>
         <br/>
 
@@ -125,7 +126,9 @@ function init() {
                 $("#naviHeadline").remove();
                 $("#naviContentSpan").remove();
                 $(".helpTextDiv").empty();
-                $(".helpTextDiv").html('<h1>Help</h1>Please specify the table name. Note, that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.');
+                //TODO: übersetzung (paddy)
+                $(".helpTextDiv").html("<h1>{% trans "Help" %}</h1>{% trans "Please specify the table name. Note, that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table." %}");
+
             }
             else if (ui.newPanel.attr('id') == 'tabs-2') {
                 $("#tab_header_1").addClass("headerTabIanctive")
@@ -134,7 +137,8 @@ function init() {
                 $("#naviContentSpan").remove();
                 $("#naviContentList").remove();
                 $(".helpTextDiv").empty();
-                $(".helpTextDiv").html('<h1>Help</h1>Finally, assign read, insert, modify and delete rights to users and groups:Search for users or groups in the input field and toggle their rights for each column.The "All"-section allows fast rights assignment for all columns.');
+                 //TODO: übersetzung (paddy)
+                $(".helpTextDiv").html("<h1>{% trans "Help" %}</h1>{% trans "Finally, assign read, insert, modify and delete rights to users and groups:Search for users or groups in the input field and toggle their rights for each column.The 'All'-section allows fast rights assignment for all columns." %}");
 
             }
 
@@ -169,12 +173,13 @@ function init() {
 
     });
 
-
+    //get all tables
     jQuery.getJSON('/api/table/', function (data) {
 
         tables = data.tables;
 
     });
+    //get all categories
   jQuery.getJSON('/api/category/', function (data) {
 
        var cat = data.categories;
@@ -217,33 +222,17 @@ function init() {
 
 }
 
-
+//function to remove empty columns when switching page from first tab to second tab
 function removeEmptyColumns(){
-
   $(".columnNameClass").each(function (){
        var row = $(this).parent();
         row = row.parent();
-
       if($(this).val() == ''){
           row.remove();
       }
-
-
       });
-
-
-
 }
-
-// functions for auto-complete
-function split(val) {
-    return val.split(/,\s*/);
-}
-function extractLast(term) {
-    return split(term).pop();
-}
-
-
+//function to get all column names
 function getAllColumnNames() {
     var allColumnNames = [];
     $(".columnNameClass").each(function () {
@@ -252,17 +241,15 @@ function getAllColumnNames() {
     return allColumnNames;
 
 }
+//function to create a new column row
 function createNewColumnsRow() {
     columnID++;
-    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><input class='comment' type='text'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>length:<input type='text' size='5' class='length' value='100'></td></tr>");
+    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><input class='comment' type='text'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'></td></tr>");
 
     $("#field_" + columnID).change(function () {
         valid = true;
         var columns = getAllColumnNames();
-
         $(".columnNameClass").each(function () {
-
-
             if (columns.lastIndexOf($(this).val()) != columns.indexOf($(this).val())) {
 
                 $(this).css('background-color', 'rgb(255, 0, 0)');
@@ -275,18 +262,14 @@ function createNewColumnsRow() {
         });
     });
 
-
     //fill dropdown menu with datatypes
     for (var key in datatypes) {
         $("#selectDataType_" + columnID).append("<option value='" + key + "'>" + datatypes[key] + "</option>");
     }
-
     var tables = getTables();
     for (var key in tables) {
         $("#selectDataType_" + columnID).append("<option value='5'>" + tables[key] + "</option>");
     }
-
-
     // create delete-function for every column
     $("#deleteButton_" + columnID).click(function () {
 
@@ -296,36 +279,38 @@ function createNewColumnsRow() {
     });
     //append different inputs for datatypes for every row
 
-    //min and max input for numeric datatype
-
 
     $("#selectDataType_" + columnID).change(function () {
         lastID = getNumber(this.id);
 
         $("#selectDataTypeCell_" + lastID).remove();
+        //datatype 1 = numeric -> append min and max inputs
         if ($("#selectDataType_" + lastID).val() == "1") {
             $("#selectDataTypeCell_" + lastID).remove();
             $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>min:<input type='text' value='0.0' class='min' size='7'>max:<input type='text' value='100.0' class='max' size='7'></td>");
 
         }
-        //size for text datatype
+        //datatype 0 = text -> append length input
         if ($("#selectDataType_" + lastID).val() == "0") {
             $("#selectDataTypeCell_" + lastID).remove();
-            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>length:<input type='text' class='length' size='5' value='100'></td>");
+            $("#row_" + lastID).append("<td id='selectDataTypeCell_" + lastID + "'>{% trans "length" %}:<input type='text' class='length' size='5' value='100'></td>");
         }
+        //datatype 4 = boolean
         if ($("#selectDataType_" + lastID).val() == "4") {
             $("#selectDataTypeCell_" + lastID).remove();
         }
+        //datatype 2 = date
         if ($("#selectDataType_" + lastID).val() == "2") {
             $("#selectDataTypeCell_" + lastID).remove();
         }
+        //datatype 5 = tabletype -> append a dropdown menu with all column names
         if ($("#selectDataType_" + lastID).val() == "5") {
            $("#selectDataTypeCell_" + lastID).remove();
             var tableName = $("#selectDataType_" + lastID).find(":selected").text();
             $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
             var input = "";
-            input += "<td id='selectDataTypeCell_" + lastID + "'>select value: <select class='referencedColumn'>";
-            input += "<option value='defaultValue'>all</option>"
+            input += "<td id='selectDataTypeCell_" + lastID + "'>{% trans "select value" %}: <select class='referencedColumn'>";
+            input += "<option value='defaultValue'>{% trans "all" %}</option>"
                allColumns = data.columns;
                for(var key in allColumns){
                    if(allColumns[key].type != 5){
@@ -340,6 +325,8 @@ function createNewColumnsRow() {
             });
 
         }
+
+        //datatype 3 = selection -> append dynamically selections
         if ($("#selectDataType_" + lastID).val() == "3") {
 
 
@@ -415,7 +402,7 @@ function getIDtoCompareColumnName(column) {
 jQuery.isInArray = function (value, array) {
     return -1 != jQuery.inArray(value, array);
 }
-
+//click on tab 2 + button to add an user to the rightslist
 $("#addUserToRights").click(function () {
 
     var inputValue = $("#inputUserGroup").val()
@@ -434,17 +421,17 @@ $("#addUserToRights").click(function () {
         var inputsToappend ="";
         $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
          countCheckboxes++;
-        inputsToappend+= "<td class='forever all' nowrap='true'><input  type='checkbox' class='rightsAdmin' id='check"+countCheckboxes+"' /><label title='modify structure' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/key-icon.png'></label>";
+        inputsToappend+= "<td class='forever all' nowrap='true'><input  type='checkbox' class='rightsAdmin' id='check"+countCheckboxes+"' /><label title='{% trans "modify table" %}' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/key-icon.png'></label>";
         countCheckboxes++;
-         inputsToappend+= "<input type='checkbox' class='insert' id='check"+countCheckboxes+"' /><label title='insert datasets' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+         inputsToappend+= "<input type='checkbox' class='insert' id='check"+countCheckboxes+"' /><label title='{% trans "insert data" %}' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/pencil-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend+= "<input type='checkbox' class='delete' id='check"+countCheckboxes+"' /><label title='delete datasets' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/trash-icon.png'></label>";
+        inputsToappend+= "<input type='checkbox' class='delete' id='check"+countCheckboxes+"' /><label title='{% trans "delete data" %}' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/trash-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend+= "<input type='checkbox' class='viewLog' id='check"+countCheckboxes+"' /><label title='view log' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/paper-icon.png'></label>";
+        inputsToappend+= "<input type='checkbox' class='viewLog' id='check"+countCheckboxes+"' /><label title='{% trans "view log" %}' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/paper-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend+="<input onClick='toggleAll(this,\"read\")'"+" type='checkbox' id='check"+countCheckboxes+"'  /><label title='read all data' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
+        inputsToappend+="<input onClick='toggleAll(this,\"read\")'"+" type='checkbox' id='check"+countCheckboxes+"'  /><label title='{% trans "read all data" %}' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend+="<input  onClick='toggleAll(this,\"modify\")'"+" type='checkbox' id='check"+countCheckboxes+"' /><label title='modify all data' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+        inputsToappend+="<input  onClick='toggleAll(this,\"modify\")'"+" type='checkbox' id='check"+countCheckboxes+"' /><label title='{% trans "modify all data" %}' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
         $("#iconsRow_" + userName).append(inputsToappend);
         countCheckboxes++;
         var columnNames = getAllColumnNames();
@@ -453,9 +440,9 @@ $("#addUserToRights").click(function () {
             var stringToappend = "";
             $("#descriptionRow_" + rightColumnID).append("<td>" + columnNames[i] + "</td>");
             countCheckboxes++;
-            stringToappend+="<td nowrap='true' class='forever "+ClassColumnName+"'><input type='checkbox' class='read' id='check"+countCheckboxes+"' /><label title='read' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
+            stringToappend+="<td nowrap='true' class='forever "+ClassColumnName+"'><input type='checkbox' class='read' id='check"+countCheckboxes+"' /><label title='{% trans "read" %}' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/view-icon.png'></label>";
             countCheckboxes++;
-              stringToappend+="<input type='checkbox' class='modify' id='check"+countCheckboxes+"' /><label title='modify' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+              stringToappend+="<input type='checkbox' class='modify' id='check"+countCheckboxes+"' /><label title='{% trans "modify" %}' for='check"+countCheckboxes+"'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
             $("#iconsRow_" + userName).append(stringToappend);
             countCheckboxes++;
         }
@@ -467,7 +454,7 @@ $("#addUserToRights").click(function () {
     $("#inputUserGroup").val("");
 });
 
-
+//function to toggle all checkboxes for columnsrights
 function toggleAll(element,type){
     var row = $(element).parent();
     row = row.parent();
@@ -485,7 +472,7 @@ function toggleAll(element,type){
         }
 );
 }
-
+// function to create table / create json object and send it to server
 $("#createTableButton").click(function () {
 
     //object to send

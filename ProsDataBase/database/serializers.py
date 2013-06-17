@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'My-Tien Nguyen'
 
+from django.utils.translation import ugettext_lazy as _
 from models import *
 
 
@@ -141,8 +142,6 @@ class TableSerializer:
         result["insert"] = tableRights.insert
         result["category"] = table.category.name
         result["columns"] = colStructs
-        print "result"
-        print result
 
         return result
 
@@ -212,7 +211,6 @@ class TableSerializer:
             result["actors"].append(groupObj)
 
         return result
-
 
     @staticmethod
     def serializeRightsForActor(name, tableName):
@@ -290,7 +288,20 @@ class TableSerializer:
         except Table.DoesNotExist:
             return False
 
-        histories = History.objects.filter(table=table)
+        result = dict()
+        result["histories"] = list()
+        histories = HistoryTable.objects.filter(table=table)
+        for history in histories:
+            historyObj = dict()
+            historyObj["type"] = history.type
+            historyObj["user"] = history.user.username
+            historyObj["date"] = str(history.date)
+            historyObj["messages"] = list()
+            for msg in history.messages.all():
+                historyObj["messages"].append(msg.content)
+            result["histories"].append(historyObj)
+
+        return result
 
 
 class UserSerializer:
@@ -652,7 +663,6 @@ class DatasetSerializer:
 
                     # First filter datasets of the next table with criteria specified in the criterion's child
                     filteredDatasets = DatasetSerializer.filter(nextTable, nextTable.getDatasets(), criterion["child"], user)
-                    print filteredDatasets
 
                     # Now keep only those datasets, which have references to the "datasets" passed as argument
                     links = TableLink.objects.filter(dataset__in=filteredDatasets)
@@ -666,7 +676,7 @@ class DatasetSerializer:
                     datasetIDs = list()
                     for dataTable in dataTables:
                         datasetIDs.append(dataTable.dataset_id)
-                    print datasetIDs
+
                     datasets = datasets.filter(pk__in=datasetIDs, deleted=False)  # all datasets which fulfill the criterion and have reference to passed 'datasets'
 
                     return datasets

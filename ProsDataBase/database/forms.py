@@ -122,14 +122,20 @@ class TypeSelectionForm(ModelForm):
 
 
 # ===============================
-# ------- HISTORY TABLE ---------
+# ------- HISTORY TABLES --------
 # ===============================
 
 
-class HistoryForm(ModelForm):
+class HistoryTableForm(ModelForm):
     class Meta:
-        model = History
+        model = HistoryTable
         fields = ('date', 'type')
+
+
+class MessageTableForm(ModelForm):
+    class Meta:
+        model = MessageTable
+        fields = ('content', )
 
 
 # ===============================

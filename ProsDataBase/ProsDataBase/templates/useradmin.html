@@ -53,7 +53,7 @@
                     window.location = '/table/';
                 }
             });
-            $("#userAdmin").prepend("admin users");
+            $("#userAdmin").prepend("{% trans "admin users" %}");
             $.getJSON('/api/userrights/', function (data) {
                 alphabeticalUsers = [];
                 for (var p in data.users) {
@@ -73,24 +73,24 @@
                             countCheckboxes++;
                             //load all checkboxes
                             if (allUsers[key].active) {
-                                row += "<td><input checked='checked' class='enabled' type='checkbox' id='" + allUsers[key].name + "'><label title='un/lock user' for='" + allUsers[key].name + "'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
+                                row += "<td><input checked='checked' class='enabled' type='checkbox' id='" + allUsers[key].name + "'><label title='{% trans "activate/deactivate user" %}' for='" + allUsers[key].name + "'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
                             }
                             else {
-                                row += "<td><input type='checkbox' class='enabled' id='" + allUsers[key].name + "'><label title='un/lock user' for='" + allUsers[key].name + "'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
+                                row += "<td><input type='checkbox' class='enabled' id='" + allUsers[key].name + "'><label title='{% trans "activate/deactivate user" %}' for='" + allUsers[key].name + "'><img class='icn' src='/static/img/refresh-icon.png'></label></td>";
                             }
                             countCheckboxes++;
                             if (allUsers[key].tableCreator) {
-                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='tableCreator'><label title='create tables' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
+                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='tableCreator'><label title='{% trans "create tables" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
                             }
                             else {
-                                row += "<td><input type='checkbox' id='check" + countCheckboxes + "' class='tableCreator'><label title='create tables' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
+                                row += "<td><input type='checkbox' id='check" + countCheckboxes + "' class='tableCreator'><label title='{% trans "create tables" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
                             }
                             countCheckboxes++;
                             if (allUsers[key].userManager) {
-                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='userManager'><label title='manage users' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='userManager'><label title='{% trans "manage users" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
                             }
                             else {
-                                row += "<td><input type='checkbox' id='check" + countCheckboxes + "' class='userManager'><label title='manage users' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+                                row += "<td><input type='checkbox' id='check" + countCheckboxes + "' class='userManager'><label title='{% trans "manage users" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
                             }
                             countCheckboxes++;
                             row += "</tr>";

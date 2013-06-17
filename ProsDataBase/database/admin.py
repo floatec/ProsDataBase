@@ -26,7 +26,8 @@ admin.site.register(TypeSelection)
 admin.site.register(TypeBool)
 admin.site.register(TypeTable)
 
-admin.site.register(History)
+admin.site.register(HistoryTable)
+admin.site.register(MessageTable)
 
 admin.site.register(DBUser)
 admin.site.register(DBGroup)

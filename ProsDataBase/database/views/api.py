@@ -32,26 +32,36 @@ def user(request, name):
 
 
 def userRights(request):
-    if request.method == 'GET':
-        return showUserRights(request)
-    if request.method == 'POST':
-        return modifyUserRights(request)
+    if request.user.userManager or request.user.admin :
+        if request.method == 'GET':
+            return showUserRights(request)
+        if request.method == 'POST':
+            return modifyUserRights(request)
+    else:
+        return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
 
 
 def groups(request):
     if request.method == 'GET':
         return showAllGroups()
     elif request.method == 'POST':
-        return addGroup(request)
+        if request.user.userManager or request.user.admin :
+            return addGroup(request)
+        else:
+            return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
+
 
 
 def group(request, name):
     if request.method == 'GET':
         return showOneGroup(name)
-    if request.method == 'PUT':
-        return modifyGroup(request, name)
-    if request.method == 'DELETE':
-        return deleteGroup(request, name)
+    if request.user.userManager or request.user.admin :
+        if request.method == 'PUT':
+            return modifyGroup(request, name)
+        if request.method == 'DELETE':
+            return deleteGroup(request, name)
+    else:
+        return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
 
 
 def myself(request):
@@ -69,20 +79,29 @@ def myPassword(request):
 def categories(request):
     if request.method == 'GET':
         return showCategories()
-    if request.method == 'PUT':
-        return tablefactory.modifyCategories(request)
+    if request.user.admin :
+        if request.method == 'PUT':
+            return tablefactory.modifyCategories(request)
+    else:
+        return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
+
 
 
 def category(request, name):
-    if request.method == 'DELETE':
-        return tablefactory.deleteCategory(name)
+    if request.user.admin :
+        if request.method == 'DELETE':
+            return tablefactory.deleteCategory(name)
+    else:
+        return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
+
 
 
 def tables(request):
     if request.method == 'GET':
         return showAllTables(request.user)
     if request.method == 'POST':
-        return tablefactory.createTable(request)
+        if request.user.admin or request.user.tableCreator :
+            return tablefactory.createTable(request)
 
 
 def table(request, name):
@@ -107,7 +126,7 @@ def column(request, tableName, columnName):
         if not answer:
             return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
         else:
-            return HttpResponse(_("Successfully deleted column ") + columnName + _(" from table ") + tableName + ".", status=200)
+            return HttpResponse(json.dumps({"success" : _("Successfully deleted column ").__unicode__() + columnName + _(" from table ").__unicode__() + tableName + "."}), content_type="application/json")
 
 
 def export(request, tableName):
@@ -115,11 +134,11 @@ def export(request, tableName):
         return tablefactory.exportTable(json.loads(request.raw_post_data), tableName)
 
 
-def history(request, tableName):
+def tableHistory(request, tableName):
     if request.method == 'GET':
         response = TableSerializer.serializeHistory(tableName)
         if not response:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "Could not find table with name " + tableName + "."}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name ").__unicode__() + tableName + "."}]}), content_type="application/json")
         return HttpResponse(json.dumps(response), content_type="application/json")
 
 
@@ -131,7 +150,8 @@ def datasets(request, tableName):
         #    return HttpResponse("Permission denied", status=403)
     if request.method == 'DELETE':
         #if request.user.mayDeleteTable(tableName):
-        return tablefactory.deleteDatasets(request, tableName)
+        tablefactory.deleteDatasets(request, tableName)
+
        # else:
        #     return HttpResponse("Permission denied", status=403)
 
@@ -140,7 +160,7 @@ def filterDatasets(request, tableName):
     if request.method == 'POST':
         datasets = DatasetSerializer.serializeBy(json.loads(request.raw_post_data), tableName, request.user)
         if datasets is None:
-            return HttpResponse(content=_("An error occured"), status=500)
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("An error occured").__unicode__()}]}), content_type="application/json")
         return HttpResponse(json.dumps(datasets), content_type="application/json")
 
 
@@ -155,11 +175,11 @@ def register(request):
     jsonRequest = json.loads(request.raw_post_data)
     try:
         DBUser.objects.get(username=jsonRequest["username"])
-        return HttpResponse(_("user with name ") + jsonRequest["username"] + _(" already exists."), status=400)
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("user with name ").__unicode__() + jsonRequest["username"] + _(" already exists.").__unicode__()}]}),content_type="application/json")
     except DBUser.DoesNotExist:
         user = DBUser.objects.create_user(username=jsonRequest["username"], password=jsonRequest["password"])
         user.save()
-        return HttpResponseRedirect("/login/")
+        return HttpResponse(json.dumps({"success": _("Account is created").__unicode__()}), content_type="application/json")
 
 
 def login(request):
@@ -185,7 +205,7 @@ def showAllUsers():
 def showOneUser(name):
     user = UserSerializer.serializeOne(name)
     if user is None:
-        return HttpResponse(_("User does not exist"), status=400)
+        return HttpResponse(json.dumps({"errors": [{"code": -1, "message": _("User does not exist").__unicode__()}]}), content_type="application/json")
     else:
         return HttpResponse(json.dumps(user), content_type="application/json")
 
@@ -203,7 +223,7 @@ def modifyUserRights(request):
         try:
             user = DBUser.objects.get(username=userObj["name"])
         except DBUser.DoesNotExist:
-            HttpResponse(_("Could not find user with name ") + userObj["name"] + ".", status=400)
+            HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find user with name ").__unicode__() + userObj["name"] + "."}]}), content_type="application/json")
 
         if userObj["tableCreator"] != user.tableCreator\
                 or userObj["userManager"] != user.userManager\
@@ -216,7 +236,7 @@ def modifyUserRights(request):
         if modified:
             user.save()
 
-    return HttpResponse(_("Successfully modified user rights."), status=200)
+    return HttpResponse(json.dumps({"success" : _("Successfully modified user rights.").__unicode__()}), content_type="application/json")
 
 
 def showAllGroups():
@@ -237,7 +257,7 @@ def addGroup(request):
         groupNames.append(name)
 
     if request["name"] in groupNames:
-        HttpResponse(content=_("Group with name ") + request["name"] + _(" already exists."), status=400)
+        HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Group with name ").__unicode__() + request["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
 
     groupF = DBGroupForm({"name": request["name"]})
     if groupF.is_valid():
@@ -268,8 +288,9 @@ def addGroup(request):
             membership.save()
 
     if len(failed) > 0:
-        return HttpResponse({"error": _("following users could not be added to the group: ") + str(failed) + _(". Have you misspelled them?")}, content_type="application/json")
-    return HttpResponse(_("Successfully saved group ") + request["name"] + ".", status=200)
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message":  _("following users could not be added to the group: ") + str(failed) + _(". Have you misspelled them?")}]}), content_type="application/json")
+
+    return HttpResponse(json.dumps({"success" : _("Successfully saved group ").__unicode__() + request["name"] + "."}),content_type="application/json")
 
 
 def modifyGroup(request, name):
@@ -284,13 +305,13 @@ def modifyGroup(request, name):
     try:
         group = DBGroup.objects.get(name=name)
     except DBGroup.DoesNotExist:
-        return HttpResponse(content=_("Could not find group with name ") + name + ".", status=400)
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find group with name ").__unicode__() + name + "."}]}), content_type="application/json")
 
     request = json.loads(request.raw_post_data)
     if request["name"] != group.name:
         try:
             DBGroup.objects.get(name=request["name"])
-            return HttpResponse(content=_("A group with name ") + request["name"] + _(" already exists."), status=400)
+            return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("A group with name ").__unicode__() + request["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
         except DBGroup.DoesNotExist:
             group.name = request["name"]
 
@@ -334,20 +355,20 @@ def modifyGroup(request, name):
         theUser = DBUser.objects.get(username=admin)
         membership = Membership.objects.get(user=theUser)
         membership.delete()
-
-    return HttpResponse(_("Successfully modifed group ") + name + ".", status=200)
+    #TODO JSON
+    return HttpResponse(json.dumps({"success" : _("Successfully modifed group ").__unicode__() + name + "."}), content_type="applciation/json")
 
 
 def deleteGroup(request, name):
     try:
         group = DBGroup.objects.get(name=name)
     except DBGroup.DoesNotExist:
-        return HttpResponse(content=_("Could not find group with name ") + name + ".", status=400)
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find group with name ").__unicode__() + name + "."}]}), content_type="application/json")
 
     Membership.objects.filter(group=group).delete()
     group.delete()
-
-    return HttpResponse(content=_("Successfully deleted group ") + name + ".", status=200)
+    #TODO JSON
+    return HttpResponse(json.dumps({"success" : _("Successfully deleted group ").__unicode__() + name + "."}), content_type="application/json")
 
 
 def showMyUser(user):
@@ -368,7 +389,8 @@ def changeMyPassword(request):
     jsonRequest = json.loads(request.raw_post_data)
     request.user.set_password(jsonRequest["password"])
     request.user.save()
-    return HttpResponse(_("Saved password successfully."), status=200)
+    #TODO JSON
+    return HttpResponse(json.dumps({"success" : _("Saved password successfully.")}),content_type="application/jon")
 
 
 def showCategories():
@@ -391,7 +413,7 @@ def showDatasets(request, tableName):
     try:
         Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(content=_("Could not find table with name ") + tableName + ".", status=400)
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find table with name ").__unicode__() + tableName + "."}]}), content_type="application/json")
 
     jsonRequest = json.loads(request.raw_post_data)
     result = dict()
@@ -406,14 +428,14 @@ def showDataset(tableName, datasetID, user):
     try:
         table = Table.objects.get(name=tableName)
     except Table.DoesNotExist:
-        return HttpResponse(content=_("Table with name ") + tableName + _(" could not be found."), status=400)
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Table with name ").__unicode__() + tableName + _(" could not be found.").__unicode__()}]}), content_type="application/json")
     try:
         dataset = Dataset.objects.get(datasetID=datasetID, table=table)
     except Dataset.DoesNotExist:
-        return HttpResponse(content=_("dataset with id ") + datasetID + _(" could not be found in table ") + tableName + ".", status=400)
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("dataset with id ").__unicode__() + datasetID + _(" could not be found in table ").__unicode__() + tableName + "."}]}), content_type="application/json")
 
     if dataset.deleted:
-        return HttpResponse(_("The requested dataset does not exist."), status=400)
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("The requested dataset does not exist.").__unicode__()}]}),content_type="application/json")
     else:
         dataset = DatasetSerializer.serializeOne(datasetID, user)
         return HttpResponse(json.dumps(dataset), content_type="application/json")
@@ -422,7 +444,7 @@ def showDataset(tableName, datasetID, user):
 def showAllTables(user):
     tables = TableSerializer.serializeAll(user)
     return HttpResponse(json.dumps(tables), content_type="application/json") if tables is not None \
-        else HttpResponse(status=500)
+        else HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Table could not be found").__unicode__()}]}),content_type="application/json")
 
 
 def showTable(name, user):
