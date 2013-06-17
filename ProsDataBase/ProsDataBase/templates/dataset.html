@@ -6,8 +6,10 @@
 {% endblock %}
 {% block content %}
     <input type="hidden" id="newID" value="42">
-    <table id="fields" border="0">
-    </table>
+    <table id="fields" border="0" class='datasets'>
+        <caption>insert</caption>
+       <thead><th>name</th><th>content</th><th>comment</th></thead>
+    </table><br/>
     <input type="button" id='saveInsert' value="{% trans "save" %}">
 {% endblock %}
 
@@ -48,8 +50,16 @@
                 if (columns[i].type == 5) {
                     row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"><img onClick="searchElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" src="/static/img/search-icon.png">'
                 }
-                row += "</td></tr>"
-                $("#fields").append(row)
+                row += "</td><td>";
+
+                if(columns[i].comment != ""){
+
+                    row+= columns[i].comment;
+                }
+
+
+                row += "</td></tr>";
+                $("#fields").append(row);
                 $(".icn").button();
             }
             //breadcurmbs and stuff

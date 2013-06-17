@@ -86,7 +86,8 @@ function init() {
     firstload = true;
     tableName = getTableName();
     $("#tableCrumb").prepend(decodeURIComponent(tableName));
-    $("#modifyCrumb").prepend(% trans "Modify" %};
+
+    $("#modifyCrumb").prepend("{% trans "Modify" %}");
     $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
     $("#modifyCrumb").attr('href', '/modify/' + tableName + '/');
     $("#tblName").val(decodeURIComponent(tableName));
@@ -189,7 +190,7 @@ function init() {
 
         allGroups = data.groups;
         for (key in allGroups) {
-            allUserGroups.push(allGroups[key]);
+            allUserGroups.push(allGroups[key].name);
         }
 
     });
@@ -667,17 +668,17 @@ $("#addUserToRights").click(function () {
         var inputsToappend = "";
         $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
         countCheckboxes++;
-        inputsToappend += "<td class='all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+        inputsToappend += "<td class='all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='modify structure' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label title='insert datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label title='delete datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+        inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label title='view log' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+        inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label title='read all data' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
         countCheckboxes++;
-        inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+        inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label title='modify all data' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
         $("#iconsRow_" + userName).append(inputsToappend);
         countCheckboxes++;
         var columnNames = getAllColumnNames();
@@ -686,9 +687,9 @@ $("#addUserToRights").click(function () {
             var stringToappend = "";
             $("#descriptionRow_" + rightColumnID).append("<td>" + columnNames[i] + "</td>");
             countCheckboxes++;
-            stringToappend += "<td nowrap='true' class='" + ClassColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+            stringToappend += "<td nowrap='true' class='" + ClassColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label title='read' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
             countCheckboxes++;
-            stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+            stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label title='modify' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
             $("#iconsRow_" + userName).append(stringToappend);
             countCheckboxes++;
         }
@@ -716,43 +717,43 @@ function createExistedUsers() {
             countCheckboxes++;
 
             if (actors[i].tableRights.rightsAdmin) {
-                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' checked='checked' class='rightsAdmin' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' checked='checked' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='modify structure' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
             }
             else {
-                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='modify structure' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
             }
             countCheckboxes++;
             if (actors[i].tableRights.insert) {
 
-                inputsToappend += "<input type='checkbox' checked='checked' class='insert' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' checked='checked' class='insert' id='check" + countCheckboxes + "' /><label title='insert datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
             }
             else {
-                inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label title='insert datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
 
             }
             countCheckboxes++;
             if (actors[i].tableRights.delete) {
-                inputsToappend += "<input type='checkbox' checked='checked' class='delete' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' checked='checked' class='delete' id='check" + countCheckboxes + "' /><label  title='delete datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
 
             }
             else {
-                inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label  title='delete datasets' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
 
             }
 
             countCheckboxes++;
             if (actors[i].tableRights.viewLog) {
-                inputsToappend += "<input type='checkbox' checked='checked' class='viewLog' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' checked='checked' class='viewLog' id='check" + countCheckboxes + "' /><label title='view log' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
             }
             else {
 
-                inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+                inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label title='view log' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
             }
 
             countCheckboxes++;
-            inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+            inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label title='read all data' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
             countCheckboxes++;
-            inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+            inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label title='modify all data' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
             $("#iconsRow_" + userName).append(inputsToappend);
             countCheckboxes++;
             var columnNames = getAllColumnNames();
@@ -766,18 +767,18 @@ function createExistedUsers() {
                 if (classColumnName == actors[i].columnRights[p].name) {
 
                     if (actors[i].columnRights[p].rights.read) {
-                        stringToappend += "<td nowrap='true'  class='forever " + classColumnName + "'><input type='checkbox' checked='checked' class='read' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+                        stringToappend += "<td nowrap='true'  class='forever " + classColumnName + "'><input type='checkbox' checked='checked' class='read' id='check" + countCheckboxes + "' /><label title='read' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
                     }
                     else {
-                        stringToappend += "<td nowrap='true' class='forever " + classColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+                        stringToappend += "<td nowrap='true' class='forever " + classColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label title='read' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
                     }
                     countCheckboxes++;
                     if (actors[i].columnRights[p].rights.modify) {
 
-                        stringToappend += "<input type='checkbox' checked='checked' class='modify' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+                        stringToappend += "<input type='checkbox' checked='checked' class='modify' id='check" + countCheckboxes + "' /><label title='modify' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
                     }
                     else {
-                        stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+                        stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label title='modify' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
 
                     }
                     $("#iconsRow_" + userName).append(stringToappend);
