@@ -140,7 +140,7 @@ function showSuccess(success) {
 $.ajaxSetup({
     error: function (x, e) {
         if (x.status == 500) {
-            $("#errorblock").append("<div class='error'>Failed to create table. Please contact the developers.</div>")
+            $("#errorblock").append("<div class='error'>UNEXPECTED ERROR. Please contact the developers.</div>")
         }
     }
 });
