@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-17 10:55+0200\n"
+"POT-Creation-Date: 2013-06-17 19:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,6 +34,7 @@ msgstr "Admin"
 
 #: ProsDataBase/templates/base.html:35
 #: ProsDataBase/templates/createGroup.html:10
+#: ProsDataBase/templates/createGroup.html:47
 #: ProsDataBase/templates/groupadmin.html:10
 msgid "Groups"
 msgstr "Gruppen"
@@ -75,7 +76,7 @@ msgstr "Gruppenname"
 
 #: ProsDataBase/templates/createGroup.html:24
 msgid "Create tables:"
-msgstr "Tabellen erstellen"
+msgstr "Tabellen erstellen:"
 
 #: ProsDataBase/templates/createGroup.html:28
 msgid "Add users:"
@@ -85,6 +86,10 @@ msgstr "Benutzer hinzufügen"
 #: ProsDataBase/templates/createTable.html:12
 msgid "Create"
 msgstr "Erstellen"
+
+#: ProsDataBase/templates/createGroup.html:48
+msgid "Create Groups"
+msgstr "Gruppen erstellen"
 
 #: ProsDataBase/templates/createTable.html:4
 #: ProsDataBase/templates/createTable.html:26
@@ -106,7 +111,6 @@ msgid "Help"
 msgstr "Hilfe"
 
 #: ProsDataBase/templates/createTable.html:17
-#, fuzzy
 msgid ""
 "Please specify the table name. Note, that it should be unique in the "
 "database.Now specify the table\\'s columns, their content types and "
@@ -174,6 +178,12 @@ msgstr "Inhaltstyp"
 #: ProsDataBase/templates/createTable.html:47
 msgid "next"
 msgstr "weiter"
+
+#: ProsDataBase/templates/createTable.html:52
+#: ProsDataBase/templates/modify.html:61
+#: ProsDataBase/templates/useradmin.html:27
+msgid "User"
+msgstr "Benutzer"
 
 #: ProsDataBase/templates/createTable.html:57
 msgid "create"
@@ -306,7 +316,7 @@ msgstr "Benutzername:"
 #: ProsDataBase/templates/dataset.html:11
 #: ProsDataBase/templates/modifyDataset.html:11
 msgid "content"
-msgstr "Inhaltstyp"
+msgstr "Inhalt"
 
 #: ProsDataBase/templates/dataset.html:68
 #: ProsDataBase/templates/table_detailview.html:17
@@ -318,7 +328,6 @@ msgid "create group"
 msgstr "Gruppe erstellen"
 
 #: ProsDataBase/templates/groupadmin.html:76
-#, fuzzy
 msgid "groups"
 msgstr "Gruppen"
 
@@ -403,7 +412,7 @@ msgstr "Ändern"
 
 #: ProsDataBase/templates/modifyGroup.html:9
 msgid "Are you sure to delete this group?"
-msgstr "Wollen Sie dieses Element wirklich löschen?"
+msgstr "Wollen Sie diese Gruppe wirklich löschen?"
 
 #: ProsDataBase/templates/modifyGroup.html:10
 msgid "delete group"
@@ -520,10 +529,6 @@ msgstr "Sie haben auf keiner Tabelle Berechtigungen diese zu sehen."
 msgid "User Rights"
 msgstr "Benutzerberechtigungen"
 
-#: ProsDataBase/templates/useradmin.html:27
-msgid "User"
-msgstr "Benutzer"
-
 #: ProsDataBase/templates/useradmin.html:28
 msgid "Enabled"
 msgstr "freigegeben"
@@ -556,16 +561,16 @@ msgstr "Benutzer administrieren"
 
 #: database/tablefactory.py:29 database/tablefactory.py:572
 msgid "Could not find category "
-msgstr "Kategorie wurde nicht gefunden."
+msgstr "Kategorie konnte nicht gefunden werden"
 
 #: database/tablefactory.py:33 database/tablefactory.py:41
 #: database/tablefactory.py:61
 msgid "Category with name "
-msgstr "Kategorien"
+msgstr "Kategorien mit dem Namen"
 
 #: database/tablefactory.py:33 database/tablefactory.py:41
-#: database/tablefactory.py:598 database/views/api.py:158
-#: database/views/api.py:240 database/views/api.py:293
+#: database/tablefactory.py:598 database/views/api.py:177
+#: database/views/api.py:259 database/views/api.py:313
 msgid " already exists."
 msgstr "besteht bereits"
 
@@ -585,7 +590,7 @@ msgstr "exisitiert nicht."
 
 #: database/tablefactory.py:63
 msgid "Deleted category "
-msgstr "Kategorie auswählen:"
+msgstr "Kategorie gelöscht"
 
 #: database/tablefactory.py:118 database/tablefactory.py:694
 #: database/tablefactory.py:801
@@ -595,7 +600,7 @@ msgstr ""
 
 #: database/tablefactory.py:137
 msgid "Successfully created table "
-msgstr "Tabelle erstellen"
+msgstr "Tabelle wurde erfolgreich erstellt"
 
 #: database/tablefactory.py:161
 msgid "Could not create text type for column "
@@ -635,7 +640,7 @@ msgstr "Spaltenrechte für die Spalte konnten nicht erstellt werden."
 
 #: database/tablefactory.py:277 database/tablefactory.py:280
 #: database/tablefactory.py:336 database/tablefactory.py:941
-#: database/views/api.py:394
+#: database/views/api.py:141 database/views/api.py:415
 msgid "Could not find table with name "
 msgstr "Eine Tabelle mit diesem Namen konnte nicht gefunden werden."
 
@@ -649,7 +654,7 @@ msgstr "zuerst."
 
 #: database/tablefactory.py:325
 msgid "Successfully deleted table "
-msgstr "Tabelle löschen"
+msgstr "Tabelle wurde erfolgreich gelöscht"
 
 #: database/tablefactory.py:340 database/tablefactory.py:813
 #: database/tablefactory.py:961
@@ -751,11 +756,11 @@ msgstr "Daten konnten nicht hinzugefügt werden."
 msgid ". The content type was not valid. Abort."
 msgstr ". Der Inhaltstyp war nicht gültig. Vorgang abgebrochen. "
 
-#: database/tablefactory.py:773 database/views/api.py:413
+#: database/tablefactory.py:773 database/views/api.py:434
 msgid "dataset with id "
 msgstr "Datensatz mit ID"
 
-#: database/tablefactory.py:773 database/views/api.py:413
+#: database/tablefactory.py:773 database/views/api.py:434
 msgid " could not be found in table "
 msgstr "konnte in der Tabelle nicht gefunden werden."
 
@@ -771,85 +776,94 @@ msgstr "Daten konnten nicht hinzugefügt werden."
 msgid ". The content type was invalid."
 msgstr "ungültiger Inhaltstyp"
 
-#: database/views/api.py:110
-msgid "Successfully deleted column "
-msgstr "Tabelle löschen"
+#: database/views/api.py:41 database/views/api.py:51 database/views/api.py:64
+#: database/views/api.py:86 database/views/api.py:95
+msgid "You have not the rights to do this opperation"
+msgstr "Sie haben nicht die Berechtigungen dies durchzuführen."
 
-#: database/views/api.py:110
+#: database/views/api.py:129
+msgid "Successfully deleted column "
+msgstr "Spalte wurde erfolgreich gelöscht"
+
+#: database/views/api.py:129
 msgid " from table "
 msgstr "in der Tabelle"
 
-#: database/views/api.py:143
+#: database/views/api.py:162
 msgid "An error occured"
 msgstr "Ein Fehler ist aufgetreten."
 
-#: database/views/api.py:158
-msgid "user with name "
-msgstr "Kategorien"
-
 #: database/views/api.py:177
+msgid "user with name "
+msgstr "Benutzer mit dem Namen"
+
+#: database/views/api.py:196
 msgid "logged off"
 msgstr "Ausgeloggt"
 
-#: database/views/api.py:188
+#: database/views/api.py:207
 msgid "User does not exist"
-msgstr "exisitiert nicht."
+msgstr "Benutzer exisitiert nicht."
 
-#: database/views/api.py:206
+#: database/views/api.py:225
 msgid "Could not find user with name "
-msgstr "Eine Tabelle mit diesem Namen konnte nicht gefunden werden."
+msgstr "Benutzer mit diesem Namen konnten nicht gefunden werden."
 
-#: database/views/api.py:219
+#: database/views/api.py:238
 msgid "Successfully modified user rights."
-msgstr "Alle Datensätze wurden erfolgreich gelöscht."
+msgstr "Benutzerberechtigungen wurden erfolgreich modifiziert"
 
-#: database/views/api.py:240
+#: database/views/api.py:259
 msgid "Group with name "
-msgstr "Spalte mit Namen"
+msgstr "Gruppe mit dem Namen"
 
-#: database/views/api.py:271
+#: database/views/api.py:290
 msgid "following users could not be added to the group: "
 msgstr "Folgende Benutzer können nicht zu der Gruppe hinzugefügt werden:"
 
-#: database/views/api.py:271
+#: database/views/api.py:290
 msgid ". Have you misspelled them?"
 msgstr ". Haben Sie sich vielleicht vertippt?"
 
-#: database/views/api.py:272
+#: database/views/api.py:292
 msgid "Successfully saved group "
-msgstr "Tabelle erstellen"
+msgstr "Gruppe wurde erfolgreich gespeichert"
 
-#: database/views/api.py:287 database/views/api.py:345
+#: database/views/api.py:307 database/views/api.py:365
 msgid "Could not find group with name "
-msgstr "'Eine Spalte mit diesem Namen wurde nicht gefunden."
+msgstr "'Eine Gruppe mit diesem Namen konnte nicht gefunden werden"
 
-#: database/views/api.py:293
+#: database/views/api.py:313
 msgid "A group with name "
-msgstr "Spalte mit Namen"
+msgstr "Gruppe mit Namen"
 
-#: database/views/api.py:338
+#: database/views/api.py:358
 msgid "Successfully modifed group "
-msgstr "Tabelle löschen"
+msgstr "Die Gruppe wurde erfolgreich modifiziert"
 
-#: database/views/api.py:350
+#: database/views/api.py:370
 msgid "Successfully deleted group "
-msgstr "Tabelle löschen"
+msgstr "Die Gruppe wurde erfolgreich gelöscht"
 
-#: database/views/api.py:371
+#: database/views/api.py:392
 msgid "Saved password successfully."
-msgstr "Änderungen wurden erfolgreich gespeichert."
+msgstr "Neues Passwort wurde erfolgreich gespeichert."
 
-#: database/views/api.py:409
+#: database/views/api.py:430
 msgid "Table with name "
-msgstr "Kategorien"
+msgstr "Tabelle mit dem Namen"
 
-#: database/views/api.py:409
+#: database/views/api.py:430
 msgid " could not be found."
 msgstr "konnte in der Tabelle nicht gefunden werden."
 
-#: database/views/api.py:416
+#: database/views/api.py:437
 msgid "The requested dataset does not exist."
-msgstr "exisitiert nicht."
+msgstr "Der angeforderte Datensatz exestiert nicht."
+
+#: database/views/api.py:446
+msgid "Table could not be found"
+msgstr "konnte in der Tabelle nicht gefunden werden."
 
 #, fuzzy
 #~ msgid "modify structure"

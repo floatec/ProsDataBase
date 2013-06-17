@@ -37,8 +37,8 @@
     }
  });
 
-        $("#groupAdmin").prepend("groups");
-        $("#createGroup").prepend("create group");
+        $("#groupAdmin").prepend("{% trans "Groups" %}");
+        $("#createGroup").prepend("{% trans "Create Groups" %}");;
 
         $.getJSON('/api/user/', function (data) {
 
