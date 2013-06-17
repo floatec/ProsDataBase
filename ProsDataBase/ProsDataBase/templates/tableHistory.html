@@ -9,7 +9,7 @@
 
 {% endblock %}
 {% block content %}
-<table id='loggingTable' class='datasets'>
+<table id='loggingTable' class='historyTable'>
     <caption>{% trans "Logging" %}</caption>
     <thead>
         <th>{% trans "date" %}</th>
@@ -36,6 +36,31 @@
     $("#tableCrumb").attr('href','/detailview/'+getTableName()+'/')
     $("#historyCrumb").prepend("Log");
     $("#historyCrumb").attr('href', '/tableHistory/'+getTableName()+'/');
+
+
+        $.getJSON('/api/table/' + getTableName() + '/history/', function (data) {
+
+            console.log(data);
+            var historyRow = ""
+            for(var key in data.histories){
+
+                  historyRow += "<tr><td>"+data.histories[key].date+"</td><td>"+data.histories[key].user+"</td><td><ul>";
+                  for(var i in data.histories[key].messages){
+                        historyRow +="<li>"+data.histories[key].messages[i]+"</li>";
+
+                  }
+
+                  historyRow += "</ul></td></tr>";
+
+            }
+
+
+
+            $("#loggingTable").append(historyRow);
+
+        });
+
+
 
 }
 
