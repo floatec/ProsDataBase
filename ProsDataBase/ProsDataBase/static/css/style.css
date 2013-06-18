@@ -424,13 +424,13 @@ Only for Login and Register Page
     background-color: #6688AA;
     font-family: Arial, Verdana, sans-serif;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 14px;
     color: #FFFFFF;
     padding: 6px 3px 3px 3px;
 }
 
 .datasets thead th {
-    font: bold 11px Arial, Verdana, sans-serif;
+    font: bold 13px Arial, Verdana, sans-serif;
     padding: 3px;
     background-color: #CCDDEE;
     border: 1px solid #FFFFFF;
@@ -440,7 +440,7 @@ Only for Login and Register Page
 }
 
 .datasets td {
-    font: normal 11px Arial, Verdana, sans-serif;
+    font: normal 13px Arial, Verdana, sans-serif;
     padding: 5px 5px;
     background-color: #DDEEFF;
     border: 1px solid #FFFFFF;
@@ -495,4 +495,18 @@ Only for Login and Register Page
     right: 53px;
     top: 20px;
     width: 90%;
+}
+.minus{
+    font-size: 10px;
+    border-width: 1px;
+    border: solid;
+    border-color: #ffffff;
+     border-radius: 3px;
+}
+.plus{
+    font-size: 10px;
+    border-width: 1px;
+    border: solid;
+    border-color: #ffffff;
+    border-radius: 3px;
 }
