@@ -612,13 +612,15 @@ $("#createTableButton").click(function () {
                         return
                }
                if(data.success!=undefined){
+
                  showSuccess(data.success)
+                 window.location.href = '/detailview/'+jsonTbl.name+'/'
              }
+
         }
     });
 
-    console.log(jsonTbl);
-   // window.location.href = '/table/';
+
 
 });
 
