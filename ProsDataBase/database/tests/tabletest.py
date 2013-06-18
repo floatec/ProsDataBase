@@ -7,7 +7,7 @@ from django.contrib import auth
 
 
 class TableTest(TestCase):
-    # !!!!!! TABELLENNAME WIRD NICHT GEFUNDEN UND DIE COLUMNS WERDEN NICHT GEFUNDEN
+    # Mittlerweile passt alles
     def test_showAllTables(self):
         # =================================================================
         # test serializer TableSerializer serializeAll()
@@ -71,22 +71,11 @@ class TableTest(TestCase):
             length += len(array)
 
 
-        self.assertEquals(length, 8)
+        self.assertEquals(length, 10)
         print result
 
-    # !!!!!! TABELLENNAME WIRD NICHT GEFUNDEN
+    # Mittlerweile passt alles
     def test_showTable(self):
-        # =================================================================
-        #return the table with specified name, along with its columns and datasets.
-        # {
-        #     "name": "example",
-        #     "datasets": [
-        #         {"id": 38, "data": [ {"column": "id", "type": 1, "value": 0}, "column": "columnname", "type": 0, "value": "aString"}, {"column": "anothercolumn", "type": 5, "value": [1, 2], "table": "aTableName"} ]},  //row 1
-        #         {"id": 18, "data": [ {"column": "id", "type": 1, "value": 17}, "column": "columnname", "type": 0, "value": "aString"}, {"column": "anothercolumn", "type": 5, "value": [13, 14], "table": "aTableName"} ]}   //row 2
-        #     ]
-        # }
-        # =================================================================
-
 
         user = create_RandomUser()
 
@@ -103,6 +92,9 @@ class TableTest(TestCase):
         for col in table1.getColumns():
             table1Cols.append(col.name)
 
+        # ==============================================================
+        # tests the name is the same name in the result
+        # ==============================================================
         self.assertEquals(table1.name, result["name"])
 
 
@@ -110,6 +102,9 @@ class TableTest(TestCase):
         for dataset in datasets:
             id = dataset.datasetID
 
+        # ==============================================================
+        # tests the datasets are always the same datasets in the result
+        # ==============================================================
             for datasetObj in result["datasets"]:
                 if datasetObj["id"] == id:
                     for data in dataset.getData():
@@ -118,10 +113,8 @@ class TableTest(TestCase):
                             for data in datasetObj["data"]:
                                 if data["column"] == item.column.name:
                                     self.assertEquals(str(item.content), data["value"])
-
         print result
 
-    # SOLLTE SO EIGENTLICH KLAPPEN
     def test_deleteTable(self):
 
         user = create_RandomUser()
@@ -137,3 +130,14 @@ class TableTest(TestCase):
         # tests the table is flaged as deleted
         # ==============================================================
         self.assertTrue(table1.deleted)
+
+    def test_structerTest(self):
+
+        user = create_RandomUser()
+        table = create_table(user)
+        column = create_columnsWithPatients(table, user)
+        connect_User_With_TableRights(user,table)
+        connect_User_With_ColumnRights(user, column)
+        result = TableSerializer.serializeStructure(table.name, user)
+
+        print result
