@@ -7,6 +7,22 @@ from forms import *
 from serializers import *
 
 
+def writeAuthHistory(history, user, type, message=""):
+    if history is None:  # create a new history entry
+        historyF = HistoryAuthForm({"date": datetime.now(), "type": type})
+        if historyF.is_valid():
+            history = historyF.save(commit=False)
+            history.user = user
+            history.save()
+
+    if len(message) > 0:
+        messageF = MessageAuthForm({"content": message})
+        message = messageF.save(commit=False)
+        message.history = history
+        message.save()
+    return history
+
+
 def writeTableHistory(history, table, user, type, message=""):
     if history is None:  # create a new history entry
         historyF = HistoryTableForm({"date": datetime.now(), "type": type})
@@ -16,11 +32,31 @@ def writeTableHistory(history, table, user, type, message=""):
             history.user = user
             history.save()
 
-    messageF = MessageTableForm({"content": message})
-    message = messageF.save(commit=False)
-    message.history = history
-    message.save()
+    if len(message) > 0:
+        messageF = MessageTableForm({"content": message})
+        message = messageF.save(commit=False)
+        message.history = history
+        message.save()
     return history
+
+
+def printGroup(groupName):
+    serial = GroupSerializer.serializeOne(groupName)
+
+    result = "Name: " + groupName + "."
+    if serial["tableCreator"]:
+        result += "\n Can create tables."
+    result += "\n Users: "
+
+    for userName in serial["users"]:
+        result += userName + ", "
+
+    result = result[:-2]  # cut off trailing comma
+
+    if len(serial["users"]) == 0:
+        result += "no users yet."
+
+    return result
 
 
 def printRightsFor(tableName):
@@ -32,7 +68,7 @@ def printRightsFor(tableName):
         try:
             DBUser.objects.get(username=actor["name"])
             user = True
-        except DBUser.doesNotExist:
+        except DBUser.DoesNotExist:
             DBGroup.objects.get(name=actor["name"])
             user = False
         if user:
@@ -74,6 +110,20 @@ def printRightsFor(tableName):
             result += "\n"
 
     if result[-1] == "\n":  # cut off trailing new line
+        result = result[:-1]
+
+    return result
+
+
+def printDataset(datasetID, user):
+    serial = DatasetSerializer.serializeOne(datasetID, user)
+
+    result = "System ID: " + str(serial["id"]) + "\n"
+
+    for data in serial["data"]:
+        result += _("In column ").__unicode__() + unicode(data["column"]) + ": " + unicode(data["value"]) + "\n"
+
+    if result[-1] == "\n":
         result = result[:-1]
 
     return result

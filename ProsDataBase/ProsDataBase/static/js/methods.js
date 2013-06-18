@@ -16,7 +16,7 @@ $(document).ready(function () {
             navigationMenu.accordion({    collapsible: true,
                 autoHeight: false,
                 heightStyle: "content",
-                active: false
+                active: true
             });
             loginNameMenu.accordion({    collapsible: true,
                 autoHeight: false,

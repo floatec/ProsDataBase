@@ -28,6 +28,8 @@ admin.site.register(TypeTable)
 
 admin.site.register(HistoryTable)
 admin.site.register(MessageTable)
+admin.site.register(HistoryAuth)
+admin.site.register(MessageAuth)
 
 admin.site.register(DBUser)
 admin.site.register(DBGroup)

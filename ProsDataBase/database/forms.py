@@ -138,6 +138,18 @@ class MessageTableForm(ModelForm):
         fields = ('content', )
 
 
+class HistoryAuthForm(ModelForm):
+    class Meta:
+        model = HistoryAuth
+        fields = ('date', 'type')
+
+
+class MessageAuthForm(ModelForm):
+    class Meta:
+        model = MessageAuth
+        fields = ('content', )
+
+
 # ===============================
 # ----- PERMISSION FORMS --------
 # ===============================

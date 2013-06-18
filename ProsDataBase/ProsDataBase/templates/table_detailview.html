@@ -319,7 +319,7 @@
         //create all column headlines
         for (var key in columns) {
             {
-                tableHead.append("<th>" + columns[key].name + "</th>");
+                tableHead.append("<th><a name='" + columns[key].name + "'>" + columns[key].name + "</a></th>");
                 //if it is dthe headelement ifill the navigation
                 if ($(insertTo).attr("id") == "headTable") {
                     $("#navigationMenuContent").append("<li><a href='#" + columns[key].name + "'>" + columns[key].name + "</a></li>");

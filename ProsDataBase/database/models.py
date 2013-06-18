@@ -26,7 +26,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 # ===============================
 
 class Table(models.Model):
-    name = models.CharField(unique=True, max_length=100)
+    name = models.CharField(max_length=100)
     category = models.ForeignKey('Category', related_name="tables", blank=True, null=True)
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
@@ -91,7 +91,7 @@ class Table(models.Model):
 
 class Column(models.Model):
     name = models.CharField(max_length=100)
-    table = models.ForeignKey('Table', related_name="columns", to_field='name')
+    table = models.ForeignKey('Table', related_name="columns")
     type = models.OneToOneField('Type', related_name="owncolumn")
     comment = models.TextField(blank=True, null=True)
 
@@ -108,7 +108,7 @@ class Column(models.Model):
 
 class Dataset(models.Model):
     datasetID = models.CharField(max_length=200)
-    table = models.ForeignKey('Table', related_name="datasets", to_field='name')
+    table = models.ForeignKey('Table', related_name="datasets")
     created = models.DateTimeField(default=datetime.now)
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setcreator')
@@ -353,7 +353,7 @@ class TypeBool(models.Model):
 
 class TypeTable(models.Model):
     type = models.OneToOneField('Type')
-    table = models.ForeignKey('Table', to_field='name')
+    table = models.ForeignKey('Table')
     column = models.ForeignKey('Column', blank=True, null=True)
 
     def isValid(self, input):
@@ -382,7 +382,7 @@ class HistoryTable(models.Model):
     DATASET_MODIFIED = 5
     EXPORT = 6
 
-    table = models.ForeignKey('Table', to_field='name', related_name='histories')
+    table = models.ForeignKey('Table', related_name='histories')
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     date = models.DateTimeField()
     type = models.IntegerField()
@@ -409,7 +409,7 @@ class MessageTable(models.Model):
     content = models.TextField()
 
     def __unicode__(self):
-        return self.content
+        return "message: " + self.content
 
 
 class HistoryAuth(models.Model):
@@ -424,10 +424,31 @@ class HistoryAuth(models.Model):
     date = models.DateTimeField()
     type = models.IntegerField()
 
+    def __unicode__(self):
+        text = "authorization log entry: " + str(self.date)
+        if self.type == HistoryAuth.USER_REGISTERED:
+            text += ". Event: USER REGISTERED."
+        if self.type == HistoryAuth.USER_MODIFIED:
+            text += ". Event: USER MODIFIED."
+        if self.type == HistoryAuth.GROUP_CREATED:
+            text += ". Event: GROUP CREATED."
+        if self.type == HistoryAuth.GROUP_DELETED:
+            text += ". Event: GROUP DELETED."
+        if self.type == HistoryAuth.GROUP_MODIFIED:
+            text += ". Event: GROUP MODIFIED."
+        if self.type == HistoryAuth.GROUP_MEMBER_ADDED:
+            text += ". Event: GROUP MEMBER ADDED."
+        if self.type == HistoryAuth.GROUP_MEMBER_REMOVED:
+            text += ". Event: GROUP MEMBER REMOVED."
+        return text
+
 
 class MessageAuth(models.Model):
     history = models.ForeignKey('HistoryAuth', related_name='messages')
     content = models.TextField()
+
+    def __unicode__(self):
+        return "message: " + self.content
 
 # ===============================
 # ----- PERMISSION TABLES -------
@@ -445,7 +466,7 @@ class DBUser(AbstractUser):
         pass
 
     def mayDeleteTable(self, tableName):
-        table = Table.objects.get(name=tableName)
+        table = Table.objects.get(name=tableName, deleted=False)
         try:
             tableRights = RightListForTable.objects.get(user=self, table=table)
         except RightListForTable.DoesNotExist:

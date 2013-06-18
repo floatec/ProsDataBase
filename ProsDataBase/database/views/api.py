@@ -9,6 +9,7 @@ from ..response import *
 from ..serializers import *
 from ..forms import *
 from .. import tablefactory
+from .. import historyfactory
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -49,7 +50,6 @@ def groups(request):
             return addGroup(request)
         else:
             return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
-
 
 
 def group(request, name):
@@ -126,7 +126,7 @@ def column(request, tableName, columnName):
         if not answer:
             return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
         else:
-            return HttpResponse(json.dumps({"success" : _("Successfully deleted column ").__unicode__() + columnName + _(" from table ").__unicode__() + tableName + "."}), content_type="application/json")
+            return HttpResponse(json.dumps({"success": _("Successfully deleted column ").__unicode__() + columnName + _(" from table ").__unicode__() + tableName + "."}), content_type="application/json")
 
 
 def export(request, tableName):
@@ -160,7 +160,7 @@ def filterDatasets(request, tableName):
     if request.method == 'POST':
         datasets = DatasetSerializer.serializeBy(json.loads(request.raw_post_data), tableName, request.user)
         if datasets is None:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("An error occured").__unicode__()}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("No matching datasets.").__unicode__()}]}), content_type="application/json")
         return HttpResponse(json.dumps(datasets), content_type="application/json")
 
 
@@ -179,6 +179,7 @@ def register(request):
     except DBUser.DoesNotExist:
         user = DBUser.objects.create_user(username=jsonRequest["username"], password=jsonRequest["password"])
         user.save()
+        historyfactory.writeAuthHistory(None, user, HistoryAuth.USER_REGISTERED)
         return HttpResponse(json.dumps({"success": _("Account is created").__unicode__()}), content_type="application/json")
 
 
@@ -218,17 +219,27 @@ def showUserRights(request):
 def modifyUserRights(request):
     jsonRequest = json.loads(request.raw_post_data)
 
+    message = ""  # message for writing into history
     for userObj in jsonRequest["users"]:
+        # for tracking changes made
+        tableCreatorChanged = False
+        userManagerChanged = False
+        activeChanged = False
         modified = False
         try:
             user = DBUser.objects.get(username=userObj["name"])
         except DBUser.DoesNotExist:
             HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find user with name ").__unicode__() + userObj["name"] + "."}]}), content_type="application/json")
 
-        if userObj["tableCreator"] != user.tableCreator\
-                or userObj["userManager"] != user.userManager\
-                or userObj["active"] != user.is_active:
+        if userObj["tableCreator"] != user.tableCreator:
             modified = True
+            tableCreatorChanged = True
+        if userObj["userManager"] != user.userManager:
+            modified = True
+            userManagerChanged = True
+        if userObj["active"] != user.is_active:
+            modified = True
+            activeChanged = True
 
         user.tableCreator = userObj["tableCreator"]
         user.userManager = userObj["userManager"]
@@ -236,7 +247,26 @@ def modifyUserRights(request):
         if modified:
             user.save()
 
-    return HttpResponse(json.dumps({"success" : _("Successfully modified user rights.").__unicode__()}), content_type="application/json")
+            message += "User " + userObj["name"] + ": "
+            if activeChanged:
+                if user.is_active:
+                    message += "has been activated, "
+                else:
+                    message += "has been deactivated, "
+            if tableCreatorChanged:
+                if user.tableCreator:
+                    message += "can create tables now, "
+                else:
+                    message += "cannot create tables anymore, "
+            if userManagerChanged:
+                if user.userManager:
+                    message += "has become user manager."
+                else:
+                    message += "is no user manager anymore."
+            message += "\n"  # cut off trailing comma
+
+    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.USER_MODIFIED, message)
+    return HttpResponse(json.dumps({"success": _("Successfully modified user rights.").__unicode__()}), content_type="application/json")
 
 
 def showAllGroups():
@@ -265,19 +295,9 @@ def addGroup(request):
         newGroup.tableCreator = request["tableCreator"]
         newGroup.save()
 
-        failed = list() # list of users whose names could not be found in the database
-        for adminName in set(request["admins"]):
-            try:
-                admin = DBUser.objects.get(username=adminName)
-            except DBUser.DoesNotExist:
-                if len(adminName) > 0:
-                    failed.append(adminName)
-                continue
-            membership = Membership(group=newGroup, user=admin)
-            membership.isAdmin = True
-            membership.save()
+        failed = list()  # list of users whose names could not be found in the database
 
-        for userName in set(request["users"]) - set(request["admins"]):
+        for userName in set(request["users"]):
             try:
                 user = DBUser.objects.get(username=userName)
             except DBUser.DoesNotExist:
@@ -288,9 +308,11 @@ def addGroup(request):
             membership.save()
 
     if len(failed) > 0:
-        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message":  _("following users could not be added to the group: ") + str(failed) + _(". Have you misspelled them?")}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("following users could not be added to the group: ") + str(failed) + _(". Have you misspelled them?")}]}), content_type="application/json")
 
-    return HttpResponse(json.dumps({"success" : _("Successfully saved group ").__unicode__() + request["name"] + "."}),content_type="application/json")
+    message = historyfactory.printGroup(request["name"])
+    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_CREATED, historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_CREATED, message))
+    return HttpResponse(json.dumps({"success": _("Successfully saved group ").__unicode__() + request["name"] + "."}),content_type="application/json")
 
 
 def modifyGroup(request, name):
@@ -307,26 +329,32 @@ def modifyGroup(request, name):
     except DBGroup.DoesNotExist:
         return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find group with name ").__unicode__() + name + "."}]}), content_type="application/json")
 
-    request = json.loads(request.raw_post_data)
-    if request["name"] != group.name:
-        try:
-            DBGroup.objects.get(name=request["name"])
-            return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("A group with name ").__unicode__() + request["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
-        except DBGroup.DoesNotExist:
-            group.name = request["name"]
 
-    group.tableCreator = request["tableCreator"]
+    # will hold content for history entry
+    oldName = None
+    tableCreatorChanged = False
+    userRemoved = list()
+    userAdded = list()
+
+    jsonRequest = json.loads(request.raw_post_data)
+    if jsonRequest["name"] != group.name:
+        try:
+            DBGroup.objects.get(name=jsonRequest["name"])
+            return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("A group with name ").__unicode__() + jsonRequest["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
+        except DBGroup.DoesNotExist:
+            oldName = group.name
+            group.name = jsonRequest["name"]
+
+    if jsonRequest["tableCreator"] != group.tableCreator:
+        tableCreatorChanged = True
+        group.tableCreator = jsonRequest["tableCreator"]
     group.save()
 
     usernames = list()
-    adminnames = list()
     for m in Membership.objects.filter(group=group):
-        if m.isAdmin:
-            adminnames.append(m.user.username)
-        else:
-            usernames.append(m.user.username)
+        usernames.append(m.user.username)
 
-    sendUsers = set(request["users"]) - set(request["admins"])
+    sendUsers = set(jsonRequest["users"])
 
     for user in set(sendUsers) - set(usernames):  # new users were added to the group
         if len(user) > 0:  # workaround. frontend always sends one empty string
@@ -336,27 +364,36 @@ def modifyGroup(request, name):
                 membership.user = DBUser.objects.get(username=user)
                 membership.group = group
                 membership.save()
+            userAdded.append(user)
 
     for user in set(usernames) - set(sendUsers):  # users were deleted from the group
         theUser = DBUser.objects.get(username=user)
-        membership = Membership.objects.get(user=theUser)
+        membership = Membership.objects.get(user=theUser, group=group)
         membership.delete()
+        userRemoved.append(user)
 
-    for admin in set(request["admins"]) - set(adminnames):  # new admins were added to the group
-        if len(admin) > 0:
-            membershipF = MembershipForm({"isAdmin": True})
-            if membershipF.is_valid():
-                membership = membershipF.save(commit=False)
-                membership.user = DBUser.objects.get(username=admin)
-                membership.group = group
-                membership.save()
+    # write modification to history
+    message = "Group " + jsonRequest["name"] + ": \n"
+    if oldName is not None:
+        message += _("Changed name from '").__unicode__() + oldName + _("' to '").__unicode__() + jsonRequest["name"] + "'.\n"
+    if tableCreatorChanged:
+        if group.tableCreator:
+            message += "Can now create tables.\n"
+        else:
+            message += "Cannot create tables anymore.\n"
+    if len(userAdded) > 0:
+        message += "New users: "
+        for user in userAdded:
+            message += user + ", "
+        message = message[:-2] + "\n"  # cut off trailing comma
+    if len(userRemoved) > 0:
+        message += "Removed users: "
+        for user in userRemoved:
+            message += user + ", "
+        message = message[:-2] + "\n"  # cut off trailing comma
+    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_MODIFIED, message)
 
-    for admin in set(adminnames) - set(request["admins"]):  # users were deleted from the group
-        theUser = DBUser.objects.get(username=admin)
-        membership = Membership.objects.get(user=theUser)
-        membership.delete()
-    #TODO JSON
-    return HttpResponse(json.dumps({"success" : _("Successfully modifed group ").__unicode__() + name + "."}), content_type="applciation/json")
+    return HttpResponse(json.dumps({"success": _("Successfully modifed group ").__unicode__() + name + "."}), content_type="applciation/json")
 
 
 def deleteGroup(request, name):
@@ -367,8 +404,9 @@ def deleteGroup(request, name):
 
     Membership.objects.filter(group=group).delete()
     group.delete()
-    #TODO JSON
-    return HttpResponse(json.dumps({"success" : _("Successfully deleted group ").__unicode__() + name + "."}), content_type="application/json")
+
+    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_DELETED)
+    return HttpResponse(json.dumps({"success": _("Successfully deleted group ").__unicode__() + name + "."}), content_type="application/json")
 
 
 def showMyUser(user):
@@ -411,7 +449,7 @@ def tableStructure(request, name):
 
 def showDatasets(request, tableName):
     try:
-        Table.objects.get(name=tableName)
+        Table.objects.get(name=tableName, deleted=False)
     except Table.DoesNotExist:
         return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find table with name ").__unicode__() + tableName + "."}]}), content_type="application/json")
 
@@ -426,7 +464,7 @@ def showDatasets(request, tableName):
 
 def showDataset(tableName, datasetID, user):
     try:
-        table = Table.objects.get(name=tableName)
+        table = Table.objects.get(name=tableName, deleted=False)
     except Table.DoesNotExist:
         return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Table with name ").__unicode__() + tableName + _(" could not be found.").__unicode__()}]}), content_type="application/json")
     try:

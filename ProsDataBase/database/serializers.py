@@ -20,13 +20,13 @@ class TableSerializer:
         }
         """
         try:
-            table = Table.objects.get(name=tableName)
+            table = Table.objects.get(name=tableName, deleted=False)
         except Table.DoesNotExist:
             return None
 
         result = dict()
         result["name"] = table.name
-        result.update(DatasetSerializer.serializeAll(tableName, user))
+        result.update(DatasetSerializer.serializeAll(table, user))
 
         return result
 
@@ -44,9 +44,19 @@ class TableSerializer:
         """
         user = user
         allowedTables = set()
-
+        memberships = Membership.objects.filter(user=user)
+        groupNames = list()
+        for membership in memberships:
+            groupNames.append(membership.group.name)
+        groups = DBGroup.objects.filter(name__in=groupNames)
         for rights in RightListForColumn.objects.filter(user=user):
-            allowedTables.add(rights.column.table)
+            allowedTables.add(rights.table)
+        for rights in RightListForColumn.objects.filter(group__in=groups, table__deleted=False):
+            allowedTables.add(rights.table)
+        for rights in RightListForTable.objects.filter(user=user, table__deleted=False):
+            allowedTables.add(rights.table)
+        for rights in RightListForTable.objects.filter(group__in=groups, table__deleted=False):
+            allowedTables.add(rights.table)
 
         result = dict()
         result["tables"] = list()
@@ -85,7 +95,7 @@ class TableSerializer:
           ]
         }
         """
-        table = Table.objects.get(name=tableName)
+        table = Table.objects.get(name=tableName, deleted=False)
         if table is None:
             return None
 
@@ -95,6 +105,7 @@ class TableSerializer:
             if col.deleted:
                 continue
             comment = col.comment if col.comment is not None else ""
+
             try:
                 rightList = RightListForColumn.objects.get(column=col, user=user)
                 modify = rightList.modify
@@ -133,13 +144,37 @@ class TableSerializer:
                 linkCol = Column.objects.get(type=typeTable.type)
                 colStructs.append({"name": typesColumn.name + " in " + typesColumn.table.name, "type": Type.LINK, "table": typesColumn.table.name, "link": linkCol.name})
 
+        rightsAdmin = False
+        viewLog = False
+        delete = False
+        insert = False
+        try:
+            tableRights = RightListForTable.objects.get(user=user, table=table)
+            rightsAdmin = tableRights.rightsAdmin
+            viewLog = tableRights.viewLog
+            delete = tableRights.delete
+            insert = tableRights.insert
+        except RightListForTable.DoesNotExist:
+            pass
+
+        groupNames = list()
+        for membership in Membership.objects.filter(user=user):
+            groupNames.append(membership.group.name)
+
+        groups = DBGroup.objects.filter(name__in=groupNames)
+        rightsFromGroup = RightListForTable.objects.filter(group__in=groups)
+        for right in rightsFromGroup:
+            rightsAdmin = right.rightsAdmin if not rightsAdmin else True
+            viewLog = right.viewLog if not viewLog else True
+            delete = right.delete if not delete else True
+            insert = right.insert if not insert else True
+
         result = dict()
-        tableRights = RightListForTable.objects.get(user=user, table=table)
         result["admin"] = user.admin
-        result["rightsAdmin"] = tableRights.rightsAdmin
-        result["viewLog"] = tableRights.viewLog
-        result["delete"] = tableRights.delete
-        result["insert"] = tableRights.insert
+        result["rightsAdmin"] = rightsAdmin
+        result["viewLog"] = viewLog
+        result["delete"] = delete
+        result["insert"] = insert
         result["category"] = table.category.name
         result["columns"] = colStructs
 
@@ -183,7 +218,7 @@ class TableSerializer:
         }
         """
         try:
-            table = Table.objects.get(name=tableName)
+            table = Table.objects.get(name=tableName, deleted=False)
         except Table.DoesNotExist:
             return None
 
@@ -199,7 +234,7 @@ class TableSerializer:
             userObj["columnRights"] = rights["columnRights"]
 
             result["actors"].append(userObj)
-
+        print result
         groups = table.getGroupsWithRights()
         for group in groups:
             groupObj = dict()
@@ -225,7 +260,7 @@ class TableSerializer:
         }
         """
         try:
-            table = Table.objects.get(name=tableName)
+            table = Table.objects.get(name=tableName, deleted=False)
         except Table.DoesNotExist:
             return None
         # either a user or a group name was passed
@@ -278,13 +313,13 @@ class TableSerializer:
             colObj["rights"]["modify"] = columnRights.modify if columnRights else False
 
             result["columnRights"].append(colObj)
-
+        print result
         return result
 
     @staticmethod
     def serializeHistory(tableName):
         try:
-            table = Table.objects.get(name=tableName)
+            table = Table.objects.get(name=tableName, deleted=False)
         except Table.DoesNotExist:
             return False
 
@@ -293,7 +328,18 @@ class TableSerializer:
         histories = HistoryTable.objects.filter(table=table)
         for history in histories:
             historyObj = dict()
-            historyObj["type"] = history.type
+            if history.type == HistoryTable.TABLE_CREATED:
+                historyObj["type"] = "TABLE CREATED"
+            if history.type == HistoryTable.TABLE_MODIFIED:
+                historyObj["type"] = "TABLE MODIFIED"
+            if history.type == HistoryTable.TABLE_DELETED:
+                historyObj["type"] = "TABLE DELETED"
+            if history.type == HistoryTable.DATASET_INSERTED:
+                historyObj["type"] = "DATASET INSERTED"
+            if history.type == HistoryTable.DATASET_MODIFIED:
+                historyObj["type"] = "DATASET MODIFIED"
+            if history.type == HistoryTable.DATASET_DELETED:
+                historyObj["type"] = "DATASET DELETED"
             historyObj["user"] = history.user.username
             historyObj["date"] = str(history.date)
             historyObj["messages"] = list()
@@ -371,7 +417,7 @@ class UserSerializer:
 
 class GroupSerializer:
     @staticmethod
-    def serializeOne(id):
+    def serializeOne(name):
         """
         {
             "name": "group1",
@@ -382,7 +428,7 @@ class GroupSerializer:
         }
         """
         try:
-            group = DBGroup.objects.get(name=id)
+            group = DBGroup.objects.get(name=name)
         except DBGroup.DoesNotExist:
             return False
 
@@ -494,7 +540,7 @@ class DatasetSerializer:
 
         for tableName in tables:
             try:
-                table = Table.objects.get(name=tableName)
+                table = Table.objects.get(name=tableName, deleted=False)
             except Table.DoesNotExist:
                 continue
             refDataTables = DataTable.objects.filter(pk__in=dataTableIDs, dataset__in=table.getDatasets())
@@ -518,9 +564,9 @@ class DatasetSerializer:
         return result
 
     @staticmethod
-    def serializeAll(tableRef, user):
+    def serializeAll(table, user):
         try:
-            datasets = Dataset.objects.filter(table=tableRef)
+            datasets = Dataset.objects.filter(table=table)
         except Dataset.DoesNotExist:
             pass
 
@@ -560,7 +606,7 @@ class DatasetSerializer:
         }
         """
         try:
-            table = Table.objects.get(name=tableName)
+            table = Table.objects.get(name=tableName, deleted=False)
         except Table.DoesNotExist:
             return None
 
@@ -595,7 +641,7 @@ class DatasetSerializer:
             if "datasetID" in criterion:
                 return datasets.filter(datasetID=criterion["datasetID"])
             try:
-                column = table.getColumns().get(name=criterion["column"])
+                column = table.getColumns().get(name=criterion["column"], deleted=False)
             except Column.DoesNotExist:
                 return False
             if column.type.type == Type.TEXT:
@@ -652,12 +698,11 @@ class DatasetSerializer:
                 # filter over column in another table. In principle it repeats the algorithm above on the referenced table's column
                 if typeTable.column is None:
                     try:
-                        nextTable = Table.objects.get(name=criterion["table"])
+                        nextTable = Table.objects.get(name=criterion["table"], deleted=False)
                     except Table.DoesNotExist:
                         return False
                     try:
-                        #refColumn = Column.objects.get(table=nextTable, name=criterion["link"])
-                        refColumn = Column.objects.get(table=nextTable, name=criterion["child"]["column"])
+                        refColumn = Column.objects.get(table=nextTable, name=criterion["child"]["column"], deleted=False)
                     except Column.DoesNotExist:
                         return False
 
@@ -739,11 +784,11 @@ class DatasetSerializer:
 
         else:  # filter with criteria on nested table
             try:
-                nextTable = Table.objects.get(name=criterion["table"])
+                nextTable = Table.objects.get(name=criterion["table"], deleted=False)
             except Table.DoesNotExist:
                 return False
             try:
-                refColumn = Column.objects.get(table=nextTable, name=criterion["link"])
+                refColumn = Column.objects.get(table=nextTable, name=criterion["link"], deleted=False)
             except Column.DoesNotExist:
                 return False
 
