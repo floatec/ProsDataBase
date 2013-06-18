@@ -248,7 +248,7 @@ body{
     margin-right: 13px;
     margin-top: 13px;
     padding: 8px;
-    position: relative;
+
     top: 44px;
     border-style: solid;
     border-radius: 10px;
@@ -266,9 +266,10 @@ body{
     border-bottom-right-radius: 10px;
     border-color: #03588C;
     font-size: 23px;
-    height: 35px;
+    height: 33px;
     position: absolute;
     width: 240px;
+    overflow: hidden;
 }
 
 a {
