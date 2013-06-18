@@ -254,8 +254,10 @@ function getTableName(){
                     }
                 }
 
-                jsonDataset.columns.push(columnObj);
-                console.log(jsonDataset);
+                 //only add if there is a value set
+                if(columnObj.value!=""){
+                    jsonDataset.columns.push(columnObj);
+                }
 
             });
             console.log(jsonDataset);
