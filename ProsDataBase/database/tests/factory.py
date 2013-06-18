@@ -327,6 +327,9 @@ def create_columnsWithPatients(table, user):
     # ============================================================
     texttype = Type(name="Text", type=0)
     texttype.save()
+    typetext = TypeText(length=30, type=texttype)
+    typetext.save()
+
 
     # ============================================================
     # - creates a numerictype
@@ -341,6 +344,7 @@ def create_columnsWithPatients(table, user):
     # ============================================================
     datetype = Type(name="Type", type=2)
     datetype.save()
+    typedate = TypeDate(type = datetype, min=1, max=51)
 
     # ============================================================
     # - creates a selectiontype
@@ -379,6 +383,8 @@ def create_columnsWithPatients(table, user):
     # ============================================================
     booleantype = Type(name="Boolean", type=4)
     booleantype.save()
+    typeBoolean = TypeBool(type=booleantype)
+    typeBoolean.save()
 
     tabletype = Type(name="Table", type=5)
     tabletype.save()
