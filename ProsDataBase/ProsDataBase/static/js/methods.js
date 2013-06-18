@@ -132,7 +132,7 @@ function clearErrors() {
  success=Message
  */
 function showSuccess(success) {
-
+    clearErrors()
     $("#errorblock").append("<div class='success'>" + success + "</div>")
 
 }

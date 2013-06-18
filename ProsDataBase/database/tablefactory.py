@@ -147,7 +147,7 @@ def createTable(request):
     history = historyfactory.writeTableHistory(None, newTable, request.user, HistoryTable.TABLE_CREATED, _("Added columns: ").__unicode__() + str(columnNames))
     # Write table rights to history
     rights = historyfactory.printRightsFor(newTable.name)
-    historyfactory.writeTableHistory(history, newTable, request.user, HistoryTable.TABE_CREATED, _("Added permissions:\n").__unicode__() + rights)
+    historyfactory.writeTableHistory(history, newTable, request.user, HistoryTable.TABLE_CREATED, _("Added permissions:\n").__unicode__() + rights)
     # write table creation to history
     historyfactory.writeTableHistory(history, newTable, request.user, HistoryTable.TABLE_CREATED, _("Created table ").__unicode__() + newTable.name + ".")
     return HttpResponse(json.dumps({"success":_("Successfully created table ").__unicode__() + table["name"]}), content_type="application/json")
