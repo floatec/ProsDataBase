@@ -309,7 +309,7 @@
         table.attr("id", "tab" + subtable);
         var tableHead = $("<thead  id='descrRow'></thead>")
         //set caption and initial colapse event
-        table.prepend("<caption  onClick='toggleTable(this.parentNode)'>" + tableName + "</capton>");
+        table.prepend("<caption  onClick='toggleTable(this.parentNode)'>" + tableName + " <span class='plus'>+</span><span class='minus' style='display:none'>-</span></capton>");
         //$("#navigationMenuContent").append("<li><a href='#'><span class=\"ui-icon ui-icon-plusthick\"></span>back</a></li>");
         tableHead.append("<th><input type='checkbox' onClick='toggleAll(this)' id='selectAll'></th><th>{% trans "data edit" %}</th><th>system ID</th>");
         //if it is the head element it shoudl clear the navigation
@@ -341,9 +341,13 @@
         if (!$(element).hasClass("closed")) {
             $(element).addClass("closed")
             $(element).find("tr,thead").css("display", "none")
+            $(element).find(".minus").css("display", "none")
+            $(element).find(".plus").css("display", "inline")
         } else {
             $(element).removeClass("closed")
             $(element).find("tr,thead").css("display", "table-row")
+             $(element).find(".plus").css("display", "none")
+            $(element).find(".minus").css("display", "inline")
         }
     }
 

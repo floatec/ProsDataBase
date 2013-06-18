@@ -23,12 +23,11 @@
 <body style="margin: -2px;top: 2px;padding: 2px;">
 {% block body %}
 <div id=header>
-        <div id='helpLinkDiv'>
-        <a id='helpLink' title='help' href='/help/'>&nbsp;? </a>
-        </div>
+
         <a href="/table/" class="crumb">{% trans "Home" %}<span>></span></a>{% block header %}{% endblock %}
         <div id="loginNameMenu">
             <ul id="subMenuList">
+                <li><a href="/help/">{% trans "Help" %}</a></li>
                 <li><a href="/settings/">{% trans "Settings" %}</a></li>
                 <li><a id='adminMenu' href="#">{% trans "Admin" %}</a>
                     <ul id='adminSubMenu' style="z-index: 3;">
