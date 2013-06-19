@@ -122,9 +122,9 @@
                 createTable(columns, tableName, $("#headTable"), '/api/table/' + tableName + '/',undefined);
             });
             $("#tableCrumb").prepend(decodeURIComponent(tableName));
-            $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
-            $("#insertData").attr('href', '/dataset/' + tableName + '/');
-            $("#modifyStructure").attr('href', '/modify/' + tableName + '/');
+           // $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
+           // $("#insertData").attr('href', '/dataset/' + tableName + '/');
+           //$("#modifyStructure").attr('href', '/modify/' + tableName + '/');
             $("#viewLog").attr('href', '/tableHistory/' + tableName + '/')
             $("#exportData").click(function(){
 
