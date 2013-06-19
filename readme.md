@@ -64,12 +64,18 @@ change your mysql configuration ProsDataBase/ProsData/Base/settings.py
     }
 
 navigate into your projects folder:
+
     cd path/to/your/Project/MEPSS2013/ProsDataBase
-	./manange.py syncdb
+    ./manange.py syncdb
+
 please say yes if you are asked to create an admin user
-	./manage.py migrate
+
+    ./manage.py migrate
+
 you can noew test it by running
-	./manage.py runserver
+
+    ./manage.py runserver
+
 and open http://localhost:8000 in your browser or try it with wget/curl
 
 setup NginX
