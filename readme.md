@@ -54,39 +54,39 @@ initial project
 	mysql>GRANT ALL PRIVILEGES ON prosdatabase.* TO 'prosdatabase'@'localhost' IDENTIFIED BY 'some_pass' WITH GRANT OPTION;
 	mysql>exit
 change your mysql configuration ProsDataBase/ProsData/Base/settings.py
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'prosdatabase',
-            'USER': 'prosdatabase',
-            'PASSWORD': 'pass',
-        }
-    }
+	    DATABASES = {
+	        'default': {
+	            'ENGINE': 'django.db.backends.mysql',
+	            'NAME': 'prosdatabase',
+	            'USER': 'prosdatabase',
+	            'PASSWORD': 'pass',
+	        }
+	    }
 
 navigate into your projects folder:
 
-    cd path/to/your/Project/MEPSS2013/ProsDataBase
-    ./manange.py syncdb
+	cd path/to/your/Project/MEPSS2013/ProsDataBase
+	./manange.py syncdb
 
 please say yes if you are asked to create an admin user
 
-    ./manage.py migrate
+	./manage.py migrate
 
 you can noew test it by running
 
-    ./manage.py runserver
+	./manage.py runserver
 
 and open http://localhost:8000 in your browser or try it with wget/curl
 
 setup NginX
 ----------------------
 install nginx
-    sudo apt-get install nginx python-flup
+	sudo apt-get install nginx python-flup
 run django in fsatcgi mode
-    python ./manage.py runfcgi host=127.0.0.1 port=8080
+	python ./manage.py runfcgi host=127.0.0.1 port=8080
 don't forget to add it to your init.d script!
-    sudo touch /etc/nginx/sites-available/sample_project.conf
-    sudo ln -s /etc/nginx/sites-available/sample_project.conf /etc/nginx/sites-enabled/sample_project.conf
+	sudo touch /etc/nginx/sites-available/sample_project.conf
+	sudo ln -s /etc/nginx/sites-available/sample_project.conf /etc/nginx/sites-enabled/sample_project.conf
 add your config
     server {
         listen 80;
