@@ -15,10 +15,10 @@
 {% endblock %}
 {% block content %}
 <span>{% trans "Group name:" %}</span><br/>
-<input type="text" id="groupName"><br/><br/>
-<span>{% trans "Create tables:" %}</span>
+<input placeholder="{% trans "groupname %}" type="text" id="groupName"><br/><br/>
+<span>{% trans "Has permission to Ccreate tables:" %}</span>
 <input type="checkbox" id="createTables"><br/><br />
-<span>{% trans "Add users:" %}</span><br/>
+<span>{% trans "User off this groups:" %}</span><br/>
 <textarea rows="4" cols="50" id="allUsers">
 </textarea><br/>
 <button id='createGroupButton'>{% trans "Create" %}</button>
