@@ -185,7 +185,7 @@ def register(request):
     except DBUser.DoesNotExist:
         user = DBUser.objects.create_user(username=jsonRequest["username"], password=jsonRequest["password"])
         user.save()
-        historyfactory.writeAuthHistory(None, user, HistoryAuth.USER_REGISTERED)
+        historyfactory.writeAuthHistory(None, request.user, HistoryAuth.USER_REGISTERED, user.username)
         return HttpResponse(json.dumps({"success": _("Account is created").__unicode__()}), content_type="application/json")
 
 
