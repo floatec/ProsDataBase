@@ -153,7 +153,7 @@ def createTable(request):
             obj.delete()
         errors.append({"code": Error.RIGHTS_TABLE_CREATE, "message": _("Failed to give access rights to the table creator. Please contact the developers.").__unicode__()})
     for col in newTable.getColumns():
-        colRightsF = RightListForColumn({'read': True, 'modify': True})
+        colRightsF = RightListForColumnForm({'read': True, 'modify': True})
         if colRightsF.is_valid():
             colRights = colRightsF.save(commit=False)
             colRights.user = request.user
