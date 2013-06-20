@@ -382,7 +382,7 @@ class HistorySerializer:
                 }
             ]
 
-            }
+        }
         """
         result = dict()
         result["tableHistory"] = list()
@@ -394,7 +394,7 @@ class HistorySerializer:
         result["authHistory"] = list()
         for history in HistoryAuth.objects.all():
             historyObj = dict()
-            historyObj["user"] = history.user
+            historyObj["user"] = history.user.username
             if history.type == HistoryAuth.GROUP_CREATED:
                 historyObj["type"] = "GROUP CREATED"
             if history.type == HistoryAuth.GROUP_MODIFIED:
@@ -410,7 +410,7 @@ class HistorySerializer:
                 historyObj["messages"].append(message.content)
 
             result["authHistory"].append(historyObj)
-
+        print result
         return result
 
 
