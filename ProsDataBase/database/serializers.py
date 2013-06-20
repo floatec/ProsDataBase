@@ -395,7 +395,7 @@ class HistorySerializer:
         for history in HistoryAuth.objects.all():
             historyObj = dict()
             historyObj["user"] = history.user.username
-            historyObj["date"] = history.date
+            historyObj["date"] = str(history.date)
             if history.type == HistoryAuth.GROUP_CREATED:
                 historyObj["type"] = "GROUP CREATED"
             if history.type == HistoryAuth.GROUP_MODIFIED:
