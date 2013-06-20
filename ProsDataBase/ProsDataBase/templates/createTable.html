@@ -83,7 +83,8 @@ function init() {
 
     });
  $.getJSON('/api/myself/', function (data) {
-    if(!data.tableCreator){
+    username=data.name
+     if(!data.tableCreator){
         window.location = '/table/';
 
     }
@@ -159,6 +160,7 @@ function init() {
         allUsers = data.users;
 
         for (var key in allUsers) {
+            if (allUsers[key]!=username)
             allUserGroups.push(allUsers[key]);
         }
 
