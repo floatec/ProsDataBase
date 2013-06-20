@@ -357,7 +357,7 @@ def deleteTable(name, user):
         table.save()
 
     if len(errors) > 0:
-        return HttpResponse({"errors": errors}, content_type="application/json")
+        return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
     historyfactory.writeTableHistory(None, table, user, HistoryTable.TABLE_DELETED)
     return HttpResponse(json.dumps({"success": _("Successfully deleted table ").__unicode__() + table.name + "."}), status=200)
 
