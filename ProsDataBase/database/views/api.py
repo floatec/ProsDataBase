@@ -33,35 +33,39 @@ def user(request, name):
 
 
 def userRights(request):
-    if request.user.userManager or request.user.admin :
+    if request.user.userManager or request.user.admin:
         if request.method == 'GET':
             return showUserRights(request)
         if request.method == 'POST':
             return modifyUserRights(request)
     else:
-        return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"message": _("You have no permissions to perform this opperation.").__unicode__()}]}), content_type="application/json")
 
 
 def groups(request):
     if request.method == 'GET':
         return showAllGroups()
     elif request.method == 'POST':
-        if request.user.userManager or request.user.admin :
+        if request.user.userManager or request.user.admin:
             return addGroup(request)
         else:
-            return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"message": _("You have no permissions to perform this opperation.").__unicode__()}]}), content_type="application/json")
 
 
 def group(request, name):
+    try:
+        DBGroup.objects.get(name=name)
+    except DBGroup.DoesNotExist:
+        return HttpResponse(json.dumps({"errors": [{"code": Error.GROUP_NOTFOUND, "message": _("This page does not exist!").__unicode__()}]}), content_type="application/json")
     if request.method == 'GET':
         return showOneGroup(name)
-    if request.user.userManager or request.user.admin :
+    if request.user.userManager or request.user.admin:
         if request.method == 'PUT':
             return modifyGroup(request, name)
         if request.method == 'DELETE':
             return deleteGroup(request, name)
     else:
-        return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"message": _("You have no permissions to perform this opperation.").__unicode__()}]}), content_type="application/json")
 
 
 def myself(request):
@@ -103,12 +107,12 @@ def tables(request):
 
 
 def table(request, name):
+    try:
+        Table.objects.get(name=name, deleted=False)
+    except Table.DoesNotExist:
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("This page does not exist!").__unicode__()}]}), content_type="application/json")
     if request.method == 'GET':
-        try:
-            Table.objects.get(name=name, deleted=False)
-            return showTable(name, request.user)
-        except Table.DoesNotExist:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "404: Page not found!"}]}), content_type="application/json")
+        return showTable(name, request.user)
     if request.method == 'POST':
         return tablefactory.insertData(request, name)
     if request.method == 'PUT':
@@ -118,6 +122,10 @@ def table(request, name):
 
 
 def tableRights(request, tableName):
+    try:
+        Table.objects.get(name=tableName, deleted=False)
+    except Table.DoesNotExist:
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("This page does not exist!").__unicode__()}]}), content_type="application/json")
     if request.method == 'PUT':
         return tablefactory.modifyTableRights(json.loads(request.raw_post_data), tableName, request.user)
     if request.method == 'GET':
@@ -190,7 +198,7 @@ def register(request):
         user = DBUser.objects.create_user(username=jsonRequest["username"], password=jsonRequest["password"])
         user.save()
         historyfactory.writeAuthHistory(None, request.user, HistoryAuth.USER_REGISTERED, user.username)
-        return HttpResponse(json.dumps({"success": _("Account is created").__unicode__()}), content_type="application/json")
+        return HttpResponse(json.dumps({"success": _("Created account successfully.").__unicode__()}), content_type="application/json")
 
 
 def login(request):
@@ -458,11 +466,11 @@ def showTableRights(name):
 
 
 def tableStructure(request, name):
+    try:
+        Table.objects.get(name=name, deleted=False)
+    except Table.DoesNotExist:
+        return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("This page does not exist!").__unicode__()}]}), content_type="application/json")
     if request.method == 'GET':
-        try:
-            Table.objects.get(name=name, deleted=False)
-        except Table.DoesNotExist:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "404: Page not found!"}]}), content_type="application/json")
         structure = TableSerializer.serializeStructure(name, request.user)
         return HttpResponse(json.dumps(structure), content_type="application/json")
 
