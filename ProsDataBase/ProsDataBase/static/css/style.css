@@ -15,6 +15,14 @@ body{
     font-family: 'Arbutus Slab';
 }
 
+#filter{
+    margin-bottom: 10px;
+}
+
+.FilterButton{
+    width: 30px;
+}
+
 
 .error{
     border-color: red;

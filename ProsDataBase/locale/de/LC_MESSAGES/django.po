@@ -22,7 +22,7 @@ msgstr ""
 
 #: ProsDataBase/templates/base.html:29
 msgid "Home"
-msgstr "Start"
+msgstr "Übersicht"
 
 #: ProsDataBase/templates/base.html:32
 msgid "Settings"

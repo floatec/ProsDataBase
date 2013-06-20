@@ -54,14 +54,15 @@ initial project
 	mysql>GRANT ALL PRIVILEGES ON prosdatabase.* TO 'prosdatabase'@'localhost' IDENTIFIED BY 'some_pass' WITH GRANT OPTION;
 	mysql>exit
 change your mysql configuration ProsDataBase/ProsData/Base/settings.py
-	    DATABASES = {
-	        'default': {
-	            'ENGINE': 'django.db.backends.mysql',
-	            'NAME': 'prosdatabase',
-	            'USER': 'prosdatabase',
-	            'PASSWORD': 'pass',
-	        }
+
+	DATABASES = {
+	       'default': {
+	       'ENGINE': 'django.db.backends.mysql',
+	       'NAME': 'prosdatabase',
+	       'USER': 'prosdatabase',
+	       'PASSWORD': 'pass',
 	    }
+	}
 
 navigate into your projects folder:
 
