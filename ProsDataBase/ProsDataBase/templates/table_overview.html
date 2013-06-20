@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block menu %}
-<a href="/createTable/" id='createTableButton' title='{% trans "click here to add a new Table" %}' class="buttonMenuButton">{%trans "Create new table" %}</a>
+<a href="/createTable/" id='createTableButton' title='{% trans "add a new Table" %}' class="buttonMenuButton">{%trans "Create new table" %}</a>
 
 {% endblock %}
 
@@ -29,7 +29,7 @@
         //get all tables for the current user
         $.getJSON('/api/table/', function (tabledata) {
             if(allCatagories.length==0){
-                showErrors([{message: "{%  trans "You don't have the right to view any table." %}"}])
+                showErrors([{message: "{%  trans "No tables available" %}"}])
             }
             //go thru all categories
             for (var i in allCatagories) {
