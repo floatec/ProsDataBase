@@ -15,12 +15,17 @@
     </ul>
 
 {% endblock %}
+{% block menu %}
+         <a href="/register/" class='buttonMenuButton'>create user</a>
+
+{% endblock %}
 {% block header %}
     <a class="crumb" href='/useradmin/' id='userAdmin'> <span>></span></a>
 
 
 {% endblock %}
 {% block content %}
+
     <table id='userTable' class='datasets'>
         <caption>{% trans "User Rights" %}</caption>
         <thead>
@@ -36,9 +41,6 @@
     <button id='saveUsers'>{% trans "Save" %}</button>
 {% endblock %}
 
-{% block menu %}
-
-{% endblock %}
 {% block javascript %}
     <script language="JavaScript">
 
