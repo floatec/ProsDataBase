@@ -356,10 +356,10 @@ def deleteTable(name, user):
         table.modifier = user
         table.save()
 
-        if len(errors) > 0:
-            return HttpResponse({"errors": errors}, content_type="application/json")
-        historyfactory.writeTableHistory(None, table, user, HistoryTable.TABLE_DELETED)
-        return HttpResponse(json.dumps({"success": _("Successfully deleted table ").__unicode__() + table.name + "."}), status=200)
+    if len(errors) > 0:
+        return HttpResponse({"errors": errors}, content_type="application/json")
+    historyfactory.writeTableHistory(None, table, user, HistoryTable.TABLE_DELETED)
+    return HttpResponse(json.dumps({"success": _("Successfully deleted table ").__unicode__() + table.name + "."}), status=200)
 
 
 def deleteColumn(tableName, columnName, user):
