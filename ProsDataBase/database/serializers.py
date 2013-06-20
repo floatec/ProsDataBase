@@ -469,11 +469,13 @@ class UserSerializer:
         return result
 
     @staticmethod
-    def serializeAllWithRights():
+    def serializeAllWithRights(callingUser):
         result = dict()
         result["users"] = list()
 
         for user in DBUser.objects.all():
+            if user is callingUser:
+                continue
             result["users"].append(UserSerializer.serializeOne(user.username))
 
         return result
