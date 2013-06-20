@@ -104,7 +104,11 @@ def tables(request):
 
 def table(request, name):
     if request.method == 'GET':
-        return showTable(name, request.user)
+        try:
+            Table.objects.get(name=name, deleted=False)
+            return showTable(name, request.user)
+        except Table.DoesNotExist:
+            return HttpResponse({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "404: Page not found!"}]})
     if request.method == 'POST':
         return tablefactory.insertData(request, name)
     if request.method == 'PUT':

@@ -599,7 +599,7 @@ def modifyTable(request, name):
         try:
             Table.objects.get(name=jsonRequest["name"], deleted=False)
         except Table.DoesNotExist:
-            message = _("Changed name from '").__unicode__() + table.name + _("', to: '").__unicode__() + jsonRequest["name"] + "'."
+            message = _("Changed name from '").__unicode__() + table.name + _("' to: '").__unicode__() + jsonRequest["name"] + "'."
             history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
             table.name = jsonRequest["name"]
 
@@ -858,7 +858,7 @@ def insertData(request, tableName):
         if newData is None:
             for obj in savedObjs:
                 obj.delete()
-            return HttpResponse(json.dumps({"errors": [{"code": Error.DATAFIELD_CREATE, "message": _("Could not add data for column").__unicode__() + col["name"] + _(". The content type was not valid. Abort.").__unicode__()}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.DATAFIELD_CREATE, "message": _("Could not add data for column ").__unicode__() + col["name"] + _(". The content type was not valid. Abort.").__unicode__()}]}), content_type="application/json")
 
         else:
             newData.creator = request.user
