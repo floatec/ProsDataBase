@@ -1186,39 +1186,3 @@ msgstr "Der angeforderte Datensatz existiert nicht."
 msgid "Table could not be found"
 msgstr "Tabelle konnte nicht gefunden werden"
 
-#, fuzzy
-#~ msgid "Are you sure to delete this item(s)?"
-#~ msgstr "Wollen Sie diese(s) Elemente wirklich löschen?"
-
-#~ msgid "Group members:"
-#~ msgstr "Gruppenmitglieder:"
-
-#~ msgid "Delete"
-#~ msgstr "Löschen"
-
-#~ msgid "Modify Structure"
-#~ msgstr "Struktur ändern"
-
-#~ msgid "Add users:"
-#~ msgstr "Benutzer hinzufügen:"
-
-#~ msgid "An error occured"
-#~ msgstr "Ein Fehler ist aufgetreten."
-
-#~ msgid "add administrators"
-#~ msgstr "Administraoren hinzufügen"
-
-#~ msgid "attachment; filename='"
-#~ msgstr "Anhang; Dateiname='"
-
-#~ msgid " from "
-#~ msgstr "von"
-
-#~ msgid "status"
-#~ msgstr "Status"
-
-#~ msgid "Gruppen"
-#~ msgstr "Gruppen"
-
-#~ msgid "Password"
-#~ msgstr "Passwort"
