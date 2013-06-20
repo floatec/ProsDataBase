@@ -27,8 +27,8 @@
         <li><a href="#tabs-2" id="tab_2">{% trans "Step 2" %}</a></li>
     </ul>
     <div id="tabs-1">
-        <span>{% trans "Tablename:" %}</span><br/>
-        <input type="text" id="tblName" placeholder="tablename"><br/><br/>
+        <span>{% trans "Tablename:" %}</span>
+        <input type="text" id="tblName"><br/><br/>
        {% trans "Select Category" %}: <select id="category"></select><br/><br/>
         <table id="columnTable">
 
@@ -248,7 +248,7 @@ function getAllColumnNames() {
 //function to create a new column row
 function createNewColumnsRow() {
     columnID++;
-    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button class='FilterButton' id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "' placeholder='{% trans "columnname" %}'></td><td><input class='comment' type='text' placeholder='{% trans "displayed in insert/modify" %}'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'></td></tr>");
+    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button class='FilterButton' id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "' placeholder='{% trans "columnname" %}'></td><td><input class='comment' type='text'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'></td></tr>");
 
     $("#field_" + columnID).change(function () {
         valid = true;
