@@ -24,7 +24,7 @@
 {% block body %}
 <div id=header>
 
-        <a href="/table/" class="crumb">{% trans "Home" %}<span>></span></a>{% block header %}{% endblock %}
+        <a href="/table/" class="crumb">{% trans "Home" %}<span>></span></a><span class="headnav">{% block header %}{% endblock %}</span>
         <div id="loginNameMenu">
             <ul id="subMenuList">
                 <li><a href="/help/">{% trans "Help" %}</a></li>
