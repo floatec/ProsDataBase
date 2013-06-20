@@ -612,12 +612,6 @@ def modifyTable(request, name):
         table.category = category
     table.save()
 
-    if "rights" in jsonRequest:
-        RightListForTable.objects.filter(table=table).delete()
-        answer = createTableRights(jsonRequest["rights"], table, request.user)
-        if not answer:
-            return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
-
     for col in jsonRequest["columns"]:
         if "id" not in col:  # this should be a newly added column
             answer = createColumn(col, table, request.user)
@@ -735,21 +729,39 @@ def modifyTable(request, name):
                     history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 typeTable.column = None
                 typeTable.save()
-        if "rights" in col:
-            RightListForColumn.objects.filter(column=column).delete()
-            answer = createColumnRights(col["rights"], column, request.user)
-            if not answer:
-                return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
 
-    rights = historyfactory.printRightsFor(name)
+    return HttpResponse(json.dumps({"success": _("Successfully modified table structure.").__unicode__()}), content_type="application/json")
+
+
+def modifyTableRights(rights, tableName, user):
+    try:
+        table = Table.objects.get(name=tableName, deleted=False)
+    except Table.DoesNotExist:
+        return HttpResponse({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name " + tableName + ".").__unicode__()}]})
+    if "rights" in rights:
+        RightListForTable.objects.filter(table=table).delete()
+        answer = createTableRights(rights["rights"], table, user)
+        if not answer:
+            return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
+
+    for col in rights["columns"]:
+        try:
+            column = table.getColumns().filter(name=col["name"], deleted=False)
+        except Column.DoesNotExist:
+            continue
+        RightListForColumn.objects.filter(column=column).delete()
+        answer = createColumnRights(col["rights"], column, user)
+        if not answer:
+            return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
+
+    rights = historyfactory.printRightsFor(tableName)
     if rights is not None:
         message = "Current rights: "
-        historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
+        history = historyfactory.writeTableHistory(None, table, user, HistoryTable.TABLE_MODIFIED, message)
         for right in rights:
-            historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, right)
+            historyfactory.writeTableHistory(history, table, user, HistoryTable.TABLE_MODIFIED, right)
 
-    result = TableSerializer.serializeStructure(name, request.user)
-    return HttpResponse(json.dumps(result), content_type="application/json")
+    return HttpResponse(json.dumps({"success": _("Successfully modified rights.").__unicode__()}), content_type="application/json")
 
 
 def insertData(request, tableName):

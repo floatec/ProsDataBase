@@ -114,6 +114,8 @@ def table(request, name):
 
 
 def tableRights(request, tableName):
+    if request.method == 'PUT':
+        return tablefactory.modifyTableRights(json.loads(request.raw_post_data), tableName, request.user)
     if request.method == 'GET':
         return showTableRights(tableName)
 
