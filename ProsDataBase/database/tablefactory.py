@@ -746,7 +746,7 @@ def modifyTableRights(rights, tableName, user):
 
     for col in rights["columns"]:
         try:
-            column = table.getColumns().filter(name=col["name"], deleted=False)
+            column = table.getColumns().get(name=col["name"], deleted=False)
         except Column.DoesNotExist:
             continue
         RightListForColumn.objects.filter(column=column).delete()
