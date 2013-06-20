@@ -143,7 +143,7 @@ function init() {
                 $(".helpTextDiv").html("<h1>{% trans "Help" %}</h1>{% trans "Finally, assign read, insert, modify and delete rights to users and groups:Search for users or groups in the input field and toggle their rights for each column.The 'All'-section allows fast rights assignment for all columns." %} <img style='float:left' class='icn' src='/static/img/key-icon.png'>{%  trans "can change the streuctur and the rights of this table" %}<br><img class='icn' src='/static/img/pencil-icon.png'>{% trans "can inster new Datasets" %}<br><img class='icn' src='/static/img/trash-icon.png'>{% trans "an delete datasets" %}<br><img class='icn' src='/static/img/paper-icon.png'>{% trans "can view the log" %}<br><img class='icn' src='/static/img/view-icon.png'>{% trans "an view this column" %}<br><img class='icn' src='/static/img/setting-icon.png'>{% trans "can change this column" %}")
             }
 
-             removeEmptyColumns();
+             removeEmptyColuns();
         }
     });
 
@@ -247,7 +247,7 @@ function getAllColumnNames() {
 //function to create a new column row
 function createNewColumnsRow() {
     columnID++;
-    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button class='FilterButton' id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "' placeholder='{% trans "columnname" %}'></td><td><input class='comment' type='text'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'></td></tr>");
+    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button class='FilterButton' id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "' placeholder='{% trans "columnname" %}'></td><td><input class='comment' type='text' placeholder='{%  trans "displeyed at insert/delte" %}'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'></td></tr>");
 
     $("#field_" + columnID).change(function () {
         valid = true;

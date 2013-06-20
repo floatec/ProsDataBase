@@ -121,7 +121,7 @@
                 columns = data.columns;
                 createTable(columns, tableName, $("#headTable"), '/api/table/' + tableName + '/',undefined);
             });
-            $("#tableCrumb").prepend(decodeURIComponent(tableName));
+            $("#tableCrumb").html(decodeURIComponent(tableName));
            // $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
            // $("#insertData").attr('href', '/dataset/' + tableName + '/');
            //$("#modifyStructure").attr('href', '/modify/' + tableName + '/');
@@ -429,4 +429,12 @@ function sendData(){
 
 
     </script>
+{% endblock %}
+
+{% block css %}
+#content{
+
+    top:100px;
+    left:10px;
+}
 {% endblock %}
