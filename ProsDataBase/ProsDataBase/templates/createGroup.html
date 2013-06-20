@@ -14,11 +14,11 @@
 <a class="crumb" href='/createGroup/' id='createGroup'> <span>></span></a>
 {% endblock %}
 {% block content %}
-<span>{% trans "Group name:" %}</span><br/>
-<input placeholder="{% trans "groupname %}" type="text" id="groupName"><br/><br/>
-<span>{% trans "Has permission to Ccreate tables:" %}</span>
+<span>{% trans "Group name:" %}:</span>
+<input type="text" id="groupName"><br/><br/>
+<span>{% trans "Has permission to create tables:" %}</span>
 <input type="checkbox" id="createTables"><br/><br />
-<span>{% trans "User off this groups:" %}</span><br/>
+<span>{% trans "add users to this group:" %}</span><br/>
 <textarea rows="4" cols="50" id="allUsers">
 </textarea><br/>
 <button id='createGroupButton'>{% trans "Create" %}</button>

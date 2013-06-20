@@ -16,7 +16,7 @@
 
 {% endblock %}
 {% block menu %}
-         <a href="/register/" class='buttonMenuButton'>create user</a>
+         <a href="/register/" class='buttonMenuButton'>{% trans "create user" %}</a>
 
 {% endblock %}
 {% block header %}
@@ -31,7 +31,7 @@
         <thead>
         <th>{% trans "User" %}</th>
         <th>{% trans "Enabled" %}</th>
-        <th>{% trans "Create tables" %}</th>
+        <th>{% trans "Table creator" %}</th>
         <th>{% trans "User admin" %}</th>
         </thead>
 
@@ -84,14 +84,14 @@
                             }
                             countCheckboxes++;
                             if (allUsers[key].tableCreator) {
-                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='tableCreator'><label title='{% trans "create tables" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
+                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='tableCreator'><label title='{% trans "toggle permission to create tables" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
                             }
                             else {
                                 row += "<td><input type='checkbox' id='check" + countCheckboxes + "' class='tableCreator'><label title='{% trans "create tables" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/browser-icon.png'></label></td>";
                             }
                             countCheckboxes++;
                             if (allUsers[key].userManager) {
-                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='userManager'><label title='{% trans "manage users" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
+                                row += "<td><input type='checkbox' checked='checked' id='check" + countCheckboxes + "' class='userManager'><label title='{% trans "toggle User Manager property" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";
                             }
                             else {
                                 row += "<td><input type='checkbox' id='check" + countCheckboxes + "' class='userManager'><label title='{% trans "manage users" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/male-avatar-icon.png'></label></td>";

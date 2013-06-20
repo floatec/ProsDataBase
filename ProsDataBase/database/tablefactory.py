@@ -153,7 +153,7 @@ def createTable(request):
             obj.delete()
         errors.append({"code": Error.RIGHTS_TABLE_CREATE, "message": _("Failed to give access rights to the table creator. Please contact the developers.").__unicode__()})
     for col in newTable.getColumns():
-        colRightsF = RightListForColumn({'read': True, 'modify': True})
+        colRightsF = RightListForColumnForm({'read': True, 'modify': True})
         if colRightsF.is_valid():
             colRights = colRightsF.save(commit=False)
             colRights.user = request.user
@@ -300,6 +300,7 @@ def createColumn(col, table, user):
         newColumn.table = table
         newColumn.save()
         savedObjs.append(newColumn)
+
     else:
         for obj in savedObjs:
             obj.delete()
@@ -355,10 +356,10 @@ def deleteTable(name, user):
         table.modifier = user
         table.save()
 
-        if len(errors) > 0:
-            return HttpResponse({"errors": errors}, content_type="application/json")
-        historyfactory.writeTableHistory(None, table, user, HistoryTable.TABLE_DELETED)
-        return HttpResponse(json.dumps({"success": _("Successfully deleted table ").__unicode__() + table.name + "."}), status=200)
+    if len(errors) > 0:
+        return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
+    historyfactory.writeTableHistory(None, table, user, HistoryTable.TABLE_DELETED)
+    return HttpResponse(json.dumps({"success": _("Successfully deleted table ").__unicode__() + table.name + "."}), status=200)
 
 
 def deleteColumn(tableName, columnName, user):
@@ -598,7 +599,7 @@ def modifyTable(request, name):
         try:
             Table.objects.get(name=jsonRequest["name"], deleted=False)
         except Table.DoesNotExist:
-            message = _("Changed name from '").__unicode__() + table.name + _("', to: '").__unicode__() + jsonRequest["name"] + "'."
+            message = _("Changed name from '").__unicode__() + table.name + _("' to: '").__unicode__() + jsonRequest["name"] + "'."
             history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
             table.name = jsonRequest["name"]
 
@@ -612,17 +613,20 @@ def modifyTable(request, name):
         table.category = category
     table.save()
 
-    if "rights" in jsonRequest:
-        RightListForTable.objects.filter(table=table).delete()
-        answer = createTableRights(jsonRequest["rights"], table, request.user)
-        if not answer:
-            return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
-
     for col in jsonRequest["columns"]:
         if "id" not in col:  # this should be a newly added column
             answer = createColumn(col, table, request.user)
             if not answer:
                 return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
+
+            # give the creator of this column rights on it:
+            colRightsF = RightListForColumnForm({"read": True, "modify": True})
+            if colRightsF.is_valid():
+                colRights = colRightsF.save(commit=False)
+                colRights.user = request.user
+                colRights.column = table.getColumns().get(name=col["name"], deleted=False)
+                colRights.table = table
+                colRights.save()
             message = _("New column: '").__unicode__() + col["name"] + "'"
             history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
             continue
@@ -735,21 +739,39 @@ def modifyTable(request, name):
                     history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 typeTable.column = None
                 typeTable.save()
-        if "rights" in col:
-            RightListForColumn.objects.filter(column=column).delete()
-            answer = createColumnRights(col["rights"], column, request.user)
-            if not answer:
-                return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
 
-    rights = historyfactory.printRightsFor(name)
+    return HttpResponse(json.dumps({"success": _("Successfully modified table structure.").__unicode__()}), content_type="application/json")
+
+
+def modifyTableRights(rights, tableName, user):
+    try:
+        table = Table.objects.get(name=tableName, deleted=False)
+    except Table.DoesNotExist:
+        return HttpResponse({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name " + tableName + ".").__unicode__()}]})
+    if "rights" in rights:
+        RightListForTable.objects.filter(table=table).exclude(user=user).delete()
+        answer = createTableRights(rights["rights"], table, user)
+        if not answer:
+            return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
+
+    for col in rights["columns"]:
+        try:
+            column = table.getColumns().get(name=col["name"], deleted=False)
+        except Column.DoesNotExist:
+            continue
+        RightListForColumn.objects.filter(column=column).exclude(user=user).delete()
+        answer = createColumnRights(col["rights"], column, user)
+        if not answer:
+            return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
+
+    rights = historyfactory.printRightsFor(tableName)
     if rights is not None:
         message = "Current rights: "
-        historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
+        history = historyfactory.writeTableHistory(None, table, user, HistoryTable.TABLE_MODIFIED, message)
         for right in rights:
-            historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, right)
+            historyfactory.writeTableHistory(history, table, user, HistoryTable.TABLE_MODIFIED, right)
 
-    result = TableSerializer.serializeStructure(name, request.user)
-    return HttpResponse(json.dumps(result), content_type="application/json")
+    return HttpResponse(json.dumps({"success": _("Successfully modified rights.").__unicode__()}), content_type="application/json")
 
 
 def insertData(request, tableName):
@@ -836,7 +858,7 @@ def insertData(request, tableName):
         if newData is None:
             for obj in savedObjs:
                 obj.delete()
-            return HttpResponse(json.dumps({"errors": [{"code": Error.DATAFIELD_CREATE, "message": _("Could not add data for column").__unicode__() + col["name"] + _(". The content type was not valid. Abort.").__unicode__()}]}), content_type="application/json")
+            return HttpResponse(json.dumps({"errors": [{"code": Error.DATAFIELD_CREATE, "message": _("Could not add data for column ").__unicode__() + col["name"] + _(". The content type was not valid. Abort.").__unicode__()}]}), content_type="application/json")
 
         else:
             newData.creator = request.user

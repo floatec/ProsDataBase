@@ -22,28 +22,30 @@ urlpatterns = patterns(
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     (r'^$', RedirectView.as_view(url='/table/')),
-    (r'^detailview/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="table_detailview.html")),
-    (r'^select_dataset/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="select_dataset.html")),
-    (r'^modifyDataset/(?P<table_id>[\w ]+)/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', TemplateView.as_view(template_name="modifyDataset.html")),
-    (r'^group/(?P<groupname>[\w ]+)/$', TemplateView.as_view(template_name="modifyGroup.html")),
-    (r'^modify/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="modify.html")),
+    (r'^detailview/(?P<table_id>[\w| |\d|.|_|\-|\(|\)]+)/$', TemplateView.as_view(template_name="table_detailview.html")),
+    (r'^select_dataset/(?P<table_id>[\w| |\d|.|_|\-|\(|\)]+)/$', TemplateView.as_view(template_name="select_dataset.html")),
+    (r'^modifyDataset/(?P<table_id>[\w| |\d|.|_|\-|\(|\)]+)/(?P<datasetID>\d+.\d{4}_\d+_\w)/$', TemplateView.as_view(template_name="modifyDataset.html")),
+    (r'^group/(?P<groupname>[\w| |\d|.|_|\-|\(|\)]+)/$', TemplateView.as_view(template_name="modifyGroup.html")),
+    (r'^modify/(?P<table_id>[\w| |\d|.|_|\-|\(|\)]+)/$', TemplateView.as_view(template_name="modify.html")),
     (r'^createTable/$', TemplateView.as_view(template_name="createTable.html")),
-    (r'^tableHistory/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="tableHistory.html")),
+    (r'^tableHistory/(?P<table_id>[\w| |\d|.|_|\-|\(|\)]+)/$', TemplateView.as_view(template_name="tableHistory.html")),
+    (r'^log/$', TemplateView.as_view(template_name="log.html")),
     (r'^useradmin/$', TemplateView.as_view(template_name="useradmin.html")),
     (r'^categories/$', TemplateView.as_view(template_name="categoryadmin.html")),
     (r'^createGroup/$', TemplateView.as_view(template_name="createGroup.html")),
     (r'^groupadmin/$', TemplateView.as_view(template_name="groupadmin.html")),
+    (r'^modifyRights/(?P<table_id>[\w ]+)/$', TemplateView.as_view(template_name="modifyRights.html")),
     (r'^table/$', TemplateView.as_view(template_name="table_overview.html")),
     (r'^register/$', TemplateView.as_view(template_name="register.html")),
     (r'^login/$', TemplateView.as_view(template_name="login.html")),
      (r'^settings/$', TemplateView.as_view(template_name="settings.html")),
-    url(regex=r'^dataset/(?P<tableName>[\w ]+)/$',
+    url(regex=r'^dataset/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/$',
         view='database.views.frontend.insertDataset'),
 
 
     # APIs for category requests
     (r'^api/category/$', "database.views.api.categories"),
-    (r'^api/category/(?P<name>[\w ]+)/$', "database.views.api.category"),
+    (r'^api/category/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/$', "database.views.api.category"),
 
 
     # APIs for table requests

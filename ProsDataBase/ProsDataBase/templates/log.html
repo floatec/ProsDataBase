@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block header %}
+
+
+        <a class="crumb" href='/log/' id='historyCrumb'> <span>></span></a>
+
+
+{% endblock %}
+{% block content %}
+<table id='loggingTable' class='historyTable'>
+    <caption>{% trans "table log" %}</caption>
+    <thead>
+        <th>{% trans "date" %}</th>
+        <th>{% trans "user" %}</th>
+        <th>{% trans "type" %}</th>
+        <th>{% trans "message" %}</th>
+
+    </thead>
+
+
+</table>
+        <br />
+<table id='loggingAuthTable' class='historyTable'>
+    <caption>{% trans "group/user log" %}</caption>
+    <thead>
+        <th>{% trans "date" %}</th>
+        <th>{% trans "user" %}</th>
+        <th>{% trans "type" %}</th>
+        <th>{% trans "message" %}</th>
+
+    </thead>
+
+
+</table>
+{% endblock %}
+
+{% block menu %}
+
+{% endblock %}
+{% block javascript %}
+<script language="JavaScript">
+
+    init();
+    function init(){
+ $.getJSON('/api/myself/', function (data) {
+    if(!data.admin){
+        window.location = '/table/';
+
+    }
+ });
+    $("#historyCrumb").prepend("Log");
+
+
+        $.getJSON('/api/history/', function (data) {
+
+
+            console.log(data);
+            var historyRow = "";
+            var authHistory = "";
+            for(var key in data.tableHistory){
+
+                  historyRow += "<tr><td>"+data.tableHistory[key].date+"</td><td>"+data.tableHistory[key].user+"</td><td>"+data.tableHistory[key].type+"</td><td><ul>";
+                  for(var i in data.tableHistory[key].messages){
+                        historyRow +="<li>"+data.tableHistory[key].messages[i]+"</li>";
+
+                  }
+
+                  historyRow += "</ul></td></tr>";
+
+            }
+
+            for(var key in data.authHistory){
+
+                  authHistory += "<tr><td>"+data.authHistory[key].date+"</td><td>"+data.authHistory[key].user+"</td><td>"+data.authHistory[key].type+"</td><td><ul>";
+                  for(var i in data.authHistory[key].messages){
+                        authHistory +="<li>"+data.authHistory[key].messages[i]+"</li>";
+
+                  }
+
+                  authHistory += "</ul></td></tr>";
+
+            }
+
+            $("#loggingAuthTable").append(authHistory);
+            $("#loggingTable").append(historyRow);
+
+        });
+
+
+
+}
+
+</script>
+{% endblock %}
