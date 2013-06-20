@@ -423,6 +423,7 @@ class HistoryAuth(models.Model):
 
     date = models.DateTimeField()
     type = models.IntegerField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     def __unicode__(self):
         text = "authorization log entry: " + str(self.date)

@@ -318,13 +318,24 @@ class TableSerializer:
 
     @staticmethod
     def serializeHistory(tableName):
+        """
+        {
+            "history": [
+                {
+                    "type": TABLE:CREATED,
+                    "user": username,
+                    "messages": ["created rights for ...", "created columns..."]
+                }
+            ]
+        }
+        """
         try:
             table = Table.objects.get(name=tableName, deleted=False)
         except Table.DoesNotExist:
             return False
 
         result = dict()
-        result["histories"] = list()
+        result["history"] = list()
         histories = HistoryTable.objects.filter(table=table)
         for history in histories:
             historyObj = dict()
@@ -345,7 +356,60 @@ class TableSerializer:
             historyObj["messages"] = list()
             for msg in history.messages.all():
                 historyObj["messages"].append(msg.content)
-            result["histories"].append(historyObj)
+            result["history"].append(historyObj)
+
+        return result
+
+
+class HistorySerializer:
+    @staticmethod
+    def serializeHistory():
+        """
+        {
+            "tableHistory": [
+                {
+                    "table": "table 1",
+                    "type": "TABLE_CREATED",
+                    "user": "user 1",
+                    "messages": ["created rights for ...", "created columns..."]
+                }
+            ],
+            "authHistory": [
+                {
+                    "user": "user 1",
+                    "type": "GROUP MODIFIED",
+                    "messages": ["Added group member ...", "can now create tables..."]
+                }
+            ]
+
+            }
+        """
+        result = dict()
+        result["tableHistory"] = list()
+        for table in Table.objects.all():
+            tableHist = TableSerializer.serializeHistory(table.name)
+            if tableHist and tableHist is not None:
+                result["tableHistory"] = tableHist["history"]
+
+        result["authHistory"] = list()
+        for history in HistoryAuth.objects.all():
+            historyObj = dict()
+            historyObj["user"] = history.user
+            if history.type == HistoryAuth.GROUP_CREATED:
+                historyObj["type"] = "GROUP CREATED"
+            if history.type == HistoryAuth.GROUP_MODIFIED:
+                historyObj["type"] = "GROUP MODIFIED"
+            if history.type == HistoryAuth.GROUP_DELETED:
+                historyObj["type"] = "GROUP DELETED"
+            if history.type == HistoryAuth.USER_REGISTERED:
+                historyObj["type"] = "USER REGISTERED"
+            if history.type == HistoryAuth.USER_MODIFIED:
+                historyObj["type"] = "USER MODIFIED"
+            historyObj["messages"] = list()
+            for message in history.messages.all():
+                historyObj["messages"].append(message.content)
+
+            result["authHistory"].append(historyObj)
 
         return result
 

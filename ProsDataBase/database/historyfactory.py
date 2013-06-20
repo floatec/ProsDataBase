@@ -61,9 +61,11 @@ def printGroup(groupName):
 
 def printRightsFor(tableName):
     serial = TableSerializer.serializeRightsFor(tableName)
-
-    result = ""
+    if serial is None:
+        return None
+    result = list()
     for actor in serial["actors"]:
+        message = ""
         #  check if user or group
         try:
             DBUser.objects.get(username=actor["name"])
@@ -72,45 +74,45 @@ def printRightsFor(tableName):
             DBGroup.objects.get(name=actor["name"])
             user = False
         if user:
-            result += _("User ").__unicode__() + actor["name"] + _(" may ").__unicode__()
+            message += _("User ").__unicode__() + actor["name"] + _(" may ").__unicode__()
         else:
-            result += _("Group ").__unicode__() + actor["name"] + _(" may ").__unicode__()
+            message += _("Group ").__unicode__() + actor["name"] + _(" may ").__unicode__()
 
         # table rights
         if actor["tableRights"]["viewLog"]:
-            result += "view the table log, "
+            message += "view the table log, "
         if actor["tableRights"]["rightsAdmin"]:
-            result += "modify the table, "
+            message += "modify the table, "
         if actor["tableRights"]["insert"]:
-            result += "insert datasets, "
+            message += "insert datasets, "
         if actor["tableRights"]["delete"]:
-            if result[-2:] == ", ":
-                result = result[:-2] + " and delete datasets"
+            if message[-2:] == ", ":
+                message = message[:-2] + " and delete datasets"
             else:
-                result += "delete datasets"
-        if result[-2:] == ", ":  # cut off trailing comma
-            result = result[:-2]
+                message += "delete datasets"
+        if message[-2:] == ", ":  # cut off trailing comma
+            message = message[:-2]
 
         # column rights
         if len(actor["columnRights"]) > 0:
-            result += ". Column rights:"
+            message += ". Column rights:"
             for column in actor["columnRights"]:
-                result += "\n" + column["name"] + ": "
+                if not column["rights"]["read"] and not column["rights"]["modify"]:
+                    continue
+                message += "\n" + column["name"] + ": "
                 if column["rights"]["read"]:
-                    result += "read, "
+                    message += "read, "
                 if column["rights"]["modify"]:
-                    if result[-2:] == ", ":
-                        result = result[:-2] + " and modify"
+                    if message[-2:] == ", ":
+                        message = message[:-2] + " and modify"
                     else:
-                        result += "modify"
-                if result[-2:] == ", ":  # cut off trailing comma
-                    result = result[:-2]
+                        message += "modify"
+                if message[-2:] == ", ":  # cut off trailing comma
+                    message = message[:-2]
 
-        if result[-1] != "\n":  # new line for next actor
-            result += "\n"
-
-    if result[-1] == "\n":  # cut off trailing new line
-        result = result[:-1]
+        if message[-1] != "\n":  # new line for next actor
+            message += ". \n"
+        result.append(message)
 
     return result
 

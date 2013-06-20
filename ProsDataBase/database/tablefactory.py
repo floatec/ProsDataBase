@@ -144,10 +144,17 @@ def createTable(request):
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
 
     # Write column creation to history
-    history = historyfactory.writeTableHistory(None, newTable, request.user, HistoryTable.TABLE_CREATED, _("Added columns: ").__unicode__() + str(columnNames))
+    columnString = ""
+    for name in columnNames:
+        columnString += name + ", "
+    columnString = columnString[:-2]  # cut off trailing comma
+
+    history = historyfactory.writeTableHistory(None, newTable, request.user, HistoryTable.TABLE_CREATED, _("Added columns: ").__unicode__() + columnString)
     # Write table rights to history
     rights = historyfactory.printRightsFor(newTable.name)
-    historyfactory.writeTableHistory(history, newTable, request.user, HistoryTable.TABLE_CREATED, _("Added permissions:\n").__unicode__() + rights)
+    if rights is not None:
+        for right in rights:
+            historyfactory.writeTableHistory(history, newTable, request.user, HistoryTable.TABLE_CREATED, _("Added permissions:\n").__unicode__() + right)
     # write table creation to history
     historyfactory.writeTableHistory(history, newTable, request.user, HistoryTable.TABLE_CREATED, _("Created table ").__unicode__() + newTable.name + ".")
     return HttpResponse(json.dumps({"success":_("Successfully created table ").__unicode__() + table["name"]}), content_type="application/json")
@@ -555,11 +562,14 @@ def modifyTable(request, name):
     except Table.DoesNotExist:
         return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table ").__unicode__() + name + _(" to delete from.").__unicode__()}]}), content_type="application/json")
 
+    history = None
     jsonRequest = json.loads(request.raw_post_data)
     if jsonRequest["name"] != name:
         try:
             Table.objects.get(name=jsonRequest["name"], deleted=False)
         except Table.DoesNotExist:
+            message = _("Changed name from '").__unicode__() + table.name + _("', to: '").__unicode__() + jsonRequest["name"] + "'."
+            history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
             table.name = jsonRequest["name"]
 
     if jsonRequest["category"] != table.category.name:
@@ -567,9 +577,10 @@ def modifyTable(request, name):
             category = Category.objects.get(name=jsonRequest["category"])
         except Category.DoesNotExist:
             return HttpResponse(json.dumps({"errors": [{"code": Error.CATEGORY_NOTFOUND, "message": _("Could not find category ").__unicode__() + jsonRequest["category"] + "."}]}), content_type="application/json")
-
+        message = _("Changed category from '").__unicode__() + table.category.name + _("' to '").__unicode__() + category.name + "'."
+        history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
         table.category = category
-        table.save()
+    table.save()
 
     if "rights" in jsonRequest:
         RightListForTable.objects.filter(table=table).delete()
@@ -582,6 +593,8 @@ def modifyTable(request, name):
             answer = createColumn(col, table, request.user)
             if not answer:
                 return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
+            message = _("New column: '").__unicode__() + col["name"] + "'"
+            history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
             continue
 
         # this column should be modified
@@ -594,31 +607,51 @@ def modifyTable(request, name):
                 Column.objects.get(name=col["name"], table=table, deleted=False)
                 return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_CREATE, "message": _("Column with name ").__unicode__() + col["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
             except Column.DoesNotExist:
+                message = _("Changed column '").__unicode__() + column.name + _("' to '").__unicode__() + col["name"] + "'"
+                history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 column.name = col["name"]
 
-        column.comment = col["comment"]
+        if column.comment != col["comment"]:
+            message = column.name + _(": old comment : '").__unicode__() + column.comment + _("', new comment: '").__unicode__() + col["comment"] + "."
+            history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
+            column.comment = col["comment"]
         column.save()
 
         colType = column.type
         if colType.type == Type.TEXT:
             typeText = colType.getType()
             if col["length"] >= typeText.length:
+                if col["length"] > typeText.length:
+                    message = _("Column '").__unicode__() + column.name + _("': old length: ").__unicode__() + unicode(typeText.length) + _(", new length: ").__unicode__() + unicode(col["length"]) + "."
+                    history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 typeText.length = col["length"]
                 typeText.save()
 
         elif colType.type == Type.NUMERIC:
             typeNum = colType.getType()
             if col["min"] <= typeNum.min:
+                if col["min"] < typeNum.min:
+                    message = _("Column '").__unicode__() + column.name + _("': old min: ").__unicode__() + unicode(typeNum.min) + _(", new min: ").__unicode__() + col["min"] + "."
+                    history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 typeNum.min = col["min"]
             if typeNum.max <= col["max"]:
+                if typeNum.max < col["max"]:
+                    message = _("Column '").__unicode__() + column.name + _("': old max: ").__unicode__() + unicode(typeNum.max) + _(", new max: ").__unicode__() + col["max"] + "."
+                    history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 typeNum.max = col["max"]
             typeNum.save()
 
         elif colType.type == Type.DATE:
             typeDate = colType.getType()
             if "min" in col and col["min"] <= typeDate.min:
+                if col["min"] < typeDate.min:
+                    message = _("Column '").__unicode__() + column.name + _("': old min: ").__unicode__() + unicode(typeDate.min) + _(", new min: ").__unicode__() + col["min"] + "."
+                    history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 typeDate.min = col["min"]
             if "max" in col and col["max"] >= typeDate.max:
+                if typeDate.max < col["max"]:
+                    message = _("Column '").__unicode__() + column.name + _("': old max: ").__unicode__() + unicode(typeDate.max) + _(", new max: ").__unicode__() + col["max"] + "."
+                    history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 typeDate.max = col["max"]
             typeDate.save()
 
@@ -629,12 +662,16 @@ def modifyTable(request, name):
             for option in col["options"]:
                 if "key" in option:
                     value = SelectionValue.objects.get(index=option["key"], typeSelection=typeSel)
+                    if value.content != option["value"]:
+                        message = _("Column '").__unicode__() + column.name + _("': changed selection value from '").__unicode__() + value.content + _("' to '").__unicode__() + option["value"] + "."
+                        history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                     value.content = option["value"]
                     value.save()
                     # change this selection value for all existing datasets.
                     for datasel in DataSelection.objects.filter(dataset__in=table.getDatasets(), column=column):
-                        if datasel.key == option["key"]:
+                        if str(datasel.key) == option["key"]:
                             datasel.content = option["value"]
+                            datasel.save()
                 else:  # this is a new selection value
                     typeSel.count += 1
                     typeSel.save()
@@ -643,6 +680,8 @@ def modifyTable(request, name):
                         selVal = selValF.save(commit=False)
                         selVal.typeSelection = typeSel
                         selVal.save()
+                    message = _("Column '").__unicode__() + column.name + _("': added selection value '").__unicode__() + option["value"] + "'."
+                    history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
 
         elif colType.type == Type.TABLE:
             typeTable = colType.getType()
@@ -661,6 +700,9 @@ def modifyTable(request, name):
                     return HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": _("Column ") + col["column"] + _(" does not exist.").__unicode__()}]}), content_type="application/json")
                 typeTable.column = refColumn
             else:
+                if typeTable.column:
+                    message = _("Column '").__unicode__() + column.name + _("': Removed link to column '").__unicode__() + typeTable.column.name + "'."
+                    history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
                 typeTable.column = None
                 typeTable.save()
         if "rights" in col:
@@ -668,6 +710,13 @@ def modifyTable(request, name):
             answer = createColumnRights(col["rights"], column)
             if not answer:
                 return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
+
+    rights = historyfactory.printRightsFor(name)
+    if rights is not None:
+        message = "Current rights: "
+        historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
+        for right in rights:
+            historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, right)
 
     result = TableSerializer.serializeStructure(name, request.user)
     return HttpResponse(json.dumps(result), content_type="application/json")
@@ -808,6 +857,8 @@ def modifyData(request, tableName, datasetID):
 
     dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
     newData = None
+    message = "ID: " + unicode(dataset.datasetID) + ". \n"  # message for the history
+    history = historyfactory.writeTableHistory(None, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
     for col in jsonRequest["columns"]:
         if "value" not in col:
             continue
@@ -827,6 +878,9 @@ def modifyData(request, tableName, datasetID):
                 text = dataset.datatext.get(column=column)
                 text.modified = datetime.now()
                 text.modifier = request.user
+                if text.content != col["value"]:
+                    message = column.name + _(": old: '").__unicode__() + text.content + _("', new: '").__unicode__() + col["value"] + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                 text.content = col["value"]
                 text.save()
             except DataText.DoesNotExist:
@@ -834,12 +888,17 @@ def modifyData(request, tableName, datasetID):
                 textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
                 if textF.is_valid():
                     newData = textF.save(commit=False)
+                    message = column.name + _(": new entry: '").__unicode__() + col["value"] + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
 
         elif column.type.type == Type.NUMERIC:
             try:
                 num = dataset.datanumeric.get(column=column)
                 num.modified = datetime.now()
                 num.modifier = request.user
+                if num.content != col["value"]:
+                    message = column.name + _(": old: '").__unicode__() + unicode(num.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                 num.content = col["value"]
                 num.save()
             except DataNumeric.DoesNotExist:
@@ -847,12 +906,17 @@ def modifyData(request, tableName, datasetID):
                 numF = DataNumericForm({"created": datetime.now(), "content": col["value"]})
                 if numF.is_valid():
                     newData = numF.save(commit=False)
+                    message = column.name + _(": new entry: '").__unicode__() + unicode(col["value"]) + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
 
         elif column.type.type == Type.DATE:
             try:
                 date = dataset.datadate.get(column=column)
                 date.modified = datetime.now()
                 date.modifier = request.user
+                if unicode(date.content) != col["value"]:
+                    message = column.name + _(": old: '").__unicode__() + unicode(date.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                 date.content = col["value"]
                 date.save()
             except DataDate.DoesNotExist:
@@ -860,12 +924,17 @@ def modifyData(request, tableName, datasetID):
                 dateF = DataDateForm({"created": datetime.now(), "content": col["value"]})
                 if dateF.is_valid():
                     newData = dateF.save(commit=False)
+                    message = column.name + _(": new entry: '").__unicode__() + unicode(col["value"]) + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
 
         elif column.type.type == Type.SELECTION:
             try:
                 sel = dataset.dataselection.get(column=column)
                 sel.modified = datetime.now()
                 sel.modifier = request.user
+                if sel.content != col["value"]:
+                    message = column.name + _(": old: '").__unicode__() + unicode(sel.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                 sel.content = col["value"]
                 sel.save()
             except DataSelection.DoesNotExist:
@@ -873,12 +942,16 @@ def modifyData(request, tableName, datasetID):
                 selF = DataSelectionForm({"created": datetime.now(), "content": col["value"]})
                 if selF.is_valid():
                     newData = selF.save(commit=False)
+                    message = column.name + _(": new entry: '").__unicode__() + unicode(col["value"]) + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
 
         elif column.type.type == Type.BOOL:
             try:
                 bool = dataset.databool.get(column=column)
                 bool.modified = datetime.now()
                 bool.modifier = request.user
+                if bool.content != col["value"]:
+                    message += column.name + _(": old: '").__unicode__() + unicode(bool.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "',\n"
                 bool.content = col["value"]
                 bool.save()
             except DataBool.DoesNotExist:
@@ -886,6 +959,8 @@ def modifyData(request, tableName, datasetID):
                 boolF = DataBoolForm({"created": datetime.now(), "content": col["value"]})
                 if boolF.is_valid():
                     newData = boolF.save(commit=False)
+                    message = column.name + _(": new entry: '").__unicode__() + unicode(col["value"]) + "'"
+                    history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
 
         elif column.type.type == Type.TABLE:
             try:
@@ -896,6 +971,8 @@ def modifyData(request, tableName, datasetID):
                 for link in links:
                     setIDs.append(link.dataset_id)
                     if link.dataset_id not in col["value"]:
+                        message = column.name + _(": removed link to dataset: '").__unicode__() + unicode(link.dataset.datasetID) + "'"
+                        history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                         link.delete()
 
                 #  now add any link that does not exist yet
@@ -905,6 +982,8 @@ def modifyData(request, tableName, datasetID):
                         newLink = TableLink()
                         newLink.dataTable = dataTbl
                         newLink.dataset = newDataset
+                        message = column.name + _(": added link to dataset: '").__unicode__() + id + "'"
+                        history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                         newLink.save()
                     except Dataset.DoesNotExist:
                         return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ").__unicode__() + id + "."}]}), content_type="application/json")
@@ -933,6 +1012,8 @@ def modifyData(request, tableName, datasetID):
                         link = TableLink()
                         link.dataTable = newData
                         link.dataset = dataset
+                        message = column.name + _(": added link to dataset: '").__unicode__() + index + "'"
+                        history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                         link.save()
                     except Dataset.DoesNotExist:
                         return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ").__unicode__() + index + "."}]}), content_type="application/json")

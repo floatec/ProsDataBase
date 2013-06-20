@@ -142,6 +142,12 @@ def tableHistory(request, tableName):
         return HttpResponse(json.dumps(response), content_type="application/json")
 
 
+def history(request):
+    if not request.user.admin:
+        return HttpResponse(json.dumps({"errors": [{"code": Error.RIGHTS_NO_ADMIN, "message": _("You have no right to view the log.").__unicode__()}]}))
+    return HttpResponse(json.dumps(HistorySerializer.serializeHistory()), content_type="application/json")
+
+
 def datasets(request, tableName):
     if request.method == 'POST':
         #if request.user.mayReadTable(tableName):
@@ -280,24 +286,24 @@ def showOneGroup(name):
 
 
 def addGroup(request):
-    request = json.loads(request.raw_post_data)
+    jsonRequest = json.loads(request.raw_post_data)
 
     groupNames = list()
     for name in DBGroup.objects.all():
         groupNames.append(name)
 
-    if request["name"] in groupNames:
-        HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Group with name ").__unicode__() + request["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
+    if jsonRequest["name"] in groupNames:
+        HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Group with name ").__unicode__() + jsonRequest["name"] + _(" already exists.").__unicode__()}]}), content_type="application/json")
 
-    groupF = DBGroupForm({"name": request["name"]})
+    groupF = DBGroupForm({"name": jsonRequest["name"]})
     if groupF.is_valid():
         newGroup = groupF.save(commit=False)
-        newGroup.tableCreator = request["tableCreator"]
+        newGroup.tableCreator = jsonRequest["tableCreator"]
         newGroup.save()
 
         failed = list()  # list of users whose names could not be found in the database
 
-        for userName in set(request["users"]):
+        for userName in set(jsonRequest["users"]):
             try:
                 user = DBUser.objects.get(username=userName)
             except DBUser.DoesNotExist:
@@ -310,9 +316,9 @@ def addGroup(request):
     if len(failed) > 0:
         return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("following users could not be added to the group: ") + str(failed) + _(". Have you misspelled them?")}]}), content_type="application/json")
 
-    message = historyfactory.printGroup(request["name"])
-    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_CREATED, historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_CREATED, message))
-    return HttpResponse(json.dumps({"success": _("Successfully saved group ").__unicode__() + request["name"] + "."}),content_type="application/json")
+    message = historyfactory.printGroup(jsonRequest["name"])
+    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_CREATED, message)
+    return HttpResponse(json.dumps({"success": _("Successfully saved group ").__unicode__() + jsonRequest["name"] + "."}), content_type="application/json")
 
 
 def modifyGroup(request, name):
@@ -328,7 +334,6 @@ def modifyGroup(request, name):
         group = DBGroup.objects.get(name=name)
     except DBGroup.DoesNotExist:
         return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find group with name ").__unicode__() + name + "."}]}), content_type="application/json")
-
 
     # will hold content for history entry
     oldName = None
@@ -373,25 +378,29 @@ def modifyGroup(request, name):
         userRemoved.append(user)
 
     # write modification to history
-    message = "Group " + jsonRequest["name"] + ": \n"
+    message = "Group " + jsonRequest["name"] + ":"
+    history = historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_MODIFIED, message)
     if oldName is not None:
-        message += _("Changed name from '").__unicode__() + oldName + _("' to '").__unicode__() + jsonRequest["name"] + "'.\n"
+        message = _("Changed name from '").__unicode__() + oldName + _("' to '").__unicode__() + jsonRequest["name"] + "'."
+        historyfactory.writeAuthHistory(history, request.user, HistoryAuth.GROUP_MODIFIED, message)
     if tableCreatorChanged:
         if group.tableCreator:
-            message += "Can now create tables.\n"
+            message = "Can now create tables."
         else:
-            message += "Cannot create tables anymore.\n"
+            message = "Cannot create tables anymore."
+        historyfactory.writeAuthHistory(history, request.user, HistoryAuth.GROUP_MODIFIED, message)
     if len(userAdded) > 0:
-        message += "New users: "
+        message = "New users: "
         for user in userAdded:
             message += user + ", "
-        message = message[:-2] + "\n"  # cut off trailing comma
+        message = message[:-2]  # cut off trailing comma
+        historyfactory.writeAuthHistory(history, request.user, HistoryAuth.GROUP_MODIFIED, message)
     if len(userRemoved) > 0:
-        message += "Removed users: "
+        message = "Removed users: "
         for user in userRemoved:
             message += user + ", "
         message = message[:-2] + "\n"  # cut off trailing comma
-    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_MODIFIED, message)
+        historyfactory.writeAuthHistory(history, request.user, HistoryAuth.GROUP_MODIFIED, message)
 
     return HttpResponse(json.dumps({"success": _("Successfully modifed group ").__unicode__() + name + "."}), content_type="applciation/json")
 

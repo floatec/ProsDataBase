@@ -61,6 +61,8 @@ urlpatterns = patterns(
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/export/$', "database.views.api.export"),
     (r'^api/table/(?P<tableName>[\w| |\d|.|_|\-|\(|\)]+)/history/$', "database.views.api.tableHistory"),
 
+    (r'^api/history/$', "database.views.api.history"),
+
     # APIs for user/group requests
     (r'^api/user/$', "database.views.api.users"),
     (r'^api/user/(?P<name>[\w| |\d|.|_|\-|\(|\)]+)/$', 'database.views.api.user'),
