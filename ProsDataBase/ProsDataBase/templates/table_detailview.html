@@ -79,7 +79,7 @@
             $(select).next().html("<input type='text' class='text' placeholder='text...'>")
         }
         //table in table, virtual col
-        if ($(select).find(":selected").val() >= 5) {
+        if ($(select).find(":selected").val() >= 5&&$(select).find(":selected").val()!=7) {
             addFilterOption($(select).next(), $(select).find(":selected").attr("table"))
 
         }
@@ -410,9 +410,8 @@
                 //empty resultset
                 if (allDatasets.length == 0) {
                     clearErrors()
-                    showErrors([
-                        {message: "{%  trans "No Datasets are Matching" %}"}
-                    ])
+                    showSuccess(
+                        "{%  trans "No Datasets are Matching" %}")
                 }
                 allDatasets = data.datasets;
                 console.log(data);
