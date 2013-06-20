@@ -2,10 +2,8 @@
 {% load i18n %}
 
 {% block menu %}
-<a id="tab_header_1" href="#tabs-1" class="headerTab" onClick='changeTo(0)'>{% trans "Step 1" %}</a><a id="tab_header_2"
-                                                                                         href="#tabs-2"
-                                                                                         class="headerTab headerTabDeactive"
-                                                                                         onClick='changeTo(1)'>{% trans "Step 2" %}</a>
+<a href="#" id='structLink' class='buttonMenuButton'>{% trans "structure" %}</a>
+<a href="#" id='rightsLink' class='buttonMenuButton'>{% trans "rights" %}</a>
 {% endblock %}
 
 {% block header %}
@@ -30,17 +28,13 @@
    <!--todo: translation (paddy) -->
 <div id="deleteExistedColumns">{% trans "Are you sure to delete this column? Be careful! Containing data will be lost!" %}</div>
 
-<div id="tabs">
-    <ul>
-        <li><a href="#tabs-1" id="tab_1">{% trans "Step 1" %}</a></li>
-        <li><a href="#tabs-2" id="tab_2">{% trans "Step 2" %}</a></li>
-    </ul>
-    <div id="tabs-1">
+
+
         <button id='deleteTable'>{% trans "delete table" %}</button>
         <br/><br/>
         <span>{% trans "tablename:" %}</span><br/>
         <input type="text" id="tblName"><br/><br/>
-        {% trans "select category" %}: <select id="category"></select><br/><br/>
+        {% trans "select category" %} <select id="category"></select><br/><br/>
         <table id="columnTable">
 
             <tr>
@@ -56,20 +50,7 @@
         <br/><br/>
         <button id='createTableButtonPage1'>{% trans "save" %}</button>
 
-    </div>
-    <div id="tabs-2">
-        {% trans "User" %}
-        <input type="text" id="inputUserGroup">
-        <button id="addUserToRights">+</button>
-        <br/>
 
-        <div id="allUserRights"></div>
-        <button id='createTableButtonPage2'>{% trans "save" %}</button>
-
-
-    </div>
-
-</div>
 
 {% endblock %}
 
@@ -89,7 +70,8 @@ function init() {
     firstload = true;
     tableName = getTableName();
     $("#tableCrumb").prepend(decodeURIComponent(tableName));
-
+    $("#structLink").attr('href', '/modify/' + tableName + '/');
+    $("#rightsLink").attr('href', '/modifyRights/' + tableName + '/');
     $("#modifyCrumb").prepend("{% trans "Modify" %}");
     $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
     $("#modifyCrumb").attr('href', '/modify/' + tableName + '/');
@@ -628,31 +610,6 @@ function getNumber(number) {
     return number.substring(number.lastIndexOf("_") + 1);
 
 }
-//function to get the username for rightstable
-function getUsernameForRights(username) {
-
-    return username.substring(0, username.indexOf("-"));
-
-}
-//function to get the column for rightstable
-function getColumnNameForRights(column) {
-
-    return column.substring(column.indexOf("-") + 1, column.indexOf("_"));
-
-}
-
-//function to get the Right for rightstable
-function getRightNameForRights(column) {
-
-    return column.substring(column.indexOf("_") + 1, column.lastIndexOf("-"));
-
-}
-
-function getIDtoCompareColumnName(column) {
-    return column.substring(0, column.indexOf("-"));
-
-}
-
 // function to check if an element is in an array
 jQuery.isInArray = function (value, array) {
     return -1 != jQuery.inArray(value, array);
@@ -851,9 +808,9 @@ function sendJsonObjPage1(){
     var jsonTbl = {};
     //fill json object with name of the table
     jsonTbl.name = $("#tblName").val();
-    if ($(this).attr('columnid') != 'undefinded') {
+
         jsonTbl.id = $(this).attr('columnid');
-    }
+
     jsonTbl.category = $("#category").find(":selected").text();
     //fill it with all columns
     jsonTbl.columns = [];
@@ -862,9 +819,9 @@ function sendJsonObjPage1(){
 
         columnObj = {};
         columnObj.name = columnNames;
-
+        if ($(this).attr('columnid') != 'undefinded') {
         columnObj.id = $(this).attr('columnid');
-
+        }
         var row = $(this).parent();
         row = row.parent();
          columnObj.comment = row.find(".comment").val();
@@ -915,150 +872,13 @@ function sendJsonObjPage1(){
         data: JSON.stringify(jsonTbl),
         contentType: 'application/json',
         dataType: 'json',
-        success: createAllExistedColumn
+        success: function(data){ createAllExistedColumn }
     });
 
     console.log(jsonTbl);
     //window.location.href = '/table/';
 }
-function sendJsonObjPage2(){
 
-    //object to send
-    var jsonTbl = {};
-    //fill json object with name of the table
-    jsonTbl.name = $("#tblName").val();
-    if ($(this).attr('columnid') != 'undefinded') {
-        jsonTbl.id = $(this).attr('columnid');
-    }
-    jsonTbl.category = $("#category").find(":selected").text();
-    //fill it with all columns
-    jsonTbl.columns = [];
-    $(".columnNameClass").each(function () {
-        var columnNames = $(this).val();
-
-        columnObj = {};
-        columnObj.name = columnNames;
-
-        columnObj.id = $(this).attr('columnid');
-        columnObj.rights = {};
-        var row = $(this).parent();
-        row = row.parent();
-         columnObj.comment = row.find(".comment").val();
-        var thisDataType = parseInt($(row.find(".dataType")[0]).val());
-
-        columnObj.type = thisDataType;
-        if (thisDataType == 0) {
-            columnObj.length = parseInt($(row.find(".length")[0]).val());
-
-        }
-        else if (thisDataType == 1) {
-            columnObj.min = parseInt($(row.find(".min")[0]).val());
-            columnObj.max = parseInt($(row.find(".max")[0]).val());
-        }
-        else if (thisDataType == 2) {
-        }
-        else if (thisDataType == 3) {
-            columnObj.options = [];
-
-            $(row.find(".option")).each(function () {
-
-                var inputObj = {};
-               if($(this).attr('selectionid')){
-                    inputObj.key = $(this).attr('selectionid');
-                }
-                inputObj.value = $(this).val();
-                columnObj.options.push(inputObj);
-
-
-            });
-
-        }
-        else if (thisDataType == 4) {
-
-
-        }
-        else {
-            columnObj.table = $(row.find(".dataType")).find(":selected").text();
-        }
-        var users = [];
-        var groups = [];
-
-        console.log(columnObj);
-        $(".rightsTable").each(function () {
-
-
-            var name = this.id;
-
-            var userObj = {};
-            userObj.name = name;
-            var tempRights = [];
-            if ($(this).find("." + encode_pros(columnNames)).find(".read").is(':checked')) {
-                tempRights.push('read');
-            }
-            if ($(this).find("." + encode_pros(columnNames)).find(".modify").is(':checked')) {
-                tempRights.push('modify');
-            }
-            userObj.rights = tempRights;
-            if ($.isInArray(name, allUsers)) {
-                users.push(userObj);
-            }
-            else if ($.isInArray(name, allGroupNames)) {
-                groups.push(userObj);
-
-            }
-
-        });
-        columnObj.rights.users = users;
-        columnObj.rights.groups = groups;
-        jsonTbl.columns.push(columnObj);
-    });
-
-    jsonTbl.rights = {};
-    var users = [];
-    var groups = [];
-
-    $(".rightsTable").each(function () {
-        var userObj = {};
-        var userGroupName = this.id;
-        userObj.name = this.id;
-
-        userObj.rights = [];
-
-        if (($(this).find((".rightsAdmin")).is(':checked'))) {
-            userObj.rights.push('rightsAdmin');
-        }
-        if (($(this).find((".insert")).is(':checked'))) {
-            userObj.rights.push('insert');
-        }
-        if (($(this).find((".delete")).is(':checked'))) {
-            userObj.rights.push('delete');
-        }
-        if (($(this).find((".viewLog")).is(':checked'))) {
-            userObj.rights.push('viewLog');
-        }
-        if ($.isInArray(userGroupName, allUsers)) {
-            users.push(userObj);
-        }
-        else if ($.isInArray(userGroupName, allGroupNames)) {
-            groups.push(userObj);
-        }
-    });
-    jsonTbl.rights.users = users;
-    jsonTbl.rights.groups = groups;
-    console.log(jsonTbl);
-    //fill it with rights for the whole table
-
-    $.ajax({
-        url: '/api/table/' + getTableName() + '/',
-        type: 'put',
-        data: JSON.stringify(jsonTbl),
-        contentType: 'application/json',
-        dataType: 'json'
-    });
-
-    console.log(jsonTbl);
-    //window.location.href = '/table/';
-}
 function getTableName() {
     var tableName = window.location.href;
     var lastIndex = tableName.lastIndexOf('/');

@@ -1,0 +1,478 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block menu %}
+<a href="#" id='structLink' class='buttonMenuButton'>{% trans "structure" %}</a>
+<a href="#" id='rightsLink' class='buttonMenuButton'>{% trans "rights" %}</a>
+{% endblock %}
+
+{% block header %}
+<a class="crumb" href='#' id='tableCrumb'> <span>></span></a>
+<a class="crumb" href='#' id='modifyCrumb'> <span>></span></a>
+{% endblock %}
+
+{% block help %}
+<div class='helpTextDiv'><h1>{% trans "Help" %}</h1>
+    <!-- todo: translation (paddy)-->
+    {% trans "Please specify the table name. Note,that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br/>Following content types exist:<br/>Text: accepts any text and numbers. Is optionally restricted by length.<br/>Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br/>Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br/>Yes/No: accepts either yes or no.<br/>Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br/>[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table."%}
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+
+
+        {% trans "User" %}
+        <input type="text" id="inputUserGroup">
+        <button id="addUserToRights">+</button>
+        <br/>
+
+        <div id="allUserRights"></div>
+        <button id='createTableButtonPage2'>{% trans "save" %}</button>
+
+
+
+{% endblock %}
+
+{% block javascript %}
+<script language="JavaScript">
+
+init();
+
+// FIRST TAB
+//switch navi-content function
+function init() {
+
+    tableName = getTableName();
+    $("#tableCrumb").prepend(decodeURIComponent(tableName));
+    $("#structLink").attr('href', '/modify/' + tableName + '/');
+    $("#rightsLink").attr('href', '/modifyRights/' + tableName + '/');
+    $("#modifyCrumb").prepend("{% trans "Modify" %}");
+    $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
+    $("#modifyCrumb").attr('href', '/modifyRights/' + tableName + '/');
+    $("#tblName").val(decodeURIComponent(tableName));
+
+    $.ajaxSetup({
+        async: false
+
+    });
+    getAllColumnNames();
+    rightColumnID = 1;
+    takenUserGroups = [];
+    allUserGroups = [];
+    columnNames = [];
+    allGroupNames = [];
+    tables = [];
+    datatypes = [];
+    countCheckboxes = 0;
+    $.getJSON('/api/user/', function (data) {
+
+        allUsers = data.users;
+
+        for (key in allUsers) {
+            allUserGroups.push(allUsers[key]);
+        }
+
+
+    });
+    $.getJSON('/api/group/', function (data) {
+
+        allGroups = data.groups;
+        for (key in allGroups) {
+
+            allGroupNames.push(allGroups[key].name);
+            allUserGroups.push(allGroups[key].name);
+        }
+
+    });
+
+
+    jQuery.getJSON('/api/table/', function (data) {
+
+        tables = data.tables;
+
+    });
+    jQuery.getJSON('/api/category/', function (data) {
+
+        var cat = data.categories;
+        for (var key in cat) {
+            $("#category").append("<option>" + cat[key] + "</option>");
+        }
+
+    });
+
+
+
+    //initialize auto-complete input field to add users / groups to rightlists
+
+
+    $("#inputUserGroup")
+            .autocomplete({
+                source: function (request, response) {
+                    response($.ui.autocomplete.filter(
+                            allUserGroups, extractLast(request.term)));
+                }
+            });
+
+    createExistedUsers();
+    $.ajaxSetup({
+        async: true
+
+    });
+
+
+}
+
+
+
+function removeEmptyColumns() {
+
+    $(".columnNameClass").each(function () {
+        var row = $(this).parent();
+        row = row.parent();
+
+        if ($(this).val() == '') {
+            row.remove();
+        }
+
+
+    });
+
+
+}
+
+
+
+function getTables() {
+    var temp = [];
+    for (var key in tables) {
+
+        var tablename = tables[key].name;
+
+        temp.push(tablename);
+    }
+    return temp;
+}
+
+//function to get the ID
+function getNumber(number) {
+
+    return number.substring(number.lastIndexOf("_") + 1);
+
+}
+// function to check if an element is in an array
+jQuery.isInArray = function (value, array) {
+    return -1 != jQuery.inArray(value, array);
+}
+
+function getAllColumnNames() {
+        allColumnNames = [];
+       $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
+      if(data.admin){
+
+          if (!data.rightsAdmin) {
+            window.location = "/table/";
+        }
+          else{
+              for( var key in data.columns){
+                  if(data.columns[key].type != 6){
+                  allColumnNames.push(data.columns[key].name);
+                  }
+              }
+
+          }
+      }
+
+
+    });
+
+
+}
+
+
+$("#addUserToRights").click(function () {
+
+    var inputValue = $("#inputUserGroup").val()
+
+    //check that the input is really correct
+    if (inputValue != '' && !($.isInArray(inputValue, takenUserGroups)) && ($.isInArray(inputValue, allUserGroups))) {
+
+        takenUserGroups.push(inputValue);
+
+        // BETA Bereich: Nur zum zeigen
+
+        var userName = $("#inputUserGroup").val();
+
+        //create rights-table
+        $("#allUserRights").append("<table border='1' class='rightsTable' id='" + userName + "'><tr id='descriptionRow_" + rightColumnID + "'></tr><tr id='iconsRow_" + userName + "'></tr></table>");
+        var inputsToappend = "";
+        $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
+        countCheckboxes++;
+        inputsToappend += "<td class='all forever' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='{% trans "modify table" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+        countCheckboxes++;
+        inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label title='{% trans "insert data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+        countCheckboxes++;
+        inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label title='{% trans "delete data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+        countCheckboxes++;
+        inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label title='{% trans "view log" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+        countCheckboxes++;
+        inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label title='{% trans "read all data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+        countCheckboxes++;
+        inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label title='{% trans "modify all data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+        $("#iconsRow_" + userName).append(inputsToappend);
+        countCheckboxes++;
+
+        for (var i in allColumnNames) {
+            var ClassColumnName = encode_pros(allColumnNames[i]);
+            var stringToappend = "";
+            $("#descriptionRow_" + rightColumnID).append("<td>" + allColumnNames[i] + "</td>");
+            countCheckboxes++;
+            stringToappend += "<td nowrap='true' class='forever " + ClassColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label title='{% trans "read" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+            countCheckboxes++;
+            stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label title='{% trans "modify" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+            $("#iconsRow_" + userName).append(stringToappend);
+            countCheckboxes++;
+        }
+        $("#" + userName).prepend("<th>" + userName + "</th>");
+
+        rightColumnID++;
+    }
+    $("input:checkbox").button();
+    $("#inputUserGroup").val("");
+});
+
+
+function createExistedUsers() {
+
+    $.getJSON('/api/table/' + tableName + '/rights/', function (data) {
+
+        var actors = data.actors;
+        for (var i in actors) {
+            var userName = actors[i].name;
+            takenUserGroups.push(actors[i].name);
+            //create rights-table
+            $("#allUserRights").append("<table border='1' class='rightsTable' id='" + userName + "'><tr id='descriptionRow_" + rightColumnID + "'></tr><tr id='iconsRow_" + userName + "'></tr></table>");
+            var inputsToappend = "";
+            $("#descriptionRow_" + rightColumnID).append("<td>all</td>");
+            countCheckboxes++;
+
+            if (actors[i].tableRights.rightsAdmin) {
+                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' checked='checked' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='{% trans "modify table" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+            }
+            else {
+                inputsToappend += "<td class='forever all' nowrap='true'><input type='checkbox' class='rightsAdmin' id='check" + countCheckboxes + "' /><label title='{% trans "modify table" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/key-icon.png'></label>";
+            }
+            countCheckboxes++;
+            if (actors[i].tableRights.insert) {
+
+                inputsToappend += "<input type='checkbox' checked='checked' class='insert' id='check" + countCheckboxes + "' /><label title='{% trans "insert data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+            }
+            else {
+                inputsToappend += "<input type='checkbox' class='insert' id='check" + countCheckboxes + "' /><label title='{% trans "insert data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/pencil-icon.png'></label>";
+
+            }
+            countCheckboxes++;
+            if (actors[i].tableRights.delete) {
+                inputsToappend += "<input type='checkbox' checked='checked' class='delete' id='check" + countCheckboxes + "' /><label  title='{% trans "delete data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+
+            }
+            else {
+                inputsToappend += "<input type='checkbox' class='delete' id='check" + countCheckboxes + "' /><label  title='{% trans "delete data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/trash-icon.png'></label>";
+
+            }
+
+            countCheckboxes++;
+            if (actors[i].tableRights.viewLog) {
+                inputsToappend += "<input type='checkbox' checked='checked' class='viewLog' id='check" + countCheckboxes + "' /><label title='{% trans "view log" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+            }
+            else {
+
+                inputsToappend += "<input type='checkbox' class='viewLog' id='check" + countCheckboxes + "' /><label title='{% trans "view log" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/paper-icon.png'></label>";
+            }
+
+            countCheckboxes++;
+            inputsToappend += "<input onClick='toggleAll(this,\"read\")'" + " type='checkbox' id='check" + countCheckboxes + "'  /><label title='{% trans "read all data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+            countCheckboxes++;
+            inputsToappend += "<input  onClick='toggleAll(this,\"modify\")'" + " type='checkbox' id='check" + countCheckboxes + "' /><label title='{% trans "modify all data" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+            $("#iconsRow_" + userName).append(inputsToappend);
+            countCheckboxes++;
+
+
+
+            for (var p in allColumnNames) {
+                var classColumnName = encode_pros(allColumnNames[p]);
+                var stringToappend = "";
+                $("#descriptionRow_" + rightColumnID).append("<td>" + allColumnNames[p] + "</td>");
+                countCheckboxes++;
+                if (classColumnName == encode_pros(actors[i].columnRights[p].name)) {
+
+                    if (actors[i].columnRights[p].rights.read) {
+                        stringToappend += "<td nowrap='true'  class='forever " + classColumnName + "'><input type='checkbox' checked='checked' class='read' id='check" + countCheckboxes + "' /><label title='{% trans "read" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+                    }
+                    else {
+                        stringToappend += "<td nowrap='true' class='forever " + classColumnName + "'><input type='checkbox' class='read' id='check" + countCheckboxes + "' /><label title='{% trans "read" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/view-icon.png'></label>";
+                    }
+                    countCheckboxes++;
+                    if (actors[i].columnRights[p].rights.modify) {
+
+                        stringToappend += "<input type='checkbox' checked='checked' class='modify' id='check" + countCheckboxes + "' /><label title='{% trans "modify" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+                    }
+                    else {
+                        stringToappend += "<input type='checkbox' class='modify' id='check" + countCheckboxes + "' /><label title='{% trans "modify" %}' for='check" + countCheckboxes + "'><img class='icn' src='/static/img/setting-icon.png'></label></td>";
+
+                    }
+                    $("#iconsRow_" + userName).append(stringToappend);
+                    countCheckboxes++;
+                }
+
+            }
+
+
+            $("#" + userName).prepend("<th>" + userName + "</th>");
+
+            rightColumnID++;
+
+            $("input:checkbox").button();
+            $("#inputUserGroup").val("");
+
+
+        }
+
+    });
+
+}
+
+function toggleAll(element, type) {
+    var row = $(element).parent();
+    row = row.parent();
+    var temp = [];
+    if (type == 'read') {
+        temp = row.find(".read");
+    }
+    else if (type == 'modify') {
+        temp = row.find(".modify");
+    }
+    $(temp).each(function () {
+                this.checked = element.checked;
+                $(this).button("refresh")
+                //$(this).button("option","label").css('background-color', 'rgb(255, 0, 0)');
+            }
+    );
+}
+
+
+
+$("#createTableButtonPage2").click(function () {
+   sendJsonObjRights();
+
+});
+
+$("#deleteTable").click(function () {
+
+    $("#alertTableBox").dialog("open");
+
+});
+
+function sendJsonObjRights(){
+
+    //object to send
+    var jsonTbl = {};
+    //fill it with all columns
+    jsonTbl.columns = [];
+    for(var i in allColumnNames){
+
+        columnObj = {};
+        columnObj.name =  allColumnNames[i];
+        columnObj.rights = {};
+        var users = [];
+        var groups = [];
+        $(".rightsTable").each(function () {
+            var name = this.id;
+            var userObj = {};
+            userObj.name = name;
+            var tempRights = [];
+            if ($(this).find("." + encode_pros(allColumnNames[i])).find(".read").is(':checked')) {
+                tempRights.push('read');
+            }
+            if ($(this).find("." + encode_pros(allColumnNames[i])).find(".modify").is(':checked')) {
+                tempRights.push('modify');
+            }
+            userObj.rights = tempRights;
+            if ($.isInArray(name, allUsers)) {
+                users.push(userObj);
+            }
+            else if ($.isInArray(name, allGroupNames)) {
+                groups.push(userObj);
+
+            }
+
+        });
+        columnObj.rights.users = users;
+        columnObj.rights.groups = groups;
+        jsonTbl.columns.push(columnObj);
+    }
+
+    jsonTbl.rights = {};
+    var users = [];
+    var groups = [];
+
+    $(".rightsTable").each(function () {
+        var userObj = {};
+        var userGroupName = this.id;
+        userObj.name = this.id;
+
+        userObj.rights = [];
+
+        if (($(this).find((".rightsAdmin")).is(':checked'))) {
+            userObj.rights.push('rightsAdmin');
+        }
+        if (($(this).find((".insert")).is(':checked'))) {
+            userObj.rights.push('insert');
+        }
+        if (($(this).find((".delete")).is(':checked'))) {
+            userObj.rights.push('delete');
+        }
+        if (($(this).find((".viewLog")).is(':checked'))) {
+            userObj.rights.push('viewLog');
+        }
+        if ($.isInArray(userGroupName, allUsers)) {
+            users.push(userObj);
+        }
+        else if ($.isInArray(userGroupName, allGroupNames)) {
+            groups.push(userObj);
+        }
+    });
+    jsonTbl.rights.users = users;
+    jsonTbl.rights.groups = groups;
+    console.log(jsonTbl);
+    //fill it with rights for the whole table
+
+    $.ajax({
+        url: '/api/table/' + getTableName() + '/rights',
+        type: 'put',
+        data: JSON.stringify(jsonTbl),
+        contentType: 'application/json',
+        dataType: 'json'
+    });
+
+    console.log(jsonTbl);
+    //window.location.href = '/table/';
+}
+function getTableName() {
+    var tableName = window.location.href;
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(0, lastIndex);
+    var lastIndex = tableName.lastIndexOf('/');
+    var tableName = tableName.substr(lastIndex + 1);
+    return tableName;
+}
+</script>
+
+{% endblock %}
+
+{% block css %}
+.forever .ui-state-active{
+    background: greenyellow;
+}
+{% endblock %}
