@@ -300,6 +300,7 @@ def createColumn(col, table, user):
         newColumn.table = table
         newColumn.save()
         savedObjs.append(newColumn)
+
     else:
         for obj in savedObjs:
             obj.delete()
@@ -617,6 +618,15 @@ def modifyTable(request, name):
             answer = createColumn(col, table, request.user)
             if not answer:
                 return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
+
+            # give the creator of this column rights on it:
+            colRightsF = RightListForColumnForm({"read": True, "modify": True})
+            if colRightsF.is_valid():
+                colRights = colRightsF.save(commit=False)
+                colRights.user = request.user
+                colRights.column = table.getColumns().get(name=col["name"], deleted=False)
+                colRights.table = table
+                colRights.save()
             message = _("New column: '").__unicode__() + col["name"] + "'"
             history = historyfactory.writeTableHistory(history, table, request.user, HistoryTable.TABLE_MODIFIED, message)
             continue
@@ -739,7 +749,7 @@ def modifyTableRights(rights, tableName, user):
     except Table.DoesNotExist:
         return HttpResponse({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name " + tableName + ".").__unicode__()}]})
     if "rights" in rights:
-        RightListForTable.objects.filter(table=table).delete()
+        RightListForTable.objects.filter(table=table).exclude(user=user).delete()
         answer = createTableRights(rights["rights"], table, user)
         if not answer:
             return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
@@ -749,7 +759,7 @@ def modifyTableRights(rights, tableName, user):
             column = table.getColumns().get(name=col["name"], deleted=False)
         except Column.DoesNotExist:
             continue
-        RightListForColumn.objects.filter(column=column).delete()
+        RightListForColumn.objects.filter(column=column).exclude(user=user).delete()
         answer = createColumnRights(col["rights"], column, user)
         if not answer:
             return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
