@@ -108,7 +108,7 @@ def table(request, name):
             Table.objects.get(name=name, deleted=False)
             return showTable(name, request.user)
         except Table.DoesNotExist:
-            return HttpResponse({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "404: Page not found!"}]})
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "404: Page not found!"}]}), content_type="application/json")
     if request.method == 'POST':
         return tablefactory.insertData(request, name)
     if request.method == 'PUT':
@@ -459,6 +459,10 @@ def showTableRights(name):
 
 def tableStructure(request, name):
     if request.method == 'GET':
+        try:
+            Table.objects.get(name=name, deleted=False)
+        except Table.DoesNotExist:
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": "404: Page not found!"}]}), content_type="application/json")
         structure = TableSerializer.serializeStructure(name, request.user)
         return HttpResponse(json.dumps(structure), content_type="application/json")
 
