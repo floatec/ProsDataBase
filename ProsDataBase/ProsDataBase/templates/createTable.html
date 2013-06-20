@@ -28,7 +28,7 @@
     </ul>
     <div id="tabs-1">
         <span>{% trans "Tablename:" %}</span><br/>
-        <input type="text" id="tblName"><br/><br/>
+        <input type="text" id="tblName" placeholder="tablename"><br/><br/>
        {% trans "Select Category" %}: <select id="category"></select><br/><br/>
         <table id="columnTable">
 
@@ -42,15 +42,15 @@
 
         </table>
 
-        <button id="addColumn">+</button>
+        <button id="addColumn" title='{% trans "add a new column" %}'>+</button>
         <br/><br/>
         <button id="nextButtonPage2">{% trans "next" %}</button>
 
 
     </div>
     <div id="tabs-2">
-        {% trans "User" %}<input type="text" id="inputUserGroup">
-        <button id="addUserToRights">+</button>
+        {% trans "User/Group" %}<input type="text" id="inputUserGroup" placeholder="username/groupname">
+        <button class='ilterButton' title='{% trans "adds the selected user/group" %}' id="addUserToRights">+</button>
         <br/>
 
         <div id="allUserRights"></div>
@@ -246,7 +246,7 @@ function getAllColumnNames() {
 //function to create a new column row
 function createNewColumnsRow() {
     columnID++;
-    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "'></td><td><input class='comment' type='text'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'></td></tr>");
+    $("#columnTable").append("<tr id='row_" + columnID + "'><td><button class='FilterButton' id='deleteButton_" + columnID + "'>-</button></td><td><input type='text' class='columnNameClass' id='field_" + columnID + "' placeholder='{% trans "columnname" %}'></td><td><input class='comment' type='text' placeholder='{% trans "displayed in insert/modify" %}'></td><td><select class='dataType' id='selectDataType_" + columnID + "'></select></td><td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'></td></tr>");
 
     $("#field_" + columnID).change(function () {
         valid = true;

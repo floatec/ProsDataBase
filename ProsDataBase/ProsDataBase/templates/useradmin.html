@@ -49,6 +49,7 @@
          */
         function init() {
             $.getJSON('/api/myself/', function (data) {
+                username=data.name
                 if (!data.userManager) {
                     window.location = '/table/';
                 }
@@ -66,7 +67,7 @@
                 for (var i in alphabeticalUsers) {
                     //go true all users
                     for (var key in allUsers) {
-                        if (alphabeticalUsers[i] == allUsers[key].name) {
+                        if (alphabeticalUsers[i] == allUsers[key].name &&allUsers[key].name!=username) {
                             $("#navigationMenuContent").append("<li><a href='#" + allUsers[key].name + "'>" + allUsers[key].name + "</a></li>");
                             countCheckboxes++;
                             var row = "<tr class='allRows'><td>" + allUsers[key].name + "</td>";
