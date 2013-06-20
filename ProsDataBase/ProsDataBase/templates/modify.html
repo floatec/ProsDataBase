@@ -59,14 +59,24 @@
 
 init();
 
-function changeTo(number) {
 
-    $("#tabs").tabs("option", "active", number);
-
-}
-// FIRST TAB
 //switch navi-content function
 function init() {
+           $.getJSON('/api/table/',function(data){
+            var validTablesName = false;
+            for(var k in data.tables){
+               if(data.tables[k].name == getTableName()){
+                   validTablesName = true;
+               }
+            }
+            if(!validTablesName){
+
+                $(".wrapContent").remove();
+                $(".wrapButtonMenu").remove();
+                $("body").append("<div class='wrapContent'><div id=''content'><div id='errorblock'></div></div></div>")
+            }
+
+        });
     firstload = true;
     tableName = getTableName();
     $("#tableCrumb").prepend(decodeURIComponent(tableName));
@@ -102,66 +112,6 @@ function init() {
     datatypes[3] = "selection";
     datatypes[4] = "yes or no";
 
-    // initialize tabs
-    $("#tabs").tabs({
-        collapsible: false,
-        disabled: 1,
-        beforeActivate: function (event, ui) {
-
-
-            if (!valid && ui.newPanel.attr('id') != 'tabs-2') {
-
-                return false;
-            }
-
-                if (ui.newPanel.attr('id') == 'tabs-1') {
-                    if (!firstload) {
-                        createAllExistedColumnFirst();
-                        sendJsonObjPage2();
-
-                }
-
-                }
-                if (ui.newPanel.attr('id') == 'tabs-2') {
-                    sendJsonObjPage1();
-                    $(".rightsTable").remove();
-                    createExistedUsers();
-
-                }
-
-
-        },
-        activate: function (event, ui) {
-            if (ui.newPanel.attr('id') == 'tabs-1') {
-
-                $("#tab_header_1").removeClass("headerTabIanctive");
-                $("#tab_header_2").addClass("headerTabIanctive")
-                $("#naviContentList").remove();
-                $("#naviHeadline").remove();
-                $("#naviContentSpan").remove();
-                $(".helpTextDiv").empty();
-                //todo: translation (paddy)
-                $(".helpTextDiv").html('<h1>Help</h1>Please specify the table name. Note, that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br />Following content types exist:<br />Text: accepts any text and numbers. Is optionally restricted by length.<br />Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br />Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: accepts either yes or no.<br />Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br />[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table.');
-
-
-            }
-            else if (ui.newPanel.attr('id') == 'tabs-2') {
-
-                $("#tab_header_1").addClass("headerTabIanctive")
-                $("#tab_header_2").removeClass("headerTabDeactive")
-                $("#naviHeadline").remove();
-                $("#naviContentSpan").remove();
-                $("#naviContentList").remove();
-                $(".helpTextDiv").empty();
-                //todo: translation (paddy)
-                $(".helpTextDiv").html('<h1>Help</h1>Finally, assign read, insert, modify and delete rights to users and groups:Search for users or groups in the input field and toggle their rights for each column.The "All"-section allows fast rights assignment for all columns.');
-
-
-            }
-
-            removeEmptyColumns();
-        }
-    });
 
 
     $.getJSON('/api/user/', function (data) {

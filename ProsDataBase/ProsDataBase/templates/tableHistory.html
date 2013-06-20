@@ -33,6 +33,21 @@
 
     init();
     function init(){
+               $.getJSON('/api/table/',function(data){
+            var validTablesName = false;
+            for(var k in data.tables){
+               if(data.tables[k].name == getTableName()){
+                   validTablesName = true;
+               }
+            }
+            if(!validTablesName){
+
+                $(".wrapContent").remove();
+                $(".wrapButtonMenu").remove();
+                $("body").append("<div class='wrapContent'><div id=''content'><div id='errorblock'></div></div></div>")
+            }
+
+        });
     $("#tableCrumb").prepend(encodeURIComponent(getTableName()));
     $("#tableCrumb").attr('href','/detailview/'+getTableName()+'/')
     $("#historyCrumb").prepend("Log");

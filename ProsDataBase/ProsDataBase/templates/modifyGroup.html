@@ -29,6 +29,41 @@
 
     }
  });
+         $.getJSON('/api/group/', function (data) {
+        var validGroupName = false;
+            for(var k in data.groups){
+               if(data.groups[k].name == getGroupName()){
+                   validGroupName = true;
+               }
+            }
+            if(!validGroupName){
+
+                $(".wrapContent").remove();
+                $(".wrapButtonMenu").remove();
+                $("body").append("<div class='wrapContent'><div id=''content'><div id='errorblock'></div></div></div>")
+                  $.getJSON('/api/group/'+getGroupName()+'/', function (data) {
+
+                      showErrors(data.errors);
+                  });
+            }
+             else{
+
+                      $.getJSON('/api/group/'+getGroupName()+'/', function (data) {
+
+
+
+        $("#groupName").val(data.name);
+       if(data.tableCreator){
+           $("#createTables").attr('checked',true);
+       }
+       $("#allAdmins").val(getAllUsers(data.admins));
+       $("#allUsers").val(getAllUsers(data.users));
+        });
+
+
+            }
+
+        });
         var groupName = getGroupName();
          $("#groupCrumb").prepend('{% trans "all groups" %}');
             $("#modifyGroupCrumb").prepend(groupName);
@@ -91,14 +126,7 @@
             }
         }
     });
-        $.getJSON('/api/group/'+getGroupName()+'/', function (data) {
-        $("#groupName").val(data.name);
-       if(data.tableCreator){
-           $("#createTables").attr('checked',true);
-       }
-       $("#allAdmins").val(getAllUsers(data.admins));
-       $("#allUsers").val(getAllUsers(data.users));
-        });
+
 
         $("#deleteGroup").click(function(){
            $("#deleteAlertBox").dialog('open');

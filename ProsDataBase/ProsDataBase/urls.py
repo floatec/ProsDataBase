@@ -29,6 +29,7 @@ urlpatterns = patterns(
     (r'^modify/(?P<table_id>[\w| |\d|.|_|\-|\(|\)]+)/$', TemplateView.as_view(template_name="modify.html")),
     (r'^createTable/$', TemplateView.as_view(template_name="createTable.html")),
     (r'^tableHistory/(?P<table_id>[\w| |\d|.|_|\-|\(|\)]+)/$', TemplateView.as_view(template_name="tableHistory.html")),
+    (r'^log/$', TemplateView.as_view(template_name="log.html")),
     (r'^useradmin/$', TemplateView.as_view(template_name="useradmin.html")),
     (r'^categories/$', TemplateView.as_view(template_name="categoryadmin.html")),
     (r'^createGroup/$', TemplateView.as_view(template_name="createGroup.html")),
