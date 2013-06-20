@@ -2,8 +2,10 @@
 {% load i18n %}
 
 {% block menu %}
-<a href="#" id='structLink' class='buttonMenuButton'>{% trans "structure" %}</a>
-<a href="#" id='rightsLink' class='buttonMenuButton'>{% trans "rights" %}</a>
+<a href="#" id='deleteTable' class='buttonMenuButton'>{% trans "delete table" %}</a>
+<a href="#" id='structLink' class='buttonMenuButton'>{% trans "modify structure" %}</a>
+<a href="#" id='rightsLink' class='buttonMenuButton'>{% trans "modify rights" %}</a>
+
 {% endblock %}
 
 {% block header %}
@@ -30,7 +32,7 @@
 
 
 
-        <button id='deleteTable'>{% trans "delete table" %}</button>
+
         <br/><br/>
         <span>{% trans "tablename:" %}</span><input type="text" id="tblName"><br/><br/>
         {% trans "select category" %} <select id="category"></select><br/><br/>
