@@ -123,8 +123,8 @@ def createTable(request):
             obj.delete()
         return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("Failed to create table. Please contact the developers.").__unicode__()}]}))
 
-    # add to table 'RightlistForTable' for user
-    answer = createTableRights(jsonRequest["rights"], newTable)
+    # add table access rights for users and groups
+    answer = createTableRights(jsonRequest["rights"], newTable, request.user)
     if not answer:
         for obj in savedObjs:
             obj.delete()
@@ -139,6 +139,32 @@ def createTable(request):
                 obj.delete()
             errors.append(answer)
         columnNames.append(col["name"])
+
+    #  finally give the creator of this table all rights on it
+    tableRightsF = RightListForTableForm({'viewLog': True, 'rightsAdmin': True, 'insert': True, 'delete': True})
+    if tableRightsF.is_valid():
+        tableRights = tableRightsF.save(commit=False)
+        tableRights.user = request.user
+        tableRights.table = newTable
+        tableRights.save()
+        savedObjs.append(tableRights)
+    else:
+        for obj in savedObjs:
+            obj.delete()
+        errors.append({"code": Error.RIGHTS_TABLE_CREATE, "message": _("Failed to give access rights to the table creator. Please contact the developers.").__unicode__()})
+    for col in newTable.getColumns():
+        colRightsF = RightListForColumn({'read': True, 'modify': True})
+        if colRightsF.is_valid():
+            colRights = colRightsF.save(commit=False)
+            colRights.user = request.user
+            colRights.column = col
+            colRights.table = newTable
+            colRights.save()
+            savedObjs.append(colRights)
+        else:
+            for obj in savedObjs:
+                obj.delete()
+            errors.append({"code": Error.RIGHTS_TABLE_CREATE, "message": _("Failed to give access rights to column ").__unicode__() + col.name + _(" for the table creator. Please contact the developers.").__unicode__()})
 
     if len(errors) > 0:
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
@@ -280,7 +306,7 @@ def createColumn(col, table, user):
         return {"code": Error.COLUMN_CREATE, "message": _("Could not create column ").__unicode__() + col["name"] + _(". Abort.").__unicode__()}
     # new rights
     if "rights" in col:
-        answer = createColumnRights(col["rights"], newColumn)
+        answer = createColumnRights(col["rights"], newColumn, user)
         if not answer:
             for obj in savedObjs:
                 obj.delete()
@@ -440,10 +466,12 @@ def deleteDataset(datasetID, user):
     return True
 
 
-def createTableRights(rights, table):
+def createTableRights(rights, table, user):
     # for users
     savedObjects = list()
     for item in rights["users"]:
+        if user.username == item["name"]:  # user should not be able to change his own permissions
+            continue
         rightList = dict()
         rightList["viewLog"] = True if "viewLog" in item["rights"] else False
         rightList["rightsAdmin"] = True if "rightsAdmin" in item["rights"] else False
@@ -486,11 +514,13 @@ def createTableRights(rights, table):
     return True
 
 
-def createColumnRights(rights, column):
+def createColumnRights(rights, column, user):
     savedObjs = list()
 
     # for users
     for item in rights["users"]:
+        if user.username == item["name"]:  # user should not be able to change his own rights
+            continue
         rightList = dict()
         rightList["read"] = True if "read" in item["rights"] else False
         rightList["modify"] = True if "modify" in item["rights"] else False
@@ -584,7 +614,7 @@ def modifyTable(request, name):
 
     if "rights" in jsonRequest:
         RightListForTable.objects.filter(table=table).delete()
-        answer = createTableRights(jsonRequest["rights"], table)
+        answer = createTableRights(jsonRequest["rights"], table, request.user)
         if not answer:
             return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
 
@@ -707,7 +737,7 @@ def modifyTable(request, name):
                 typeTable.save()
         if "rights" in col:
             RightListForColumn.objects.filter(column=column).delete()
-            answer = createColumnRights(col["rights"], column)
+            answer = createColumnRights(col["rights"], column, request.user)
             if not answer:
                 return HttpResponse(json.dumps({"errors": [answer]}), content_type="application/json")
 

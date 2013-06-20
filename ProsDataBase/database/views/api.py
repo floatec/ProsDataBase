@@ -86,14 +86,12 @@ def categories(request):
         return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
 
 
-
 def category(request, name):
     if request.user.admin :
         if request.method == 'DELETE':
             return tablefactory.deleteCategory(name)
     else:
         return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
-
 
 
 def tables(request):
@@ -218,7 +216,7 @@ def showOneUser(name):
 
 
 def showUserRights(request):
-    rights = UserSerializer.serializeAllWithRights()
+    rights = UserSerializer.serializeAllWithRights(request.user)
     return HttpResponse(json.dumps(rights), content_type="application/json")
 
 
@@ -227,15 +225,18 @@ def modifyUserRights(request):
 
     message = ""  # message for writing into history
     for userObj in jsonRequest["users"]:
+        try:
+            user = DBUser.objects.get(username=userObj["name"])
+            if user is request.user:
+                continue
+        except DBUser.DoesNotExist:
+            HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find user with name ").__unicode__() + userObj["name"] + "."}]}), content_type="application/json")
+
         # for tracking changes made
         tableCreatorChanged = False
         userManagerChanged = False
         activeChanged = False
         modified = False
-        try:
-            user = DBUser.objects.get(username=userObj["name"])
-        except DBUser.DoesNotExist:
-            HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Could not find user with name ").__unicode__() + userObj["name"] + "."}]}), content_type="application/json")
 
         if userObj["tableCreator"] != user.tableCreator:
             modified = True
