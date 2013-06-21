@@ -261,7 +261,7 @@ msgstr ""
 
 #: ProsDataBase/templates/createTable.html:251
 msgid "columnname"
-msgstr "Spalte"
+msgstr "Spaltenname"
 
 #: ProsDataBase/templates/createTable.html:251
 msgid "displayed in insert/modify"
