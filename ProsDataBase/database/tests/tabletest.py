@@ -1,8 +1,8 @@
 from django.test import TestCase
-from database.models import *
-from database.tests.factory import *
-from database.tablefactory import deleteTable
-from database.views.api import login
+from ..models import *
+from ..tests.factory import *
+from ..tablefactory import deleteTable
+from ..views.api import login
 from django.contrib import auth
 
 
@@ -36,7 +36,7 @@ class TableTest(TestCase):
         for col in table2.getColumns():
             connect_User_With_ColumnRights(schmog,col)
 
-        result =  TableSerializer.serializeAll(schmog)
+        result = TableSerializer.serializeAll(schmog)
 
         length = 0
         table1Cols = list()

@@ -1,7 +1,7 @@
 from django.test import TestCase
-from database.models import *
-from database.tests.factory import *
-from database.views.api import login
+from ..models import *
+from ..tests.factory import *
+from ..views.api import login
 
 class UserTest(TestCase):
     def test_showAllUser(self):

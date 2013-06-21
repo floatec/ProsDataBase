@@ -1,7 +1,7 @@
 from django.test import TestCase
-from database.models import *
-from database.tests.factory import *
-from database.views.api import *
+from ..models import *
+from ..tests.factory import *
+from ..views.api import *
 from django.core.urlresolvers import reverse
 
 # funzt bisher alles

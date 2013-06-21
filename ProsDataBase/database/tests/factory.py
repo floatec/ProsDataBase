@@ -1,6 +1,6 @@
-from database.models import *
-from database.forms import *
-from database.serializers import *
+from ..models import *
+from ..forms import *
+from ..serializers import *
 from string import ascii_lowercase, digits
 from random import choice
 
