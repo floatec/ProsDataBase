@@ -3,7 +3,6 @@ from ..forms import *
 from ..serializers import *
 from string import ascii_lowercase, digits
 from random import choice
-from django.test.client import Client
 
 
 class LiteralFactory:
@@ -313,7 +312,6 @@ class UserFactory:
     def createUserWithName(name, password):
         user = DBUser.objects.create_user(username=name, password=password)
         user.save()
-
         return user
 
     @staticmethod
@@ -322,7 +320,6 @@ class UserFactory:
         user.is_active = True
         user.admin = True
         user.save()
-
         return user
 
     @staticmethod

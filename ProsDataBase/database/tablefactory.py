@@ -18,7 +18,6 @@ def modifyCategories(request):
         "categories": [{"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}]
     }
     """
-    request = json.loads(request.raw_post_data)
     errors = list()
 
     for cat in request["categories"]:
@@ -64,7 +63,7 @@ def deleteCategory(name):
     return HttpResponse(json.dumps({"success": _("Deleted category ") + name + "."}), content_type="application/json")
 
 
-def createTable(request):
+def createTable(request, user):
     """
     add table to database.
 
@@ -96,25 +95,24 @@ def createTable(request):
       }
     }
     """
-    jsonRequest = json.loads(request.raw_post_data)
 
     savedObjs = list()  # holds all objects saved so far, so that in case of errors, they can be deleted
     errors = list()
 
     # check if table already exists:
-    existingTables = Table.objects.filter(name=jsonRequest["name"])
+    existingTables = Table.objects.filter(name=request["name"])
     for existingTable in existingTables.all():
         if not existingTable.deleted:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("A table with name ").__unicode__() + jsonRequest["name"] + _(" already exists.").__unicode__()}]}))
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("A table with name ").__unicode__() + request["name"] + _(" already exists.").__unicode__()}]}))
     # create new table
     table = dict()
-    table["name"] = jsonRequest["name"]
+    table["name"] = request["name"]
     table["created"] = datetime.now()
     tableF = TableForm(table)
     if tableF.is_valid():
         newTable = tableF.save(commit=False)
-        newTable.creator = request.user
-        newTable.category = Category.objects.get(name=jsonRequest["category"])
+        newTable.creator = user
+        newTable.category = Category.objects.get(name=request["category"])
         newTable.save()
         savedObjs.append(newTable)
     else:
@@ -123,16 +121,16 @@ def createTable(request):
         return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("Failed to create table. Please contact the developers.").__unicode__()}]}))
 
     # add table access rights for users and groups
-    answer = createTableRights(jsonRequest["rights"], newTable, request.user)
+    answer = createTableRights(request["rights"], newTable, user)
     if not answer:
         for obj in savedObjs:
             obj.delete()
         errors.append(answer)
 
     columnNames = list()
-    for col in jsonRequest["columns"]:
+    for col in request["columns"]:
         # add to table 'Datatype'
-        answer = createColumn(col, newTable, request.user)
+        answer = createColumn(col, newTable, user)
         if not answer:
             for obj in savedObjs:
                 obj.delete()
@@ -143,7 +141,7 @@ def createTable(request):
     tableRightsF = RightListForTableForm({'viewLog': True, 'rightsAdmin': True, 'insert': True, 'delete': True})
     if tableRightsF.is_valid():
         tableRights = tableRightsF.save(commit=False)
-        tableRights.user = request.user
+        tableRights.user = user
         tableRights.table = newTable
         tableRights.save()
         savedObjs.append(tableRights)
@@ -155,7 +153,7 @@ def createTable(request):
         colRightsF = RightListForColumnForm({'read': True, 'modify': True})
         if colRightsF.is_valid():
             colRights = colRightsF.save(commit=False)
-            colRights.user = request.user
+            colRights.user = user
             colRights.column = col
             colRights.table = newTable
             colRights.save()
@@ -174,14 +172,14 @@ def createTable(request):
         columnString += name + ", "
     columnString = columnString[:-2]  # cut off trailing comma
 
-    history = historyfactory.writeTableHistory(None, newTable, request.user, HistoryTable.TABLE_CREATED, _("Added columns: ").__unicode__() + columnString)
+    history = historyfactory.writeTableHistory(None, newTable, user, HistoryTable.TABLE_CREATED, _("Added columns: ").__unicode__() + columnString)
     # Write table rights to history
     rights = historyfactory.printRightsFor(newTable.name)
     if rights is not None:
         for right in rights:
-            historyfactory.writeTableHistory(history, newTable, request.user, HistoryTable.TABLE_CREATED, _("Added permissions:\n").__unicode__() + right)
+            historyfactory.writeTableHistory(history, newTable, user, HistoryTable.TABLE_CREATED, _("Added permissions:\n").__unicode__() + right)
     # write table creation to history
-    historyfactory.writeTableHistory(history, newTable, request.user, HistoryTable.TABLE_CREATED, _("Created table ").__unicode__() + newTable.name + ".")
+    historyfactory.writeTableHistory(history, newTable, user, HistoryTable.TABLE_CREATED, _("Created table ").__unicode__() + newTable.name + ".")
     return HttpResponse(json.dumps({"success":_("Successfully created table ").__unicode__() + table["name"]}), content_type="application/json")
 
 

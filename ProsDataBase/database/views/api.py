@@ -85,7 +85,7 @@ def categories(request):
         return showCategories()
     if request.user.admin:
         if request.method == 'PUT':
-            return tablefactory.modifyCategories(request)
+            return tablefactory.modifyCategories(json.loads(request.body))
     else:
         return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
 
@@ -102,8 +102,8 @@ def tables(request):
     if request.method == 'GET':
         return showAllTables(request.user)
     if request.method == 'POST':
-        if request.user.admin or request.user.tableCreator :
-            return tablefactory.createTable(request)
+        if request.user.admin or request.user.tableCreator:
+            return tablefactory.createTable(request.body, request.user)
 
 
 def table(request, name):
