@@ -7,7 +7,6 @@ from django.http import HttpResponse
 
 from models import *
 from forms import *
-from serializers import TableSerializer
 import historyfactory
 from response import *
 from django.utils.translation import ugettext_lazy as _

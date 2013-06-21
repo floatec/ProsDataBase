@@ -83,7 +83,7 @@ def myPassword(request):
 def categories(request):
     if request.method == 'GET':
         return showCategories()
-    if request.user.admin :
+    if request.user.admin:
         if request.method == 'PUT':
             return tablefactory.modifyCategories(request)
     else:
