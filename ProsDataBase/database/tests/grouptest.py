@@ -12,8 +12,8 @@ class GroupTest(TestCase):
         # tests the api showAllGroups
         # =================================================================
         self.maxDiff = None
-        group1 = create_Group()
-        group2 = create_Group()
+        group1 = UserFactory.createGroup(10)
+        group2 = UserFactory.createGroup(10)
 
         result = GroupSerializer.serializeAll()
 
@@ -60,7 +60,7 @@ class GroupTest(TestCase):
 
     def test_showOneGroup(self):
 
-        group = create_Group()
+        group = UserFactory.createGroup(10)
 
         result = GroupSerializer.serializeOne(group)
 
@@ -69,8 +69,7 @@ class GroupTest(TestCase):
         # =================================================================
         groupMember = list()
         for m in Membership.objects.filter(group=group):
-            groupMember.append((m.user.username))
-
+            groupMember.append(m.user.username)
         #for user in groupMember:
         #    self.assertTrue(user in result["users"])
 

@@ -1,6 +1,7 @@
 __author__ = 'tieni'
 
 from datetime import datetime
+from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
 
 from forms import *
@@ -9,7 +10,7 @@ from serializers import *
 
 def writeAuthHistory(history, user, type, message=""):
     if history is None:  # create a new history entry
-        historyF = HistoryAuthForm({"date": datetime.now(), "type": type})
+        historyF = HistoryAuthForm({"date": datetime.utcnow().replace(tzinfo=utc), "type": type})
         if historyF.is_valid():
             history = historyF.save(commit=False)
             history.user = user
@@ -25,7 +26,7 @@ def writeAuthHistory(history, user, type, message=""):
 
 def writeTableHistory(history, table, user, type, message=""):
     if history is None:  # create a new history entry
-        historyF = HistoryTableForm({"date": datetime.now(), "type": type})
+        historyF = HistoryTableForm({"date": datetime.utcnow().replace(tzinfo=utc), "type": type})
         if historyF.is_valid():
             history = historyF.save(commit=False)
             history.table = table

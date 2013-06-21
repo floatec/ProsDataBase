@@ -9,8 +9,8 @@ class UserTest(TestCase):
         listofuser2 = list()
 
         for i in range(1,101):
-            listofuser.append(create_RandomUser())
-            listofuser2.append(create_RandomUser())
+            listofuser.append(UserFactory.createRandomUser())
+            listofuser2.append(UserFactory.createRandomUser())
 
         result = UserSerializer.serializeAll()
 
@@ -33,8 +33,8 @@ class UserTest(TestCase):
 
     # Jetzt passts
     def test_showOneUser(self):
-        user1 = create_RandomUser()
-        user2 = create_RandomUser()
+        user1 = UserFactory.createRandomUser()
+        user2 = UserFactory.createRandomUser()
         user2.tableCreator=True
         user2.admin=True
         user2.userManager=True
@@ -64,16 +64,16 @@ class UserTest(TestCase):
 
     # User der keine createTable-Rechte hat kann eine Tabelle erstellen
     def test_showUserRights(self):
-        user1 = create_UserWithName("Gunther", "abc")
+        user1 = UserFactory.createUserWithName("Gunther", "abc")
 
-        user2 = create_UserWithName("Mammut", "abx")
+        user2 = UserFactory.createUserWithName("Mammut", "abx")
 
-        table = create_table(user1)
+        table = StructureFactory.createTable(user1)
 
-        connect_User_With_TableRights(user1,table)
-        connect_User_With_TableRights(user2,table)
+        UserFactory.createTableRights(user1,table)
+        UserFactory.createTableRights(user2,table)
 
-        result = UserSerializer.serializeAllWithRights()
+        result = UserSerializer.serializeAllWithRights(user1)
 
         print result
 
@@ -99,7 +99,7 @@ class UserTest(TestCase):
                 self.assertFalse(user["userManager"])
 
     def test_login(self):
-        user = create_UserWithName("Tim","abc")
+        user = UserFactory.createUserWithName("Tim","abc")
 
         self.client.login(username="Tim",password="abc")
 

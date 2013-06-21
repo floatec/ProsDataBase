@@ -4,597 +4,353 @@ from ..serializers import *
 from string import ascii_lowercase, digits
 from random import choice
 
-def generate_random_username(length=5, chars=ascii_lowercase):
-    """
-    generate a simple string with the length of 5 characters only lowercase
-    alphabets
-    """
-    username = ''.join([choice(chars) for i in xrange(length)])
-    return username
 
-def generate_random_number(length=2, chars=digits):
-    number = ''.join([choice(chars) for k in xrange(length)])
-    return number
+class LiteralFactory:
+    usedStrings = list()
+    usedNumbers = list()
 
-def create_table(user):
-    # ============================================================
-    # creates a simple table with two columns and
-    # two datasets filed with 3 values
-    # ============================================================
-    category = dict()
-    category["name"] = "Allgemein"
-    categoryF = CategoryForm(category)
-    if categoryF.is_valid():
-        newCategory = categoryF.save(commit=False)
-        newCategory.save()
+    @staticmethod
+    def genRandString(length=5, chars=ascii_lowercase):
+        """
+        generate a random lowercase string with the length of 5 characters
+        """
+        while True:
+            newString = ''.join([choice(chars) for i in xrange(length)])
+            if newString not in LiteralFactory.usedStrings:
+                LiteralFactory.usedStrings.append(newString)
+                return newString
 
-    table = dict()
-    table["name"] = generate_random_username()
-    table["created"] = datetime.now()
+    @staticmethod
+    def genRandNumber(length=5, chars=digits):
+        """
+        generate a random number with 5 digits
+        """
+        while True:
+            number = ''.join([choice(chars) for k in xrange(length)])
+            if number not in LiteralFactory.usedNumbers:
+                LiteralFactory.usedNumbers.append(number)
+                return number
 
-    tabF = TableForm(table)
-    if tabF.is_valid():
-        newTable = tabF.save(commit=False)
-        newTable.creator = user
-        newTable.category = newCategory
-        newTable.save()
 
-    return newTable
+class StructureFactory:
 
-def create_columns(table, user):
-    # ============================================================
-    # - create a texttype
-    # ============================================================
-    texttype = Type(name="Text", type=0)
-    texttype.save()
+    @staticmethod
+    def createTable(user):
+        # ============================================================
+        # creates a simple table with two columns and
+        # two datasets filed with 3 values
+        # ============================================================
+        category = dict()
+        category["name"] = "Allgemein"
+        categoryF = CategoryForm(category)
+        if categoryF.is_valid():
+            newCategory = categoryF.save(commit=False)
+            newCategory.save()
 
-    # ============================================================
-    # - creates a numerictype
-    # ============================================================
-    numerictype = Type(name="Numeric", type=1)
-    numerictype.save()
-    numericCond = TypeNumeric(type=numerictype, min=2, max=10)
-    numericCond.save()
+        table = dict()
+        table["name"] = LiteralFactory.genRandString()
+        table["created"] = datetime.now()
 
-    # ============================================================
-    # - creates a datetype
-    # ============================================================
-    datetype = Type(name="Type", type=2)
-    datetype.save()
+        tabF = TableForm(table)
+        if tabF.is_valid():
+            newTable = tabF.save(commit=False)
+            newTable.creator = user
+            newTable.category = newCategory
+            newTable.save()
 
-    # ============================================================
-    # - creates a selectiontype
-    # ============================================================
-    selectiontype = Type(name="Selection", type=3)
-    selectiontype.save()
+        StructureFactory.createColumns(newTable, user)
 
-    typeSelection = dict()
-    typeSelection["count"] = 2
-    typeSelectionF = TypeSelectionForm(typeSelection)
-    if typeSelectionF.is_valid():
-        newTypeSelection = typeSelectionF.save(commit=False)
-        newTypeSelection.type = selectiontype
-        newTypeSelection.save()
+        return newTable
 
-    selection1 = dict()
-    selection1["index"] = 0
-    selection1["content"] = "ja"
-    selection1F = SelectionValueForm(selection1)
-    if selection1F.is_valid():
-        newSelection1 = selection1F.save(commit=False)
-        newSelection1.typeSelection = newTypeSelection
-        newSelection1.save()
+    @staticmethod
+    def createColumns(table, user):
+        # ============================================================
+        # - create a texttype
+        # ============================================================
+        texttype = Type(name="Text", type=0)
+        texttype.save()
+        typetext = TypeText(length=30, type=texttype)
+        typetext.save()
 
-    selection2 = dict()
-    selection2["index"] = 1
-    selection2["content"] = "nein"
-    selection2F = SelectionValueForm(selection2)
-    if selection2F.is_valid():
-        newSelection2 = selection2F.save(commit=False)
-        newSelection2.typeSelection = newTypeSelection
-        newSelection2.save()
+        # ============================================================
+        # - creates a numerictype
+        # ============================================================
+        numerictype = Type(name="Numeric", type=1)
+        numerictype.save()
+        numericCond = TypeNumeric(type=numerictype, min=2, max=10)
+        numericCond.save()
 
-    # ============================================================
-    # - creates a booleantype
-    # ============================================================
-    booleantype = Type(name="Boolean", type=4)
-    booleantype.save()
+        # ============================================================
+        # - creates a datetype
+        # ============================================================
+        datetype = Type(name="Type", type=2)
+        datetype.save()
+        typedate = TypeDate(type=datetype)
+        typedate.save()
 
-    tabletype = Type(name="Table", type=5)
-    tabletype.save()
+        # ============================================================
+        # - creates a selectiontype
+        # ============================================================
+        selectiontype = Type(name="Selection", type=3)
+        selectiontype.save()
 
-    for i in range(0,4):
+        typeSelection = dict()
+        typeSelection["count"] = 2
+        typeSelectionF = TypeSelectionForm(typeSelection)
+        if typeSelectionF.is_valid():
+            newTypeSelection = typeSelectionF.save(commit=False)
+            newTypeSelection.type = selectiontype
+            newTypeSelection.save()
+
+        selection1 = dict()
+        selection1["index"] = 0
+        selection1["content"] = "ja"
+        selection1F = SelectionValueForm(selection1)
+        if selection1F.is_valid():
+            newSelection1 = selection1F.save(commit=False)
+            newSelection1.typeSelection = newTypeSelection
+            newSelection1.save()
+
+        selection2 = dict()
+        selection2["index"] = 1
+        selection2["content"] = "nein"
+        selection2F = SelectionValueForm(selection2)
+        if selection2F.is_valid():
+            newSelection2 = selection2F.save(commit=False)
+            newSelection2.typeSelection = newTypeSelection
+            newSelection2.save()
+
+        # ============================================================
+        # - creates a booleantype
+        # ============================================================
+        booleantype = Type(name="Boolean", type=4)
+        booleantype.save()
+        typeBoolean = TypeBool(type=booleantype)
+        typeBoolean.save()
+
+        tabletype = Type(name="Table", type=5)
+        tabletype.save()
+
         columns = dict()
-        columnsArray = ["TEXT" + table.name, "NUMERIC" + table.name, "DATE" + table.name,
-                        "SELECTION" + table.name, "BOOLEAN" + table.name, "TABLE" + table.name ]
-        columns["name"] = columnsArray[i]
-        columns["created"] = datetime.now()
+        columns["name"] = "TEXT" + table.name
+        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
         columnsF = ColumnForm(columns)
         if columnsF.is_valid():
-            newColumns = columnsF.save(commit=False)
-            newColumns.table = table
-            if i == 0:
-                newColumns.type = texttype
-            if i == 1:
-                newColumns.type = numerictype
-            if i == 2:
-                newColumns.type = datetype
-            if i == 3:
-                newColumns.type = selectiontype
-            if i == 4:
-                newColumns.type = booleantype
-            #if i == 5:
-             #   newColumns.type = tabletype
-            newColumns.creator = user
-            newColumns.save()
+            textColumns = columnsF.save(commit=False)
+            textColumns.table = table
+            textColumns.type = texttype
+            textColumns.creator = user
+            textColumns.save()
 
-            dataSets = dict()
-            dataSets["created"] = datetime.now()
-            dataSetsF = DatasetForm(dataSets)
-            if dataSetsF.is_valid():
-                newDataSets = dataSetsF.save(commit=False)
-                newDataSets.column = newColumns
-                newDataSets.creator = user
-                newDataSets.table = table
-                newDataSets.save()
-                newDataSets.datasetID = table.generateDatasetID(newDataSets)
-                newDataSets.save()
-                # ============================================================
-                # - the 1st column have a text data type
-                # ============================================================
-                if i == 0:
-                    for j in range(0,2):
-                        dataText = dict()
-                        dataText["created"] = datetime.now()
-                        dataText["content"] =  generate_random_username()
-                        dataTextF = DataTextForm(dataText)
-                        if dataTextF.is_valid():
-                            newDataText = dataTextF.save(commit=False)
-                            newDataText.column = newColumns
-                            newDataText.dataset = newDataSets
-                            newDataText.creator = user
-                            newDataText.save()
-                # ============================================================
-                # - the 2nd column have a numeric data type
-                # ============================================================
-                if i == 1:
-                    for k in range(0,2):
-                        dataNumeric = dict()
-                        dataNumeric["created"] = datetime.now()
-                        dataNumeric["content"] = generate_random_number()
-                        dataNumericF = DataNumericForm(dataNumeric)
-                        if dataNumericF.is_valid():
-                            newDataNummeric = dataNumericF.save(commit=False)
-                            newDataNummeric.column = newColumns
-                            newDataNummeric.dataset = newDataSets
-                            newDataNummeric.creator = user
-                            newDataNummeric.save()
-                # ============================================================
-                # -- the 3rd column have a date data type
-                # ============================================================
-                if i == 2:
-                    for l in range(0,2):
-                        dataDate = dict()
-                        dataDate["created"] = datetime.now()
-                        dataDate["content"] = datetime.now()
-                        dataDateF = DataDateForm(dataDate)
-                        if dataDateF.is_valid():
-                            newDataDate = dataDateF.save(commit=False)
-                            newDataDate.column = newColumns
-                            newDataDate.dataset = newDataSets
-                            newDataDate.creator = user
-                            newDataDate.save()
-                # ============================================================
-                # -- the 4th column have a Selection data type
-                # ============================================================
-                if i == 3:
-                    for m in range(0,2):
-                        dataSelection = dict()
-                        dataSelection["created"] = datetime.now()
-                        if l == 0:
-                            dataSelection["content"] = "ja"
-                        if l == 1:
-                            dataSelection["content"] = "nein"
-                        dataSelectionF = DataSelectionForm(dataSelection)
-                        if dataSelectionF.is_valid():
-                            newDataSelection = dataSelectionF.save(commit=False)
-                            newDataSelection.column = newColumns
-                            newDataSelection.dataset = newDataSets
-                            newDataSelection.creator = user
-                            newDataSelection.save()
-                # ============================================================
-                # -- the 5th column have a boolean data type
-                # ============================================================
-                if i == 4:
-                    for n in range(0,2):
-                        dataBoolean = dict()
-                        dataBoolean["created"] = datetime.now()
-                        if k == 0:
-                            dataBoolean["content"] = "True"
-                        if k == 1:
-                            dataBoolean["content"] = "False"
-                        dataBooleanF = DataBoolForm(dataBoolean)
-                        if dataBooleanF.is_valid():
-                            newDataBoolean = dataBooleanF.save(commit=False)
-                            newDataBoolean.column = newColumns
-                            newDataBoolean.dataset = newDataSets
-                            newDataBoolean.creator = user
-                            newDataBoolean.save()
-                # ============================================================
-                # -- the 6th column have a table datatype
-                # ============================================================
-                #if i == 5:
-                #    op = dict()
-                #    op["name"] = generate_random_username()
-                #    op["created"] = datetime.now()
-                #    opF = TableForm(op)
-                #    if opF.is_valid():
-                #        newOP = opF.save(commit=False)
-                #        newOP.creator = testUser
-                #        newOP.save()
+        columns = dict()
+        columns["name"] = "NUMERIC" + table.name
+        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columnsF = ColumnForm(columns)
+        if columnsF.is_valid():
+            numericColumns = columnsF.save(commit=False)
+            numericColumns.table = table
+            numericColumns.type = numerictype
+            numericColumns.creator = user
+            numericColumns.save()
 
-                #        texttype2 = Type(name="Text", type=0)
-                #        texttype2.save()
+        columns = dict()
+        columns["name"] = "DATE" + table.name
+        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columnsF = ColumnForm(columns)
+        if columnsF.is_valid():
+            dateColumns = columnsF.save(commit=False)
+            dateColumns.table = table
+            dateColumns.type = datetype
+            dateColumns.creator = user
+            dateColumns.save()
 
-                #       texttype3 = Type(name="Text", type=0)
-                #        texttype3.save()
-#
-#                        columnsOP = dict()
-#                        columnsOP["name"] = i
-#                        columnsOP["created"] = datetime.now()
-#                        columnsOPF = ColumnForm(columnsOP)
-#                        if columnsOPF.is_valid():
-#                            newColumnsOP = columnsOPF.save(commit=False)
-#                            newColumnsOP.table = newOP
-#                            newColumnsOP.type = texttype2
-#                            newColumnsOP.creator = testUser
-#                            newColumnsOP.save()
-#                            dataSetsOP = dict()
-#                            dataSetsOP["created"] = datetime.now()
-#                            dataSetsOPF = DatasetForm(dataSetsOP)
-#                            if dataSetsOPF.is_valid():
-#                                newDataSetsOP = dataSetsOPF.save(commit=False)
-#                                newDataSetsOP.column = newColumnsOP
-#                                newDataSetsOP.creator = testUser
-#                                newDataSetsOP.table = newOP
-#                                newDataSetsOP.save()
-#                                newDataSetsOP.datasetID = newOP.generateDatasetID(newDataSetsOP)
-#                                newDataSetsOP.save()
-#                                dataText2 = dict()
-#                                dataText2["created"] = datetime.now()
-#                                dataText2["content"] = "HalloWelt!!!"
-#                                dataText2F = DataTextForm(dataText2)
-#                                if dataText2F.is_valid():
-#                                    newDataText2 = dataText2F.save(commit=False)
-#                                    newDataText2.column = newColumnsOP
-#                                    newDataText2.dataset = newDataSetsOP
-#                                    newDataText2.creator = testUser
-#                                    newDataText2.save()
+        columns = dict()
+        columns["name"] = "SELECTION" + table.name
+        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columnsF = ColumnForm(columns)
+        if columnsF.is_valid():
+            selectionColumns = columnsF.save(commit=False)
+            selectionColumns.table = table
+            selectionColumns.type = selectiontype
+            selectionColumns.creator = user
+            selectionColumns.save()
 
-#                        columnsOP2 = dict()
-#                        columnsOP2["name"] = i
-#                        columnsOP2["created"] = datetime.now()
-#                        columnsOP2F = ColumnForm(columnsOP2)
-#                        if columnsOP2F.is_valid():
-#                            newColumnsOP2 = columnsOP2F.save(commit=False)
-#                            newColumnsOP2.table = newOP
-#                            newColumnsOP2.type = texttype3
-#                            newColumnsOP2.creator = testUser
-#                            newColumnsOP2.save()
-#                            dataSetsOP2 = dict()
-#                            dataSetsOP2["created"] = datetime.now()
-#                            dataSetsOP2F = DatasetForm(dataSetsOP2)
-#                            if dataSetsOP2F.is_valid():
-#                                newDataSetsOP2 = dataSetsOP2F.save(commit=False)
-#                                newDataSetsOP2.column = newColumnsOP2
-#                                newDataSetsOP2.creator = testUser
-#                                newDataSetsOP2.table = newOP
-#                                newDataSetsOP2.save()
-#                                newDataSetsOP2.datasetID = newOP.generateDatasetID(newDataSetsOP2)
-#                                newDataSetsOP2.save()
-#                                dataText3 = dict()
-#                                dataText3["created"] = datetime.now()
-#                                dataText3["content"] = "HalloWelt!!!"
-#                                dataText3F = DataTextForm(dataText3)
-#                                if dataText3F.is_valid():
-#                                    newDataText3 = dataText3F.save(commit=False)
-#                                    newDataText3.column = newColumnsOP2
-#                                    newDataText3.dataset = newDataSetsOP2
-#                                    newDataText3.creator = testUser
-#                                    newDataText3.save()
-
-#                    dataTable = dict()
-#                    dataTable["created"] = datetime.now()
-#                    dataTableF = DataTableForm(dataTable)
-#                    if dataTableF.is_valid():
-#                        newDataTable = dataTableF.save(commit=False)
-#                        newDataTable.column = newColumns
-#                        newDataTable.dataset = newDataSets
-#                        newDataTable.creator = testUser
-#                        newDataTable.save()
-
-#                    TableLink = TableLink(dataTable=newDataTable, dataset=newDataSetsOP)
-#                    TableLink.save()
-
-#                    TableLink2 = TableLink(dataTable=newDataTable, dataset=newDataSetsOP2)
-#                    TableLink2.save()
-
-    return newColumns
-
-def create_columnsWithPatients(table, user):
-    # ============================================================
-    # - create a texttype
-    # ============================================================
-    texttype = Type(name="Text", type=0)
-    texttype.save()
-    typetext = TypeText(length=30, type=texttype)
-    typetext.save()
+        columns = dict()
+        columns["name"] = "BOOLEAN" + table.name
+        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columnsF = ColumnForm(columns)
+        if columnsF.is_valid():
+            boolColumns = columnsF.save(commit=False)
+            boolColumns.table = table
+            boolColumns.type = booleantype
+            boolColumns.creator = user
+            boolColumns.save()
 
 
-    # ============================================================
-    # - creates a numerictype
-    # ============================================================
-    numerictype = Type(name="Numeric", type=1)
-    numerictype.save()
-    numericCond = TypeNumeric(type=numerictype, min=2, max=10)
-    numericCond.save()
+class DataFactory:
+    @staticmethod
+    def genRandDatasets(table, user, n=10):
+        for i in range(0, n):
 
-    # ============================================================
-    # - creates a datetype
-    # ============================================================
-    datetype = Type(name="Type", type=2)
-    datetype.save()
-    typedate = TypeDate(type = datetype, min=1, max=51)
+            dataset = dict()
+            dataset["created"] = datetime.utcnow().replace(tzinfo=utc)
+            datasetF = DatasetForm(dataset)
+            if datasetF.is_valid():
+                newDataset = datasetF.save(commit=False)
+                newDataset.creator = user
+                newDataset.table = table
+                newDataset.save()
+                newDataset.datasetID = table.generateDatasetID(newDataset)
+                newDataset.save()
 
-    # ============================================================
-    # - creates a selectiontype
-    # ============================================================
-    selectiontype = Type(name="Selection", type=3)
-    selectiontype.save()
+            for column in table.getColumns():
+                if column.type.type == Type.TEXT:
+                    # ============================================================
+                    # - the 1st column have a text data type
+                    # ============================================================
+                    dataText = dict()
+                    dataText["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataText["content"] = LiteralFactory.genRandString()
+                    dataTextF = DataTextForm(dataText)
+                    if dataTextF.is_valid():
+                        newDataText = dataTextF.save(commit=False)
+                        newDataText.column = column
+                        newDataText.dataset = newDataset
+                        newDataText.creator = user
+                        newDataText.save()
 
-    typeSelection = dict()
-    typeSelection["count"] = 2
-    typeSelectionF = TypeSelectionForm(typeSelection)
-    if typeSelectionF.is_valid():
-        newTypeSelection = typeSelectionF.save(commit=False)
-        newTypeSelection.type = selectiontype
-        newTypeSelection.save()
+                if column.type.type == Type.NUMERIC:
+                    # ============================================================
+                    # - the 2nd column have a numeric data type
+                    # ============================================================
+                    dataNumeric = dict()
+                    dataNumeric["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataNumeric["content"] = LiteralFactory.genRandNumber()
+                    dataNumericF = DataNumericForm(dataNumeric)
+                    if dataNumericF.is_valid():
+                        newDataNummeric = dataNumericF.save(commit=False)
+                        newDataNummeric.column = column
+                        newDataNummeric.dataset = newDataset
+                        newDataNummeric.creator = user
+                        newDataNummeric.save()
 
-    selection1 = dict()
-    selection1["index"] = 0
-    selection1["content"] = "ja"
-    selection1F = SelectionValueForm(selection1)
-    if selection1F.is_valid():
-        newSelection1 = selection1F.save(commit=False)
-        newSelection1.typeSelection = newTypeSelection
-        newSelection1.save()
+                if column.type.type == Type.DATE:
+                    # ============================================================
+                    # -- the 3rd column have a date data type
+                    # ============================================================
+                    dataDate = dict()
+                    dataDate["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataDate["content"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataDateF = DataDateForm(dataDate)
+                    if dataDateF.is_valid():
+                        newDataDate = dataDateF.save(commit=False)
+                        newDataDate.column = column
+                        newDataDate.dataset = newDataset
+                        newDataDate.creator = user
+                        newDataDate.save()
 
-    selection2 = dict()
-    selection2["index"] = 1
-    selection2["content"] = "nein"
-    selection2F = SelectionValueForm(selection2)
-    if selection2F.is_valid():
-        newSelection2 = selection2F.save(commit=False)
-        newSelection2.typeSelection = newTypeSelection
-        newSelection2.save()
+                if column.type.type == Type.SELECTION:
+                    # ============================================================
+                    # -- the 4th column have a Selection data type
+                    # ============================================================
+                    dataSelection = dict()
+                    dataSelection["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataSelection["content"] = "ja"
+                    dataSelectionF = DataSelectionForm(dataSelection)
+                    if dataSelectionF.is_valid():
+                        newDataSelection = dataSelectionF.save(commit=False)
+                        newDataSelection.column = column
+                        newDataSelection.dataset = newDataset
+                        newDataSelection.creator = user
+                        newDataSelection.save()
 
-    # ============================================================
-    # - creates a booleantype
-    # ============================================================
-    booleantype = Type(name="Boolean", type=4)
-    booleantype.save()
-    typeBoolean = TypeBool(type=booleantype)
-    typeBoolean.save()
+                if column.type.type == Type.BOOL:
+                    # ============================================================
+                    # -- the 5th column have a boolean data type
+                    # ============================================================
 
-    tabletype = Type(name="Table", type=5)
-    tabletype.save()
-
-    columnsArray = ["TEXT" + table.name, "NUMERIC" + table.name, "DATE" + table.name,
-                    "SELECTION" + table.name, "BOOLEAN" + table.name, "TABLE" + table.name]
-
-    columns = dict()
-    columns["name"] = "TEXT" + table.name
-    columns["created"] = datetime.now()
-    columnsF = ColumnForm(columns)
-    if columnsF.is_valid():
-        textColumns = columnsF.save(commit=False)
-        textColumns.table = table
-        textColumns.type = texttype
-        textColumns.creator = user
-        textColumns.save()
-
-    columns = dict()
-    columns["name"] = "NUMERIC" + table.name
-    columns["created"] = datetime.now()
-    columnsF = ColumnForm(columns)
-    if columnsF.is_valid():
-        numericColumns = columnsF.save(commit=False)
-        numericColumns.table = table
-        numericColumns.type = numerictype
-        numericColumns.creator = user
-        numericColumns.save()
-
-    columns = dict()
-    columns["name"] = "DATE" + table.name
-    columns["created"] = datetime.now()
-    columnsF = ColumnForm(columns)
-    if columnsF.is_valid():
-        dateColumns = columnsF.save(commit=False)
-        dateColumns.table = table
-        dateColumns.type = datetype
-        dateColumns.creator = user
-        dateColumns.save()
-
-    columns = dict()
-    columns["name"] = "SELECTION" + table.name
-    columns["created"] = datetime.now()
-    columnsF = ColumnForm(columns)
-    if columnsF.is_valid():
-        selectionColumns = columnsF.save(commit=False)
-        selectionColumns.table = table
-        selectionColumns.type = selectiontype
-        selectionColumns.creator = user
-        selectionColumns.save()
-
-    columns = dict()
-    columns["name"] = "BOOLEAN" + table.name
-    columns["created"] = datetime.now()
-    columnsF = ColumnForm(columns)
-    if columnsF.is_valid():
-        boolColumns = columnsF.save(commit=False)
-        boolColumns.table = table
-        boolColumns.type = booleantype
-        boolColumns.creator = user
-        boolColumns.save()
+                    dataBoolean = dict()
+                    dataBoolean["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataBoolean["content"] = "True"
+                    dataBooleanF = DataBoolForm(dataBoolean)
+                    if dataBooleanF.is_valid():
+                        newDataBoolean = dataBooleanF.save(commit=False)
+                        newDataBoolean.column = column
+                        newDataBoolean.dataset = newDataset
+                        newDataBoolean.creator = user
+                        newDataBoolean.save()
 
 
-    for i in range(0, 20):
-        dataSets = dict()
-        dataSets["created"] = datetime.now()
-        dataSetsF = DatasetForm(dataSets)
-        if dataSetsF.is_valid():
-            newDataSets = dataSetsF.save(commit=False)
-            newDataSets.creator = user
-            newDataSets.table = table
-            newDataSets.save()
-            newDataSets.datasetID = table.generateDatasetID(newDataSets)
-            newDataSets.save()
-            # ============================================================
-            # - the 1st column have a text data type
-            # ============================================================
+class UserFactory:
+    @staticmethod
+    def createGroup(numMembers=10):
+        # ============================================================
+        # creates a group with 1000 members
+        # ============================================================
+        groupA = dict()
+        groupA["name"] = (LiteralFactory.genRandString())
+        groupF = DBGroupForm(groupA)
+        if groupF.is_valid():
+            newDBGroup = groupF.save()
+            newDBGroup.save()
+        for i in range(0, numMembers):
+            user = DBUser.objects.create_user(username=LiteralFactory.genRandString())
+            user.save()
+            m = dict()
+            m["isAdmin"] = False
+            mF = MembershipForm(m)
+            if mF.is_valid():
+                newm = mF.save(commit=False)
+                newm.user = user
+                newm.group = newDBGroup
+                newm.save()
 
-            dataText = dict()
-            dataText["created"] = datetime.now()
-            dataText["content"] =  generate_random_username()
-            dataTextF = DataTextForm(dataText)
-            if dataTextF.is_valid():
-                newDataText = dataTextF.save(commit=False)
-                newDataText.column = textColumns
-                newDataText.dataset = newDataSets
-                newDataText.creator = user
-                newDataText.save()
-            # ============================================================
-            # - the 2nd column have a numeric data type
-            # ============================================================
+        GroupSerializer.serializeOne(groupA["name"])
+        return newDBGroup
 
-            dataNumeric = dict()
-            dataNumeric["created"] = datetime.now()
-            dataNumeric["content"] = generate_random_number()
-            dataNumericF = DataNumericForm(dataNumeric)
-            if dataNumericF.is_valid():
-                newDataNummeric = dataNumericF.save(commit=False)
-                newDataNummeric.column = numericColumns
-                newDataNummeric.dataset = newDataSets
-                newDataNummeric.creator = user
-                newDataNummeric.save()
-            # ============================================================
-            # -- the 3rd column have a date data type
-            # ============================================================
-
-            dataDate = dict()
-            dataDate["created"] = datetime.now()
-            dataDate["content"] = datetime.now()
-            dataDateF = DataDateForm(dataDate)
-            if dataDateF.is_valid():
-                newDataDate = dataDateF.save(commit=False)
-                newDataDate.column = dateColumns
-                newDataDate.dataset = newDataSets
-                newDataDate.creator = user
-                newDataDate.save()
-            # ============================================================
-            # -- the 4th column have a Selection data type
-            # ============================================================
-
-            dataSelection = dict()
-            dataSelection["created"] = datetime.now()
-            dataSelection["content"] = "ja"
-            dataSelectionF = DataSelectionForm(dataSelection)
-            if dataSelectionF.is_valid():
-                newDataSelection = dataSelectionF.save(commit=False)
-                newDataSelection.column = selectionColumns
-                newDataSelection.dataset = newDataSets
-                newDataSelection.creator = user
-                newDataSelection.save()
-            # ============================================================
-            # -- the 5th column have a boolean data type
-            # ============================================================
-
-            dataBoolean = dict()
-            dataBoolean["created"] = datetime.now()
-            dataBoolean["content"] = "True"
-            dataBooleanF = DataBoolForm(dataBoolean)
-            if dataBooleanF.is_valid():
-                newDataBoolean = dataBooleanF.save(commit=False)
-                newDataBoolean.column = boolColumns
-                newDataBoolean.dataset = newDataSets
-                newDataBoolean.creator = user
-                newDataBoolean.save()
-    return textColumns
-
-def create_Group(**kwargs):
-    # ============================================================
-    # creates a group with 1000 members
-    # ============================================================
-    groupA = dict()
-    groupA["name"] = (generate_random_username())
-    groupF = DBGroupForm(groupA)
-    if groupF.is_valid():
-        newDBGroup = groupF.save()
-        newDBGroup.save()
-    for i in range(1,1001):
-        user = DBUser.objects.create_user(username=generate_random_username())
+    @staticmethod
+    def createUserWithName(name, password):
+        user = DBUser.objects.create_user(username=name, password=password)
         user.save()
-        m = dict()
-        m["isAdmin"] = False
-        mF = MembershipForm(m)
-        if mF.is_valid():
-            newm = mF.save(commit=False)
-            newm.user = user
-            newm.group = newDBGroup
-            newm.save()
+        return user
 
-    GroupSerializer.serializeOne(groupA["name"])
-    return newDBGroup
+    @staticmethod
+    def createRandomUser():
+        user = DBUser.objects.create_user(username=LiteralFactory.genRandString(), tableCreator=True)
+        user.save()
+        return user
 
-def create_UserWithName(name, password):
-    user = DBUser.objects.create_user(username=name, password=password)
-    user.save()
-    return user
+    @staticmethod
+    def createTableRights(user, table):
+        # ============================================================
+        # creates a User with rights
+        # ============================================================
+        rights = dict()
+        rights['viewLog'] = True
+        rights['rightsAdmin'] = True
+        rights['insert'] = True
+        rights['delete'] = True
+        rightsF = RightListForTableForm(rights)
+        if rightsF.is_valid():
+            newRights = rightsF.save(commit=False)
+            newRights.user = user
+            newRights.table = table
+            newRights.save()
+            return newRights
 
-def create_RandomUser():
-    user = DBUser.objects.create_user(username=generate_random_username(), tableCreator=True)
-    user.save()
-    return user
-
-def connect_User_With_TableRights(user, table):
-    # ============================================================
-    # creates a User with rights
-    # ============================================================
-    rights = dict()
-    rights['viewLog'] = True
-    rights['rightsAdmin'] = True
-    rights['insert'] = True
-    rights['delete'] = True
-    rightsF = RightListForTableForm(rights)
-    if rightsF.is_valid():
-        newRights = rightsF.save(commit=False)
-        newRights.user = user
-        newRights.table = table
-        newRights.save()
-        return newRights
-
-def connect_User_With_ColumnRights(user, column):
-    # ============================================================
-    # creates a User with rights
-    # ============================================================
-    rights = dict()
-    rights['modify'] = True
-    rights['read'] = True
-    rightsF = RightListForColumnForm(rights)
-    if rightsF.is_valid():
-        newRights = rightsF.save(commit=False)
-        newRights.user = user
-        newRights.table = column.table
-        newRights.column = column
-        newRights.save()
-        return newRights
+    @staticmethod
+    def createColRights(user, column):
+        # ============================================================
+        # creates a User with rights
+        # ============================================================
+        rights = dict()
+        rights['modify'] = True
+        rights['read'] = True
+        rightsF = RightListForColumnForm(rights)
+        if rightsF.is_valid():
+            newRights = rightsF.save(commit=False)
+            newRights.user = user
+            newRights.table = column.table
+            newRights.column = column
+            newRights.save()
+            return newRights

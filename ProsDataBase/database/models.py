@@ -19,6 +19,7 @@ import sys
 from django.db import models
 from django.conf import settings
 from datetime import datetime
+from django.utils.timezone import utc
 from django.contrib.auth.models import AbstractUser, UserManager
 
 # ===============================
@@ -28,7 +29,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 class Table(models.Model):
     name = models.CharField(max_length=100)
     category = models.ForeignKey('Category', related_name="tables", blank=True, null=True)
-    created = models.DateTimeField(default=datetime.now)
+    created = models.DateTimeField(default=datetime.utcnow().replace(tzinfo=utc))
     modified = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tablecreator')
@@ -95,7 +96,7 @@ class Column(models.Model):
     type = models.OneToOneField('Type', related_name="owncolumn")
     comment = models.TextField(blank=True, null=True)
 
-    created = models.DateTimeField(default=datetime.now)
+    created = models.DateTimeField(default=datetime.utcnow().replace(tzinfo=utc))
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='columncreator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='columnmodifier', blank=True, null=True)
@@ -109,7 +110,7 @@ class Column(models.Model):
 class Dataset(models.Model):
     datasetID = models.CharField(max_length=200)
     table = models.ForeignKey('Table', related_name="datasets")
-    created = models.DateTimeField(default=datetime.now)
+    created = models.DateTimeField(default=datetime.utcnow().replace(tzinfo=utc))
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setcreator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='setmodifier', blank=True, null=True)
@@ -175,7 +176,7 @@ class Category(models.Model):
 class Data(models.Model):
     column = models.ForeignKey('Column', related_name="%(class)s")
     dataset = models.ForeignKey('Dataset', related_name="%(class)s")
-    created = models.DateTimeField(default=datetime.now())
+    created = models.DateTimeField(default=datetime.utcnow().replace(tzinfo=utc))
     modified = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_creator')
     modifier = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='%(class)s_modifier', blank=True, null=True)

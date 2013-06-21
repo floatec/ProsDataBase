@@ -19,22 +19,21 @@ class TableTest(TestCase):
         # }
         # =================================================================
 
-        schmog = create_RandomUser()
+        schmog = UserFactory.createRandomUser()
 
-        table1 = create_table(schmog)
-        table2 = create_table(schmog)
+        table1 = StructureFactory.createTable(schmog)
+        table2 = StructureFactory.createTable(schmog)
 
+        DataFactory.genRandDatasets(table1, schmog, 10)
+        DataFactory.genRandDatasets(table2, schmog, 10)
 
-        column1 = create_columnsWithPatients(table1, schmog)
-        column2 = create_columnsWithPatients(table2, schmog)
-
-        connect_User_With_TableRights(schmog,table1)
-        connect_User_With_TableRights(schmog,table2)
+        UserFactory.createTableRights(schmog, table1)
+        UserFactory.createTableRights(schmog, table2)
 
         for col in table1.getColumns():
-            connect_User_With_ColumnRights(schmog,col)
+            UserFactory.createColRights(schmog, col)
         for col in table2.getColumns():
-            connect_User_With_ColumnRights(schmog,col)
+            UserFactory.createColRights(schmog, col)
 
         result = TableSerializer.serializeAll(schmog)
 
@@ -51,7 +50,7 @@ class TableTest(TestCase):
         # =================================================================
         for table in result["tables"]:
             if table["name"] == table1.name:
-                obj =  table
+                obj = table
                 self.assertEquals(table1Cols, obj["columns"])
             elif table["name"] == table2.name:
                 obj = table
@@ -70,22 +69,21 @@ class TableTest(TestCase):
         for array in [table["columns"] for table in result["tables"]]:
             length += len(array)
 
-
         self.assertEquals(length, 10)
         print result
 
     # Mittlerweile passt alles
     def test_showTable(self):
 
-        user = create_RandomUser()
+        user = UserFactory.createRandomUser()
 
-        table1 = create_table(user)
+        table1 = StructureFactory.createTable(user)
 
-        column1 = create_columnsWithPatients(table1, user)
+        DataFactory.genRandDatasets(table1, user)
 
-        connect_User_With_TableRights(user, table1)
+        UserFactory.createTableRights(user, table1)
         for column in table1.getColumns():
-            connect_User_With_ColumnRights(user, column)
+            UserFactory.createColRights(user, column)
         result = TableSerializer.serializeOne(table1.name,user)
         print result
         table1Cols = list()
@@ -96,7 +94,6 @@ class TableTest(TestCase):
         # tests the name is the same name in the result
         # ==============================================================
         self.assertEquals(table1.name, result["name"])
-
 
         datasets = table1.getDatasets()
         for dataset in datasets:
@@ -116,28 +113,22 @@ class TableTest(TestCase):
         print result
 
     def test_deleteTable(self):
-
-        user = create_RandomUser()
-
-        table1 = create_table(user)
-
-        column1 = create_columns(table1, user)
-
-        connect_User_With_TableRights(user, table1)
-
-        deleteTable(table1.name,user)
+        user = UserFactory.createRandomUser()
+        table1 = StructureFactory.createTable(user)
+        UserFactory.createTableRights(user, table1)
+        deleteTable(table1.name, user)
         # ==============================================================
-        # tests the table is flaged as deleted
+        # tests if the table is flagged as deleted
         # ==============================================================
         self.assertTrue(table1.deleted)
 
-    def test_structerTest(self):
-
-        user = create_RandomUser()
-        table = create_table(user)
-        column = create_columnsWithPatients(table, user)
-        connect_User_With_TableRights(user,table)
-        connect_User_With_ColumnRights(user, column)
+    def test_structureTest(self):
+        user = UserFactory.createRandomUser()
+        table = StructureFactory.createTable(user)
+        DataFactory.genRandDatasets(table, user)
+        UserFactory.createTableRights(user, table)
+        for column in table.getColumns():
+            UserFactory.createColRights(user, column)
         result = TableSerializer.serializeStructure(table.name, user)
 
         print result
