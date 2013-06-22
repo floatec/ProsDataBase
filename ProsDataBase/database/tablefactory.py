@@ -63,7 +63,7 @@ def deleteCategory(name):
     return HttpResponse(json.dumps({"success": _("Deleted category ") + name + "."}), content_type="application/json")
 
 
-def createTable(request, user):
+def createTable(data, user):
     """
     add table to database.
 
@@ -95,7 +95,6 @@ def createTable(request, user):
       }
     }
     """
-    data = json.loads(request)
     savedObjs = list()  # holds all objects saved so far, so that in case of errors, they can be deleted
     errors = list()
 
