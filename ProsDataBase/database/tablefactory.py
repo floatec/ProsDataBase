@@ -63,7 +63,7 @@ def deleteCategory(name):
     return HttpResponse(json.dumps({"success": _("Deleted category ") + name + "."}), content_type="application/json")
 
 
-def createTable(request, user):
+def createTable(data, user):
     """
     add table to database.
 
@@ -95,24 +95,23 @@ def createTable(request, user):
       }
     }
     """
-
     savedObjs = list()  # holds all objects saved so far, so that in case of errors, they can be deleted
     errors = list()
 
     # check if table already exists:
-    existingTables = Table.objects.filter(name=request["name"])
+    existingTables = Table.objects.filter(name=data["name"])
     for existingTable in existingTables.all():
         if not existingTable.deleted:
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("A table with name ").__unicode__() + request["name"] + _(" already exists.").__unicode__()}]}))
+            return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("A table with name ").__unicode__() + data["name"] + _(" already exists.").__unicode__()}]}))
     # create new table
     table = dict()
-    table["name"] = request["name"]
+    table["name"] = data["name"]
     table["created"] = datetime.now()
     tableF = TableForm(table)
     if tableF.is_valid():
         newTable = tableF.save(commit=False)
         newTable.creator = user
-        newTable.category = Category.objects.get(name=request["category"])
+        newTable.category = Category.objects.get(name=data["category"])
         newTable.save()
         savedObjs.append(newTable)
     else:
@@ -121,14 +120,14 @@ def createTable(request, user):
         return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_CREATE, "message": _("Failed to create table. Please contact the developers.").__unicode__()}]}))
 
     # add table access rights for users and groups
-    answer = createTableRights(request["rights"], newTable, user)
+    answer = createTableRights(data["rights"], newTable, user)
     if not answer:
         for obj in savedObjs:
             obj.delete()
         errors.append(answer)
 
     columnNames = list()
-    for col in request["columns"]:
+    for col in data["columns"]:
         # add to table 'Datatype'
         answer = createColumn(col, newTable, user)
         if not answer:

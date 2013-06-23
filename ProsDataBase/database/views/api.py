@@ -103,7 +103,7 @@ def tables(request):
         return showAllTables(request.user)
     if request.method == 'POST':
         if request.user.admin or request.user.tableCreator:
-            return tablefactory.createTable(request.body, request.user)
+            return tablefactory.createTable(json.loads(request.body), request.user)
 
 
 def table(request, name):
