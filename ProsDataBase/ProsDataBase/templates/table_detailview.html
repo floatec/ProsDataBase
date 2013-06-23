@@ -529,16 +529,23 @@
      */
     function exportDatasets() {
         var datasetIDs = [];
-        $(".contentRow").each(function () {
-            if ($(this).children(":first").find("input:checkbox").is(':checked')) {
-                //if ($(this).find(".selectDataset").is(':checked')) {
-                datasetIDs.push($(this).find(".datasetClassCell").text());
+        var rows = $($("#headTable").children().last().children("tbody").children())
 
+
+        //generates array with all datasets how  are selected
+        rows.each(function () {
+            if ($(this).first().find("input:checkbox").is(':checked')) {
+                $(this).remove();
+                datasetIDs.push($(this).find("td:eq(2)").text());
             }
         });
+        if(datasetIDs.length==0){
+
+            return
+        }
         $.ajax({
             url: '/api/table/' + getTableName() + '/export/',
-            type: 'delete',
+            type: 'post',
             data: JSON.stringify(datasetIDs),
             contentType: 'application/json',
             dataType: 'json',
