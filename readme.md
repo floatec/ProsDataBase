@@ -31,7 +31,9 @@ Deployment
 Install Mysql
 ------------------------
 you can also use PostgreSQL
+
 	sudo apt-get install mysql-server mysql-client
+
 create an super user
 Install git
 -----------------------
