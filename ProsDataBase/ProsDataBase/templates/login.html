@@ -13,6 +13,15 @@
     <script>
         $(document).ready(function () {
             $('.btn').button({ disabled: false});
+            $("input").keydown(function(e){
+
+
+            if(e.which == 13){
+
+                login();
+            }
+
+        });
         });
         function login() {
             jsonobj = {}
@@ -34,6 +43,7 @@
 
             });
         }
+
     </script>
     <style type="text/css">
 
@@ -51,7 +61,7 @@
 <div id="LoginPic">
 <img src="../static/img/prosdatabase.png" height="165px" width="165px">
     <div id="Slogan">
-         Research 2.0
+         RESEARCH 2.0
         </div>
 </div>
 
@@ -59,10 +69,7 @@
 
 
     <br>
-   The ProsDataBase is a webbased research database in the medical range.
-    <br>
-    To make use of the Features of the ProsDataBase, please login.
-    <br>
+   The ProsDataBase is a web-based research database in the medical range.
     <br>
     Released in 2013
 

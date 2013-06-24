@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-20 15:53+0200\n"
+"POT-Creation-Date: 2013-06-24 11:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr "Übersicht"
 #: ProsDataBase/templates/createTable.html:17
 #: ProsDataBase/templates/createTable.html:132
 #: ProsDataBase/templates/createTable.html:143
-#: ProsDataBase/templates/modify.html:16
+#: ProsDataBase/templates/modify.html:18
 #: ProsDataBase/templates/modifyRights.html:15
 msgid "Help"
 msgstr "Hilfe"
@@ -56,7 +56,11 @@ msgstr "Benutzer"
 msgid "Categories"
 msgstr "Kategorien"
 
-#: ProsDataBase/templates/base.html:39
+#: ProsDataBase/templates/base.html:37
+msgid "show log"
+msgstr "Log ansehen"
+
+#: ProsDataBase/templates/base.html:40
 msgid "Logout"
 msgstr "Ausloggen"
 
@@ -68,7 +72,7 @@ msgstr "Wollen Sie diese(s) Element(e) wirklich löschen?"
 
 #: ProsDataBase/templates/categoryadmin.html:18
 #: ProsDataBase/templates/dataset.html:13
-#: ProsDataBase/templates/modify.html:51
+#: ProsDataBase/templates/modify.html:52
 #: ProsDataBase/templates/modifyGroup.html:18
 #: ProsDataBase/templates/modifyRights.html:32
 #: ProsDataBase/templates/settings.html:21
@@ -79,9 +83,13 @@ msgstr "speichern"
 msgid "categories"
 msgstr "Kategorien"
 
+#: ProsDataBase/templates/categoryadmin.html:76
+msgid "categoryname"
+msgstr "Kategorien"
+
 #: ProsDataBase/templates/createGroup.html:17
 msgid "Group name:"
-msgstr "Gruppenname:"
+msgstr "Gruppenname"
 
 #: ProsDataBase/templates/createGroup.html:19
 msgid "Has permission to create tables:"
@@ -112,7 +120,7 @@ msgstr "Schritt 2"
 
 #: ProsDataBase/templates/createTable.html:17
 msgid ""
-"Please specify the table name. Note, that it should be unique in the "
+" \"Please specify the table name. Note, that it should be unique in the "
 "database.Now specify the table\\'s columns, their content types and "
 "additional information. <br />Following content types exist:<br />Text: "
 "accepts any text and numbers. Is optionally restricted by length.<br /"
@@ -124,7 +132,7 @@ msgid ""
 "table]: additionally to the above content types you can choose an already "
 "existing table. In this column users can select datasets from the specified "
 "table to be displayed in this table. They can also dynamically create new "
-"datasets for the selected table."
+"datasets for the selected table.\""
 msgstr ""
 "Bitte wählen Sie einen Tabellennamen aus. Beachten Sie, dass der "
 "Tabellenname nur einmal in der Datenbank vorkommen darf. <br/>Anschließend "
@@ -143,7 +151,7 @@ msgstr ""
 "Datensätze für die ausgewählte Tabelle erstellen."
 
 #: ProsDataBase/templates/createTable.html:22
-#: ProsDataBase/templates/modify.html:25
+#: ProsDataBase/templates/modify.html:27
 msgid "Are you sure to delete this item?"
 msgstr "Wollen Sie dieses Element wirklich löschen?"
 
@@ -156,19 +164,19 @@ msgid "Select Category"
 msgstr "Kategorie auswählen"
 
 #: ProsDataBase/templates/createTable.html:37
-#: ProsDataBase/templates/modify.html:42
+#: ProsDataBase/templates/modify.html:43
 msgid "column"
 msgstr "Spalte"
 
 #: ProsDataBase/templates/createTable.html:38
 #: ProsDataBase/templates/dataset.html:11
-#: ProsDataBase/templates/modify.html:43
+#: ProsDataBase/templates/modify.html:44
 #: ProsDataBase/templates/modifyDataset.html:11
 msgid "comment"
 msgstr "Kommentar"
 
 #: ProsDataBase/templates/createTable.html:39
-#: ProsDataBase/templates/modify.html:44
+#: ProsDataBase/templates/modify.html:45
 msgid "content type"
 msgstr "Inhaltstyp"
 
@@ -254,41 +262,66 @@ msgid ""
 "Search for users or groups in the input field and toggle their rights for "
 "each column.The 'All'-section allows fast rights assignment for all columns."
 msgstr ""
-"Geben Sie schließlich Benutzern und Gruppen Lese-, Einfüge-, Änderungs- und "
+"Geben Sie zuletzt Benutzern und Gruppen Lese-, Einfüge-, Änderungs- und "
 "Löschrechte:Suchen Sie mithilfe des Input Feldes nach Benutzern und Gruppen "
 "und ändern Sie ihre Rechte für jede Spalte. Der 'alle'-Abschnitt erlaubt "
 "Ihnen eine schnelle Rechtezuweisung für alle Spalten gleichzeitig."
 
-#: ProsDataBase/templates/createTable.html:251
+#: ProsDataBase/templates/createTable.html:143
+msgid "can change the streuctur and the rights of this table"
+msgstr "Tabellenstruktur und Zugriffsrechte anpassen"
+
+#: ProsDataBase/templates/createTable.html:143
+#, fuzzy
+msgid "can insert new Datasets"
+msgstr "neue Datensatz einfügen"
+
+#: ProsDataBase/templates/createTable.html:143
+msgid "an delete datasets"
+msgstr "Datensätze löschen"
+
+#: ProsDataBase/templates/createTable.html:143
+msgid "can view the log"
+msgstr "Log ansehen"
+
+#: ProsDataBase/templates/createTable.html:143
+msgid "an view this column"
+msgstr "Fügen Sie neue Spalten hinzu"
+
+#: ProsDataBase/templates/createTable.html:143
+msgid "can change this column"
+msgstr "Spalte geändert '"
+
+#: ProsDataBase/templates/createTable.html:250
 msgid "columnname"
 msgstr "Spaltenname"
 
-#: ProsDataBase/templates/createTable.html:251
-msgid "displayed in insert/modify"
+#: ProsDataBase/templates/createTable.html:250
+msgid "displeyed at insert/delte"
 msgstr ""
 
-#: ProsDataBase/templates/createTable.html:251
-#: ProsDataBase/templates/createTable.html:300
-#: ProsDataBase/templates/modify.html:259
-#: ProsDataBase/templates/modify.html:431
-#: ProsDataBase/templates/modify.html:488
+#: ProsDataBase/templates/createTable.html:250
+#: ProsDataBase/templates/createTable.html:299
+#: ProsDataBase/templates/modify.html:260
+#: ProsDataBase/templates/modify.html:432
+#: ProsDataBase/templates/modify.html:489
 msgid "length"
 msgstr "Länge"
 
-#: ProsDataBase/templates/createTable.html:316
-#: ProsDataBase/templates/modify.html:501
+#: ProsDataBase/templates/createTable.html:315
+#: ProsDataBase/templates/modify.html:502
 msgid "select value"
 msgstr "Wert auswählen"
 
-#: ProsDataBase/templates/createTable.html:317
-#: ProsDataBase/templates/modify.html:502
+#: ProsDataBase/templates/createTable.html:316
+#: ProsDataBase/templates/modify.html:503
 msgid "all"
 msgstr "alles"
 
-#: ProsDataBase/templates/createTable.html:428
-#: ProsDataBase/templates/modify.html:586
-#: ProsDataBase/templates/modify.html:635
-#: ProsDataBase/templates/modify.html:638
+#: ProsDataBase/templates/createTable.html:404
+#: ProsDataBase/templates/modify.html:587
+#: ProsDataBase/templates/modify.html:636
+#: ProsDataBase/templates/modify.html:639
 #: ProsDataBase/templates/modifyRights.html:226
 #: ProsDataBase/templates/modifyRights.html:275
 #: ProsDataBase/templates/modifyRights.html:278
@@ -296,66 +329,66 @@ msgstr "alles"
 msgid "modify table"
 msgstr "Tabelle editieren"
 
-#: ProsDataBase/templates/createTable.html:430
-#: ProsDataBase/templates/modify.html:588
-#: ProsDataBase/templates/modify.html:643
-#: ProsDataBase/templates/modify.html:646
+#: ProsDataBase/templates/createTable.html:406
+#: ProsDataBase/templates/modify.html:589
+#: ProsDataBase/templates/modify.html:644
+#: ProsDataBase/templates/modify.html:647
 #: ProsDataBase/templates/modifyRights.html:228
 #: ProsDataBase/templates/modifyRights.html:283
 #: ProsDataBase/templates/modifyRights.html:286
 msgid "insert data"
 msgstr "Datensätze einfügen"
 
-#: ProsDataBase/templates/createTable.html:432
-#: ProsDataBase/templates/modify.html:590
-#: ProsDataBase/templates/modify.html:651
-#: ProsDataBase/templates/modify.html:655
+#: ProsDataBase/templates/createTable.html:408
+#: ProsDataBase/templates/modify.html:591
+#: ProsDataBase/templates/modify.html:652
+#: ProsDataBase/templates/modify.html:656
 #: ProsDataBase/templates/modifyRights.html:230
 #: ProsDataBase/templates/modifyRights.html:291
 #: ProsDataBase/templates/modifyRights.html:295
 msgid "delete data"
 msgstr "Datensätze löschen"
 
-#: ProsDataBase/templates/createTable.html:434
-#: ProsDataBase/templates/modify.html:592
-#: ProsDataBase/templates/modify.html:661
-#: ProsDataBase/templates/modify.html:665
+#: ProsDataBase/templates/createTable.html:410
+#: ProsDataBase/templates/modify.html:593
+#: ProsDataBase/templates/modify.html:662
+#: ProsDataBase/templates/modify.html:666
 #: ProsDataBase/templates/modifyRights.html:232
 #: ProsDataBase/templates/modifyRights.html:301
 #: ProsDataBase/templates/modifyRights.html:305
 msgid "view log"
 msgstr "Log ansehen"
 
-#: ProsDataBase/templates/createTable.html:436
-#: ProsDataBase/templates/modify.html:594
-#: ProsDataBase/templates/modify.html:669
+#: ProsDataBase/templates/createTable.html:412
+#: ProsDataBase/templates/modify.html:595
+#: ProsDataBase/templates/modify.html:670
 #: ProsDataBase/templates/modifyRights.html:234
 #: ProsDataBase/templates/modifyRights.html:309
 msgid "read all data"
 msgstr "alle Datensätze ansehen"
 
-#: ProsDataBase/templates/createTable.html:438
-#: ProsDataBase/templates/modify.html:596
-#: ProsDataBase/templates/modify.html:671
+#: ProsDataBase/templates/createTable.html:414
+#: ProsDataBase/templates/modify.html:597
+#: ProsDataBase/templates/modify.html:672
 #: ProsDataBase/templates/modifyRights.html:236
 #: ProsDataBase/templates/modifyRights.html:311
 msgid "modify all data"
 msgstr "alle Datensätze editieren"
 
-#: ProsDataBase/templates/createTable.html:447
-#: ProsDataBase/templates/modify.html:605
-#: ProsDataBase/templates/modify.html:685
-#: ProsDataBase/templates/modify.html:688
+#: ProsDataBase/templates/createTable.html:423
+#: ProsDataBase/templates/modify.html:606
+#: ProsDataBase/templates/modify.html:686
+#: ProsDataBase/templates/modify.html:689
 #: ProsDataBase/templates/modifyRights.html:245
 #: ProsDataBase/templates/modifyRights.html:325
 #: ProsDataBase/templates/modifyRights.html:328
 msgid "read"
 msgstr "ansehen"
 
-#: ProsDataBase/templates/createTable.html:449
-#: ProsDataBase/templates/modify.html:607
-#: ProsDataBase/templates/modify.html:693
-#: ProsDataBase/templates/modify.html:696
+#: ProsDataBase/templates/createTable.html:425
+#: ProsDataBase/templates/modify.html:608
+#: ProsDataBase/templates/modify.html:694
+#: ProsDataBase/templates/modify.html:697
 #: ProsDataBase/templates/modifyRights.html:247
 #: ProsDataBase/templates/modifyRights.html:333
 #: ProsDataBase/templates/modifyRights.html:336
@@ -412,30 +445,34 @@ msgstr "Nachricht"
 msgid "group/user log"
 msgstr "Gruppen/Benutzer-Log"
 
-#: ProsDataBase/templates/login.html:74
+#: ProsDataBase/templates/login.html:71
 msgid "Error at login"
 msgstr "Fehler beim Einloggen"
 
-#: ProsDataBase/templates/login.html:77
+#: ProsDataBase/templates/login.html:74
 msgid "User:"
 msgstr "Benutzer:"
 
-#: ProsDataBase/templates/login.html:81
+#: ProsDataBase/templates/login.html:78
 #: ProsDataBase/templates/register.html:47
 msgid "Password:"
 msgstr "Passwort:"
 
 #: ProsDataBase/templates/modify.html:5
-#: ProsDataBase/templates/modifyRights.html:5
-msgid "structure"
-msgstr "Struktur editieren"
+msgid "delete table"
+msgstr "Tabelle löschen"
 
 #: ProsDataBase/templates/modify.html:6
-#: ProsDataBase/templates/modifyRights.html:6
-msgid "rights"
-msgstr "Zugriffsrechte"
+#: ProsDataBase/templates/modifyRights.html:5
+msgid "modify structure"
+msgstr "Struktur editieren"
 
-#: ProsDataBase/templates/modify.html:18
+#: ProsDataBase/templates/modify.html:7
+#: ProsDataBase/templates/modifyRights.html:6
+msgid "modify rights"
+msgstr "Berechtigungen editieren"
+
+#: ProsDataBase/templates/modify.html:20
 #: ProsDataBase/templates/modifyRights.html:17
 msgid ""
 "Please specify the table name. Note,that it should be unique in the "
@@ -471,7 +508,7 @@ msgstr ""
 "Ebenfalls können Sie dynamisch neueDatensätze für die ausgewählte Tabelle "
 "erstellen."
 
-#: ProsDataBase/templates/modify.html:26
+#: ProsDataBase/templates/modify.html:28
 msgid ""
 "Are you sure to delete this table? All data inside will be lost! Be careful "
 "with doing that!"
@@ -479,39 +516,35 @@ msgstr ""
 "Wollen Sie diese Tabelle wirklich löschen? Alle Daten werden dabei "
 "migelöscht."
 
-#: ProsDataBase/templates/modify.html:29
+#: ProsDataBase/templates/modify.html:31
 msgid ""
 "Are you sure to delete this column? Be careful! Containing data will be lost!"
 msgstr ""
 "Wollen Sie diese Spalte wirklich löschen? Beachten Sie, dass die "
 "dazugehörigen Daten verloren gehen!"
 
-#: ProsDataBase/templates/modify.html:33
-msgid "delete table"
-msgstr "Tabelle löschen"
-
-#: ProsDataBase/templates/modify.html:35
+#: ProsDataBase/templates/modify.html:37
 msgid "tablename:"
 msgstr "Tabellenname:"
 
-#: ProsDataBase/templates/modify.html:37
+#: ProsDataBase/templates/modify.html:38
 msgid "select category"
 msgstr "Kategorie auswählen:"
 
-#: ProsDataBase/templates/modify.html:85
+#: ProsDataBase/templates/modify.html:86
 #: ProsDataBase/templates/modifyRights.html:65
 msgid "Modify"
 msgstr "Ändern"
 
-#: ProsDataBase/templates/modify.html:156
-#: ProsDataBase/templates/modify.html:171
-#: ProsDataBase/templates/modify.html:188
+#: ProsDataBase/templates/modify.html:157
+#: ProsDataBase/templates/modify.html:172
+#: ProsDataBase/templates/modify.html:189
 msgid "delete"
 msgstr "Löschen"
 
-#: ProsDataBase/templates/modify.html:160
-#: ProsDataBase/templates/modify.html:179
-#: ProsDataBase/templates/modify.html:200
+#: ProsDataBase/templates/modify.html:161
+#: ProsDataBase/templates/modify.html:180
+#: ProsDataBase/templates/modify.html:201
 msgid "back"
 msgstr "Abbrechen"
 
@@ -591,10 +624,10 @@ msgstr "Einen neuen Datensatz einfügen"
 
 #: ProsDataBase/templates/table_detailview.html:17
 msgid "insert dataset"
-msgstr "neune Datensatz einfügen"
+msgstr "neuen Datensatz einfügen"
 
 #: ProsDataBase/templates/table_detailview.html:18
-msgid "delete selected datasets from this table"
+msgid "Deletes the selected Datasets from this Table"
 msgstr "Lösche ausgewählte Datensätze aus der Tabelle"
 
 #: ProsDataBase/templates/table_detailview.html:18
@@ -626,7 +659,7 @@ msgid "filter datasets"
 msgstr "Datensätze filtern"
 
 #: ProsDataBase/templates/table_detailview.html:32
-msgid "add filter criterion"
+msgid "adds filter criterion"
 msgstr "Filterkriterium hinzufügen"
 
 #: ProsDataBase/templates/table_detailview.html:33
@@ -642,17 +675,16 @@ msgid "show/hide this table"
 msgstr "Tabelle ausblenden/einblenden"
 
 #: ProsDataBase/templates/table_detailview.html:331
-msgid "data edit"
+msgid "edit"
 msgstr "editieren"
 
-#: ProsDataBase/templates/table_detailview.html:431
-#: database/views/api.py:181
+#: ProsDataBase/templates/table_detailview.html:431 database/views/api.py:181
 msgid "No matching datasets."
 msgstr "Keine Datensätze gefunden."
 
 #: ProsDataBase/templates/table_overview.html:12
-msgid "Add a new Table"
-msgstr "Eine neue Tabelle erstellen"
+msgid "add a new Table"
+msgstr "Eine neue Tabelle hinzufügen"
 
 #: ProsDataBase/templates/table_overview.html:12
 msgid "Create new table"
@@ -661,6 +693,10 @@ msgstr "Neue Tabelle erstellen"
 #: ProsDataBase/templates/table_overview.html:32
 msgid "No tables available"
 msgstr "Keine Tabelle vorhanden"
+
+#: ProsDataBase/templates/useradmin.html:19
+msgid "create user"
+msgstr "Erstellen"
 
 #: ProsDataBase/templates/useradmin.html:30
 msgid "User Rights"
@@ -692,395 +728,401 @@ msgid "activate/deactivate user"
 msgstr "Benutzer aktivieren/deaktivieren"
 
 #: ProsDataBase/templates/useradmin.html:87
-#: ProsDataBase/templates/useradmin.html:90
 msgid "toggle permission to create tables"
 msgstr "Setze Berechtigung zum Tabellen Erstellen"
 
+#: ProsDataBase/templates/useradmin.html:90
+msgid "create tables"
+msgstr "Folgende Tabelle erstellt: "
+
 #: ProsDataBase/templates/useradmin.html:94
-#: ProsDataBase/templates/useradmin.html:97
 msgid "toggle User Manager property"
 msgstr "Setze Berechtigung zum Benutzer Administrieren"
 
-#: database/historyfactory.py:77
+#: ProsDataBase/templates/useradmin.html:97
+msgid "manage users"
+msgstr "Benutzerverwaltung"
+
+#: database/historyfactory.py:78
 msgid "User "
 msgstr "Benutzer "
 
-#: database/historyfactory.py:77 database/historyfactory.py:79
+#: database/historyfactory.py:78 database/historyfactory.py:80
 msgid " may "
 msgstr " darf "
 
-#: database/historyfactory.py:79
+#: database/historyfactory.py:80
 msgid "Group "
 msgstr "Gruppe "
 
-#: database/historyfactory.py:126
+#: database/historyfactory.py:127
 msgid "In column "
 msgstr "In Spalte "
 
-#: database/tablefactory.py:30 database/tablefactory.py:610
+#: database/tablefactory.py:28 database/tablefactory.py:606
 msgid "Could not find category "
 msgstr "Konnte die angegebene Kategorie nicht finden: "
 
-#: database/tablefactory.py:34 database/tablefactory.py:42
-#: database/tablefactory.py:63
+#: database/tablefactory.py:32 database/tablefactory.py:40
+#: database/tablefactory.py:61
 msgid "Category with name "
 msgstr "Kategorie mit dem Namen "
 
-#: database/tablefactory.py:34 database/tablefactory.py:42
-#: database/tablefactory.py:109 database/tablefactory.py:642
+#: database/tablefactory.py:32 database/tablefactory.py:40
+#: database/tablefactory.py:105 database/tablefactory.py:638
 #: database/views/api.py:196 database/views/api.py:311
 #: database/views/api.py:363
 msgid " already exists."
 msgstr " existiert bereits."
 
-#: database/tablefactory.py:52
+#: database/tablefactory.py:50
 msgid "Saved changes successfully."
 msgstr "Änderungen wurden erfolgreich gespeichert."
 
-#: database/tablefactory.py:60
+#: database/tablefactory.py:58
 msgid "Please put the tables of this group into another category first."
-msgstr
-"Bitte verschieben Sie zuerst die Tabellen dieser Gruppe in eine andere Kategorie."
+msgstr ""
+"Bitte verschieben Sie zuerst die Tabellen dieser Gruppe in eine andere "
+"Kategorie."
 
-#: database/tablefactory.py:63 database/tablefactory.py:734
+#: database/tablefactory.py:61 database/tablefactory.py:730
 msgid " does not exist."
 msgstr " exisitiert nicht."
 
-#: database/tablefactory.py:65
+#: database/tablefactory.py:63
 msgid "Deleted category "
 msgstr "Kategorie gelöscht: "
 
-#: database/tablefactory.py:109
+#: database/tablefactory.py:105
 msgid "A table with name "
 msgstr "Eine Tabelle mit dem Namen "
 
-#: database/tablefactory.py:124 database/tablefactory.py:904
+#: database/tablefactory.py:120 database/tablefactory.py:900
 msgid "Failed to create table. Please contact the developers."
-msgstr
+msgstr ""
 "Tabelle erstellen fehlgeschlagen. Bitte wenden Sie sich an die Entwickler."
 
-#: database/tablefactory.py:154
-msgid
+#: database/tablefactory.py:150
+msgid ""
 "Failed to give access rights to the table creator. Please contact the "
 "developers."
-msgstr
+msgstr ""
 "Zuweisung der Tabellenrechte an den Ersteller fehlgeschlagen. Bitte wenden "
 "Sie sich an die Entwickler."
 
-#: database/tablefactory.py:167
+#: database/tablefactory.py:163
 msgid "Failed to give access rights to column "
 msgstr "Konnte dem Tabellenersteller für die Spalte "
 
-#: database/tablefactory.py:167
+#: database/tablefactory.py:163
 msgid " for the table creator. Please contact the developers."
 msgstr " keine Spaltenrechte geben. Bitte wenden Sie sich an die Entwickler."
 
-#: database/tablefactory.py:178
+#: database/tablefactory.py:174
 msgid "Added columns: "
 msgstr "Folgende Spalten hinzugefügt: "
 
-#: database/tablefactory.py:183
+#: database/tablefactory.py:179
 msgid "Added permissions:\n"
 msgstr "Folgende Rechte vergeben:\n"
 
-#: database/tablefactory.py:185
+#: database/tablefactory.py:181
 msgid "Created table "
 msgstr "Folgende Tabelle erstellt: "
 
-#: database/tablefactory.py:186
+#: database/tablefactory.py:182
 msgid "Successfully created table "
 msgstr "Folgende Tabelle erfolgreich erstellt: "
 
-#: database/tablefactory.py:210
+#: database/tablefactory.py:206
 msgid "Could not create text type for column "
 msgstr "Konnte keinen text type erstellen für die Spalte "
 
-#: database/tablefactory.py:210 database/tablefactory.py:225
-#: database/tablefactory.py:243 database/tablefactory.py:260
-#: database/tablefactory.py:273 database/tablefactory.py:307
-#: database/tablefactory.py:314 database/tablefactory.py:819
-#: database/tablefactory.py:875
+#: database/tablefactory.py:206 database/tablefactory.py:221
+#: database/tablefactory.py:239 database/tablefactory.py:256
+#: database/tablefactory.py:269 database/tablefactory.py:303
+#: database/tablefactory.py:310 database/tablefactory.py:815
+#: database/tablefactory.py:871
 msgid ". Abort."
 msgstr ". Breche ab."
 
-#: database/tablefactory.py:225
+#: database/tablefactory.py:221
 msgid "Could not create numeric type for column "
 msgstr "Konnte keinen numeric type erstellen für die Spalte "
 
-#: database/tablefactory.py:243
+#: database/tablefactory.py:239
 msgid "Could not create date type for column "
 msgstr "Konnte keinen date type erstellen für die Spalte "
 
-#: database/tablefactory.py:260
+#: database/tablefactory.py:256
 msgid "Could not create selection type for column "
 msgstr "Konnte keinen selection type erstellen für die Spalte "
 
-#: database/tablefactory.py:273
+#: database/tablefactory.py:269
 msgid "Could not create selection value for column "
 msgstr "Konnte keinen selection value erstellen für die Spalte "
 
-#: database/tablefactory.py:307
+#: database/tablefactory.py:303
 msgid "Could not create column "
 msgstr "Konnte folgende Spalte nicht erstellen: "
 
-#: database/tablefactory.py:314
+#: database/tablefactory.py:310
 msgid "Could not create column rights for column "
 msgstr "Konnte keine Spaltenrechte für folgende Spalte erstellen: "
 
-#: database/tablefactory.py:326 database/tablefactory.py:329
-#: database/tablefactory.py:373 database/tablefactory.py:750
-#: database/tablefactory.py:793 database/tablefactory.py:1080
+#: database/tablefactory.py:322 database/tablefactory.py:325
+#: database/tablefactory.py:369 database/tablefactory.py:746
+#: database/tablefactory.py:789 database/tablefactory.py:1076
 #: database/views/api.py:153 database/views/api.py:482
 msgid "Could not find table with name "
 msgstr "Eine Tabelle mit folgendem Namen konnte nicht gefunden werden: "
 
-#: database/tablefactory.py:341
+#: database/tablefactory.py:337
 msgid "Please delete references to this table in tables "
-msgstr
+msgstr ""
 "Bitte löschen Sie zuerst die Referenzen von folgenden Tabellen zu dieser "
 "Tabelle: "
 
-#: database/tablefactory.py:341
+#: database/tablefactory.py:337
 msgid " first."
-msgstr " "
+msgstr " zuerst."
 
-#: database/tablefactory.py:362
+#: database/tablefactory.py:358
 msgid "Successfully deleted table "
 msgstr "Folgende Tabelle erfolgreich gelöscht: "
 
-#: database/tablefactory.py:377 database/tablefactory.py:922
-#: database/tablefactory.py:1100
+#: database/tablefactory.py:373 database/tablefactory.py:918
+#: database/tablefactory.py:1096
 msgid "Could not find column with name "
 msgstr "Konnte keine Spalte mit Namen "
 
-#: database/tablefactory.py:377 database/tablefactory.py:908
-#: database/tablefactory.py:1100
+#: database/tablefactory.py:373 database/tablefactory.py:904
+#: database/tablefactory.py:1096
 msgid " in table "
 msgstr "in folgender Tabelle finden: "
 
-#: database/tablefactory.py:411 database/tablefactory.py:594
+#: database/tablefactory.py:407 database/tablefactory.py:590
 msgid "Could not find table "
 msgstr "Konnte die Tabelle "
 
-#: database/tablefactory.py:411 database/tablefactory.py:594
+#: database/tablefactory.py:407 database/tablefactory.py:590
 msgid " to delete from."
 msgstr "zum Herauslöschen nicht finden."
 
-#: database/tablefactory.py:427
+#: database/tablefactory.py:423
 msgid "Successfully deleted all datasets."
 msgstr "Alle Datensätze wurden erfolgreich gelöscht."
 
-#: database/tablefactory.py:440 database/tablefactory.py:442
-#: database/tablefactory.py:908 database/tablefactory.py:1041
-#: database/tablefactory.py:1071
+#: database/tablefactory.py:436 database/tablefactory.py:438
+#: database/tablefactory.py:904 database/tablefactory.py:1037
+#: database/tablefactory.py:1067
 msgid "Could not find dataset with id "
 msgstr "Datensatz mit folgender ID wurden nicht gefunden: "
 
-#: database/tablefactory.py:460
+#: database/tablefactory.py:456
 msgid "Could not delete dataset with id "
 msgstr "Datensätze konnten nicht gelöscht werden"
 
-#: database/tablefactory.py:460
+#: database/tablefactory.py:456
 msgid ". Please delete references to it in following tables first: "
 msgstr ""
 ". Bitte löschen Sie zuerst Referenzen zu dieser Tabelle in diesen Tabellen: "
 
-#: database/tablefactory.py:493
+#: database/tablefactory.py:489
 msgid "Failed to create table rights."
 msgstr "Erstellung der Rechte auf dieser Tabelle fehlgeschlagen."
 
-#: database/tablefactory.py:514
+#: database/tablefactory.py:510
 msgid "Could not create table rights."
 msgstr "Tabellenrechte konnten nicht erstellt werden."
 
-#: database/tablefactory.py:542 database/tablefactory.py:562
+#: database/tablefactory.py:538 database/tablefactory.py:558
 msgid "Failed to create column rights."
 msgstr "Erstellung der Spaltenrechte fehlgeschlagen."
 
-#: database/tablefactory.py:602 database/views/api.py:399
+#: database/tablefactory.py:598 database/views/api.py:399
 msgid "Changed name from '"
 msgstr "Name von '"
 
-#: database/tablefactory.py:602
+#: database/tablefactory.py:598
 msgid "' to: '"
 msgstr "' geändert zu: '"
 
-#: database/tablefactory.py:611
+#: database/tablefactory.py:607
 msgid "Changed category from '"
 msgstr "Kategorie von '"
 
-#: database/tablefactory.py:611 database/tablefactory.py:644
-#: database/tablefactory.py:700 database/views/api.py:399
+#: database/tablefactory.py:607 database/tablefactory.py:640
+#: database/tablefactory.py:696 database/views/api.py:399
 msgid "' to '"
 msgstr "' geändert zu '"
 
-#: database/tablefactory.py:630
+#: database/tablefactory.py:626
 msgid "New column: '"
 msgstr "Neue Spalte: '"
 
-#: database/tablefactory.py:638
+#: database/tablefactory.py:634
 msgid "Could not find column."
 msgstr "Spalte nicht gefunden."
 
-#: database/tablefactory.py:642
+#: database/tablefactory.py:638
 msgid "Column with name "
 msgstr "Spalte mit Namen "
 
-#: database/tablefactory.py:644
+#: database/tablefactory.py:640
 msgid "Changed column '"
 msgstr "Spalte geändert '"
 
-#: database/tablefactory.py:649
+#: database/tablefactory.py:645
 msgid ": old comment : '"
-msgstr ""
+msgstr ": alter Kommentar: '"
 
-#: database/tablefactory.py:649
+#: database/tablefactory.py:645
 msgid "', new comment: '"
 msgstr "', neuer Kommentar: '"
 
-#: database/tablefactory.py:659 database/tablefactory.py:668
-#: database/tablefactory.py:673 database/tablefactory.py:682
-#: database/tablefactory.py:687 database/tablefactory.py:700
-#: database/tablefactory.py:717 database/tablefactory.py:738
-
+#: database/tablefactory.py:655 database/tablefactory.py:664
+#: database/tablefactory.py:669 database/tablefactory.py:678
+#: database/tablefactory.py:683 database/tablefactory.py:696
+#: database/tablefactory.py:713 database/tablefactory.py:734
 msgid "Column '"
 msgstr "Spalte '"
 
-#: database/tablefactory.py:659
+#: database/tablefactory.py:655
 msgid "': old length: "
 msgstr "': Länge vorher: "
 
-#: database/tablefactory.py:659
+#: database/tablefactory.py:655
 msgid ", new length: "
 msgstr ", neue Länge: "
 
-#: database/tablefactory.py:668 database/tablefactory.py:682
+#: database/tablefactory.py:664 database/tablefactory.py:678
 msgid "': old min: "
 msgstr "': min vorher: "
 
-#: database/tablefactory.py:668 database/tablefactory.py:682
+#: database/tablefactory.py:664 database/tablefactory.py:678
 msgid ", new min: "
 msgstr ", min jetzt: "
 
-#: database/tablefactory.py:673 database/tablefactory.py:687
+#: database/tablefactory.py:669 database/tablefactory.py:683
 msgid "': old max: "
 msgstr ": max vorher: "
 
-#: database/tablefactory.py:673 database/tablefactory.py:687
+#: database/tablefactory.py:669 database/tablefactory.py:683
 msgid ", new max: "
 msgstr ", max jetzt: "
 
-#: database/tablefactory.py:695
+#: database/tablefactory.py:691
 msgid "found duplicate selection values."
 msgstr "Es wurden doppelte Auswahlwerte gefunden."
 
-#: database/tablefactory.py:700
+#: database/tablefactory.py:696
 msgid "': changed selection value from '"
 msgstr ": Auswahlwert geändert von '"
 
-#: database/tablefactory.py:717
+#: database/tablefactory.py:713
 msgid "': added selection value '"
 msgstr ": Auswahlwert hinzugefügt: '"
 
-#: database/tablefactory.py:730 database/tablefactory.py:734
+#: database/tablefactory.py:726 database/tablefactory.py:730
 msgid "Column "
 msgstr "Spalte "
 
-#: database/tablefactory.py:730
+#: database/tablefactory.py:726
 msgid " does not exist in referenced table "
 msgstr " existiert nicht in der referenzierten Tabelle "
 
-#: database/tablefactory.py:738
+#: database/tablefactory.py:734
 msgid "': Removed link to column '"
 msgstr "': Link entfernt von Spalte '"
 
-#: database/tablefactory.py:743
+#: database/tablefactory.py:739
 msgid "Successfully modified table structure."
 msgstr "Zugriffsrechte wurden erfolgreich angepasst"
 
-#: database/tablefactory.py:774
+#: database/tablefactory.py:770
 msgid "Successfully modified rights."
 msgstr "Zugriffsrechte wurden erfolgreich angepasst"
 
-#: database/tablefactory.py:799
+#: database/tablefactory.py:795
 msgid "Error creating a new dataset."
 msgstr "Fehler beim Erstellen eines neuen Datensatzes."
 
-#: database/tablefactory.py:819
+#: database/tablefactory.py:815
 msgid "Could not find a column with name "
 msgstr "Es konnte keine Spalte mit Namen "
 
-#: database/tablefactory.py:819
+#: database/tablefactory.py:815
 msgid "in table "
 msgstr "in folgender Tabelle gefunden werden: "
 
-#: database/tablefactory.py:825 database/tablefactory.py:926
+#: database/tablefactory.py:821 database/tablefactory.py:922
 msgid "input "
 msgstr "Eingabe "
 
-#: database/tablefactory.py:825 database/tablefactory.py:926
+#: database/tablefactory.py:821 database/tablefactory.py:922
 msgid " for column "
 msgstr " für die Spalte "
 
-#: database/tablefactory.py:825
+#: database/tablefactory.py:821
 msgid " is not valid. Abort."
 msgstr " ist nicht gültig. Der Vorgang wurde abgebrochen."
 
-#: database/tablefactory.py:861
+#: database/tablefactory.py:857
 msgid "Could not add data for column "
 msgstr "Konnte für folgende Spalte keine Daten hinzufügen: "
 
-#: database/tablefactory.py:861
+#: database/tablefactory.py:857
 msgid ". The content type was not valid. Abort."
 msgstr ". Der Inhaltstyp war nicht gültig. Vorgang abgebrochen."
 
-#: database/tablefactory.py:875 database/views/api.py:501
+#: database/tablefactory.py:871 database/views/api.py:501
 msgid "dataset with id "
 msgstr "Datensatz mit ID "
 
-#: database/tablefactory.py:875 database/views/api.py:501
+#: database/tablefactory.py:871 database/views/api.py:501
 msgid " could not be found in table "
 msgstr " konnte in folgender Tabelle nicht gefunden werden: "
 
-#: database/tablefactory.py:926
+#: database/tablefactory.py:922
 msgid " is not valid."
 msgstr " ist nicht gültig."
 
-#: database/tablefactory.py:934 database/tablefactory.py:952
-#: database/tablefactory.py:970 database/tablefactory.py:988
-#: database/tablefactory.py:1006
+#: database/tablefactory.py:930 database/tablefactory.py:948
+#: database/tablefactory.py:966 database/tablefactory.py:984
+#: database/tablefactory.py:1002
 msgid ": old: '"
 msgstr ": vorher: '"
 
-#: database/tablefactory.py:934 database/tablefactory.py:952
-#: database/tablefactory.py:970 database/tablefactory.py:988
-#: database/tablefactory.py:1006
+#: database/tablefactory.py:930 database/tablefactory.py:948
+#: database/tablefactory.py:966 database/tablefactory.py:984
+#: database/tablefactory.py:1002
 msgid "', new: '"
 msgstr "', nachher: '"
 
-#: database/tablefactory.py:943 database/tablefactory.py:961
-#: database/tablefactory.py:979 database/tablefactory.py:997
-#: database/tablefactory.py:1014
+#: database/tablefactory.py:939 database/tablefactory.py:957
+#: database/tablefactory.py:975 database/tablefactory.py:993
+#: database/tablefactory.py:1010
 msgid ": new entry: '"
 msgstr ": Neuer Eintrag: '"
 
-#: database/tablefactory.py:1026
+#: database/tablefactory.py:1022
 msgid ": removed link to dataset: '"
 msgstr ": Link zu folgendem Datensatz entfernt: '"
 
-#: database/tablefactory.py:1037 database/tablefactory.py:1067
+#: database/tablefactory.py:1033 database/tablefactory.py:1063
 msgid ": added link to dataset: '"
 msgstr ": Link zu folgendem Datensatz hinzugefügt: '"
 
-#: database/tablefactory.py:1051
+#: database/tablefactory.py:1047
 msgid "Could not add data to column "
 msgstr "Daten konnten nicht zur Spalte "
 
-#: database/tablefactory.py:1051
+#: database/tablefactory.py:1047
 msgid ". The content type was invalid."
 msgstr " hinzugefügt werden. Ungültiger Inhaltstyp."
 
-#: database/tablefactory.py:1093
+#: database/tablefactory.py:1089
 msgid "Could not find dataset with ID "
 msgstr "Datensätze mit der folgenden IDs konnten nicht gefunden werden: "
 
@@ -1108,7 +1150,6 @@ msgstr " von folgender Tabelle gelöscht: "
 #: database/views/api.py:159
 msgid "You have no right to view the log."
 msgstr "Sie haben kein Recht den Log einzusehen."
-
 
 #: database/views/api.py:196
 msgid "user with name "
@@ -1186,3 +1227,5 @@ msgstr "Der angeforderte Datensatz existiert nicht."
 msgid "Table could not be found"
 msgstr "Tabelle konnte nicht gefunden werden"
 
+#~ msgid "rights"
+#~ msgstr "Zugriffsrechte"

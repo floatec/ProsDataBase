@@ -110,6 +110,23 @@
         if ($(select).find(":selected").val() == 4 || $(select).find(":selected").attr("refType") == 4) {
             $(select).next().html("<input type='checkbox'>")
         }
+        $("select").keydown(function(e){
+
+            if(e.which == 13){
+
+                laodFiltered();
+            }
+
+        });
+
+         $("input").keydown(function(e){
+
+            if(e.which == 13){
+
+                laodFiltered();
+            }
+
+        });
     }
 
     /*
@@ -133,7 +150,14 @@
      initalize the page
      */
     function init() {
+        $("input").keydown(function(e){
 
+            if(e.which == 13){
+
+                laodFiltered();
+            }
+
+        });
         $.getJSON('/api/table/',function(data){
             var validTablesName = false;
             for(var k in data.tables){
@@ -251,6 +275,7 @@
      relaods table with filtered set
      */
     function laodFiltered() {
+        clearErrors();
         var obj = genFilterObj();
         $("#headTable").html("")
         //get table structure
@@ -535,7 +560,6 @@
         //generates array with all datasets how  are selected
         rows.each(function () {
             if ($(this).first().find("input:checkbox").is(':checked')) {
-                $(this).remove();
                 datasetIDs.push($(this).find("td:eq(2)").text());
             }
         });
