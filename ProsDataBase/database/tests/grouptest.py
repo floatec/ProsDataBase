@@ -1,8 +1,8 @@
 from django.test import TestCase
 from ..models import *
 from ..tests.factory import *
+from django.test.client import Client
 from ..views.api import *
-from django.core.urlresolvers import reverse
 
 # funzt bisher alles
 class GroupTest(TestCase):
@@ -77,3 +77,7 @@ class GroupTest(TestCase):
         # test the quantity of the result is correct
         # =================================================================
         self.assertEquals(len(result["users"]), 10000)
+
+    def test_groups(self):
+        group = UserFactory.createGroup(10)
+        c = Client()
