@@ -13,6 +13,15 @@
     <script>
         $(document).ready(function () {
             $('.btn').button({ disabled: false});
+            $("input").keydown(function(e){
+
+
+            if(e.which == 13){
+
+                login();
+            }
+
+        });
         });
         function login() {
             jsonobj = {}
@@ -34,6 +43,7 @@
 
             });
         }
+
     </script>
     <style type="text/css">
 
