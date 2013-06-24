@@ -1,5 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Arbutus+Slab);
-@import url(http://fonts.googleapis.com/css?family=Vast+Shadow);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
 
 #header {
     font-weight: bold;
@@ -331,15 +331,17 @@ Only for Login and Register Page
     text-align: right;
 }
 
+
 #loginInfoText {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
     margin: 50px;
     position: relative;
-    width: 50%;
-    font-weight: bold;
+    right: 45px;
     text-align: center;
-
-
+    width: 50%;
 }
+
 
 #loginContent {
     background: none repeat scroll 0 0 #EEEEEE;
@@ -349,9 +351,8 @@ Only for Login and Register Page
     margin-left: 5px;
     padding: 20px;
     position: absolute;
-    right: 216px;
+    right: 110px;
     top: 135px;
-
 }
 
 #loginText {
@@ -488,22 +489,24 @@ Only for Login and Register Page
 * Bilder
 */
 
+
 #LoginPic {
-    left: 300px;
+    left: 210px;
     position: relative;
     top: 20px;
     width: 30%;
 }
 
-
 #Slogan {
-    font-family: 'Vast Shadow',cursive;
+    font-family: 'Open Sans',sans-serif;
     font-size: 35px;
+    font-weight: bold;
     position: relative;
-    right: 53px;
+    right: 35px;
     top: 20px;
     width: 90%;
 }
+
 .minus{
     font-size: 10px;
     border-width: 1px;
