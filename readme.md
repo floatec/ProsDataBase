@@ -31,7 +31,9 @@ Deployment
 Install Mysql
 ------------------------
 you can also use PostgreSQL
+
 	sudo apt-get install mysql-server mysql-client
+
 create an super user
 Install git
 -----------------------
@@ -49,10 +51,12 @@ install django and dependencies
 
 initial project
 ----------------------
+
 	mysql --user=root --password=root localhost
 	mysql>CREATE DATABASE prosdatabase;
 	mysql>GRANT ALL PRIVILEGES ON prosdatabase.* TO 'prosdatabase'@'localhost' IDENTIFIED BY 'some_pass' WITH GRANT OPTION;
 	mysql>exit
+
 change your mysql configuration ProsDataBase/ProsData/Base/settings.py
 
 	DATABASES = {
@@ -82,13 +86,20 @@ and open http://localhost:8000 in your browser or try it with wget/curl
 setup NginX
 ----------------------
 install nginx
+
 	sudo apt-get install nginx python-flup
+
 run django in fsatcgi mode
-	python ./manage.py runfcgi host=127.0.0.1 port=8080
+
+	python ./manage.py runfcgi host=127.0.0.1 port=8000
+
 don't forget to add it to your init.d script!
+
 	sudo touch /etc/nginx/sites-available/sample_project.conf
 	sudo ln -s /etc/nginx/sites-available/sample_project.conf /etc/nginx/sites-enabled/sample_project.conf
+
 add your config
+
     server {
         listen 80;
         server_name myhostname.com;
