@@ -1,7 +1,7 @@
 from django.test import TestCase
 from ..models import *
 from ..tests.factory import *
-from ..views.api import login
+from ..views.api import *
 
 class UserTest(TestCase):
     def test_showAllUser(self):
@@ -99,8 +99,16 @@ class UserTest(TestCase):
                 self.assertFalse(user["userManager"])
 
     def test_login(self):
-        user = UserFactory.createUserWithName("Tim","abc")
+        serial = UserSerializer.serializeAll()
+        self.assertTrue("users" in serial)
+        self.assertEquals(len(serial["users"]), 0)
 
-        self.client.login(username="Tim",password="abc")
+        usernames = list()
+        for i in range(0,10):
+            userF = UserFactory.createUserWithName("tim", "abc")
+            user = userF.save()
+            usernames.append(user.username)
 
-        #self.assertTrue(login(request=user))
+        response = showAllUsers()
+        self.asserTrue("users" in json.loads(response.content))
+        self.assertEquals(usernames, json.loads(response.content["users"]))
