@@ -73,7 +73,7 @@
         }
         $("#createInput").click(function () {
             columnrow++;
-            $("#allCategories").append("<tr class='newEntry' id='row_" + columnrow + "'><td><button id='delete_" + columnrow + "'>-</button></td><td><input type='text' value=''></td></tr>");
+            $("#allCategories").append("<tr class='newEntry' id='row_" + columnrow + "'><td><button id='delete_" + columnrow + "'>-</button></td><td><input placeholder='{% trans "categoryname" %}' type='text' value=''></td></tr>");
             $("#delete_" + columnrow).click(function () {
                 lastID = getNumber(this.id);
                 $("#row_" + lastID).remove();

@@ -91,7 +91,7 @@ install nginx
 
 run django in fsatcgi mode
 
-	python ./manage.py runfcgi host=127.0.0.1 port=8080
+	python ./manage.py runfcgi host=127.0.0.1 port=8000
 
 don't forget to add it to your init.d script!
 
@@ -99,6 +99,7 @@ don't forget to add it to your init.d script!
 	sudo ln -s /etc/nginx/sites-available/sample_project.conf /etc/nginx/sites-enabled/sample_project.conf
 
 add your config
+
     server {
         listen 80;
         server_name myhostname.com;
