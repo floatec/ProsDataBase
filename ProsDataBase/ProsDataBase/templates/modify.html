@@ -17,17 +17,15 @@
 {% block help %}
 <div class='helpTextDiv'><h1>{% trans "Help" %}</h1>
     <!-- todo: translation (paddy)-->
-    {% trans "Please specify the table name. Note,that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br/>Following content types exist:<br/>Text: accepts any text and numbers. Is optionally restricted by length.<br/>Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br/>Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br/>Yes/No: accepts either yes or no.<br/>Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br/>[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table."%}
+    {% blocktrans %}"Please specify the table name. Note,that it should be unique in the database. Now specify the table\'s columns, their content types and additional information. <br/>Following content types exist:<br/>Text: accepts any text and numbers. Is optionally restricted by length.<br/>Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a minimum and maximum value.<br/>Date: accepts date and time input. Is optionally restricted by a minimum and maximum date.<br/>Yes/No: accepts either yes or no.<br/>Choice: accepts any value from a list of options specified by you. Values can contain any text and numbers.<br/>[a table]: additionally to the above content types you can choose an already existing table. In this column users can select datasets from the specified table to be displayed in this table. They can also dynamically create new datasets for the selected table."{% endblocktrans %}
 </div>
 {% endblock %}
 
 
 {% block content %}
-    <!--todo: translation (paddy) -->
 <div id="deleteAlertBox">{% trans "Are you sure to delete this item?" %}</div>
 <div id="alertTableBox">{% trans "Are you sure to delete this table? All data inside will be lost! Be careful with doing that!" %}
 </div>
-   <!--todo: translation (paddy) -->
 <div id="deleteExistedColumns">{% trans "Are you sure to delete this column? Be careful! Containing data will be lost!" %}</div>
 
 
