@@ -1073,27 +1073,31 @@ def exportTable(request, tableName):
     try:
         table = Table.objects.get(name=tableName, deleted=False)
     except Table.DoesNotExist:
-        return HttpResponse(json.dumps({"errors":[{"message":_("Could not find table with name ").__unicode__() + tableName + "."}]}))
+        return HttpResponse(json.dumps({"errors": [{"message": _("Could not find table with name ").__unicode__() + tableName + "."}]}))
+
+    colNames = list()
+    for column in table.getColumns():
+        colNames.append(column.name)
 
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.utcnow().replace(tzinfo=utc)) + ".csv'"
+    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y.%M.%d, %H:%M')) + ".csv'"
 
     writer = csv.writer(response)
-    writer.writerow([table.name + " from " + str(datetime.utcnow().replace(tzinfo=utc))])
-    writer.writerow(["system ID"] + request["columns"])
+    writer.writerow([table.name + " from " + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y.%M.%d, %H:%M'))])
+    writer.writerow(["system ID"] + colNames)
 
-    for datasetID in request["datasets"]:
+    for datasetID in request:
         try:
             dataset = Dataset.objects.get(datasetID=datasetID)
         except Dataset.DoesNotExist:
-            return HttpResponse(json.dumps({"errors":[{"message":_("Could not find dataset with ID ").__unicode__() + datasetID + "."}]}))
+            return HttpResponse(json.dumps({"errors": [{"message": _("Could not find dataset with ID ").__unicode__() + datasetID + "."}]}))
         row = list()
         row.append(datasetID)
-        for colName in request["columns"]:
+        for colName in colNames:
             try:
                 column = Column.objects.get(name=colName, table=table, deleted=False)
             except Column.DoesNotExist:
-                return HttpResponse(json.dumps({"errors":[{"message":_("Could not find column with name ").__unicode__() + colName + _(" in table ").__unicode__() + tableName + "."}]}))
+                return HttpResponse(json.dumps({"errors": [{"message": _("Could not find column with name ").__unicode__() + colName + _(" in table ").__unicode__() + tableName + "."}]}))
             if column.type.type == Type.TEXT:
                 text = dataset.datatext.all().get(column=column)
                 row.append(text.content)

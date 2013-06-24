@@ -49,7 +49,7 @@ class StructureFactory:
 
         table = dict()
         table["name"] = LiteralFactory.genRandString()
-        table["created"] = datetime.now()
+        table["created"] = datetime.utcnow().replace(tzinfo=utc)
 
         tabF = TableForm(table)
         if tabF.is_valid():

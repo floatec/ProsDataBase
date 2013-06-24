@@ -113,21 +113,21 @@ class TableSerializer:
                 modify = True
 
             type = col.type.type
-            if type is Type.TEXT:
+            if type == Type.TEXT:
                 colStructs.append({"id": col.id, "name": col.name, "type": Type.TEXT, "length": col.type.getType().length, "comment": comment, "modify": modify})
-            elif type is Type.NUMERIC:
+            elif type == Type.NUMERIC:
                 colStructs.append({"id": col.id, "name": col.name, "type": Type.NUMERIC, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "modify": modify})
-            elif type is Type.DATE:
+            elif type == Type.DATE:
                 colStructs.append({"id": col.id, "name": col.name, "type": Type.DATE, "min": col.type.getType().min, "max": col.type.getType().max, "comment": comment, "modify": modify})
 
-            elif type is Type.SELECTION:
+            elif type == Type.SELECTION:
                 options = list()
                 for value in col.type.getType().values():
                     options.append({"key": value.index, "value": value.content})
                 colStructs.append({"id": col.id, "name": col.name, "type": Type.SELECTION, "options": options, "comment": comment, "modify": modify})
-            elif type is Type.BOOL:
+            elif type == Type.BOOL:
                 colStructs.append({"id": col.id, "name": col.name, "type": Type.BOOL, "comment": comment, "modify": modify})
-            elif type is Type.TABLE:
+            elif type == Type.TABLE:
                 if col.type.getType().column is not None:
                     refCol = col.type.getType().column
                     colStructs.append({"id": col.id, "name": col.name, "type": Type.TABLE, "table": col.type.getType().table.name, "column": refCol.name, "refType": refCol.type.type, "comment": comment, "modify": modify})
@@ -352,7 +352,7 @@ class TableSerializer:
             if history.type == HistoryTable.DATASET_DELETED:
                 historyObj["type"] = "DATASET DELETED"
             historyObj["user"] = history.user.username
-            historyObj["date"] = str(history.date)
+            historyObj["date"] = str(history.date.strftime('%Y.%M.%d, %H:%M'))
             historyObj["messages"] = list()
             for msg in history.messages.all():
                 historyObj["messages"].append(msg.content)
@@ -395,7 +395,7 @@ class HistorySerializer:
         for history in HistoryAuth.objects.all():
             historyObj = dict()
             historyObj["user"] = history.user.username
-            historyObj["date"] = str(history.date)
+            historyObj["date"] = str(history.date.strftime('%Y.%M.%d, %H:%M'))
             if history.type == HistoryAuth.GROUP_CREATED:
                 historyObj["type"] = "GROUP CREATED"
             if history.type == HistoryAuth.GROUP_MODIFIED:
@@ -581,9 +581,9 @@ class DatasetSerializer:
                         dataObj["value"].append(valObj)
 
                 else:
-                    try:
-                        dataObj["value"] = str(item.content)
-                    except UnicodeEncodeError:
+                    if item.column.type.type == Type.DATE:
+                        dataObj["value"] = str(item.content.strftime('%Y.%M.%d, %H:%M'))
+                    else:
                         dataObj["value"] = unicode(item.content)
 
                 result["data"].append(dataObj)

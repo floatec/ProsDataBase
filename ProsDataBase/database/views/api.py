@@ -14,6 +14,14 @@ from django.utils.translation import ugettext_lazy as _
 
 
 def session(request):
+    """
+    api calls for registering, logging on and logging off.
+
+    url: /api/session/
+    POST: register. This action will be logged.
+    PUT: login
+    DELETE: logoff
+    """
     if request.method == 'POST':
         return register(request)
     elif request.method == 'PUT':
@@ -23,16 +31,38 @@ def session(request):
 
 
 def users(request):
+    """
+    api for getting a list of all usernames
+
+    url: /api/user/
+    GET: get a list of all usernames
+    """
     if request.method == 'GET':
         return showAllUsers()
 
 
 def user(request, name):
+    """
+    api for getting one user and his permissions
+
+    url: /api/user/[username]/
+    GET: get one user and his permissions
+    possible permissions are: admin, tablecreator and usermanager
+    """
     if request.method == 'GET':
         return showOneUser(name)
 
 
 def userRights(request):
+    """
+    api for managing user permissions
+
+    url: /api/user/rights/
+    GET: get all users and their permissions
+    POST: set permissions for a list of users. This action will be logged.
+    possible permissions are: admin, tablecreator and usermanager
+    You must have user manager or admin status to make this request.
+    """
     if request.user.userManager or request.user.admin:
         if request.method == 'GET':
             return showUserRights(request)
@@ -43,6 +73,14 @@ def userRights(request):
 
 
 def groups(request):
+    """
+    api for managing groups
+
+    url: /api/group/
+    GET: get a list of all groups
+    POST: create a new group. You must have user manager or admin status to make a POST request.
+    The POST request will be logged.
+    """
     if request.method == 'GET':
         return showAllGroups()
     elif request.method == 'POST':
@@ -53,6 +91,16 @@ def groups(request):
 
 
 def group(request, name):
+    """
+    api for managing one group
+
+    url: /api/group/[name]/
+    GET: get one group with its members
+    PUT: edit the group's members and its table creator status
+    DELETE: delete the group
+    You need user manager or admin status to make this request.
+    PUT and DELETE requests will be logged.
+    """
     try:
         DBGroup.objects.get(name=name)
     except DBGroup.DoesNotExist:
@@ -69,11 +117,25 @@ def group(request, name):
 
 
 def myself(request):
+    """
+    api for getting the permissions of the logged-in user
+
+    url: /api/myself/
+    GET: get your own permissions
+    possible permissions are table creator, user manager or admin
+    """
     if request.method == 'GET':
         return showMyUser(request.user.username)
 
 
 def myPassword(request):
+    """
+    api for password management
+
+    url: /api/myself/password/
+    POST: check your password
+    PUT: change your password
+    """
     if request.method == 'POST':
         return checkMyPassword(request)
     if request.method == 'PUT':
@@ -81,24 +143,44 @@ def myPassword(request):
 
 
 def categories(request):
+    """
+    api for managing table categories
+
+    url: /api/category/
+    GET: get a list of all categories
+    PUT: add new categories or change the name of existing ones. You need to be admin to make PUT requests.
+    """
     if request.method == 'GET':
         return showCategories()
     if request.user.admin:
         if request.method == 'PUT':
             return tablefactory.modifyCategories(json.loads(request.body))
     else:
-        return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"message": _("You have not the rights to do this opperation").__unicode__()}]}), content_type="application/json")
 
 
 def category(request, name):
-    if request.user.admin :
+    """
+    api for deleting a category
+
+    url: /api/category/[name]/
+    DELETE: delete this category. You need to be admin to make this request.
+    """
+    if request.user.admin:
         if request.method == 'DELETE':
             return tablefactory.deleteCategory(name)
     else:
-        return HttpResponse('{"errors":[{"message":"'+(_("You have not the rights to do this opperation").__unicode__())+'"}]}',content_type="application/json")
+        return HttpResponse(json.dumps({"errors":[{"message": _("You have not the rights to do this opperation").__unicode__()}]}), content_type="application/json")
 
 
 def tables(request):
+    """
+    api for showing or creating tables
+
+    url: /api/table/
+    GET: get all tables with their columns for which you have access rights
+    POST: create a new table. You need to be a table creator or admin to perform this task. This request will be logged.
+    """
     if request.method == 'GET':
         return showAllTables(request.user)
     if request.method == 'POST':
@@ -107,6 +189,16 @@ def tables(request):
 
 
 def table(request, name):
+    """
+    api for managing one table
+
+    url: /api/table/[name]/
+    GET: get the table and all its datasets. You need to have access rights to at least one column to see datasets
+    POST: insert a new dataset to the table. Requires permission to insert data
+    PUT: edit the table's structure, name and category. You need admin rights on this table to do this.
+    DELETE: remove this table. It will be hidden but not deleted entirely. You need table admin rights on this table to do this.
+    All requests except the GET request will be logged.
+    """
     try:
         Table.objects.get(name=name, deleted=False)
     except Table.DoesNotExist:
@@ -122,6 +214,15 @@ def table(request, name):
 
 
 def tableRights(request, tableName):
+    """
+    api for editing access rights on a table
+
+    url: /api/table/[name]/rights
+    PUT: edit access rights for users and groups. This action will be logged.
+    GET: show all users and groups and their permissions on this table.
+    possible permission are: administration (that is the permission to modify the table structure and access rights for other users),
+    log viewing, inserting data, deleting data, reading data and modifying existing data.
+    """
     try:
         Table.objects.get(name=tableName, deleted=False)
     except Table.DoesNotExist:
@@ -133,6 +234,14 @@ def tableRights(request, tableName):
 
 
 def column(request, tableName, columnName):
+    """
+    api for deleting one column
+
+    url: /api/table/[tablename]/column/[columnname]/
+    DELETE: delete the column. You need admin rights on this table to perform this task.
+    The column will only be hidden but not deleted from the database entirely.
+    This action will be logged.
+    """
     if request.method == 'DELETE':
         answer = tablefactory.deleteColumn(tableName, columnName, request.user)
         if not answer:
@@ -142,11 +251,26 @@ def column(request, tableName, columnName):
 
 
 def export(request, tableName):
+    """
+    api for exporting a table's datasets to CSV
+
+    url: /api/table/[name]/export/
+    POST: export a specified list of datasetes from this table to CSV.
+    You can only export data from columns for which you have read permission.
+    """
     if request.method == 'POST':
         return tablefactory.exportTable(json.loads(request.raw_post_data), tableName)
 
 
 def tableHistory(request, tableName):
+    """
+    api for reading a table's log.
+
+    url: /api/table/[name]/history/
+    GET: read the table's history. You need to have log viewing permission to perform this task.
+    Logged actions are: the table creation, table structure modifications, table deletion, access rights modifications,
+    dataset insertion, dataset modification and dataset deletion.
+    """
     if request.method == 'GET':
         response = TableSerializer.serializeHistory(tableName)
         if not response:
@@ -155,12 +279,29 @@ def tableHistory(request, tableName):
 
 
 def history(request):
+    """
+    api for reading the general history log.
+
+    url: /api/history/
+    GET: get all logs, that is from all tables and from the user management.
+    You need admin rights to perform this task.
+    Logged actions for tables: the table creation, table structure modifications, table deletion, access rights modifications,
+    dataset insertion, dataset modification and dataset deletion.
+    Logged actions for user management: user registration, user rights modification, group creation, group modification, group deletion
+    """
     if not request.user.admin:
         return HttpResponse(json.dumps({"errors": [{"code": Error.RIGHTS_NO_ADMIN, "message": _("You have no right to view the log.").__unicode__()}]}))
     return HttpResponse(json.dumps(HistorySerializer.serializeHistory()), content_type="application/json")
 
 
 def datasets(request, tableName):
+    """
+    api for reading or deleting a tables datasets
+
+    url: /api/table/[name]/dataset/
+    POST: show the requested datasets. You need read permission on at least one of the table's columns
+    DELETE: delete a list of specified datasets. You need data deletion rights to do this.
+    """
     if request.method == 'POST':
         #if request.user.mayReadTable(tableName):
         return showDatasets(request, tableName)  # request.user)
