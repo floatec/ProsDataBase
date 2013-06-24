@@ -105,7 +105,7 @@ def printRightsFor(tableName):
                     message += _("read, ").__unicode__()
                 if column["rights"]["modify"]:
                     if message[-2:] == ", ":
-                        message = message[:-2] + " and modify"
+                        message = message[:-2] + _(" and modify").__unicode__()
                     else:
                         message += _("modify").__unicode__()
                 if message[-2:] == ", ":  # cut off trailing comma

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-24 17:07+0200\n"
+"POT-Creation-Date: 2013-06-24 17:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -805,13 +805,61 @@ msgstr ". Spaltenrechte:"
 msgid "read, "
 msgstr "ansehen, "
 
+#: database/historyfactory.py:108
+msgid " and modify"
+msgstr "und editieren"
+
 #: database/historyfactory.py:127
 msgid "In column "
 msgstr "In Spalte "
 
+#: database/serializers.py:343
+msgid "TABLE CREATED"
+msgstr "TABELLE ERSTELLT"
+
+#: database/serializers.py:345
+msgid "TABLE MODIFIED"
+msgstr "TABELLE MODIFIZIERT"
+
+#: database/serializers.py:347
+msgid "TABLE DELETED"
+msgstr "TABELLE GELÖSCHT"
+
+#: database/serializers.py:349
+msgid "DATASET INSERTED"
+msgstr "DATENSATZ EINGEFÜGT"
+
+#: database/serializers.py:351
+msgid "DATASET MODIFIED"
+msgstr "DATENSATZ MODIFIZIERT"
+
+#: database/serializers.py:353
+msgid "DATASET DELETED"
+msgstr "DATENSATZ GELÖSCHT"
+
+#: database/serializers.py:400
+msgid "GROUP CREATED"
+msgstr "GRUPPE ERSTELLT"
+
+#: database/serializers.py:402
+msgid "GROUP MODIFIED"
+msgstr "GRUPPE MODIFIZIERT"
+
+#: database/serializers.py:404
+msgid "GROUP DELETED"
+msgstr "GRUPPE GELÖSCHT"
+
+#: database/serializers.py:406
+msgid "USER REGISTERED"
+msgstr "BENUTZER REGISTRIERT"
+
+#: database/serializers.py:408
+msgid "USER MODIFIED"
+msgstr "Benutzer MODIFIZIERT"
+
 #: database/tablefactory.py:28 database/tablefactory.py:606
 msgid "Could not find category "
-msgstr "Konnte die angegebene Kategorie nicht finden: "
+msgstr "Konnte die angegebene Kategorie nicht finden "
 
 #: database/tablefactory.py:32 database/tablefactory.py:40
 #: database/tablefactory.py:61
@@ -1276,9 +1324,6 @@ msgstr "Der angeforderte Datensatz existiert nicht."
 #: database/views/api.py:654
 msgid "Table could not be found"
 msgstr "Tabelle konnte nicht gefunden werden"
-
-#~ msgid " and modify"
-#~ msgstr "und editieren"
 
 #~ msgid "Current rights: "
 #~ msgstr "Aktuelle Rechte: "
