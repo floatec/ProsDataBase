@@ -267,7 +267,7 @@ function sendData(){
             $(".contentRow").each(function () {
                 var datasetID = $(this).find(".datasetClassCell").html();
                 if ($(this).find(".selectDataset").is(':checked')) {
-                     $(window.opener.document).find('#' + field).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" + datasetID + "</span> ");
+                     $(window.opener.document).find('#' + field).append("<span style='display:block'><button onClick='deleteTableType(this)'>-</button><span class='value'>" + datasetID + "</span> </span>");
                       window.close()
                 }
 
