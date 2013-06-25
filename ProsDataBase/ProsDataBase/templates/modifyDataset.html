@@ -72,7 +72,11 @@ function init(){
                     row += '<select  class="'+columns[i].name+'" name="' + columns[i].name + '" limit="1">'
                     for (var v in columns[i].options) {
 
-                             row += '<option select="selected" value="' + columns[i].options[v].key + '" limit="1">' + columns[i].options[v].value + '</option>'
+                             row += '<option '
+                            if(columns[i].options[v].value==columns[i].value){
+                                row=+ 'select="selected"'
+                            }
+                            row+=' value="' + columns[i].options[v].key + '" >' + columns[i].options[v].value + '</option>'
 
                     }
                     row += '</select>'
@@ -81,8 +85,11 @@ function init(){
 
                     row += '<select disabled class="'+columns[i].name+'" name="' + columns[i].name + '" limit="1">'
                     for (var v in columns[i].options) {
-
-                             row += '<option  select="selected" value="' + columns[i].options[v].key + '" limit="1">' + columns[i].options[v].value + '</option>'
+                            row += '<option '
+                            if(columns[i].options[v].value==columns[i].value){
+                                row=+ 'select="selected"'
+                            }
+                            row+=' value="' + columns[i].options[v].key + '" >' + columns[i].options[v].value + '</option>'
 
                     }
                     row += '</select>'
