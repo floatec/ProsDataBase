@@ -68,7 +68,7 @@
                 });
             }
             //breadcurmbs and stuff
-            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
+            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true, yearRange: "-100:+10"});
             $("#tableCrumb").prepend(decodeURIComponent(tableName));
             $("#insertCrumb").prepend("{% trans "Insert" %}");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');

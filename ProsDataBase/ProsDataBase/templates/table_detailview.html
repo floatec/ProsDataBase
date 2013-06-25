@@ -95,7 +95,7 @@
         //date selected
         if ($(select).find(":selected").val() == 2 || $(select).find(":selected").attr("refType") == 2) {
             $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='1990-05-26 23:42'>Max:<input class='max  dateTimePicker' type='text' placeholder='1990-05-26 23:42'>")
-            $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
+            $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true, yearRange: "-100:+10"});
         }
         //selection selected
         if ($(select).find(":selected").val() == 3 || $(select).find(":selected").attr("refType") == 3) {
