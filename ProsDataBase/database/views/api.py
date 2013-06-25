@@ -3,6 +3,7 @@
 
 from django.http import HttpResponse
 import json
+import urllib2
 from django.contrib import auth
 from django.utils.translation import ugettext_lazy as _
 
@@ -258,7 +259,7 @@ def export(request, tableName):
     You can only export data from columns for which you have read permission.
     """
     if request.method == 'POST':
-        return tablefactory.exportTable(json.loads(request.raw_post_data), tableName)
+        return tablefactory.exportTable(urllib2.unquote(request.body), tableName)
 
 
 def tableHistory(request, tableName):

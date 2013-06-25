@@ -1133,10 +1133,11 @@ def exportTable(request, tableName):
     response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M')) + ".csv'"
 
     writer = csv.writer(response)
-    writer.writerow([table.name + " from " + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M'))])
+    writer.writerow([table.name + " from " + datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M')])
     writer.writerow(["system ID"] + colNames)
 
-    for datasetID in request:
+    datasetIDs = json.loads(request[4:])
+    for datasetID in datasetIDs:
         try:
             dataset = Dataset.objects.get(datasetID=datasetID)
         except Dataset.DoesNotExist:
@@ -1156,7 +1157,7 @@ def exportTable(request, tableName):
                 row.append(num.content)
             elif column.type.type == Type.DATE:
                 date = dataset.datadate.all().get(column=column)
-                row.append(unicode(date.content))
+                row.append(date.content.strftime('%Y-%m-%d %H:%M'))
             elif column.type.type == Type.SELECTION:
                 selection = dataset.dataselection.all().get(column=column)
                 row.append(selection.content)
