@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-25 14:42+0200\n"
+"POT-Creation-Date: 2013-06-25 11:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,8 +26,8 @@ msgstr "Übersicht"
 
 #: ProsDataBase/templates/base.html:30
 #: ProsDataBase/templates/createTable.html:16
-#: ProsDataBase/templates/createTable.html:131
-#: ProsDataBase/templates/createTable.html:142
+#: ProsDataBase/templates/createTable.html:130
+#: ProsDataBase/templates/createTable.html:140
 #: ProsDataBase/templates/modify.html:18
 #: ProsDataBase/templates/modifyRights.html:15
 msgid "Help"
@@ -72,9 +72,9 @@ msgstr "Wollen Sie diese(s) Element(e) wirklich löschen?"
 
 #: ProsDataBase/templates/categoryadmin.html:18
 #: ProsDataBase/templates/dataset.html:13
-#: ProsDataBase/templates/modify.html:50
+#: ProsDataBase/templates/modify.html:49
 #: ProsDataBase/templates/modifyGroup.html:18
-#: ProsDataBase/templates/modifyRights.html:32
+#: ProsDataBase/templates/modifyRights.html:31
 #: ProsDataBase/templates/settings.html:21
 msgid "save"
 msgstr "speichern"
@@ -119,39 +119,37 @@ msgid "Assign permissions"
 msgstr "Rechte vergeben"
 
 #: ProsDataBase/templates/createTable.html:16
+#: ProsDataBase/templates/modify.html:19
 msgid ""
-" \"Please specify the table name. Note, that it should be unique in the "
-"database.Now specify the table\\'s columns, their content types and "
-"additional information. <br />Following content types exist:<br />Text: "
-"accepts any text and numbers. Is optionally restricted by length.<br /"
-">Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally "
-"restricted by a minimum and maximum value.<br />Date: accepts date and time "
-"input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: "
-"accepts either yes or no.<br />Choice: accepts any value from a list of "
-"options specified by you. Values can contain any text and numbers.<br />[a "
-"table]: additionally to the above content types you can choose an already "
-"existing table. In this column users can select datasets from the specified "
-"table to be displayed in this table. They can also dynamically create new "
-"datasets for the selected table.\""
+" 1. Please specify an unique table name.<br /> 2. Chose a category. <br />3. "
+"Specify the table's columns.<br /> <b>Text:</b> accepts any text and "
+"numbers. Is optionally restricted by length.<br /><b>Numeric:</b> accepts "
+"floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a "
+"minimum and maximum value.<br /><b>Date:</b> accepts date and time input. Is "
+"optionally restricted by a minimum and maximum date.<br /><b> Yes/No:</b> "
+"accepts either yes or no.<br /> <b>Choice: </b>accepts any value from a list "
+"of options specified by you. Values can contain any text and numbers.<br /"
+"><b>[any table]:</b> 4. you can choose an already existing table. In this "
+"column you can select datasets from the specified table to be displayed in "
+"this table. You can also dynamically create new datasets for the selected "
+"table."
 msgstr ""
-"Bitte wählen Sie einen Tabellennamen aus. Beachten Sie, dass der "
-"Tabellenname nur einmal in der Datenbank vorkommen darf. <br/>Anschließend "
-"wählen Sie bitte die gewünschten Spalten aus, sowie deren Inhaltstypen.<br> "
-"Es gibt folgende Inhaltstypen:<br/> Text: erlaubt 'Text- und Zahleneingabe. "
-"Optional können Sie die Länge des Texts bestimmen. <br/>Numerisch: erlaubt "
-"Fließkommazahlen, wie z.B. 23 oder 3.14. Optional können hier ein Minimum- "
-"und/oder ein Maximumwert festgelegt werden. <br/>Datum: für Datum- und "
-"Zeiteingabe.<br/>Ja / Nein: Auswahlfelder mit Auswahl Ja oder Nein.<br/> "
-"Auswahlfeld: erlaubt beliebige Werte,die zuvor von Ihnen ausgewählt wurden. "
-"Die Werte können alle beliebigen Texte und Nummern beinhalten.<br/"
-">Alternativ zu den genannten Inhaltstypen können Sie eine bereits bestehende "
-"Tabelle auswählen. Sie haben die Möglichkeit, Spalten eines gewählten "
-"Datensatz einer speziellenTabelle, um sie in der Tabelle, die Sie gerade "
-"erstellen, anzeigen zu lassen. Ebenfalls können Sie dynamisch neue "
-"Datensätze für die ausgewählte Tabelle erstellen."
+"1. Bitte wählen Sie einen einmaligen Tabellennamen aus. <br/> 2. Wählen Sie "
+"eine Kategorie aus.</br> 3. Definieren Sie bitte die gewünschten Spalten."
+"<br> Text: erlaubt Text- und Zahleneingabe. Optional können Sie die Länge "
+"des Texts bestimmen. <br/>Numerisch: erlaubt Fließkommazahlen, wie z.B. 23 "
+"oder 3.14. Optional können hier ein Minimum- und/oder ein Maximumwert "
+"festgelegt werden. <br/>Datum: für Datum- und Zeiteingaben.<br/>Ja / Nein: "
+"Auswahlfelder mit Auswahl Ja oder Nein.<br/> Auswahlfeld: erlaubt beliebige "
+"Werte, die zuvor von Ihnen ausgewählt wurden. Die Werte können alle "
+"beliebige Texte und Nummern beinhalten.<br/>4. Sie können eine bereits "
+"bestehende Tabelle auswählen. Sie haben die Möglichkeit, Spalten eines "
+"gewählten Datensatz einer speziellen Tabelle, sich in dieser Tabelle "
+"anzeigen zu lassen. Ebenfalls können Sie dynamisch neue Datensätze für die "
+"ausgewählte Tabelle erstellen."
 
 #: ProsDataBase/templates/createTable.html:21
-#: ProsDataBase/templates/modify.html:26
+#: ProsDataBase/templates/modify.html:25
 msgid "Are you sure to delete this item?"
 msgstr "Wollen Sie dieses Element wirklich löschen?"
 
@@ -164,19 +162,19 @@ msgid "Select Category"
 msgstr "Kategorie auswählen"
 
 #: ProsDataBase/templates/createTable.html:36
-#: ProsDataBase/templates/modify.html:41
+#: ProsDataBase/templates/modify.html:40
 msgid "column"
 msgstr "Spalte"
 
 #: ProsDataBase/templates/createTable.html:37
 #: ProsDataBase/templates/dataset.html:11
-#: ProsDataBase/templates/modify.html:42
+#: ProsDataBase/templates/modify.html:41
 #: ProsDataBase/templates/modifyDataset.html:11
 msgid "comment"
 msgstr "Kommentar"
 
 #: ProsDataBase/templates/createTable.html:38
-#: ProsDataBase/templates/modify.html:43
+#: ProsDataBase/templates/modify.html:42
 msgid "content type"
 msgstr "Inhaltstyp"
 
@@ -222,157 +220,159 @@ msgstr "Auswahl"
 msgid "yes or no"
 msgstr "Ja oder Nein"
 
-#: ProsDataBase/templates/createTable.html:131
+#: ProsDataBase/templates/createTable.html:130
 msgid ""
-"Please specify the table name. Note, that it should be unique in the "
-"database. Now specify the table\\'s columns, their content types and "
-"additional information. <br />Following content types exist:<br />Text: "
-"accepts any text and numbers. Is optionally restricted by length.<br /"
-">Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally "
-"restricted by a minimum and maximum value.<br />Date: accepts date and time "
-"input. Is optionally restricted by a minimum and maximum date.<br />Yes/No: "
-"accepts either yes or no.<br />Choice: accepts any value from a list of "
-"options specified by you. Values can contain any text and numbers.<br />[a "
-"table]: additionally to the above content types you can choose an already "
-"existing table. In this column users can select datasets from the specified "
-"table to be displayed in this table. They can also dynamically create new "
-"datasets for the selected table."
+"1. Please specify an unique table name.<br /> 2. Chose a category. <br />3. "
+"Specify the table's columns.<br /> <b>Text:</b> accepts any text and "
+"numbers. Is optionally restricted by length.<br /><b>Numeric:</b> accepts "
+"floating point numbers, e.g. 23 or 3.14. Is optionally restricted by a "
+"minimum and maximum value.<br /><b>Date:</b> accepts date and time input. Is "
+"optionally restricted by a minimum and maximum date.<br /><b> Yes/No:</b> "
+"accepts either yes or no.<br /> <b>Choice: </b>accepts any value from a list "
+"of options specified by you. Values can contain any text and numbers.<br /"
+"><b>[any table]:</b> 4. you can choose an already existing table. In this "
+"column you can select datasets from the specified table to be displayed in "
+"this table. You can also dynamically create new datasets for the selected "
+"table."
 msgstr ""
-"Bitte wählen Sie einen Tabellennamen aus. Beachten Sie, dass der "
-"Tabellenname nur einmal in der Datenbank vorkommen kann. <br/>Anschließend "
-"wählen Sie bitte die gewünschten Spalten aus, sowie deren Inhaltstypen und "
-"fügen sie gegebenenfalls Informationen hinzu.<br> Es gibt folgende "
-"Inhaltstypen:<br/> Text:vorgesehen für 'Textzeichen und Zahlen. Optional "
-"können Sie die Länge des Texts bestimmen. <br/>Numerisch: vorgesehen für "
-"Fließkommazahlen, wie z.B. 23 oder 3.14. Optionalkönnen hier Grenzwerte "
-"festgelegt werden, durch Minimum und Maximum. <br/>Datum: vorgesehen für "
-"Datum und Zeit.Optional können auch hier Minimum und Maximum ausgewählt "
-"werden. <br/>Ja / Nein:vorgesehen für Auswählfelder die mit Ja oder Nein zu "
-"beantworten sind.<br/> Auswahlfeld: vorgesehen für beliebige Werte,die zuvor "
-"von Ihnen ausgewählt wurden. Die Werte können alle beliebigen Texte und "
-"Nummern beinhalten.<br/>Alternativ zu den genannten Inhaltstypen können Sie "
-"eine bereits bestehendeTabelle auswählen. Sie haben die Möglichkeit, Spalten "
-"eines gewählten Datensatz einer speziellenTabelle, um sie in der Tabelle, "
-"die Sie gerade erstellen, anzeigen zu lassen. Ebenfalls können Sie dynamisch "
-"neueDatensätze für die ausgewählte Tabelle erstellen."
+"1. Bitte wählen Sie einen einmaligen Tabellennamen aus. <br/> 2. Wählen Sie "
+"eine Kategorie aus.</br> 3. Definieren Sie bitte die gewünschten Spalten."
+"<br> Text: erlaubt Text- und Zahleneingabe. Optional können Sie die Länge "
+"des Texts bestimmen. <br/>Numerisch: erlaubt Fließkommazahlen, wie z.B. 23 "
+"oder 3.14. Optional können hier ein Minimum- und/oder ein Maximumwert "
+"festgelegt werden. <br/>Datum: für Datum- und Zeiteingaben.<br/>Ja / Nein: "
+"Auswahlfelder mit Auswahl Ja oder Nein.<br/> Auswahlfeld: erlaubt beliebige "
+"Werte, die zuvor von Ihnen ausgewählt wurden. Die Werte können alle "
+"beliebige Texte und Nummern beinhalten.<br/>4. Sie können eine bereits "
+"bestehende Tabelle auswählen. Sie haben die Möglichkeit, Spalten eines "
+"gewählten Datensatz einer speziellen Tabelle, sich in dieser Tabelle "
+"anzeigen zu lassen. Ebenfalls können Sie dynamisch neue Datensätze für die "
+"ausgewählte Tabelle erstellen."
 
-#: ProsDataBase/templates/createTable.html:142
+#: ProsDataBase/templates/createTable.html:140
+#: ProsDataBase/templates/modifyRights.html:16
 msgid ""
-"Finally, assign read, insert, modify and delete rights to users and groups:"
-"Search for users or groups in the input field and toggle their rights for "
-"each column.The 'All'-section allows fast rights assignment for all columns."
+"1. Assign rights to users and groups. </br> 2. Type the user's / group's "
+"name in the input field. </br> 3. Click the + field to display the right "
+"list. </br> 4. The 'All'-section allows fast rights assignment for all "
+"columns."
 msgstr ""
-"Geben Sie zuletzt Benutzern und Gruppen Lese-, Einfüge-, Änderungs- und "
-"Löschrechte:Suchen Sie mithilfe des Input Feldes nach Benutzern und Gruppen "
-"und ändern Sie ihre Rechte für jede Spalte. Der 'alle'-Abschnitt erlaubt "
-"Ihnen eine schnelle Rechtezuweisung für alle Spalten gleichzeitig."
+"1. Vergeben Sie Rechte an Benutzer und Gruppen </br> 2. Geben Sie den Namen der Benutzer "
+"/ Gruppen in das Eingabefeld ein. </br> 3. Klicken Sie das + Symbol um die Rechte zu sehen und zu verteilen."
+"</br>4. Der 'alle'-Abschnitt erlaubt Ihnen eine schnelle Rechtezuweisung für alle Spalten gleichzeitig."
 
-#: ProsDataBase/templates/createTable.html:142
-msgid "can change the streuctur and the rights of this table"
+#: ProsDataBase/templates/createTable.html:140
+#: ProsDataBase/templates/modifyRights.html:16
+msgid "can change the structure and the rights of this table"
 msgstr "Tabellenstruktur und Zugriffsrechte anpassen"
 
-#: ProsDataBase/templates/createTable.html:142
+#: ProsDataBase/templates/createTable.html:140
+#: ProsDataBase/templates/modifyRights.html:16
 msgid "can insert new Datasets"
-msgstr "neue Datensatz einfügen"
+msgstr "Datensätze einfügen"
 
-#: ProsDataBase/templates/createTable.html:142
-msgid "an delete datasets"
+#: ProsDataBase/templates/createTable.html:140
+#: ProsDataBase/templates/modifyRights.html:16
+msgid "can delete datasets"
 msgstr "Datensätze löschen"
 
-#: ProsDataBase/templates/createTable.html:142
+#: ProsDataBase/templates/createTable.html:140
+#: ProsDataBase/templates/modifyRights.html:16
 msgid "can view the log"
-msgstr "darf die Log einsehen"
+msgstr "Log einsehen"
 
-#: ProsDataBase/templates/createTable.html:142
-msgid "an view this column"
-msgstr "Fügen Sie neue Spalten hinzu"
+#: ProsDataBase/templates/createTable.html:140
+#: ProsDataBase/templates/modifyRights.html:16
+msgid "can view this column"
+msgstr "Spalte einsehen"
 
-#: ProsDataBase/templates/createTable.html:142
+#: ProsDataBase/templates/createTable.html:140
+#: ProsDataBase/templates/modifyRights.html:16
 msgid "can change this column"
-msgstr "Spalte geändert '"
+msgstr "Spalte ändern"
 
-#: ProsDataBase/templates/createTable.html:249
-#: ProsDataBase/templates/createTable.html:298
-#: ProsDataBase/templates/modify.html:258
-#: ProsDataBase/templates/modify.html:430
-#: ProsDataBase/templates/modify.html:487
+#: ProsDataBase/templates/createTable.html:247
+#: ProsDataBase/templates/createTable.html:296
+#: ProsDataBase/templates/modify.html:257
+#: ProsDataBase/templates/modify.html:429
+#: ProsDataBase/templates/modify.html:486
 msgid "length"
 msgstr "Länge"
 
-#: ProsDataBase/templates/createTable.html:314
-#: ProsDataBase/templates/modify.html:500
+#: ProsDataBase/templates/createTable.html:312
+#: ProsDataBase/templates/modify.html:499
 msgid "select value"
 msgstr "Wert auswählen"
 
-#: ProsDataBase/templates/createTable.html:315
-#: ProsDataBase/templates/modify.html:501
+#: ProsDataBase/templates/createTable.html:313
+#: ProsDataBase/templates/modify.html:500
 msgid "all"
 msgstr "alles"
 
-#: ProsDataBase/templates/createTable.html:403
-#: ProsDataBase/templates/modify.html:585
-#: ProsDataBase/templates/modify.html:634
-#: ProsDataBase/templates/modify.html:637
-#: ProsDataBase/templates/modifyRights.html:226
-#: ProsDataBase/templates/modifyRights.html:275
-#: ProsDataBase/templates/modifyRights.html:278
+#: ProsDataBase/templates/createTable.html:401
+#: ProsDataBase/templates/modify.html:584
+#: ProsDataBase/templates/modify.html:633
+#: ProsDataBase/templates/modify.html:636
+#: ProsDataBase/templates/modifyRights.html:225
+#: ProsDataBase/templates/modifyRights.html:274
+#: ProsDataBase/templates/modifyRights.html:277
 #: ProsDataBase/templates/table_detailview.html:20
 msgid "modify table"
 msgstr "Tabelle editieren"
 
-#: ProsDataBase/templates/createTable.html:405
-#: ProsDataBase/templates/modify.html:587
-#: ProsDataBase/templates/modify.html:642
-#: ProsDataBase/templates/modify.html:645
-#: ProsDataBase/templates/modifyRights.html:228
-#: ProsDataBase/templates/modifyRights.html:283
-#: ProsDataBase/templates/modifyRights.html:286
+#: ProsDataBase/templates/createTable.html:403
+#: ProsDataBase/templates/modify.html:586
+#: ProsDataBase/templates/modify.html:641
+#: ProsDataBase/templates/modify.html:644
+#: ProsDataBase/templates/modifyRights.html:227
+#: ProsDataBase/templates/modifyRights.html:282
+#: ProsDataBase/templates/modifyRights.html:285
 msgid "insert data"
 msgstr "Datensätze einfügen"
 
-#: ProsDataBase/templates/createTable.html:407
-#: ProsDataBase/templates/modify.html:589
-#: ProsDataBase/templates/modify.html:650
-#: ProsDataBase/templates/modify.html:654
-#: ProsDataBase/templates/modifyRights.html:230
-#: ProsDataBase/templates/modifyRights.html:291
-#: ProsDataBase/templates/modifyRights.html:295
+#: ProsDataBase/templates/createTable.html:405
+#: ProsDataBase/templates/modify.html:588
+#: ProsDataBase/templates/modify.html:649
+#: ProsDataBase/templates/modify.html:653
+#: ProsDataBase/templates/modifyRights.html:229
+#: ProsDataBase/templates/modifyRights.html:290
+#: ProsDataBase/templates/modifyRights.html:294
 msgid "delete data"
 msgstr "Datensätze löschen"
 
-#: ProsDataBase/templates/createTable.html:409
-#: ProsDataBase/templates/modify.html:591
-#: ProsDataBase/templates/modify.html:660
-#: ProsDataBase/templates/modify.html:664
-#: ProsDataBase/templates/modifyRights.html:232
-#: ProsDataBase/templates/modifyRights.html:301
-#: ProsDataBase/templates/modifyRights.html:305
+#: ProsDataBase/templates/createTable.html:407
+#: ProsDataBase/templates/modify.html:590
+#: ProsDataBase/templates/modify.html:659
+#: ProsDataBase/templates/modify.html:663
+#: ProsDataBase/templates/modifyRights.html:231
+#: ProsDataBase/templates/modifyRights.html:300
+#: ProsDataBase/templates/modifyRights.html:304
 msgid "view log"
 msgstr "Log ansehen"
 
-#: ProsDataBase/templates/createTable.html:411
-#: ProsDataBase/templates/modify.html:593
-#: ProsDataBase/templates/modify.html:668
-#: ProsDataBase/templates/modifyRights.html:234
-#: ProsDataBase/templates/modifyRights.html:309
+#: ProsDataBase/templates/createTable.html:409
+#: ProsDataBase/templates/modify.html:592
+#: ProsDataBase/templates/modify.html:667
+#: ProsDataBase/templates/modifyRights.html:233
+#: ProsDataBase/templates/modifyRights.html:308
 msgid "read all data"
 msgstr "alle Datensätze ansehen"
 
-#: ProsDataBase/templates/createTable.html:413
-#: ProsDataBase/templates/modify.html:595
-#: ProsDataBase/templates/modify.html:670
-#: ProsDataBase/templates/modifyRights.html:236
-#: ProsDataBase/templates/modifyRights.html:311
+#: ProsDataBase/templates/createTable.html:411
+#: ProsDataBase/templates/modify.html:594
+#: ProsDataBase/templates/modify.html:669
+#: ProsDataBase/templates/modifyRights.html:235
+#: ProsDataBase/templates/modifyRights.html:310
 msgid "modify all data"
 msgstr "alle Datensätze editieren"
 
-#: ProsDataBase/templates/createTable.html:422
-#: ProsDataBase/templates/modify.html:604
-#: ProsDataBase/templates/modify.html:684
-#: ProsDataBase/templates/modify.html:687
-#: ProsDataBase/templates/modifyRights.html:245
-#: ProsDataBase/templates/modifyRights.html:325
-#: ProsDataBase/templates/modifyRights.html:328
+#: ProsDataBase/templates/createTable.html:420
+#: ProsDataBase/templates/modify.html:603
+#: ProsDataBase/templates/modify.html:683
+#: ProsDataBase/templates/modify.html:686
+#: ProsDataBase/templates/modifyRights.html:244
+#: ProsDataBase/templates/modifyRights.html:324
+#: ProsDataBase/templates/modifyRights.html:327
 msgid "read"
 msgstr "ansehen"
 
@@ -401,6 +401,15 @@ msgstr "Name"
 msgid "content"
 msgstr "Inhalt"
 
+#: ProsDataBase/templates/dataset.html:64
+msgid "add a new entry"
+msgstr "einen neuen Eintrag hinzufügen"
+
+#: ProsDataBase/templates/dataset.html:67
+msgid "search for entrys"
+msgstr "nach Einträgen suchen"
+
+#: ProsDataBase/templates/dataset.html:73
 #: ProsDataBase/templates/dataset.html:38
 #: ProsDataBase/templates/select_dataset.html:74
 #: ProsDataBase/templates/table_detailview.html:97
@@ -469,42 +478,7 @@ msgstr "Struktur editieren"
 msgid "modify rights"
 msgstr "Berechtigungen editieren"
 
-#: ProsDataBase/templates/modify.html:20
-msgid ""
-"\"Please specify the table name. Note,that it should be unique in the "
-"database. Now specify the table\\'s columns, their content types and "
-"additional information. <br/>Following content types exist:<br/>Text: "
-"accepts any text and numbers. Is optionally restricted by length.<br/"
-">Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally "
-"restricted by a minimum and maximum value.<br/>Date: accepts date and time "
-"input. Is optionally restricted by a minimum and maximum date.<br/>Yes/No: "
-"accepts either yes or no.<br/>Choice: accepts any value from a list of "
-"options specified by you. Values can contain any text and numbers.<br/>[a "
-"table]: additionally to the above content types you can choose an already "
-"existing table. In this column users can select datasets from the specified "
-"table to be displayed in this table. They can also dynamically create new "
-"datasets for the selected table.\""
-msgstr ""
-"Bitte wählen Sie einen Tabellennamen aus. Beachten Sie, dass die "
-"Tabellenbezeichnung nur einmal in der Datenbank vorkommen kann. <br/"
-">Anschließend wählen Sie bitte die gewünschten Spalten aus, sowie deren "
-"Inhaltstypen und fügen sie gegebenenfalls Informationen hinzu.<br> Es gibt "
-"folgende Inhaltstypen:<br/> Text:vorgesehen für 'Textzeichen und Zahlen. "
-"Optional können Sie die Länge des Texts bestimmen. <br/>Numerisch: "
-"vorgesehen für Fließkommazahlen, wie z.B. 23 oder 3.14. Optionalkönnen hier "
-"Grenzwerte festgelegt werden, durch Minimum und Maximum. <br/>Datum: "
-"vorgesehen für Datum und Zeit.Optional können auch hier Minimum und Maximum "
-"ausgewählt werden. <br/>Ja / Nein:vorgesehen für Auswählfelder die mit Ja "
-"oder Nein zu beantworten sind.<br/> Auswahlfeld: vorgesehen für beliebige "
-"Werte,die zuvor von Ihnen ausgewählt wurden. Die Werte können alle "
-"beliebigen Texte und Nummern beinhalten.<br/>Alternativ zu den genannten "
-"Inhaltstypen können Sie eine bereits bestehendeTabelle auswählen. Sie haben "
-"die Möglichkeit, Spalten eines gewählten Datensatz einer speziellenTabelle, "
-"um sie in der Tabelle, die Sie gerade erstellen, anzeigen zu lassen. "
-"Ebenfalls können Sie dynamisch neueDatensätze für die ausgewählte Tabelle "
-"erstellen."
-
-#: ProsDataBase/templates/modify.html:27
+#: ProsDataBase/templates/modify.html:26
 msgid ""
 "Are you sure to delete this table? All data inside will be lost! Be careful "
 "with doing that!"
@@ -512,39 +486,44 @@ msgstr ""
 "Wollen Sie diese Tabelle wirklich löschen? Alle Daten werden dabei "
 "migelöscht."
 
-#: ProsDataBase/templates/modify.html:29
+#: ProsDataBase/templates/modify.html:28
 msgid ""
 "Are you sure to delete this column? Be careful! Containing data will be lost!"
 msgstr ""
 "Wollen Sie diese Spalte wirklich löschen? Beachten Sie, dass die "
 "dazugehörigen Daten verloren gehen!"
 
-#: ProsDataBase/templates/modify.html:35
+#: ProsDataBase/templates/modify.html:34
 msgid "tablename:"
 msgstr "Tabellenname:"
 
-#: ProsDataBase/templates/modify.html:36
+#: ProsDataBase/templates/modify.html:35
 msgid "select category"
 msgstr "Kategorie auswählen:"
 
-#: ProsDataBase/templates/modify.html:84
-#: ProsDataBase/templates/modifyRights.html:65
+#: ProsDataBase/templates/modify.html:83
+#: ProsDataBase/templates/modifyRights.html:64
 msgid "Modify"
 msgstr "Ändern"
 
-#: ProsDataBase/templates/modify.html:155
-#: ProsDataBase/templates/modify.html:170
-#: ProsDataBase/templates/modify.html:187
+#: ProsDataBase/templates/modify.html:154
+#: ProsDataBase/templates/modify.html:169
+#: ProsDataBase/templates/modify.html:186
 #: ProsDataBase/templates/table_detailview.html:595
 msgid "delete"
 msgstr "Löschen"
 
-#: ProsDataBase/templates/modify.html:159
-#: ProsDataBase/templates/modify.html:178
-#: ProsDataBase/templates/modify.html:199
+#: ProsDataBase/templates/modify.html:158
+#: ProsDataBase/templates/modify.html:177
+#: ProsDataBase/templates/modify.html:198
 #: ProsDataBase/templates/table_detailview.html:599
 msgid "back"
 msgstr "Abbrechen"
+
+#: ProsDataBase/templates/modifyDataset.html:13
+#: ProsDataBase/templates/useradmin.html:41
+msgid "Save"
+msgstr "speichern"
 
 #: ProsDataBase/templates/modifyGroup.html:9
 msgid "Are you sure to delete this group?"
@@ -570,42 +549,7 @@ msgstr "Gruppenmitglieder:"
 msgid "all groups"
 msgstr "Gruppenübersicht"
 
-#: ProsDataBase/templates/modifyRights.html:17
-msgid ""
-"Please specify the table name. Note,that it should be unique in the "
-"database. Now specify the table\\'s columns, their content types and "
-"additional information. <br/>Following content types exist:<br/>Text: "
-"accepts any text and numbers. Is optionally restricted by length.<br/"
-">Numeric: accepts floating point numbers, e.g. 23 or 3.14. Is optionally "
-"restricted by a minimum and maximum value.<br/>Date: accepts date and time "
-"input. Is optionally restricted by a minimum and maximum date.<br/>Yes/No: "
-"accepts either yes or no.<br/>Choice: accepts any value from a list of "
-"options specified by you. Values can contain any text and numbers.<br/>[a "
-"table]: additionally to the above content types you can choose an already "
-"existing table. In this column users can select datasets from the specified "
-"table to be displayed in this table. They can also dynamically create new "
-"datasets for the selected table."
-msgstr ""
-"Bitte wählen Sie einen Tabellennamen aus. Beachten Sie, dass die "
-"Tabellenbezeichnung nur einmal in der Datenbank vorkommen kann. <br/"
-">Anschließend wählen Sie bitte die gewünschten Spalten aus, sowie deren "
-"Inhaltstypen und fügen sie gegebenenfalls Informationen hinzu.<br> Es gibt "
-"folgende Inhaltstypen:<br/> Text:vorgesehen für 'Textzeichen und Zahlen. "
-"Optional können Sie die Länge des Texts bestimmen. <br/>Numerisch: "
-"vorgesehen für Fließkommazahlen, wie z.B. 23 oder 3.14. Optionalkönnen hier "
-"Grenzwerte festgelegt werden, durch Minimum und Maximum. <br/>Datum: "
-"vorgesehen für Datum und Zeit.Optional können auch hier Minimum und Maximum "
-"ausgewählt werden. <br/>Ja / Nein:vorgesehen für Auswählfelder die mit Ja "
-"oder Nein zu beantworten sind.<br/> Auswahlfeld: vorgesehen für beliebige "
-"Werte,die zuvor von Ihnen ausgewählt wurden. Die Werte können alle "
-"beliebigen Texte und Nummern beinhalten.<br/>Alternativ zu den genannten "
-"Inhaltstypen können Sie eine bereits bestehendeTabelle auswählen. Sie haben "
-"die Möglichkeit, Spalten eines gewählten Datensatz einer speziellenTabelle, "
-"um sie in der Tabelle, die Sie gerade erstellen, anzeigen zu lassen. "
-"Ebenfalls können Sie dynamisch neueDatensätze für die ausgewählte Tabelle "
-"erstellen."
-
-#: ProsDataBase/templates/modifyRights.html:26
+#: ProsDataBase/templates/modifyRights.html:25
 #: ProsDataBase/templates/useradmin.html:32
 msgid "User"
 msgstr "Benutzer"
@@ -657,14 +601,14 @@ msgstr "Einen neuen Datensatz einfügen"
 
 #: ProsDataBase/templates/table_detailview.html:17
 msgid "insert dataset"
-msgstr "neuen Datensatz einfügen"
+msgstr "Daten einfügen"
 
 #: ProsDataBase/templates/table_detailview.html:18
 msgid "Deletes the selected Datasets from this Table"
 msgstr "Lösche ausgewählte Datensätze aus der Tabelle"
 
 #: ProsDataBase/templates/table_detailview.html:18
-#: database/historyfactory.py:126
+#: database/historyfactory.py:125
 msgid "delete datasets"
 msgstr "Datensätze löschen"
 
@@ -748,10 +692,6 @@ msgstr "Tabellenersteller"
 msgid "User admin"
 msgstr "Benutzeradmin"
 
-#: ProsDataBase/templates/useradmin.html:41
-msgid "Save"
-msgstr "speichern"
-
 #: ProsDataBase/templates/useradmin.html:59
 msgid "admin users"
 msgstr "Benutzerverwaltung"
@@ -778,64 +718,66 @@ msgid "manage users"
 msgstr "Benutzerverwaltung"
 
 #: database/historyfactory.py:78
-#, fuzzy
-msgid "Can create tables."
+msgid ""
+"\n"
+" Can create tables."
 msgstr ""
 "\n"
 " Darf jetzt Tabellen erstellen."
 
-#: database/historyfactory.py:80
-#, fuzzy
-msgid "Users: "
+#: database/historyfactory.py:79
+msgid ""
+"\n"
+" Users: "
 msgstr ""
 "\n"
 " Benutzer: "
 
-#: database/historyfactory.py:88
+#: database/historyfactory.py:87
 msgid "no users yet."
 msgstr "Noch keine Benutzer."
 
-#: database/historyfactory.py:111
+#: database/historyfactory.py:110
 msgid "User "
 msgstr "Benutzer "
 
-#: database/historyfactory.py:111 database/historyfactory.py:113
+#: database/historyfactory.py:110 database/historyfactory.py:112
 msgid " may "
 msgstr " darf "
 
-#: database/historyfactory.py:113
+#: database/historyfactory.py:112
 msgid "Group "
 msgstr "Gruppe "
 
-#: database/historyfactory.py:117
+#: database/historyfactory.py:116
 msgid "view the table log, "
 msgstr "Log ansehen, "
 
-#: database/historyfactory.py:119
+#: database/historyfactory.py:118
 msgid "modify the table, "
 msgstr "die Tabelle editieren, "
 
-#: database/historyfactory.py:121
+#: database/historyfactory.py:120
 msgid "insert datasets, "
 msgstr "neuen Datensatz einfügen, "
 
-#: database/historyfactory.py:124
+#: database/historyfactory.py:123
 msgid " and delete datasets"
 msgstr " und Datensätze löschen"
 
-#: database/historyfactory.py:132
+#: database/historyfactory.py:131
 msgid ". Column rights:"
 msgstr ". Spaltenrechte:"
 
-#: database/historyfactory.py:138
+#: database/historyfactory.py:137
 msgid "read, "
 msgstr "ansehen, "
 
-#: database/historyfactory.py:141
+#: database/historyfactory.py:140
 msgid " and modify"
 msgstr " und editieren"
 
-#: database/historyfactory.py:169 database/historyfactory.py:171
+#: database/historyfactory.py:162
 msgid "In column "
 msgstr "In Spalte "
 
@@ -895,7 +837,7 @@ msgstr "Kategorie mit dem Namen "
 #: database/tablefactory.py:35 database/tablefactory.py:43
 #: database/tablefactory.py:99 database/tablefactory.py:673
 #: database/userfactory.py:17 database/userfactory.py:89
-#: database/userfactory.py:143
+#: database/userfactory.py:141
 msgid " already exists."
 msgstr " existiert bereits."
 
@@ -921,7 +863,7 @@ msgstr "Kategorie gelöscht: "
 msgid "A table with name "
 msgstr "Eine Tabelle mit dem Namen "
 
-#: database/tablefactory.py:114 database/tablefactory.py:939
+#: database/tablefactory.py:114 database/tablefactory.py:935
 msgid "Failed to create table. Please contact the developers."
 msgstr ""
 "Tabelle erstellen fehlgeschlagen. Bitte wenden Sie sich an die Entwickler."
@@ -996,7 +938,7 @@ msgstr "Konnte keine Spaltenrechte für folgende Spalte erstellen: "
 
 #: database/tablefactory.py:327 database/tablefactory.py:330
 #: database/tablefactory.py:373 database/tablefactory.py:781
-#: database/tablefactory.py:824 database/tablefactory.py:1123
+#: database/tablefactory.py:824 database/tablefactory.py:1119
 #: database/views/api.py:276 database/views/api.py:454
 msgid "Could not find table with name "
 msgstr "Eine Tabelle mit folgendem Namen konnte nicht gefunden werden: "
@@ -1015,13 +957,13 @@ msgstr " zuerst."
 msgid "Successfully deleted table "
 msgstr "Folgende Tabelle erfolgreich gelöscht: "
 
-#: database/tablefactory.py:377 database/tablefactory.py:957
-#: database/tablefactory.py:1147
+#: database/tablefactory.py:377 database/tablefactory.py:953
+#: database/tablefactory.py:1143
 msgid "Could not find column with name "
 msgstr "Konnte keine Spalte mit Namen "
 
-#: database/tablefactory.py:377 database/tablefactory.py:943
-#: database/tablefactory.py:1147
+#: database/tablefactory.py:377 database/tablefactory.py:939
+#: database/tablefactory.py:1143
 msgid " in table "
 msgstr "in folgender Tabelle finden: "
 
@@ -1038,8 +980,8 @@ msgid "Successfully deleted all datasets."
 msgstr "Alle Datensätze wurden erfolgreich gelöscht."
 
 #: database/tablefactory.py:444 database/tablefactory.py:446
-#: database/tablefactory.py:943 database/tablefactory.py:1076
-#: database/tablefactory.py:1106
+#: database/tablefactory.py:939 database/tablefactory.py:1072
+#: database/tablefactory.py:1102
 msgid "Could not find dataset with id "
 msgstr "Datensatz mit folgender ID wurden nicht gefunden: "
 
@@ -1064,7 +1006,7 @@ msgstr "Tabellenrechte konnten nicht erstellt werden."
 msgid "Failed to create column rights."
 msgstr "Erstellung der Spaltenrechte fehlgeschlagen."
 
-#: database/tablefactory.py:633 database/userfactory.py:179
+#: database/tablefactory.py:633 database/userfactory.py:177
 msgid "Changed name from '"
 msgstr "Name von '"
 
@@ -1077,7 +1019,7 @@ msgid "Changed category from '"
 msgstr "Kategorie von '"
 
 #: database/tablefactory.py:642 database/tablefactory.py:675
-#: database/tablefactory.py:731 database/userfactory.py:179
+#: database/tablefactory.py:731 database/userfactory.py:177
 msgid "' to '"
 msgstr "' geändert zu '"
 
@@ -1180,11 +1122,11 @@ msgstr "Es konnte keine Spalte mit Namen "
 msgid "in table "
 msgstr "in folgender Tabelle gefunden werden: "
 
-#: database/tablefactory.py:856 database/tablefactory.py:961
+#: database/tablefactory.py:856 database/tablefactory.py:957
 msgid "input "
 msgstr "Eingabe "
 
-#: database/tablefactory.py:856 database/tablefactory.py:961
+#: database/tablefactory.py:856 database/tablefactory.py:957
 msgid " for column "
 msgstr " für die Spalte "
 
@@ -1208,45 +1150,45 @@ msgstr "Datensatz mit ID "
 msgid " could not be found in table "
 msgstr " konnte in folgender Tabelle nicht gefunden werden: "
 
-#: database/tablefactory.py:961
+#: database/tablefactory.py:957
 msgid " is not valid."
 msgstr " ist nicht gültig."
 
-#: database/tablefactory.py:969 database/tablefactory.py:987
-#: database/tablefactory.py:1005 database/tablefactory.py:1023
-#: database/tablefactory.py:1041
+#: database/tablefactory.py:965 database/tablefactory.py:983
+#: database/tablefactory.py:1001 database/tablefactory.py:1019
+#: database/tablefactory.py:1037
 msgid ": old: '"
 msgstr ": vorher: '"
 
-#: database/tablefactory.py:969 database/tablefactory.py:987
-#: database/tablefactory.py:1005 database/tablefactory.py:1023
-#: database/tablefactory.py:1041
+#: database/tablefactory.py:965 database/tablefactory.py:983
+#: database/tablefactory.py:1001 database/tablefactory.py:1019
+#: database/tablefactory.py:1037
 msgid "', new: '"
 msgstr "', nachher: '"
 
-#: database/tablefactory.py:978 database/tablefactory.py:996
-#: database/tablefactory.py:1014 database/tablefactory.py:1032
-#: database/tablefactory.py:1049
+#: database/tablefactory.py:974 database/tablefactory.py:992
+#: database/tablefactory.py:1010 database/tablefactory.py:1028
+#: database/tablefactory.py:1045
 msgid ": new entry: '"
 msgstr ": Neuer Eintrag: '"
 
-#: database/tablefactory.py:1061
+#: database/tablefactory.py:1057
 msgid ": removed link to dataset: '"
 msgstr ": Link zu folgendem Datensatz entfernt: '"
 
-#: database/tablefactory.py:1072 database/tablefactory.py:1102
+#: database/tablefactory.py:1068 database/tablefactory.py:1098
 msgid ": added link to dataset: '"
 msgstr ": Link zu folgendem Datensatz hinzugefügt: '"
 
-#: database/tablefactory.py:1086
+#: database/tablefactory.py:1082
 msgid "Could not add data to column "
 msgstr "Daten konnten nicht zur Spalte "
 
-#: database/tablefactory.py:1086
+#: database/tablefactory.py:1082
 msgid ". The content type was invalid."
 msgstr " hinzugefügt werden. Ungültiger Inhaltstyp."
 
-#: database/tablefactory.py:1140
+#: database/tablefactory.py:1136
 msgid "Could not find dataset with ID "
 msgstr "Datensätze mit der folgenden IDs konnten nicht gefunden werden: "
 
@@ -1261,6 +1203,30 @@ msgstr "Der Account wurde erfolgreich angelegt."
 #: database/userfactory.py:35
 msgid "Could not find user with name "
 msgstr "Es existiert kein Benutzer mit dem Namen "
+
+#: database/userfactory.py:62
+msgid "has been activated, "
+msgstr "wurde aktiviert, "
+
+#: database/userfactory.py:64
+msgid "has been deactivated, "
+msgstr "wurde deaktivert, "
+
+#: database/userfactory.py:67
+msgid "can create tables now, "
+msgstr "Darf jetzt Tabellen erstellen, "
+
+#: database/userfactory.py:69
+msgid "cannot create tables anymore, "
+msgstr "darf keine Tabelle mehr erstellen, "
+
+#: database/userfactory.py:72
+msgid "has become user manager."
+msgstr "wurde Benutzerverwalter."
+
+#: database/userfactory.py:74
+msgid "is no user manager anymore."
+msgstr "ist kein Benutzerverwalter mehr. "
 
 #: database/userfactory.py:78
 msgid "Successfully modified user rights."
@@ -1278,20 +1244,20 @@ msgstr "Folgende Benutzer können nicht zu der Gruppe hinzugefügt werden: "
 msgid ". Have you misspelled them?"
 msgstr ". Haben Sie sich vielleicht vertippt?"
 
-#: database/userfactory.py:116
+#: database/userfactory.py:114
 msgid "Successfully saved group "
 msgstr "Die Gruppe wurde erfolgreich gespeichert: "
 
-#: database/userfactory.py:131 database/userfactory.py:207
+#: database/userfactory.py:129 database/userfactory.py:205
 msgid "Could not find group with name "
 msgstr "Es existiert keine Gruppe mit dem Namen "
 
-#: database/userfactory.py:143
+#: database/userfactory.py:141
 msgid "A group with name "
 msgstr "Eine Gruppe mit Namen "
 
+#: database/userfactory.py:198
 #: database/userfactory.py:176
-#, fuzzy
 msgid "Group: "
 msgstr "Gruppe: "
 
@@ -1299,14 +1265,48 @@ msgstr "Gruppe: "
 msgid "Successfully modifed group "
 msgstr "Die Gruppe wurde erfolgreich angepasst: "
 
-#: database/userfactory.py:213
+#: database/userfactory.py:211
 msgid "Successfully deleted group "
 msgstr "Die Gruppe wurde erfolgreich gelöscht: "
 
-#: database/userfactory.py:230
+#: database/userfactory.py:228
 msgid "Saved password successfully."
 msgstr "Neues Passwort wurde erfolgreich gespeichert."
 
+#: database/views/api.py:71 database/views/api.py:89 database/views/api.py:115
+msgid "You have no permissions to perform this opperation."
+msgstr "Sie haben keine Berechtigungen für diese Operation."
+
+#: database/views/api.py:106 database/views/api.py:204
+#: database/views/api.py:228 database/views/api.py:444
+msgid "This page does not exist!"
+msgstr "Diese Seite existiert nicht!"
+
+#: database/views/api.py:158 database/views/api.py:172
+msgid "You have not the rights to do this opperation"
+msgstr "Sie haben keine Berechtigungen für diese Operation."
+
+#: database/views/api.py:249
+msgid "Successfully deleted column "
+msgstr "Erfolgreich die Spalte "
+
+#: database/views/api.py:249
+msgid " from table "
+msgstr " von folgender Tabelle gelöscht: "
+
+#: database/views/api.py:292
+msgid "You have no right to view the log."
+msgstr "Sie haben kein Recht den Log einzusehen."
+
+#: database/views/api.py:364
+msgid "logged off"
+msgstr "Erfolgreich abgemeldet."
+
+#: database/views/api.py:385
+msgid "User does not exist"
+msgstr "Benutzer exisitiert nicht."
+
+#: database/views/api.py:469
 #: database/views/api.py:71 database/views/api.py:89 database/views/api.py:115
 msgid "You have no permissions to perform this opperation."
 msgstr "Sie haben keine Berechtigungen für diese Operation."
@@ -1355,6 +1355,7 @@ msgstr "Der angeforderte Datensatz existiert nicht."
 #: database/views/api.py:485
 msgid "Table could not be found"
 msgstr "Tabelle konnte nicht gefunden werden"
+
 
 #~ msgid "Register"
 #~ msgstr "Registrieren"
