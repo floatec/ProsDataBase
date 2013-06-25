@@ -170,7 +170,7 @@ def category(request, name):
         if request.method == 'DELETE':
             return tablefactory.deleteCategory(name)
     else:
-        return HttpResponse(json.dumps({"errors":[{"message": _("You have not the rights to do this opperation").__unicode__()}]}), content_type="application/json")
+        return HttpResponse(json.dumps({"errors": [{"message": _("You have not the rights to do this opperation").__unicode__()}]}), content_type="application/json")
 
 
 def tables(request):

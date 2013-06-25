@@ -23,7 +23,7 @@ def writeAuthHistory(history, user, type, message=""):
     USER_MODIFIED
     """
     if history is None:  # create a new history entry
-        historyF = HistoryAuthForm({"date": datetime.utcnow().replace(tzinfo=utc), "type": type})
+        historyF = HistoryAuthForm({"date": datetime.now(), "type": type})
         if historyF.is_valid():
             history = historyF.save(commit=False)
             history.user = user
@@ -52,7 +52,7 @@ def writeTableHistory(history, table, user, type, message=""):
     EXPORT
     """
     if history is None:  # create a new history entry
-        historyF = HistoryTableForm({"date": datetime.utcnow().replace(tzinfo=utc), "type": type})
+        historyF = HistoryTableForm({"date": datetime.now(), "type": type})
         if historyF.is_valid():
             history = historyF.save(commit=False)
             history.table = table
