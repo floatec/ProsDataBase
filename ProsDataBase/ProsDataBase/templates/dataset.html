@@ -48,7 +48,7 @@
                     row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
                 }
                 if (columns[i].type == 5) {
-                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"><img onClick="searchElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" src="/static/img/search-icon.png">'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><img  src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn add" style="display:inline-block;"><img onClick="searchElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn search" src="/static/img/search-icon.png">'
                 }
                 row += "</td><td>";
 
@@ -60,7 +60,12 @@
 
                 row += "</td></tr>";
                 $("#fields").append(row);
-                $(".icn").button();
+                $(".add").button({
+                    label: '{% trans "add a new entry" %}'
+                });
+                $(".search").button({
+                    label: '{% trans "search for entrys" %}'
+                });
             }
             //breadcurmbs and stuff
             $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
@@ -138,7 +143,7 @@
                     }
 
                     if (window.opener != null) {
-                        $(window.opener.document).find('#' + field).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span> ");
+                        $(window.opener.document).find('#' + field).append("<span style='display:block'><button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span></span>");
                         window.close();
                     } else {
                         window.href = window.location.href = '/detailview/' + getTableName();

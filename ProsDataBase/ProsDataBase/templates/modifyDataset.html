@@ -10,7 +10,7 @@
         <caption>{% trans "insert" %}</caption>
        <thead><th>{% trans "name" %}</th><th>{% trans "content" %}</th><th>{% trans "comment" %}</th></thead>
     </table><br/>
-    <input type="button" id='saveInsert' value="Save">
+    <input type="button" id='saveInsert' value="{%  trans "Save" %}">
 {% endblock %}
 
 
@@ -145,7 +145,7 @@ function init(){
                 }
                  else if(dataset[key].type == 5){
                     for(var p in dataset[key].value){
-                        $("#"+dataset[key].column).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" +dataset[key].value[p].id+"</span> ");
+                        $("#"+dataset[key].column).append("<span style='display:block'><button onClick='deleteTableType(this)'>-</button><span class='value'>" +dataset[key].value[p].id+"</span> </span> ");
                     }
                 }
 
