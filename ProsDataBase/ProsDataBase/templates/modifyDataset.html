@@ -270,15 +270,15 @@ function getTableName(){
                         if(data.errors!=undefined){
                     showErrors(data.errors)
                         return
-               }
-               if(data.success!=undefined){
-                 showSuccess(data.success)
+                    }else{
+                            window.location.href = '/detailview/'+getTableName();
 
-             }
+                        }
+
                 }
 
             });
-        // window.location.href = '/detailview/'+getTableName();+'/';
+
         });
     </script>
 {% endblock %}
