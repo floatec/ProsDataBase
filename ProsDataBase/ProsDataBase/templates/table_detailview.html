@@ -486,9 +486,9 @@
                                 } else if (allDatasets[key].data[i].type == 4) {
                                     tmp = "<td style='align:center'>"
                                     if (allDatasets[key].data[i].value == "True")
-                                        tmp += "&times;"
+                                        tmp += "{% trans "yes" %}"
                                     else
-                                        tmp += "&nbsp;"
+                                        tmp += "{% trans "no" %}"
                                     tmp += "</td>"
                                     $("#datasetRow" + counter).append(tmp)
                                     //all other fields
