@@ -218,17 +218,15 @@ def deleteGroup(request, name):
 
 
 def checkMyPassword(request):
-    jsonRequest = json.loads(request.raw_post_data)
+    jsonRequest = json.loads(request.body)
 
-    response = dict()
-    response["valid"] = request.user.check_password(jsonRequest["password"])
-
-    return HttpResponse(json.dumps(response), content_type="application/json")
+    if request.user.check_password(jsonRequest["password"]):
+        return HttpResponse(json.dumps({"success": _("Successfully changed password").__unicode__()}), content_type="application/json")
+    return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("Wrong password.").__unicode__()}]}), content_type="application/json")
 
 
 def changeMyPassword(request):
     jsonRequest = json.loads(request.raw_post_data)
     request.user.set_password(jsonRequest["password"])
     request.user.save()
-    #TODO JSON
     return HttpResponse(json.dumps({"success" : _("Saved password successfully.")}),content_type="application/jon")

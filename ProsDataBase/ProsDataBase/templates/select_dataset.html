@@ -72,7 +72,7 @@
             }
             if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
                $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='{% trans "YYYY-MM-DD HH:MM"%}'>Max:<input class='max  dateTimePicker' type='text' placeholder='{% trans "YYYY-MM-DD HH:MM"%}'>")
-                    $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
+                    $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true, yearRange: "-100:+10"});
             }
           }
 

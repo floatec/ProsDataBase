@@ -1,39 +1,30 @@
+{% extends "base.html" %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
 
-    <meta charset="utf-8"/>
-    <title>ProsDataBase</title>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/cupertino/jquery-ui.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-    <script src="/static/js/nouser.js"></script>
-    <link rel="stylesheet" href="/resources/demos/style.css"/>
-    <style type="text/css">
+{% block cssHeader %}
+          <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
 
-        #content {
-            font-family: 'Arbutus Slab', serif;
-            text-align: left;
-            position: absolute;
-            top: 170px;
-            left: 50%;
+{% endblock %}
 
-        }
+
+
+  {% block css %}
+
+
 
         #RegisterBtnCell {
             text-align: right;
 
         }
 
-    </style>
+    {% endblock %}
+{% block header %}
+        <a class="crumb" href='/useradmin/' id='userCrumb'> <span>></span></a>
+        <a class="crumb" href='/register/' id='registerCrumb'> <span>></span></a>
+{% endblock %}
+{% block content %}
 
-</head>
-<body>
-<div id="header">
-</div>
-<div id="content">
+<div>
     <div id="registerDiv">
 <div id="errorblock"></div>
         <table>
@@ -60,15 +51,18 @@
     </div>
 
 </div>
-</body>
-</html>
 
 
+{% endblock %}
+    {% block javascript %}
 <script>
+
     $(document).ready(function () {
         $('.btn').button({ disabled: false});
     });
 
+    $("#userCrumb").prepend("{% trans "admin users"%}");
+    $("#registerCrumb").prepend("{% trans "register"%}");
     $("#registerBtn").click(function () {
 
         if (allowPassword($("#password").val(), $("#passwordAgain").val())) {
@@ -110,3 +104,4 @@
 
     }
 </script>
+{% endblock %}

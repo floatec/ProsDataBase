@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block navigation %}
-        <div>{% trans "Users" %}</div>
- <ul id="navigationMenuContent">
 
-
-{% endblock %}
 {% block header %}
         <a class="crumb" href='/settings/' id='settingsCrumb'> <span>></span></a>
 
@@ -41,23 +36,19 @@ $("#saveSettingsButton").click(function(){
         contentType: 'application/json',
         dataType: 'json',
            success: function (data) {
-                    if(data.valid){
-                          var newpw = {};
-                          newpw.password = $("#confirmNewPw").val();
-                          $.ajax({
-                            url: '/api/myself/password/',
-                            type: 'put',
-                            data: JSON.stringify(newpw),
-                            contentType: 'application/json',
-                            dataType: 'json',
-                              success: alert("password successfully changed!")
+                      if(data.errors!=undefined){
+                    showErrors(data.errors)
+                        return
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success)
 
-                            });
+             }
+
+
                     }
-                    else{
-                   alert("password wrong!");
-                    }
-                }
+
+
         });
     }
     else{

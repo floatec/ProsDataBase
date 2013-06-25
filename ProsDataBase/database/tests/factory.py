@@ -49,7 +49,7 @@ class StructureFactory:
 
         table = dict()
         table["name"] = LiteralFactory.genRandString()
-        table["created"] = datetime.utcnow().replace(tzinfo=utc)
+        table["created"] = datetime.now()
 
         tabF = TableForm(table)
         if tabF.is_valid():
@@ -133,7 +133,7 @@ class StructureFactory:
 
         columns = dict()
         columns["name"] = "TEXT" + table.name
-        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columns["created"] = datetime.now()
         columnsF = ColumnForm(columns)
         if columnsF.is_valid():
             textColumns = columnsF.save(commit=False)
@@ -144,7 +144,7 @@ class StructureFactory:
 
         columns = dict()
         columns["name"] = "NUMERIC" + table.name
-        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columns["created"] = datetime.now()
         columnsF = ColumnForm(columns)
         if columnsF.is_valid():
             numericColumns = columnsF.save(commit=False)
@@ -155,7 +155,7 @@ class StructureFactory:
 
         columns = dict()
         columns["name"] = "DATE" + table.name
-        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columns["created"] = datetime.now()
         columnsF = ColumnForm(columns)
         if columnsF.is_valid():
             dateColumns = columnsF.save(commit=False)
@@ -166,7 +166,7 @@ class StructureFactory:
 
         columns = dict()
         columns["name"] = "SELECTION" + table.name
-        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columns["created"] = datetime.now()
         columnsF = ColumnForm(columns)
         if columnsF.is_valid():
             selectionColumns = columnsF.save(commit=False)
@@ -177,7 +177,7 @@ class StructureFactory:
 
         columns = dict()
         columns["name"] = "BOOLEAN" + table.name
-        columns["created"] = datetime.utcnow().replace(tzinfo=utc)
+        columns["created"] = datetime.now()
         columnsF = ColumnForm(columns)
         if columnsF.is_valid():
             boolColumns = columnsF.save(commit=False)
@@ -193,7 +193,7 @@ class DataFactory:
         for i in range(0, n):
 
             dataset = dict()
-            dataset["created"] = datetime.utcnow().replace(tzinfo=utc)
+            dataset["created"] = datetime.now()
             datasetF = DatasetForm(dataset)
             if datasetF.is_valid():
                 newDataset = datasetF.save(commit=False)
@@ -209,7 +209,7 @@ class DataFactory:
                     # - the 1st column have a text data type
                     # ============================================================
                     dataText = dict()
-                    dataText["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataText["created"] = datetime.now()
                     dataText["content"] = LiteralFactory.genRandString()
                     dataTextF = DataTextForm(dataText)
                     if dataTextF.is_valid():
@@ -224,7 +224,7 @@ class DataFactory:
                     # - the 2nd column have a numeric data type
                     # ============================================================
                     dataNumeric = dict()
-                    dataNumeric["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataNumeric["created"] = datetime.now()
                     dataNumeric["content"] = LiteralFactory.genRandNumber()
                     dataNumericF = DataNumericForm(dataNumeric)
                     if dataNumericF.is_valid():
@@ -239,8 +239,8 @@ class DataFactory:
                     # -- the 3rd column have a date data type
                     # ============================================================
                     dataDate = dict()
-                    dataDate["created"] = datetime.utcnow().replace(tzinfo=utc)
-                    dataDate["content"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataDate["created"] = datetime.now()
+                    dataDate["content"] = datetime.now()
                     dataDateF = DataDateForm(dataDate)
                     if dataDateF.is_valid():
                         newDataDate = dataDateF.save(commit=False)
@@ -254,7 +254,7 @@ class DataFactory:
                     # -- the 4th column have a Selection data type
                     # ============================================================
                     dataSelection = dict()
-                    dataSelection["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataSelection["created"] = datetime.now()
                     dataSelection["content"] = "ja"
                     dataSelectionF = DataSelectionForm(dataSelection)
                     if dataSelectionF.is_valid():
@@ -270,7 +270,7 @@ class DataFactory:
                     # ============================================================
 
                     dataBoolean = dict()
-                    dataBoolean["created"] = datetime.utcnow().replace(tzinfo=utc)
+                    dataBoolean["created"] = datetime.now()
                     dataBoolean["content"] = "True"
                     dataBooleanF = DataBoolForm(dataBoolean)
                     if dataBooleanF.is_valid():

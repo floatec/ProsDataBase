@@ -292,7 +292,7 @@ def createColumn(col, table, user):
     # add to table 'Column'
     column = dict()
     column["name"] = col["name"]
-    column["created"] = datetime.utcnow().replace(tzinfo=utc)
+    column["created"] = datetime.now()
     column["comment"] = col["comment"]
     columnF = ColumnForm(column)
     if columnF.is_valid():
@@ -353,7 +353,7 @@ def deleteTable(name, user):
                 errors.append(answer)
 
         table.deleted = True
-        table.modified = datetime.utcnow().replace(tzinfo=utc)
+        table.modified = datetime.now()
         table.modifier = user
         table.save()
 
@@ -392,12 +392,12 @@ def deleteColumn(tableName, columnName, user):
 
     for item in data:
         item.deleted = True
-        item.modified = datetime.utcnow().replace(tzinfo=utc)
+        item.modified = datetime.now()
         item.modifier = user
         item.save()
 
     column.deleted = True
-    column.modified = datetime.utcnow().replace(tzinfo=utc)
+    column.modified = datetime.now()
     column.modifier = user
     column.save()
 
@@ -468,7 +468,7 @@ def deleteDataset(datasetID, user):
 
     # no references in other tables, so delete this dataset
     dataset.deleted = True
-    dataset.modified = datetime.utcnow().replace(tzinfo=utc)
+    dataset.modified = datetime.now()
     dataset.modifier = user
     dataset.save()
     return True
@@ -828,7 +828,7 @@ def insertData(request, tableName):
 
     savedObjs = list()
 
-    datasetF = DatasetForm({"created": datetime.utcnow().replace(tzinfo=utc)})
+    datasetF = DatasetForm({"created": datetime.now()})
     if not datasetF.is_valid():
         return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_CREATE, "message": _("Error creating a new dataset.").__unicode__()}]}), content_type="application/json")
 
@@ -859,33 +859,33 @@ def insertData(request, tableName):
             return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": _("input ").__unicode__() + unicode(col["value"]) + _(" for column ").__unicode__() + column.name + _(" is not valid. Abort.").__unicode__()}]}), content_type="application/json")
 
         if column.type.type == Type.TEXT:
-            textF = DataTextForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+            textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
             if textF.is_valid():
                 newData = textF.save(commit=False)
 
         elif column.type.type == Type.NUMERIC:
-            numF = DataNumericForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+            numF = DataNumericForm({"created": datetime.now(), "content": col["value"]})
             if numF.is_valid():
                 newData = numF.save(commit=False)
 
         elif column.type.type == Type.DATE:
-            dateF = DataDateForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+            dateF = DataDateForm({"created": datetime.now(), "content": col["value"]})
             if dateF.is_valid():
                 newData = dateF.save(commit=False)
 
         elif column.type.type == Type.SELECTION:
             selVal = SelectionValue.objects.get(typeSelection=column.type.getType(), content=col["value"])
-            selF = DataSelectionForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"], "key": selVal.index})
+            selF = DataSelectionForm({"created": datetime.now(), "content": col["value"], "key": selVal.index})
             if selF.is_valid():
                 newData = selF.save(commit=False)
 
         elif column.type.type == Type.BOOL:
-            boolF = DataBoolForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+            boolF = DataBoolForm({"created": datetime.now(), "content": col["value"]})
             if boolF.is_valid():
                 newData = boolF.save(commit=False)
 
         elif column.type.type == Type.TABLE:
-            dataTblF = DataTableForm({"created": datetime.utcnow().replace(tzinfo=utc)})
+            dataTblF = DataTableForm({"created": datetime.now()})
             if dataTblF.is_valid():
                 newData = dataTblF.save(commit=False)
 
@@ -966,7 +966,7 @@ def modifyData(request, tableName, datasetID):
         if column.type.type == Type.TEXT:
             try:
                 text = dataset.datatext.get(column=column)
-                text.modified = datetime.utcnow().replace(tzinfo=utc)
+                text.modified = datetime.now()
                 text.modifier = request.user
                 if text.content != col["value"]:
                     message = column.name + _(": old: '").__unicode__() + text.content + _("', new: '").__unicode__() + col["value"] + "'"
@@ -975,7 +975,7 @@ def modifyData(request, tableName, datasetID):
                 text.save()
             except DataText.DoesNotExist:
                 dataCreatedNewly = True
-                textF = DataTextForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+                textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
                 if textF.is_valid():
                     newData = textF.save(commit=False)
                     message = column.name + _(": new entry: '").__unicode__() + col["value"] + "'"
@@ -984,7 +984,7 @@ def modifyData(request, tableName, datasetID):
         elif column.type.type == Type.NUMERIC:
             try:
                 num = dataset.datanumeric.get(column=column)
-                num.modified = datetime.utcnow().replace(tzinfo=utc)
+                num.modified = datetime.now()
                 num.modifier = request.user
                 if num.content != col["value"]:
                     message = column.name + _(": old: '").__unicode__() + unicode(num.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
@@ -993,7 +993,7 @@ def modifyData(request, tableName, datasetID):
                 num.save()
             except DataNumeric.DoesNotExist:
                 dataCreatedNewly = True
-                numF = DataNumericForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+                numF = DataNumericForm({"created": datetime.now(), "content": col["value"]})
                 if numF.is_valid():
                     newData = numF.save(commit=False)
                     message = column.name + _(": new entry: '").__unicode__() + unicode(col["value"]) + "'"
@@ -1002,7 +1002,7 @@ def modifyData(request, tableName, datasetID):
         elif column.type.type == Type.DATE:
             try:
                 date = dataset.datadate.get(column=column)
-                date.modified = datetime.utcnow().replace(tzinfo=utc)
+                date.modified = datetime.now()
                 date.modifier = request.user
                 if unicode(date.content) != col["value"]:
                     message = column.name + _(": old: '").__unicode__() + unicode(date.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
@@ -1011,7 +1011,7 @@ def modifyData(request, tableName, datasetID):
                 date.save()
             except DataDate.DoesNotExist:
                 dataCreatedNewly = True
-                dateF = DataDateForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+                dateF = DataDateForm({"created": datetime.now(), "content": col["value"]})
                 if dateF.is_valid():
                     newData = dateF.save(commit=False)
                     message = column.name + _(": new entry: '").__unicode__() + unicode(col["value"]) + "'"
@@ -1020,7 +1020,7 @@ def modifyData(request, tableName, datasetID):
         elif column.type.type == Type.SELECTION:
             try:
                 sel = dataset.dataselection.get(column=column)
-                sel.modified = datetime.utcnow().replace(tzinfo=utc)
+                sel.modified = datetime.now()
                 sel.modifier = request.user
                 if sel.content != col["value"]:
                     message = column.name + _(": old: '").__unicode__() + unicode(sel.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
@@ -1029,7 +1029,7 @@ def modifyData(request, tableName, datasetID):
                 sel.save()
             except DataSelection.DoesNotExist:
                 dataCreatedNewly = True
-                selF = DataSelectionForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+                selF = DataSelectionForm({"created": datetime.now(), "content": col["value"]})
                 if selF.is_valid():
                     newData = selF.save(commit=False)
                     message = column.name + _(": new entry: '").__unicode__() + unicode(col["value"]) + "'"
@@ -1038,7 +1038,7 @@ def modifyData(request, tableName, datasetID):
         elif column.type.type == Type.BOOL:
             try:
                 bool = dataset.databool.get(column=column)
-                bool.modified = datetime.utcnow().replace(tzinfo=utc)
+                bool.modified = datetime.now()
                 bool.modifier = request.user
                 if bool.content != col["value"]:
                     message += column.name + _(": old: '").__unicode__() + unicode(bool.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "',\n"
@@ -1046,7 +1046,7 @@ def modifyData(request, tableName, datasetID):
                 bool.save()
             except DataBool.DoesNotExist:
                 dataCreatedNewly = True
-                boolF = DataBoolForm({"created": datetime.utcnow().replace(tzinfo=utc), "content": col["value"]})
+                boolF = DataBoolForm({"created": datetime.now(), "content": col["value"]})
                 if boolF.is_valid():
                     newData = boolF.save(commit=False)
                     message = column.name + _(": new entry: '").__unicode__() + unicode(col["value"]) + "'"
@@ -1080,7 +1080,7 @@ def modifyData(request, tableName, datasetID):
 
             except DataTable.DoesNotExist:
                 dataCreatedNewly = True
-                dataTblF = DataTableForm({"created": datetime.utcnow().replace(tzinfo=utc)})
+                dataTblF = DataTableForm({"created": datetime.now()})
                 if dataTblF.is_valid():
                     newData = dataTblF.save(commit=False)
 
@@ -1130,13 +1130,14 @@ def exportTable(request, tableName):
         colNames.append(column.name)
 
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M')) + ".csv'"
+    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.now().strftime('%Y-%m-%d %H:%M')) + ".csv'"
 
     writer = csv.writer(response)
-    writer.writerow([table.name + " from " + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M'))])
+    writer.writerow([table.name + " from " + datetime.now().strftime('%Y-%m-%d %H:%M')])
     writer.writerow(["system ID"] + colNames)
 
-    for datasetID in request:
+    datasetIDs = json.loads(request[4:])
+    for datasetID in datasetIDs:
         try:
             dataset = Dataset.objects.get(datasetID=datasetID)
         except Dataset.DoesNotExist:
@@ -1156,7 +1157,7 @@ def exportTable(request, tableName):
                 row.append(num.content)
             elif column.type.type == Type.DATE:
                 date = dataset.datadate.all().get(column=column)
-                row.append(unicode(date.content))
+                row.append(date.content.strftime('%Y-%m-%d %H:%M'))
             elif column.type.type == Type.SELECTION:
                 selection = dataset.dataselection.all().get(column=column)
                 row.append(selection.content)

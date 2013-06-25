@@ -68,7 +68,7 @@
                 });
             }
             //breadcurmbs and stuff
-            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
+            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true, yearRange: "-100:+10"});
             $("#tableCrumb").prepend(decodeURIComponent(tableName));
             $("#insertCrumb").prepend("{% trans "Insert" %}");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
@@ -138,8 +138,8 @@
                         showSuccess(data.success)
 
                     }
-                    console.log(window.opener.document)
-                    if (window.opener.document != undefined) {
+
+                    if (window.opener!=null && window.opener.document != undefined) {
                         $(window.opener.document).find('#' + field).append("<span style='display:block'><button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span></span>");
                         window.close();
                     } else {
