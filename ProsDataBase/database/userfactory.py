@@ -25,7 +25,7 @@ def register(request):
 def modifyUserRights(request):
     jsonRequest = json.loads(request.raw_post_data)
 
-    message = ""  # message for writing into history
+    messages = list()  # message for writing into history
     for userObj in jsonRequest["users"]:
         try:
             user = DBUser.objects.get(username=userObj["name"])
@@ -56,7 +56,7 @@ def modifyUserRights(request):
         if modified:
             user.save()
 
-            message += "User " + userObj["name"] + ": "
+            message = "User " + userObj["name"] + ": "
             if activeChanged:
                 if user.is_active:
                     message += "has been activated, "
@@ -72,9 +72,13 @@ def modifyUserRights(request):
                     message += "has become user manager."
                 else:
                     message += "is no user manager anymore."
-            message += "\n"  # cut off trailing comma
+            if message[-2:] == ", ":
+                message = message[:-2]
+            messages.append(message)
 
-    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.USER_MODIFIED, message)
+    history = None
+    for message in messages:
+        history = historyfactory.writeAuthHistory(history, request.user, HistoryAuth.USER_MODIFIED, message)
     return HttpResponse(json.dumps({"success": _("Successfully modified user rights.").__unicode__()}), content_type="application/json")
 
 
@@ -109,8 +113,10 @@ def addGroup(request):
     if len(failed) > 0:
         return HttpResponse(json.dumps({"errors": [{"code": Error.USER_NOTFOUND, "message": _("following users could not be added to the group: ") + str(failed) + _(". Have you misspelled them?")}]}), content_type="application/json")
 
-    message = historyfactory.printGroup(jsonRequest["name"])
-    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_CREATED, message)
+    msgs = historyfactory.printGroup(jsonRequest["name"])
+    history = None
+    for msg in msgs:
+        history = historyfactory.writeAuthHistory(history, request.user, HistoryAuth.GROUP_CREATED, msg)
     return HttpResponse(json.dumps({"success": _("Successfully saved group ").__unicode__() + jsonRequest["name"] + "."}), content_type="application/json")
 
 
@@ -171,7 +177,7 @@ def modifyGroup(request, name):
         userRemoved.append(user)
 
     # write modification to history
-    message = "Group " + jsonRequest["name"] + ":"
+    message = _("Group: ").__unicode__() + jsonRequest["name"] + "."
     history = historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_MODIFIED, message)
     if oldName is not None:
         message = _("Changed name from '").__unicode__() + oldName + _("' to '").__unicode__() + jsonRequest["name"] + "'."
@@ -207,7 +213,7 @@ def deleteGroup(request, name):
     Membership.objects.filter(group=group).delete()
     group.delete()
 
-    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_DELETED)
+    historyfactory.writeAuthHistory(None, request.user, HistoryAuth.GROUP_DELETED, name)
     return HttpResponse(json.dumps({"success": _("Successfully deleted group ").__unicode__() + name + "."}), content_type="application/json")
 
 

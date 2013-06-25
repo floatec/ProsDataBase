@@ -71,7 +71,7 @@
                $(select).next().html("<input type='checkbox'>")
             }
             if($(select).find(":selected").val()==2|| $(select).find(":selected").attr("refType")==2){
-               $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='1990-05-26 23:42'>Max:<input class='max  dateTimePicker' type='text' placeholder='1990-05-26 23:42'>")
+               $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='{% trans "YYYY-MM-DD HH:MM"%}'>Max:<input class='max  dateTimePicker' type='text' placeholder='{% trans "YYYY-MM-DD HH:MM"%}'>")
                     $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
             }
           }
