@@ -706,7 +706,7 @@ class DatasetSerializer:
         if "link" not in criterion:  # filter only with criteria on this table
             #  check if the user filters over a specific dataset id. As this is not a column, it must be handled differently
             if "datasetID" in criterion:
-                return datasets.filter(datasetID=criterion["datasetID"])
+                return datasets.filter(datasetID__contains=criterion["datasetID"])
             try:
                 column = table.getColumns().get(name=criterion["column"], deleted=False)
             except Column.DoesNotExist:

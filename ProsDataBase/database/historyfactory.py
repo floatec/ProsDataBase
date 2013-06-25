@@ -163,8 +163,11 @@ def printDataset(datasetID, user):
     for data in serial["data"]:
         if data["type"] == Type.TABLE:
             ids = ""
-            for id in data["value"]:
-                ids += "[" + id["id"] + ": " + id["value"] + "]" + ", "
+            for dataset in data["value"]:
+                if "value" in dataset:
+                    ids += "[" + dataset["id"] + ": " + dataset["value"] + "]" + ", "
+                else:
+                    ids += dataset["id"] + ", "
             ids = ids[:-2]
             result.append(_("In column ").__unicode__() + unicode(data["column"]) + ": " + ids)
         else:

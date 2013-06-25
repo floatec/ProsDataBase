@@ -260,10 +260,9 @@ function getTableName(){
                         }
                     }
                 }
-                 //only add if there is a value set
-                if(columnObj.value!=""&&columnObj.value!=null){
+
                     jsonDataset.columns.push(columnObj);
-                }
+
             });
             console.log(jsonDataset);
             $.ajax({
