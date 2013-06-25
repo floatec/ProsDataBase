@@ -41,29 +41,29 @@ function init(){
                 var row = "<tr class='allColumns'><td class='nameCell'>" + columns[i].name + "</td><td>"
                 if (columns[i].type == 0) {
                     if(columns[i].modify || struct.admin ){
-                    row += '<input  class="'+columns[i].name+' inputText" name="' + columns[i].name + '" type="text">'
+                    row += '<input  class="'+columns[i].name+' inputText" placeholder="text" name="' + columns[i].name + '" type="text">'
                     }
                     else{
-                        row += '<input disabled  class="'+columns[i].name+' inputText" name="' + columns[i].name + '" type="text">'
+                        row += '<input disabled  class="'+columns[i].name+' inputText" placeholder="text" name="' + columns[i].name + '" type="text">'
 
                     }
                 }
 
                 if (columns[i].type == 1) {
                       if(columns[i].modify || struct.admin ){
-                    row += '<input   class="'+columns[i].name+' inputNumber"  name="' + columns[i].name + '" type="text">'
+                    row += '<input   class="'+columns[i].name+' inputNumber" placeholder="0.0" name="' + columns[i].name + '" type="text">'
                       }
                     else{
-                    row += '<input disabled class="'+columns[i].name+' inputNumber"  name="' + columns[i].name + '" type="text">'
+                    row += '<input disabled class="'+columns[i].name+' inputNumber" placeholder="0.0" name="' + columns[i].name + '" type="text">'
 
                       }
                 }
                 if (columns[i].type == 2) {
                     if(columns[i].modify || struct.admin ){
-                    row += '<input  class="'+columns[i].name+' dateClass" name="' + columns[i].name + '" type="text">'
+                    row += '<input  class="'+columns[i].name+' dateClass" name="' + columns[i].name + '" placeholder="1990-05-26 00:00:00" type="text">'
                     }
                     else{
-                          row += '<input disabled class="'+columns[i].name+' dateClass" name="' + columns[i].name + '" type="text">'
+                          row += '<input disabled class="'+columns[i].name+' dateClass" name="' + columns[i].name + '" placeholder="1990-05-26 00:00:00" type="text">'
 
                     }
                 }
