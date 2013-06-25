@@ -1,7 +1,9 @@
 from django.test import TestCase
 from ..models import *
+from django.test.client import Client
 from ..tests.factory import *
 from ..views.api import *
+
 
 class UserTest(TestCase):
     def test_serializeAll(self):
@@ -98,17 +100,24 @@ class UserTest(TestCase):
                 self.assertFalse(user["admin"])
                 self.assertFalse(user["userManager"])
 
-    def test_login(self):
-        serial = UserSerializer.serializeAll()
-        self.assertTrue("users" in serial)
-        self.assertEquals(len(serial["users"]), 0)
+    def test_user(self):
+        user = UserFactory.createRandomUser(password="test")
+        c = Client()
+        c.login(username=user.username, password="test")
 
-        usernames = list()
+        reqBody = dict()
+        reqBody["users"] = list()
         for i in range(0,10):
-            userF = UserFactory.createUserWithName("tim", "abc")
-            user = userF.save()
-            usernames.append(user.username)
+            reqBody['users'].append({"name": LiteralFactory.genRandString()})
 
-        response = showAllUsers()
-        self.asserTrue("users" in json.loads(response.content))
-        self.assertEquals(usernames, json.loads(response.content["users"]))
+        userNames = list()
+        for users in reqBody["users"]:
+            userNames.append(users)
+
+        self.assertEquals(userNames, [users for users in reqBody["users"]])
+
+        response = c.get(path='/api/user/')
+#        self.assertEquals(userNames, [users for users["name"] in json.loads(response.content)["users"]])
+        print [users for users["name"] in json.loads(response.content)["users"]]
+        print userNames
+

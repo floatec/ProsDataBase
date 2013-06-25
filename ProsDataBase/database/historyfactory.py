@@ -113,33 +113,33 @@ def printRightsFor(tableName):
 
         # table rights
         if actor["tableRights"]["viewLog"]:
-            message += "view the table log, "
+            message += _("view the table log, ").__unicode__()
         if actor["tableRights"]["rightsAdmin"]:
-            message += "modify the table, "
+            message += _("modify the table, ").__unicode__()
         if actor["tableRights"]["insert"]:
-            message += "insert datasets, "
+            message += _("insert datasets, ").__unicode__()
         if actor["tableRights"]["delete"]:
             if message[-2:] == ", ":
-                message = message[:-2] + " and delete datasets"
+                message = message[:-2] + _(" and delete datasets").__unicode__()
             else:
-                message += "delete datasets"
+                message += _("delete datasets").__unicode__()
         if message[-2:] == ", ":  # cut off trailing comma
             message = message[:-2]
 
         # column rights
         if len(actor["columnRights"]) > 0:
-            message += ". Column rights:"
+            message += _(". Column rights:").__unicode__()
             for column in actor["columnRights"]:
                 if not column["rights"]["read"] and not column["rights"]["modify"]:
                     continue
                 message += "\n" + column["name"] + ": "
                 if column["rights"]["read"]:
-                    message += "read, "
+                    message += _("read, ").__unicode__()
                 if column["rights"]["modify"]:
                     if message[-2:] == ", ":
-                        message = message[:-2] + " and modify"
+                        message = message[:-2] + _(" and modify").__unicode__()
                     else:
-                        message += "modify"
+                        message += _("modify").__unicode__()
                 if message[-2:] == ", ":  # cut off trailing comma
                     message = message[:-2]
 

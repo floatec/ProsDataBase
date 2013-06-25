@@ -129,3 +129,25 @@ class TableTest(TestCase):
         result = TableSerializer.serializeStructure(table.name, user)
 
         print result
+
+        res
+
+    def test_test(self):
+
+        user = UserFactory.createRandomUser(password="test")
+        c = Client()
+        c.login(username=user.username, password="test")
+
+        reqBody = dict()
+        reqBody["tables"] = list()
+        reqBody["columns"] = list()
+        for i in range(0, 10):
+            reqBody["tables"].append({"name": LiteralFactory.genRandString()})
+
+        c.put(path='/api/category/', data=json.dumps(reqBody), content_type="application/json")
+
+        categoryNames = list()
+        for category in Category.objects.all():
+            categoryNames.append(category.name)
+
+        self.assertEquals(categoryNames, [category["new"] for category in reqBody["categories"]])

@@ -46,9 +46,8 @@
                 $(".wrapButtonMenu").remove();
                 $("body").append("<div class='wrapContent'><div id=''content'><div id='errorblock'></div></div></div>")
             }
-
-        });
-    $("#tableCrumb").prepend(encodeURIComponent(getTableName()));
+            else{
+                 $("#tableCrumb").prepend(encodeURIComponent(getTableName()));
     $("#tableCrumb").attr('href','/detailview/'+getTableName()+'/')
     $("#historyCrumb").prepend("Log");
     $("#historyCrumb").attr('href', '/tableHistory/'+getTableName()+'/');
@@ -58,11 +57,11 @@
 
             console.log(data);
             var historyRow = ""
-            for(var key in data.histories){
+            for(var key in data.history){
 
-                  historyRow += "<tr><td>"+data.histories[key].date+"</td><td>"+data.histories[key].user+"</td><td>"+data.histories[key].type+"</td><td><ul>";
-                  for(var i in data.histories[key].messages){
-                        historyRow +="<li>"+data.histories[key].messages[i]+"</li>";
+                  historyRow += "<tr><td>"+data.history[key].date+"</td><td>"+data.history[key].user+"</td><td>"+data.history[key].type+"</td><td><ul>";
+                  for(var i in data.history[key].messages){
+                        historyRow +="<li>"+data.history[key].messages[i]+"</li>";
 
                   }
 
@@ -75,6 +74,11 @@
             $("#loggingTable").append(historyRow);
 
         });
+
+            }
+
+        });
+
 
 
 

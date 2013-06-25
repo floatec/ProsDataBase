@@ -87,3 +87,4 @@ class CategoryTest(TestCase):
         # test GET request
         response = c.get(path='/api/category/')
         self.assertEquals(categoryNames, [category for category in json.loads(response.content)["categories"]])
+
