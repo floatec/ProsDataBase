@@ -1,14 +1,11 @@
 from django.test import TestCase
-from ..models import *
 from ..tests.factory import *
 from ..tablefactory import deleteTable
-from ..views.api import login
-from django.contrib import auth
 
 
 class TableTest(TestCase):
     # Mittlerweile passt alles
-    def test_showAllTables(self):
+    def test_serializeAll(self):
         # =================================================================
         # test serializer TableSerializer serializeAll()
         # {
@@ -73,7 +70,7 @@ class TableTest(TestCase):
         print result
 
     # Mittlerweile passt alles
-    def test_showTable(self):
+    def test_serializeOne(self):
 
         user = UserFactory.createRandomUser()
 
@@ -122,7 +119,7 @@ class TableTest(TestCase):
         # ==============================================================
         self.assertTrue(table1.deleted)
 
-    def test_structureTest(self):
+    def test_TableSerializerSerializeStructure(self):
         user = UserFactory.createRandomUser()
         table = StructureFactory.createTable(user)
         DataFactory.genRandDatasets(table, user)

@@ -4,7 +4,7 @@ from ..tests.factory import *
 from ..views.api import *
 
 class UserTest(TestCase):
-    def test_showAllUser(self):
+    def test_serializeAll(self):
         listofuser = list()
         listofuser2 = list()
 
@@ -32,7 +32,7 @@ class UserTest(TestCase):
             self.assertTrue(user.username in result["users"])
 
     # Jetzt passts
-    def test_showOneUser(self):
+    def test_serializeOne(self):
         user1 = UserFactory.createRandomUser()
         user2 = UserFactory.createRandomUser()
         user2.tableCreator=True
@@ -63,7 +63,7 @@ class UserTest(TestCase):
         self.assertTrue(user2.userManager)
 
     # User der keine createTable-Rechte hat kann eine Tabelle erstellen
-    def test_showUserRights(self):
+    def test_serializeAllWithRights(self):
         user1 = UserFactory.createUserWithName("Gunther", "abc")
 
         user2 = UserFactory.createUserWithName("Mammut", "abx")

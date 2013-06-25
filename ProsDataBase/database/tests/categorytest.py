@@ -6,7 +6,7 @@ from django.test.client import Client
 
 class CategoryTest(TestCase):
 
-    def test_TableSerializer_SerializeCategories(self):
+    def test_serializeCategories(self):
         # return empty result if no category exists
         serial = TableSerializer.serializeCategories()
         self.assertTrue("categories" in serial)

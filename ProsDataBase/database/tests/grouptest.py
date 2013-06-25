@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 # funzt bisher alles
 class GroupTest(TestCase):
 
-    def test_showAllGroups(self):
+    def test_serializeAll(self):
         # =================================================================
         # tests the api showAllGroups
         # =================================================================
@@ -58,7 +58,7 @@ class GroupTest(TestCase):
             elif group["name"] == group2.name:
                 self.assertFalse(group["tableCreator"])
 
-    def test_showOneGroup(self):
+    def test_serializeOne(self):
 
         group = UserFactory.createGroup(10)
 
