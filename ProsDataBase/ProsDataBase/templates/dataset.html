@@ -105,15 +105,12 @@
                         columnObj.value = $(this).find("input").val();
                     }
                     else if ($(this).find(".check").length != 0) {
-                        if ($(this).find("input").is(':checked')) {
-                            columnObj.value = true;
-                        } else {
-                            columnObj.value = false;
-                        }
+                       columnObj.value = $(this).find("input").is(':checked')
+
                     }
                 }
                 //only add if there is a value set
-                if(columnObj.value!=""){
+                if(columnObj.value!="" || $(this).find(".check").length != 0){
                     jsonDataset.columns.push(columnObj);
                 }
             });

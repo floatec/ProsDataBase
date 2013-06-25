@@ -41,35 +41,35 @@ function init(){
                 var row = "<tr class='allColumns'><td class='nameCell'>" + columns[i].name + "</td><td>"
                 if (columns[i].type == 0) {
                     if(columns[i].modify || struct.admin ){
-                    row += '<input  class="'+columns[i].name+' inputText" name="' + columns[i].name + '" type="text">'
+                    row += '<input  class="'+encode_pros(columns[i].name)+' inputText" name="' + columns[i].name + '" type="text">'
                     }
                     else{
-                        row += '<input disabled  class="'+columns[i].name+' inputText" name="' + columns[i].name + '" type="text">'
+                        row += '<input disabled  class="'+encode_pros(columns[i].name)+' inputText" name="' + columns[i].name + '" type="text">'
 
                     }
                 }
 
                 if (columns[i].type == 1) {
                       if(columns[i].modify || struct.admin ){
-                    row += '<input   class="'+columns[i].name+' inputNumber"  name="' + columns[i].name + '" type="text">'
+                    row += '<input   class="'+encode_pros(columns[i].name)+' inputNumber"  name="' + columns[i].name + '" type="text">'
                       }
                     else{
-                    row += '<input disabled class="'+columns[i].name+' inputNumber"  name="' + columns[i].name + '" type="text">'
+                    row += '<input disabled class="'+encode_pros(columns[i].name)+' inputNumber"  name="' + columns[i].name + '" type="text">'
 
                       }
                 }
                 if (columns[i].type == 2) {
                     if(columns[i].modify || struct.admin ){
-                    row += '<input  class="'+columns[i].name+' dateClass" name="' + columns[i].name + '" type="text">'
+                    row += '<input  class="'+encode_pros(columns[i].name)+' dateClass" name="' + columns[i].name + '" type="text">'
                     }
                     else{
-                          row += '<input disabled class="'+columns[i].name+' dateClass" name="' + columns[i].name + '" type="text">'
+                          row += '<input disabled class="'+encode_pros(columns[i].name)+' dateClass" name="' + columns[i].name + '" type="text">'
 
                     }
                 }
                 if (columns[i].type == 3) {
                    if(columns[i].modify || struct.admin ){
-                    row += '<select  class="'+columns[i].name+'" name="' + columns[i].name + '" limit="1">'
+                    row += '<select  class="'+encode_pros(columns[i].name)+'" name="' + columns[i].name + '" limit="1">'
                     for (var v in columns[i].options) {
 
                              row += '<option select="selected" value="' + columns[i].options[v].key + '" limit="1">' + columns[i].options[v].value + '</option>'
@@ -79,7 +79,7 @@ function init(){
                    }
                     else{
 
-                    row += '<select disabled class="'+columns[i].name+'" name="' + columns[i].name + '" limit="1">'
+                    row += '<select disabled class="'+encode_pros(columns[i].name)+'" name="' + columns[i].name + '" limit="1">'
                     for (var v in columns[i].options) {
 
                              row += '<option  select="selected" value="' + columns[i].options[v].key + '" limit="1">' + columns[i].options[v].value + '</option>'
@@ -92,10 +92,10 @@ function init(){
                 }
                   if (columns[i].type == 4) {
                      if(columns[i].modify || struct.admin ){
-                      row += '<input class="'+columns[i].name+'" name="' + encode_pros(columns[i].name) + '" type="checkbox" placeholder="text">'
+                      row += '<input class="'+encode_pros(columns[i].name)+'" name="' + encode_pros(columns[i].name) + '" type="checkbox" placeholder="text">'
                      }
                       else{
-                          row += '<input disabled class="'+columns[i].name+'" name="' + encode_pros(columns[i].name) + '" type="checkbox" placeholder="text">'
+                          row += '<input disabled class="'+encode_pros(columns[i].name)+'" name="' + encode_pros(columns[i].name) + '" type="checkbox" placeholder="text">'
 
                      }
                 }
@@ -130,22 +130,22 @@ function init(){
             console.log(dataset);
             for(var key in dataset){
                 if(dataset[key].type == 0 || dataset[key].type == 1 || dataset[key].type == 2){
-                    $("."+dataset[key].column).val(dataset[key].value);
+                    $("."+encode_pros(dataset[key].column)).val(dataset[key].value);
 
 
                 }
                 else if(dataset[key].type == 3){
                     var selectedValue = dataset[key].value;
-                $("."+dataset[key].column+" option").filter(function() {return this.text == selectedValue; }).attr('selected', true);
+                $("."+encode_pros(dataset[key].column)+" option").filter(function() {return this.text == selectedValue; }).attr('selected', true);
 
                 }
                 else if(dataset[key].type == 4){
-                    $("."+dataset[key].column).checked = dataset[key].value;
+                    $("."+encode_pros(dataset[key].column)).checked = dataset[key].value;
 
                 }
                  else if(dataset[key].type == 5){
                     for(var p in dataset[key].value){
-                        $("#"+dataset[key].column).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" +dataset[key].value[p].id+"</span> ");
+                        $("#"+encode_pros(dataset[key].column)).append("<button onClick='deleteTableType(this)'>-</button><span class='value'>" +dataset[key].value[p].id+"</span> ");
                     }
                 }
 

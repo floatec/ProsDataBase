@@ -251,10 +251,12 @@ function createAllExistedColumn(data){
 
 
         for (var key in columns) {
+            //datatype 6 = virtual columns
             if (columns[key].type != 6) {
                 createExistedColumnsRow(columns[key].id);
                 $("#field_" + columnID).val(columns[key].name);
                 $("#row_" + columnID).find(".comment").val(columns[key].comment);
+                //datatype 0 = text
                 if (columns[key].type == 0) {
                     $("#selectDataType_" + columnID).val(0);
                     $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>{% trans "length" %}:<input type='text' size='5' class='length' value='100'>");
@@ -262,6 +264,7 @@ function createAllExistedColumn(data){
 
 
                 }
+                //datatype 1 = number
                 else if (columns[key].type == 1) {
                     $("#selectDataType_" + columnID).val(1);
                     $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'>min:<input type='text' value='0.0' class='min' size='7'>max:<input type='text' value='100.0' class='max' size='7'></td>");
@@ -270,9 +273,11 @@ function createAllExistedColumn(data){
 
 
                 }
+                //datatype 2 = date
                 else if (columns[key].type == 2) {
                     $("#selectDataType_" + columnID).val(2);
                 }
+                //datatype 3 = selection
                 else if (columns[key].type == 3) {
                     $("#selectDataType_" + columnID).val(3);
                     $("#row_" + columnID).append("<td id='selectDataTypeCell_" + columnID + "'><span id='choiceInputContent_" + columnID + "'></span></td>");
@@ -304,9 +309,11 @@ function createAllExistedColumn(data){
                         })
                     });
                 }
+                //datatype 4 = boolean
                 else if (columns[key].type == 4) {
                     $("#selectDataType_" + columnID).val(4);
                 }
+                //datatype 5 = tabletype
                 else if (columns[key].type == 5) {
                     var tbl = columns[key].table;
                     $("#selectDataType_" + columnID + " option").each(function () {
@@ -322,7 +329,7 @@ function createAllExistedColumn(data){
 
 }
 
-
+//function to create all columns when page is initialized
 function createAllExistedColumnFirst() {
     $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
       if(!data.admin){
@@ -340,7 +347,7 @@ function createAllExistedColumnFirst() {
 
 }
 
-
+// remove all empty columns
 function removeEmptyColumns() {
 
     $(".columnNameClass").each(function () {
@@ -365,7 +372,7 @@ function extractLast(term) {
     return split(term).pop();
 }
 
-
+// get all column names
 function getAllColumnNames() {
     var allColumnNames = [];
     $(".columnNameClass").each(function () {
@@ -417,15 +424,9 @@ function createExistedColumnsRow(columnid) {
         $("#deleteExistedColumns").dialog("open");
 
     });
-    //append different inputs for datatypes for every row
-
-    //min and max input for numeric datatype
-
-
     $("#selectDataType_" + columnID).attr('disabled', true);
 
 }
-
 
 function createNewColumnsRow() {
     columnID++;
