@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-24 17:56+0200\n"
+"POT-Creation-Date: 2013-06-25 11:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -394,7 +394,7 @@ msgstr "einfügen"
 #: ProsDataBase/templates/dataset.html:11
 #: ProsDataBase/templates/modifyDataset.html:11
 msgid "name"
-msgstr "Name:"
+msgstr "Name"
 
 #: ProsDataBase/templates/dataset.html:11
 #: ProsDataBase/templates/modifyDataset.html:11
@@ -445,7 +445,7 @@ msgid "User:"
 msgstr "Benutzer:"
 
 #: ProsDataBase/templates/login.html:88
-#: ProsDataBase/templates/register.html:47
+#: ProsDataBase/templates/register.html:46
 msgid "Password:"
 msgstr "Passwort:"
 
@@ -529,12 +529,14 @@ msgstr "Ändern"
 #: ProsDataBase/templates/modify.html:155
 #: ProsDataBase/templates/modify.html:170
 #: ProsDataBase/templates/modify.html:187
+#: ProsDataBase/templates/table_detailview.html:595
 msgid "delete"
 msgstr "Löschen"
 
 #: ProsDataBase/templates/modify.html:159
 #: ProsDataBase/templates/modify.html:178
 #: ProsDataBase/templates/modify.html:199
+#: ProsDataBase/templates/table_detailview.html:599
 msgid "back"
 msgstr "Abbrechen"
 
@@ -602,17 +604,17 @@ msgstr ""
 msgid "User"
 msgstr "Benutzer"
 
-#: ProsDataBase/templates/register.html:43
+#: ProsDataBase/templates/register.html:42
 msgid "Username:"
 msgstr "Benutzername:"
 
-#: ProsDataBase/templates/register.html:51
+#: ProsDataBase/templates/register.html:50
 msgid "Confirm Password:"
 msgstr "Passwort bestätigen:"
 
-#: ProsDataBase/templates/register.html:56
-msgid "Register"
-msgstr "Registrieren"
+#: ProsDataBase/templates/register.html:55
+msgid "Save User"
+msgstr "Benutzer anlegen"
 
 #: ProsDataBase/templates/select_dataset.html:13
 msgid "Select dataset"
@@ -721,8 +723,8 @@ msgid "No tables available"
 msgstr "Keine Tabelle vorhanden"
 
 #: ProsDataBase/templates/useradmin.html:19
-msgid "create user"
-msgstr "Erstellen"
+msgid "create new user"
+msgstr "neuen Benutzer anlegen"
 
 #: ProsDataBase/templates/useradmin.html:30
 msgid "User Rights"
@@ -769,6 +771,26 @@ msgstr "Setze Berechtigung zum Benutzer Administrieren"
 msgid "manage users"
 msgstr "Benutzerverwaltung"
 
+#: database/historyfactory.py:49
+msgid ""
+"\n"
+" Can create tables."
+msgstr ""
+"\n"
+" Darf jetzt Tabellen erstellen."
+
+#: database/historyfactory.py:50
+msgid ""
+"\n"
+" Users: "
+msgstr ""
+"\n"
+" Benutzer: "
+
+#: database/historyfactory.py:58
+msgid "no users yet."
+msgstr "Noch keine Benutzer."
+
 #: database/historyfactory.py:78
 msgid "User "
 msgstr "Benutzer "
@@ -807,7 +829,7 @@ msgstr "ansehen, "
 
 #: database/historyfactory.py:108
 msgid " and modify"
-msgstr "und editieren"
+msgstr " und editieren"
 
 #: database/historyfactory.py:127
 msgid "In column "
@@ -855,7 +877,7 @@ msgstr "BENUTZER REGISTRIERT"
 
 #: database/serializers.py:408
 msgid "USER MODIFIED"
-msgstr "Benutzer MODIFIZIERT"
+msgstr "BENUTZER MODIFIZIERT"
 
 #: database/tablefactory.py:28 database/tablefactory.py:606
 msgid "Could not find category "
@@ -1324,6 +1346,9 @@ msgstr "Der angeforderte Datensatz existiert nicht."
 #: database/views/api.py:654
 msgid "Table could not be found"
 msgstr "Tabelle konnte nicht gefunden werden"
+
+#~ msgid "Register"
+#~ msgstr "Registrieren"
 
 #~ msgid "Current rights: "
 #~ msgstr "Aktuelle Rechte: "

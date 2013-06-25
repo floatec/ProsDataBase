@@ -75,8 +75,8 @@ def printGroup(groupName):
 
     result = "Name: " + groupName + "."
     if serial["tableCreator"]:
-        result += "\n Can create tables."
-    result += "\n Users: "
+        result += _("\n Can create tables.").__unicode__()
+    result += _("\n Users: ").__unicode__()
 
     for userName in serial["users"]:
         result += userName + ", "
@@ -84,7 +84,7 @@ def printGroup(groupName):
     result = result[:-2]  # cut off trailing comma
 
     if len(serial["users"]) == 0:
-        result += "no users yet."
+        result += _("no users yet.").__unicode__()
 
     return result
 
