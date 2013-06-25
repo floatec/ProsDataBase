@@ -56,22 +56,22 @@ def modifyUserRights(request):
         if modified:
             user.save()
 
-            message = "User " + userObj["name"] + ": "
+            message = _("User ").__unicode__() + userObj["name"] + ": "
             if activeChanged:
                 if user.is_active:
-                    message += "has been activated, "
+                    message += _("has been activated, ").__unicode__()
                 else:
-                    message += "has been deactivated, "
+                    message += _("has been deactivated, ").__unicode__()
             if tableCreatorChanged:
                 if user.tableCreator:
-                    message += "can create tables now, "
+                    message += _("can create tables now, ").__unicode__()
                 else:
-                    message += "cannot create tables anymore, "
+                    message += _("cannot create tables anymore, ").__unicode__()
             if userManagerChanged:
                 if user.userManager:
-                    message += "has become user manager."
+                    message += _("has become user manager.").__unicode__()
                 else:
-                    message += "is no user manager anymore."
+                    message += _("is no user manager anymore.").__unicode__()
             if message[-2:] == ", ":
                 message = message[:-2]
             messages.append(message)
