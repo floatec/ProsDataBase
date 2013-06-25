@@ -1,3 +1,5 @@
+import json
+from django.test.client import Client
 from django.test import TestCase
 from ..tests.factory import *
 from ..tablefactory import deleteTable
@@ -130,7 +132,6 @@ class TableTest(TestCase):
 
         print result
 
-        res
 
     def test_test(self):
 
