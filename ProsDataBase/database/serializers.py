@@ -340,19 +340,19 @@ class TableSerializer:
         for history in histories:
             historyObj = dict()
             if history.type == HistoryTable.TABLE_CREATED:
-                historyObj["type"] = "TABLE CREATED"
+                historyObj["type"] = _("TABLE CREATED").__unicode__()
             if history.type == HistoryTable.TABLE_MODIFIED:
-                historyObj["type"] = "TABLE MODIFIED"
+                historyObj["type"] = _("TABLE MODIFIED").__unicode__()
             if history.type == HistoryTable.TABLE_DELETED:
-                historyObj["type"] = "TABLE DELETED"
+                historyObj["type"] = _("TABLE DELETED").__unicode__()
             if history.type == HistoryTable.DATASET_INSERTED:
-                historyObj["type"] = "DATASET INSERTED"
+                historyObj["type"] = _("DATASET INSERTED").__unicode__()
             if history.type == HistoryTable.DATASET_MODIFIED:
-                historyObj["type"] = "DATASET MODIFIED"
+                historyObj["type"] = _("DATASET MODIFIED").__unicode__()
             if history.type == HistoryTable.DATASET_DELETED:
-                historyObj["type"] = "DATASET DELETED"
+                historyObj["type"] = _("DATASET DELETED").__unicode__()
             historyObj["user"] = history.user.username
-            historyObj["date"] = str(history.date.strftime('%Y.%M.%d, %H:%M'))
+            historyObj["date"] = str(history.date.strftime('%Y-%m-%d, %H:%M'))
             historyObj["messages"] = list()
             for msg in history.messages.all():
                 historyObj["messages"].append(msg.content)
@@ -395,17 +395,17 @@ class HistorySerializer:
         for history in HistoryAuth.objects.all():
             historyObj = dict()
             historyObj["user"] = history.user.username
-            historyObj["date"] = str(history.date.strftime('%Y.%M.%d, %H:%M'))
+            historyObj["date"] = str(history.date.strftime('%Y-%m-%d, %H:%M'))
             if history.type == HistoryAuth.GROUP_CREATED:
-                historyObj["type"] = "GROUP CREATED"
+                historyObj["type"] = _("GROUP CREATED").__unicode__()
             if history.type == HistoryAuth.GROUP_MODIFIED:
-                historyObj["type"] = "GROUP MODIFIED"
+                historyObj["type"] = _("GROUP MODIFIED").__unicode__()
             if history.type == HistoryAuth.GROUP_DELETED:
-                historyObj["type"] = "GROUP DELETED"
+                historyObj["type"] = _("GROUP DELETED").__unicode__()
             if history.type == HistoryAuth.USER_REGISTERED:
-                historyObj["type"] = "USER REGISTERED"
+                historyObj["type"] = _("USER REGISTERED").__unicode__()
             if history.type == HistoryAuth.USER_MODIFIED:
-                historyObj["type"] = "USER MODIFIED"
+                historyObj["type"] = _("USER MODIFIED").__unicode__()
             historyObj["messages"] = list()
             for message in history.messages.all():
                 historyObj["messages"].append(message.content)
@@ -582,7 +582,7 @@ class DatasetSerializer:
 
                 else:
                     if item.column.type.type == Type.DATE:
-                        dataObj["value"] = str(item.content.strftime('%Y.%M.%d, %H:%M'))
+                        dataObj["value"] = str(item.content.strftime('%Y-%m-%d, %H:%M'))
                     else:
                         dataObj["value"] = unicode(item.content)
 

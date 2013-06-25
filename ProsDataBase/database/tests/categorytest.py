@@ -6,7 +6,7 @@ from django.test.client import Client
 
 class CategoryTest(TestCase):
 
-    def test_TableSerializer_SerializeCategories(self):
+    def test_serializeCategories(self):
         # return empty result if no category exists
         serial = TableSerializer.serializeCategories()
         self.assertTrue("categories" in serial)
@@ -87,3 +87,4 @@ class CategoryTest(TestCase):
         # test GET request
         response = c.get(path='/api/category/')
         self.assertEquals(categoryNames, [category for category in json.loads(response.content)["categories"]])
+

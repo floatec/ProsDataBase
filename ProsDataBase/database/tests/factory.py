@@ -189,7 +189,7 @@ class StructureFactory:
 
 class DataFactory:
     @staticmethod
-    def genRandDatasets(table, user, n=10):
+    def genRandDatasets(table, user, n=100):
         for i in range(0, n):
 
             dataset = dict()

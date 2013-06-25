@@ -9,6 +9,19 @@ from serializers import *
 
 
 def writeAuthHistory(history, user, type, message=""):
+    """
+    write messages to the user management history.
+
+    If history is None, a new history object is created and messages are added to it.
+    type can be:
+    GROUP_CREATED
+    GROUP_MEMBER_ADDED
+    GROUP_MEMBER_REMOVED
+    GROUP_MODIFIED
+    GROUP_DELETED
+    USER_REGISTERED
+    USER_MODIFIED
+    """
     if history is None:  # create a new history entry
         historyF = HistoryAuthForm({"date": datetime.utcnow().replace(tzinfo=utc), "type": type})
         if historyF.is_valid():
@@ -25,6 +38,19 @@ def writeAuthHistory(history, user, type, message=""):
 
 
 def writeTableHistory(history, table, user, type, message=""):
+    """
+    write messages to a table's history.
+
+    If history is None, a new history object is created and messages are added to it.
+    type can be:
+    TABLE_CREATED
+    TABLE_DELETED
+    TABLE_MODIFIED
+    DATASET_INSERTED
+    DATASET_DELETED
+    DATASET_MODIFIED
+    EXPORT
+    """
     if history is None:  # create a new history entry
         historyF = HistoryTableForm({"date": datetime.utcnow().replace(tzinfo=utc), "type": type})
         if historyF.is_valid():
@@ -42,12 +68,15 @@ def writeTableHistory(history, table, user, type, message=""):
 
 
 def printGroup(groupName):
+    """
+    returns a human readable string of the group, its users and rights.
+    """
     serial = GroupSerializer.serializeOne(groupName)
 
     result = "Name: " + groupName + "."
     if serial["tableCreator"]:
-        result += "\n Can create tables."
-    result += "\n Users: "
+        result += _("\n Can create tables.").__unicode__()
+    result += _("\n Users: ").__unicode__()
 
     for userName in serial["users"]:
         result += userName + ", "
@@ -55,12 +84,15 @@ def printGroup(groupName):
     result = result[:-2]  # cut off trailing comma
 
     if len(serial["users"]) == 0:
-        result += "no users yet."
+        result += _("no users yet.").__unicode__()
 
     return result
 
 
 def printRightsFor(tableName):
+    """
+    returns a human readable string for a table and all access rights on it.
+    """
     serial = TableSerializer.serializeRightsFor(tableName)
     if serial is None:
         return None
@@ -81,33 +113,33 @@ def printRightsFor(tableName):
 
         # table rights
         if actor["tableRights"]["viewLog"]:
-            message += "view the table log, "
+            message += _("view the table log, ").__unicode__()
         if actor["tableRights"]["rightsAdmin"]:
-            message += "modify the table, "
+            message += _("modify the table, ").__unicode__()
         if actor["tableRights"]["insert"]:
-            message += "insert datasets, "
+            message += _("insert datasets, ").__unicode__()
         if actor["tableRights"]["delete"]:
             if message[-2:] == ", ":
-                message = message[:-2] + " and delete datasets"
+                message = message[:-2] + _(" and delete datasets").__unicode__()
             else:
-                message += "delete datasets"
+                message += _("delete datasets").__unicode__()
         if message[-2:] == ", ":  # cut off trailing comma
             message = message[:-2]
 
         # column rights
         if len(actor["columnRights"]) > 0:
-            message += ". Column rights:"
+            message += _(". Column rights:").__unicode__()
             for column in actor["columnRights"]:
                 if not column["rights"]["read"] and not column["rights"]["modify"]:
                     continue
                 message += "\n" + column["name"] + ": "
                 if column["rights"]["read"]:
-                    message += "read, "
+                    message += _("read, ").__unicode__()
                 if column["rights"]["modify"]:
                     if message[-2:] == ", ":
-                        message = message[:-2] + " and modify"
+                        message = message[:-2] + _(" and modify").__unicode__()
                     else:
-                        message += "modify"
+                        message += _("modify").__unicode__()
                 if message[-2:] == ", ":  # cut off trailing comma
                     message = message[:-2]
 
@@ -119,6 +151,9 @@ def printRightsFor(tableName):
 
 
 def printDataset(datasetID, user):
+    """
+    returns a human readable string of the dataset and its content.
+    """
     serial = DatasetSerializer.serializeOne(datasetID, user)
 
     result = "System ID: " + str(serial["id"]) + "\n"

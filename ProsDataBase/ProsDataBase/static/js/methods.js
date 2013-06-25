@@ -117,6 +117,7 @@ shows error messages
 errors=erray with error objects
  */
 function showErrors(errors) {
+    clearErrors()
     for (var i in errors) {
         $("#errorblock").append("<div class='error'>" + errors[i].message + "</div>")
     }

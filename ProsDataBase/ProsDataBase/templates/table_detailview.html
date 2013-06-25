@@ -592,11 +592,11 @@
     $("#deleteAlertBox").dialog({
         autoOpen: false,
         buttons: {
-            "delete": function () {
+    {% trans "delete" %}: function () {
                 deleteDataSet();
                 $(this).dialog("close");
             },
-            "back": function () {
+    {% trans "back" %}: function () {
                 $(this).dialog("close");
             }
         }
