@@ -14,6 +14,9 @@ from django.utils.translation import ugettext_lazy as _
 
 def modifyCategories(request):
     """
+    modifies the existing category names.
+
+    Receives json object of the form:
     {
         "categories": [{"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}, {"old": "name", "new": "newname"}]
     }
@@ -51,6 +54,9 @@ def modifyCategories(request):
 
 
 def deleteCategory(name):
+    """
+    deletes the category with specified name.
+    """
     try:
         category = Category.objects.get(name=name)
         tables = Table.objects.filter(category=category)
@@ -75,24 +81,12 @@ def createTable(data, user):
       "name": "example",
       "columns": [
             {"name": "columname", "required": 1, "type": 1,
-                "options": {"0": "yes", "1": "no", "2": "maybe"},
-                "rights": {
-                    "users" : { "8": ["read"], "17": ["modify", "read"]},
-                    "groups": {"1001": ["modify", "delete", "read"]}
-                }
+                "options": {"0": "yes", "1": "no", "2": "maybe"}
             },
             {"name": "anothercolum", "required": 0, "type": 1,
-                "options": {"0": "yes", "1": "no", "2": "maybe"},
-                "rights": {
-                    "users" : { "8": ["read"], "17": ["modify", "read"]},
-                    "groups": {"1001": ["modify", "delete", "read"]}
-                }
+                "options": {"0": "yes", "1": "no", "2": "maybe"}
             }
-        ],
-      "rights": {
-          "users": {"1": ["rightsAdmin", "viewLog"], "2": ["insert"]},
-          "groups": {"1001": ["rightsAdmin", "insert"]}
-      }
+        ]
     }
     """
     savedObjs = list()  # holds all objects saved so far, so that in case of errors, they can be deleted
@@ -179,10 +173,22 @@ def createTable(data, user):
             historyfactory.writeTableHistory(history, newTable, user, HistoryTable.TABLE_CREATED, _("Added permissions:\n").__unicode__() + right)
     # write table creation to history
     historyfactory.writeTableHistory(history, newTable, user, HistoryTable.TABLE_CREATED, _("Created table ").__unicode__() + newTable.name + ".")
-    return HttpResponse(json.dumps({"success":_("Successfully created table ").__unicode__() + table["name"]}), content_type="application/json")
+    return HttpResponse(json.dumps({"success": _("Successfully created table ").__unicode__() + table["name"]}), content_type="application/json")
 
 
 def createColumn(col, table, user):
+    """
+    creates a column and expects following json object:
+    {"name": "columname", "required": 1, "type": 1,
+        "options": {"0": "yes", "1": "no", "2": "maybe"},
+        "rights": {
+            "users" : { "8": ["read"], "17": ["modify", "read"]},
+            "groups": {"1001": ["modify", "delete", "read"]}
+        }
+    }
+
+    Writes into tables column, type and the corresponding type table, for example typeTable, typeNumber etc.
+    """
     savedObjs = list()  # holds all objects saved so far, so that in case of errors, they can be deleted
 
     # add to table 'Datatype'
@@ -314,7 +320,6 @@ def createColumn(col, table, user):
 def deleteTable(name, user):
     """
     Set the delete flag for this table and all its columns and datasets.
-    Renames the table to: tablename_DELETED_currentdatetime, so that a new table with this name can be created.
     """
     try:
         table = Table.objects.get(name=name, deleted=False)
@@ -361,7 +366,6 @@ def deleteTable(name, user):
 def deleteColumn(tableName, columnName, user):
     """
     Set the delete flag for this column and all its data fields.
-    Renames the column to: columnname_DELETED_currentdatetime, so that a new column with this name can be created.
     """
     try:
         table = Table.objects.get(name=tableName, deleted=False)
@@ -401,6 +405,10 @@ def deleteColumn(tableName, columnName, user):
 
 
 def deleteDatasets(request, tableName):
+    """
+    sets the delete flag for all datasets in the received list of the form:
+    ["1.2013_3_K", "1.2013_5_F", "1.2011_284_T"]
+    """
     try:
         table = Table.objects.get(name=tableName, deleted=False)
     except Table.DoesNotExist:
@@ -464,6 +472,16 @@ def deleteDataset(datasetID, user):
 
 
 def createTableRights(rights, table, user):
+    """
+    creates table rights for given users and groups. Accepts a json object of the form:
+    "rights": {
+        "users": {"1": ["rightsAdmin", "viewLog"], "2": ["insert"]},
+        "groups": {"1001": ["rightsAdmin", "insert"]}
+    }
+    Possible rights are: "rightsAdmin", "viewLog", "insert", "delete".
+    For each actor a new entry in RightListForTable is created, where either the user or the group
+    is left blank.
+    """
     # for users
     savedObjects = list()
     for item in rights["users"]:
@@ -512,6 +530,23 @@ def createTableRights(rights, table, user):
 
 
 def createColumnRights(rights, column, user):
+    """
+    creates column rights for a list of columns. Accepts a json object of the form:
+    "columns": [
+        {"name": "columname",
+        "rights": {
+            "users" : { "8": ["read"], "17": ["modify", "read"]},
+            "groups": {"1001": ["modify", "delete", "read"]}
+        }
+     },
+        {"name": "anothercolum",
+        "rights": {
+            "users" : { "8": ["read"], "17": ["modify", "read"]},
+            "groups": {"1001": ["modify", "delete", "read"]}
+        }
+     }
+    ]
+    """
     savedObjs = list()
 
     # for users
@@ -1070,6 +1105,14 @@ def modifyData(request, tableName, datasetID):
 
 
 def exportTable(request, tableName):
+    """
+    exports the table and specified datasets to CSV.
+    Export result looks like this:
+    tablename from date
+    system id, column1, column2...
+    1.2013_348_G, "text", 193.44
+    ...
+    """
     try:
         table = Table.objects.get(name=tableName, deleted=False)
     except Table.DoesNotExist:
@@ -1080,10 +1123,10 @@ def exportTable(request, tableName):
         colNames.append(column.name)
 
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y.%M.%d, %H:%M')) + ".csv'"
+    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d, %H:%M')) + ".csv'"
 
     writer = csv.writer(response)
-    writer.writerow([table.name + " from " + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y.%M.%d, %H:%M'))])
+    writer.writerow([table.name + " from " + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d, %H:%M'))])
     writer.writerow(["system ID"] + colNames)
 
     for datasetID in request:
@@ -1100,13 +1143,13 @@ def exportTable(request, tableName):
                 return HttpResponse(json.dumps({"errors": [{"message": _("Could not find column with name ").__unicode__() + colName + _(" in table ").__unicode__() + tableName + "."}]}))
             if column.type.type == Type.TEXT:
                 text = dataset.datatext.all().get(column=column)
-                row.append(text.content)
+                row.append(unicode(text.content))
             elif column.type.type == Type.NUMERIC:
                 num = dataset.datanumeric.all().get(column=column)
                 row.append(num.content)
             elif column.type.type == Type.DATE:
                 date = dataset.datadate.all().get(column=column)
-                row.append(date.content)
+                row.append(unicode(date.content))
             elif column.type.type == Type.SELECTION:
                 selection = dataset.dataselection.all().get(column=column)
                 row.append(selection.content)

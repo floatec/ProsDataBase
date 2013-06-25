@@ -342,3 +342,19 @@ Only for Login and Register Page
 /*
 * END: new classes
 */
+
+
+/*
+* Registercontent für Anlegung von Benutzer
+*/
+
+#registerDiv {
+    background: none repeat scroll 0 0 #EEEEEE;
+    border: 1px solid #888888;
+    border-radius: 15px 15px 15px 15px;
+    float: right;
+    margin-left: 5px;
+    padding: 20px;
+    position: absolute;
+    right: 216px;
+}

@@ -1,10 +1,12 @@
 from django.test import TestCase
 from ..models import *
+from django.test.client import Client
 from ..tests.factory import *
 from ..views.api import *
 
+
 class UserTest(TestCase):
-    def test_showAllUser(self):
+    def test_serializeAll(self):
         listofuser = list()
         listofuser2 = list()
 
@@ -32,7 +34,7 @@ class UserTest(TestCase):
             self.assertTrue(user.username in result["users"])
 
     # Jetzt passts
-    def test_showOneUser(self):
+    def test_serializeOne(self):
         user1 = UserFactory.createRandomUser()
         user2 = UserFactory.createRandomUser()
         user2.tableCreator=True
@@ -63,7 +65,7 @@ class UserTest(TestCase):
         self.assertTrue(user2.userManager)
 
     # User der keine createTable-Rechte hat kann eine Tabelle erstellen
-    def test_showUserRights(self):
+    def test_serializeAllWithRights(self):
         user1 = UserFactory.createUserWithName("Gunther", "abc")
 
         user2 = UserFactory.createUserWithName("Mammut", "abx")
@@ -98,17 +100,24 @@ class UserTest(TestCase):
                 self.assertFalse(user["admin"])
                 self.assertFalse(user["userManager"])
 
-    def test_login(self):
-        serial = UserSerializer.serializeAll()
-        self.assertTrue("users" in serial)
-        self.assertEquals(len(serial["users"]), 0)
+    def test_user(self):
+        user = UserFactory.createRandomUser(password="test")
+        c = Client()
+        c.login(username=user.username, password="test")
 
-        usernames = list()
+        reqBody = dict()
+        reqBody["users"] = list()
         for i in range(0,10):
-            userF = UserFactory.createUserWithName("tim", "abc")
-            user = userF.save()
-            usernames.append(user.username)
+            reqBody['users'].append({"name": LiteralFactory.genRandString()})
 
-        response = showAllUsers()
-        self.asserTrue("users" in json.loads(response.content))
-        self.assertEquals(usernames, json.loads(response.content["users"]))
+        userNames = list()
+        for users in reqBody["users"]:
+            userNames.append(users)
+
+        self.assertEquals(userNames, [users for users in reqBody["users"]])
+
+        response = c.get(path='/api/user/')
+#        self.assertEquals(userNames, [users for users["name"] in json.loads(response.content)["users"]])
+        print [users for users["name"] in json.loads(response.content)["users"]]
+        print userNames
+

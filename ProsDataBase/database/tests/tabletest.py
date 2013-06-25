@@ -1,14 +1,13 @@
+import json
+from django.test.client import Client
 from django.test import TestCase
-from ..models import *
 from ..tests.factory import *
 from ..tablefactory import deleteTable
-from ..views.api import login
-from django.contrib import auth
 
 
 class TableTest(TestCase):
     # Mittlerweile passt alles
-    def test_showAllTables(self):
+    def test_serializeAll(self):
         # =================================================================
         # test serializer TableSerializer serializeAll()
         # {
@@ -73,7 +72,7 @@ class TableTest(TestCase):
         print result
 
     # Mittlerweile passt alles
-    def test_showTable(self):
+    def test_serializeOne(self):
 
         user = UserFactory.createRandomUser()
 
@@ -122,7 +121,7 @@ class TableTest(TestCase):
         # ==============================================================
         self.assertTrue(table1.deleted)
 
-    def test_structureTest(self):
+    def test_TableSerializerSerializeStructure(self):
         user = UserFactory.createRandomUser()
         table = StructureFactory.createTable(user)
         DataFactory.genRandDatasets(table, user)
@@ -132,3 +131,24 @@ class TableTest(TestCase):
         result = TableSerializer.serializeStructure(table.name, user)
 
         print result
+
+
+    def test_test(self):
+
+        user = UserFactory.createRandomUser(password="test")
+        c = Client()
+        c.login(username=user.username, password="test")
+
+        reqBody = dict()
+        reqBody["tables"] = list()
+        reqBody["columns"] = list()
+        for i in range(0, 10):
+            reqBody["tables"].append({"name": LiteralFactory.genRandString()})
+
+        c.put(path='/api/category/', data=json.dumps(reqBody), content_type="application/json")
+
+        categoryNames = list()
+        for category in Category.objects.all():
+            categoryNames.append(category.name)
+
+        self.assertEquals(categoryNames, [category["new"] for category in reqBody["categories"]])
