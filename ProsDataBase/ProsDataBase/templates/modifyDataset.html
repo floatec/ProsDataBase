@@ -127,7 +127,7 @@ function init(){
                 $("#fields").append(row);
                 $(".icn").button();
             }
-            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true,changeYear: true });
+            $(".dateClass").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true,changeYear: true, yearRange: "-100:+10" });
             $("#tableCrumb").prepend(tableName);
             $("#insertCrumb").prepend("insert");
             $("#tableCrumb").attr('href', '/detailview/' + tableName + '/');
