@@ -467,7 +467,15 @@ function sendJsonObjRights(){
         type: 'put',
         data: JSON.stringify(jsonTbl),
         contentType: 'application/json',
-        dataType: 'json'
+        dataType: 'json',
+        success: function(data){
+            if(data.errors!=undefined){
+                    showErrors(data.errors);
+               }
+               if(data.success!=undefined){
+                 showSuccess(data.success);
+             }
+        }
     });
 
     console.log(jsonTbl);
