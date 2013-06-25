@@ -569,26 +569,10 @@
         }
         var url = '/api/table/' + getTableName() + '/export/';
         var form = $('<form action="' + url + '" method="post">' +
-        '<input type="text" name="api" value="' + JSON.stringify(datasetIDs)+ '" />' +
+        '<input type="text" name="api" value=\'' + JSON.stringify(datasetIDs)+'\' />' +
         '</form>');
         $('body').append(form);
         $(form).submit();
-        $.ajax({
-            url: '/api/table/' + getTableName() + '/export/',
-            type: 'post',
-            data: JSON.stringify(datasetIDs),
-            contentType: 'application/json',
-            dataType: 'json',
-            success: function (data) {
-                if (data.errors != undefined) {
-                    showErrors(data.errors)
-                    return
-                }
-                if (data.success != undefined) {
-                    showSuccess(data.success)
-                }
-            }
-        });
     }
     // initial delete
     $("#deleteData").click(function () {
