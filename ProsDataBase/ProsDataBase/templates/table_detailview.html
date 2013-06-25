@@ -95,7 +95,7 @@
         //date selected
         if ($(select).find(":selected").val() == 2 || $(select).find(":selected").attr("refType") == 2) {
             $(select).next().html("Min:<input type='text'class='min dateTimePicker' placeholder='{% trans "YYYY-MM-DD HH:MM"%}'>Max:<input class='max  dateTimePicker' type='text' placeholder='{% trans "YYYY-MM-DD HH:MM"%}'>")
-            $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true, yearRange: "-100:+10"});
+            $(".dateTimePicker").datetimepicker({dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true});
         }
         //selection selected
         if ($(select).find(":selected").val() == 3 || $(select).find(":selected").attr("refType") == 3) {
@@ -567,22 +567,12 @@
 
             return
         }
-        $.ajax({
-            url: '/api/table/' + getTableName() + '/export/',
-            type: 'post',
-            data: JSON.stringify(datasetIDs),
-            contentType: 'application/json',
-            dataType: 'json',
-            success: function (data) {
-                if (data.errors != undefined) {
-                    showErrors(data.errors)
-                    return
-                }
-                if (data.success != undefined) {
-                    showSuccess(data.success)
-                }
-            }
-        });
+        var url = '/api/table/' + getTableName() + '/export/';
+        var form = $('<form action="' + url + '" method="post">' +
+        '<input type="text" name="api" value=\'' + JSON.stringify(datasetIDs)+'\' />' +
+        '</form>');
+        $('body').append(form);
+        $(form).submit();
     }
     // initial delete
     $("#deleteData").click(function () {
