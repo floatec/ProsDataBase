@@ -234,7 +234,7 @@ class DatasetPerformanceTest(TestCase):
         schmog = UserFactory.createRandomUser("test")
         table = StructureFactory.createTable(schmog)
         # test how long it takes to serialize 10000 datasets
-        DataFactory.genRandDatasets(table, schmog, 10000)
+        DataFactory.genRandDatasets(table, schmog, 100)
 
         startTime = datetime.now()
         DatasetSerializer.serializeAll(table, schmog)

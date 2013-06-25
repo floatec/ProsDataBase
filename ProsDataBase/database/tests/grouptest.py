@@ -47,7 +47,7 @@ class GroupTest(TestCase):
         length = 0
         for array in [group["users"] for group in result["groups"]]:
             length += len(array)
-        self.assertEquals(length, 2000)
+        self.assertEquals(length, 20)
 
         # =================================================================
         # test the tableCreator and groupCreator are False
@@ -76,7 +76,7 @@ class GroupTest(TestCase):
         # =================================================================
         # test the quantity of the result is correct
         # =================================================================
-        self.assertEquals(len(result["users"]), 10000)
+        self.assertEquals(len(result["users"]), 10)
 
     def test_groups(self):
         group = UserFactory.createGroup(10)
