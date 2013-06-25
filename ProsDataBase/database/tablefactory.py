@@ -415,19 +415,22 @@ def deleteDatasets(request, tableName):
         return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table ").__unicode__() + tableName + _(" to delete from.").__unicode__()}]}), content_type="application/json")
 
     jsonRequest = json.loads(request.raw_post_data)
-
+    datasetIDs = ""
     errors = list()
     for id in jsonRequest:
         answer = deleteDataset(id, request.user)
-        print answer
         if not answer:
             errors.append(answer)
+        else:
+            datasetIDs += id + ", "
+    if datasetIDs[-2:] == ", ":
+        datasetIDs = datasetIDs[:-2]
 
     if len(errors) > 0:
         return HttpResponse(json.dumps({"errors": errors}), content_type="application/json")
     else:
         # write to history
-        historyfactory.writeTableHistory(None, table, request.user, HistoryTable.DATASET_DELETED)
+        historyfactory.writeTableHistory(None, table, request.user, HistoryTable.DATASET_DELETED, datasetIDs)
         return HttpResponse(json.dumps({"success": _("Successfully deleted all datasets.").__unicode__()}), content_type="application/json")
 
 
@@ -910,8 +913,12 @@ def insertData(request, tableName):
                     link.dataset = dataset
                     link.save()
                     savedObjs.append(link)
+    msgs = historyfactory.printDataset(newDataset.datasetID, request.user)
+    history = None
 
-    historyfactory.writeTableHistory(None, theTable, request.user, HistoryTable.DATASET_INSERTED, historyfactory.printDataset(newDataset.datasetID, request.user))
+    for msg in msgs:
+        print msg
+        history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_INSERTED, msg)
     return HttpResponse(json.dumps({"id": newDataset.datasetID}), content_type="application/json", status=200)
 
 
@@ -1123,10 +1130,10 @@ def exportTable(request, tableName):
         colNames.append(column.name)
 
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d, %H:%M')) + ".csv'"
+    response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M')) + ".csv'"
 
     writer = csv.writer(response)
-    writer.writerow([table.name + " from " + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d, %H:%M'))])
+    writer.writerow([table.name + " from " + str(datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M'))])
     writer.writerow(["system ID"] + colNames)
 
     for datasetID in request:
@@ -1154,6 +1161,8 @@ def exportTable(request, tableName):
                 selection = dataset.dataselection.all().get(column=column)
                 row.append(selection.content)
             elif column.type.type == Type.BOOL:
+                for bool in dataset.databool.all():
+                    print bool
                 bool = dataset.databool.all().get(column=column)
                 row.append(bool.content)
             #elif column.type.type == Type.TABLE:

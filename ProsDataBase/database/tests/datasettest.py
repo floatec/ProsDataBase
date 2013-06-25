@@ -71,7 +71,7 @@ class DatasetTest(TestCase):
             if item["type"] == Type.NUMERIC:
                 self.assertEquals(num.content, float(item["value"]))
             if item["type"] == Type.DATE:
-                self.assertEquals(date.content.strftime('%Y-%m-%d, %H:%M'), item["value"])
+                self.assertEquals(date.content.strftime('%Y-%m-%d %H:%M'), item["value"])
             if item["type"] == Type.SELECTION:
                 self.assertEquals(sel.content, item["value"])
             if item["type"] == Type.BOOL:

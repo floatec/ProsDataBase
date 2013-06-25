@@ -72,19 +72,20 @@ def printGroup(groupName):
     returns a human readable string of the group, its users and rights.
     """
     serial = GroupSerializer.serializeOne(groupName)
-
-    result = "Name: " + groupName + "."
+    result = list()
+    result.append("Name: " + groupName + ".")
     if serial["tableCreator"]:
-        result += _("\n Can create tables.").__unicode__()
-    result += _("\n Users: ").__unicode__()
+        result.append(_("Can create tables.").__unicode__())
+    users = ""
+    users += _("Users: ").__unicode__()
 
     for userName in serial["users"]:
-        result += userName + ", "
+        users += userName + ", "
 
-    result = result[:-2]  # cut off trailing comma
-
+    users = users[:-2]  # cut off trailing comma
+    result.append(users)
     if len(serial["users"]) == 0:
-        result += _("no users yet.").__unicode__()
+        result.append(_("no users yet.").__unicode__())
 
     return result
 
@@ -132,7 +133,7 @@ def printRightsFor(tableName):
             for column in actor["columnRights"]:
                 if not column["rights"]["read"] and not column["rights"]["modify"]:
                     continue
-                message += "\n" + column["name"] + ": "
+                message += ", " + column["name"] + ": "
                 if column["rights"]["read"]:
                     message += _("read, ").__unicode__()
                 if column["rights"]["modify"]:
@@ -156,12 +157,17 @@ def printDataset(datasetID, user):
     """
     serial = DatasetSerializer.serializeOne(datasetID, user)
 
-    result = "System ID: " + str(serial["id"]) + "\n"
+    result = list()
+    result.append("System ID: " + str(serial["id"]))
 
     for data in serial["data"]:
-        result += _("In column ").__unicode__() + unicode(data["column"]) + ": " + unicode(data["value"]) + "\n"
-
-    if result[-1] == "\n":
-        result = result[:-1]
+        if data["type"] == Type.TABLE:
+            ids = ""
+            for id in data["value"]:
+                ids += "[" + id["id"] + ": " + id["value"] + "]" + ", "
+            ids = ids[:-2]
+            result.append(_("In column ").__unicode__() + unicode(data["column"]) + ": " + ids)
+        else:
+            result.append(_("In column ").__unicode__() + unicode(data["column"]) + ": " + unicode(data["value"]))
 
     return result
