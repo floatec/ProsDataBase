@@ -138,8 +138,8 @@
                         showSuccess(data.success)
 
                     }
-                    console.log(window.opener.document)
-                    if (window.opener.document != undefined) {
+
+                    if (window.opener!=null && window.opener.document != undefined) {
                         $(window.opener.document).find('#' + field).append("<span style='display:block'><button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span></span>");
                         window.close();
                     } else {
