@@ -396,8 +396,8 @@ class HistorySerializer:
         result["tableHistory"] = list()
         for table in Table.objects.all():
             tableHist = TableSerializer.serializeHistory(table.name, user)
-            if tableHist and tableHist is not None:
-                result["tableHistory"] = tableHist["history"]
+            if tableHist is not False and tableHist is not None:
+                result["tableHistory"].append({"history": tableHist["history"], "table": table.name})
 
         result["authHistory"] = list()
         for history in HistoryAuth.objects.all():
