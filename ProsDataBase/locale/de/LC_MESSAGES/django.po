@@ -619,7 +619,7 @@ msgstr "Lösche ausgewählte Datensätze aus der Tabelle"
 #: ProsDataBase/templates/table_detailview.html:18
 #: database/historyfactory.py:126
 msgid "delete datasets"
-msgstr "Datensätze löschen"
+msgstr "Daten löschen"
 
 #: ProsDataBase/templates/table_detailview.html:19
 msgid "Exports the selected Datasets to CSV"

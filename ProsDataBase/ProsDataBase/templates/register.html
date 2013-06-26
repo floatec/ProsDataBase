@@ -58,13 +58,33 @@
 <script>
 
     $(document).ready(function () {
+
         $('.btn').button({ disabled: false});
+         $("input").keydown(function(e){
+
+            if(e.which == 13){
+                registerUser();
+
+            }
+
+        });
     });
 
     $("#userCrumb").prepend("{% trans "admin users"%}");
     $("#registerCrumb").prepend("{% trans "register"%}");
-    $("#registerBtn").click(function () {
+ $("#registerBtn").click(function () {
+     registerUser();
+ });
 
+    function registerUser(){
+
+        if($("#username").val() == ""){
+            alert("Benutzername darf nicht leer sein!");
+        }
+        else if($("#password").val() == ""){
+                alert("Passwort darf nicht leer sein!");
+            }
+            else{
         if (allowPassword($("#password").val(), $("#passwordAgain").val())) {
 
             var user = {};
@@ -89,10 +109,13 @@
             }
             });
         }
+        else{
+            alert("Passwort stimmt nicht überein!");
+        }
+        }
 
 
-    });
-
+    }
 
     function allowPassword(val1, val2) {
         if (val1 == val2) {

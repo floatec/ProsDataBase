@@ -31,7 +31,7 @@ $(document).ready(function () {
 
             else {
                 $("#categoryManagement").remove();
-
+                $("#log").remove();
                 if (!data.tableCreator) {
                     $("#createTableButton").remove();
                 }
@@ -50,13 +50,13 @@ $(document).ready(function () {
 //encode function
 function encode_pros(string) {
 
-    return string.replace(/ /g, "_-_");
+    return string.replace(/ /g, "_-_").replace(/./g,"_--_").replace(/\//g,"_---_").replace(/\?/g,"_----_").replace(/:/g,"_-----_");
 
 }
 //decode function
 function decode_pros(string) {
 
-    return string.replace(/_-_/g, " ");
+    return string.replace(/_-_/g, " ").replace(/_--_/g, ".").replace(/_---_/g, "/").replace(/_----_/g, "?").replace(/_-----_/g, ":");
 
 }
 /*
