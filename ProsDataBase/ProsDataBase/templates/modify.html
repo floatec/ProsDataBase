@@ -853,7 +853,7 @@ function getTableName() {
     var tableName = tableName.substr(0, lastIndex);
     var lastIndex = tableName.lastIndexOf('/');
     var tableName = tableName.substr(lastIndex + 1);
-    return tableName;
+    return decodeURIComponent(tableName);
 }
 </script>
 
