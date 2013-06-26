@@ -1109,7 +1109,7 @@ msgstr "': Link entfernt von Spalte '"
 
 #: database/tablefactory.py:777
 msgid "Successfully modified table structure."
-msgstr "Zugriffsrechte wurden erfolgreich angepasst"
+msgstr "Tabellenstruktur wurde erfolgreich angepasst"
 
 #: database/tablefactory.py:808
 msgid "Successfully modified rights."
