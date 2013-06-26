@@ -140,7 +140,7 @@ function init() {
                 $(".helpTextDiv").html("<h1>{% trans "Help" %}</h1>{% blocktrans %}1. Assign rights to users and groups. </br> 2. Type the user's / group's name in the input field. </br> 3. Click the + field to display the right list. </br> 4. The 'All'-section allows fast rights assignment for all columns.{% endblocktrans %} <br> <img style='float:left' class='icn' src='/static/img/key-icon.png'>{%  trans "can change the structure and the rights of this table" %}<br><img class='icn' src='/static/img/pencil-icon.png'>{% trans "can insert new Datasets" %}<br><img class='icn' src='/static/img/trash-icon.png'>{% trans "can delete datasets" %}<br><img class='icn' src='/static/img/paper-icon.png'>{% trans "can view the log" %}<br><img class='icn' src='/static/img/view-icon.png'>{% trans "can view this column" %}<br><img class='icn' src='/static/img/setting-icon.png'>{% trans "can change this column" %}")
             }
 
-             removeEmptyColuns();
+             removeEmptyColumns();
         }
     });
 
