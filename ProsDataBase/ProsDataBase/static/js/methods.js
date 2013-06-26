@@ -50,7 +50,7 @@ $(document).ready(function () {
 //encode function
 function encode_pros(string) {
 
-    return string.replace(/ /g, "_-_").replace(/./g,"_--_").replace(/\//g,"_---_").replace(/\?/g,"_----_").replace(/:/g,"_-----_");
+    return string.replace(/ /g, "_-_").replace(/\./g,"_--_").replace(/\//g,"_---_").replace(/\?/g,"_----_").replace(/:/g,"_-----_");
 
 }
 //decode function

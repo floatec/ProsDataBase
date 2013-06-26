@@ -475,6 +475,50 @@ class DBUser(AbstractUser):
             pass
         return tableRights.delete
 
+    def maySeeColumn(self, column):
+        # first see if user may see column
+        try:
+            right = RightListForColumn.objects.get(column=column, user=self)
+            if right.read or right.modify:
+                return True
+        except RightListForColumn.DoesNotExist:
+            pass
+
+        # if not check if he is member of a group with read permission on it
+        allowed = False
+        memberships = Membership.objects.filter(user=self)
+        for membership in memberships:
+            try:
+                right = RightListForColumn.objects.get(column=column, group=membership.group)
+                if right.read or right.modify:
+                    allowed = True
+            except RightListForColumn.DoesNotExist:
+                continue
+
+        return allowed
+
+    def mayModifyColumn(self, column):
+        # first see if user may modify column
+        try:
+            right = RightListForColumn.objects.get(column=column, user=self)
+            if right.modify:
+                return True
+        except RightListForColumn.DoesNotExist:
+            pass
+
+        # if not check if he is member of a group with modify permission on it
+        allowed = False
+        memberships = Membership.objects.filter(user=self)
+        for membership in memberships:
+            try:
+                right = RightListForColumn.objects.get(column=column, group=membership.group)
+                if right.modify:
+                    allowed = True
+            except RightListForColumn.DoesNotExist:
+                continue
+
+        return allowed
+
 
 class DBGroup(models.Model):
     name = models.CharField(max_length=30)

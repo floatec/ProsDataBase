@@ -855,7 +855,6 @@ def insertData(request, tableName):
         if not column.type.getType().isValid(col["value"]):
             for obj in savedObjs:
                 obj.delete()
-            print col["value"]
             return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": _("input ").__unicode__() + unicode(col["value"]) + _(" for column ").__unicode__() + column.name + _(" is not valid. Abort.").__unicode__()}]}), content_type="application/json")
 
         if column.type.type == Type.TEXT:
@@ -1171,27 +1170,32 @@ def exportTable(request, tableName):
                 return HttpResponse(json.dumps({"errors": [{"message": _("Could not find column with name ").__unicode__() + colName + _(" in table ").__unicode__() + tableName + "."}]}))
             if column.type.type == Type.TEXT:
                 text = dataset.datatext.all()
-                if text is not None:
+                if len(text) > 0:
                     text = text.get(column=column)
                     row.append(unicode(text.content))
             elif column.type.type == Type.NUMERIC:
                 num = dataset.datanumeric.all()
-                if num is not None:
+                if len(num) > 0:
                     num = num.get(column=column)
                     row.append(num.content)
             elif column.type.type == Type.DATE:
                 date = dataset.datadate.all()
-                if date is not None:
+                if len(date) > 0:
                     date = date.get(column=column)
                     row.append(date.content.strftime('%Y-%m-%d %H:%M'))
             elif column.type.type == Type.SELECTION:
-                selection = dataset.dataselection.all().get(column=column)
-                row.append(selection.content)
+                selection = dataset.dataselection.all()
+                if len(selection) > 0:
+                    selection = selection.get(column=column)
+                    row.append(selection.content)
             elif column.type.type == Type.BOOL:
-                for bool in dataset.databool.all():
-                    print bool
-                bool = dataset.databool.all().get(column=column)
-                row.append(bool.content)
+                bool = dataset.databool.all()
+                if len(bool) > 0:
+                    bool = bool.get(column=column)
+                    if bool.content:
+                        row.append("yes")
+                    else:
+                        row.append("no")
             #elif column.type.type == Type.TABLE:
             #    dataTable = dataset.datatext.all().get(column=column)
             #    row.append(data)

@@ -44,17 +44,22 @@ class TableSerializer:
         """
         user = user
         allowedTables = set()
+
         memberships = Membership.objects.filter(user=user)
         groupNames = list()
         for membership in memberships:
             groupNames.append(membership.group.name)
         groups = DBGroup.objects.filter(name__in=groupNames)
+
         for rights in RightListForColumn.objects.filter(user=user):
             allowedTables.add(rights.table)
+
         for rights in RightListForColumn.objects.filter(group__in=groups, table__deleted=False):
             allowedTables.add(rights.table)
+
         for rights in RightListForTable.objects.filter(user=user, table__deleted=False):
             allowedTables.add(rights.table)
+
         for rights in RightListForTable.objects.filter(group__in=groups, table__deleted=False):
             allowedTables.add(rights.table)
 
@@ -105,11 +110,11 @@ class TableSerializer:
             if col.deleted:
                 continue
             comment = col.comment if col.comment is not None else ""
+            if not user.maySeeColumn(col):
+                continue
 
-            try:
-                rightList = RightListForColumn.objects.get(column=col, user=user)
-                modify = rightList.modify
-            except RightListForColumn.DoesNotExist:
+            modify = False
+            if user.mayModifyColumn(col):
                 modify = True
 
             type = col.type.type
@@ -563,11 +568,14 @@ class DatasetSerializer:
         result["id"] = dataset.datasetID
         result["data"] = list()
 
-        datalist = dataset.getData()
-        for data in datalist:
+        datalist = dataset.getData()  # returns a list of query sets. One query set for each data type.
+        for data in datalist:         # thus the nested for loop
             for item in data:
                 if item.deleted:
                     continue
+                if user.maySeeColumn(item.column) is False:
+                    continue
+
                 dataObj = dict()
                 dataObj["column"] = item.column.name
                 dataObj["type"] = item.column.type.type
