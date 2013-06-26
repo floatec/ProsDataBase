@@ -63,7 +63,7 @@ function init() {
            $.getJSON('/api/table/',function(data){
             var validTablesName = false;
             for(var k in data.tables){
-               if(data.tables[k].name == getTableName()){
+               if(data.tables[k].name == decodeURIComponent(getTableName())){
                    validTablesName = true;
                }
             }

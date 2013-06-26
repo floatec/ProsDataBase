@@ -339,7 +339,7 @@ def dataset(request, tableName, datasetID):
     PUT: modify data in the specified dataset. You need modify permission on at least one column to do this.
     """
     if request.method == 'GET':
-        return showDataset(tableName, datasetID, user)
+        return showDataset(tableName, datasetID, request.user)
     elif request.method == 'PUT':
         return tablefactory.modifyData(request, tableName, datasetID)
 
