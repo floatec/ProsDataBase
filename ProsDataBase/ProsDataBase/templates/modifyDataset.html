@@ -241,14 +241,14 @@ function getTableName(){
 
                 }
                 else {
-                    if ($(this).find(".dateClass").length != 0) {
+                    if ($(this).find(".dateClass").length != 0&&$(this).find("input").val()!="") {
                         columnObj.value = $(this).find("input").val();
 
                     }
-                    else if ($(this).find(".inputNumber").length != 0) {
+                    else if ($(this).find(".inputNumber").length != 0&&$(this).find("input").val()!="") {
                         columnObj.value = parseFloat($(this).find("input").val());
                     }
-                    else if ($(this).find(".inputText").length != 0) {
+                    else if ($(this).find(".inputText").length != 0&&$(this).find("input").val()!="") {
                         columnObj.value = $(this).find("input").val();
                     }
                     else if ($(this).find(".check").length != 0) {
@@ -261,10 +261,11 @@ function getTableName(){
                     }
                 }
 
-                    jsonDataset.columns.push(columnObj);
+                jsonDataset.columns.push(columnObj);
 
             });
             console.log(jsonDataset);
+
             $.ajax({
                 url: '/api/table/' + getTableName() + '/dataset/'+getDatasetID()+'/',
                 type: 'put',
