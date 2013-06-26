@@ -363,7 +363,7 @@
             {
                 tableHead.append("<th><a name='" + columns[key].name + "'>" + columns[key].name + "</a></th>");
                 //if it is dthe headelement ifill the navigation
-                if ($(insertTo).attr("id") == "headTable") {
+                if ($(insertTo).attr("id") == "headTable"&&columns[key].type!=6) {
                     $("#navigationMenuContent").append("<li><a href='#" + columns[key].name + "'>" + columns[key].name + "</a></li>");
                 }
             }
