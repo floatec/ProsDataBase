@@ -132,7 +132,7 @@
                 data: JSON.stringify(jsonObj),
                 contentType: 'application/json',
                 dataType: 'json',
-                success: function () {
+                success: function (data) {
                     //error handling
                     if (data.errors != undefined) {
                         showErrors(data.errors)
