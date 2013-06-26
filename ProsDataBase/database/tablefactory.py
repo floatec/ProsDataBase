@@ -339,7 +339,7 @@ def deleteTable(name, user):
             column = Column.objects.get(type=typeTable.type)
             tableNames.add(column.table.name)
 
-        errors.append({"error": _("Please delete references to this table in tables ").__unicode__() + str(tableNames) + _(" first.").__unicode__()})
+        errors.append({"code": Error.TABLE_REFERENCED, "message": _("Please delete references to this table in tables ").__unicode__() + str(tableNames) + _(" first.").__unicode__()})
 
     else:  # no reference exists, so delete the table
         for dataset in table.datasets.all():
@@ -1146,8 +1146,8 @@ def exportTable(request, tableName):
         return HttpResponse(json.dumps({"errors": [{"message": _("Could not find table with name ").__unicode__() + tableName + "."}]}))
 
     colNames = list()
-    for column in table.getColumns():
-        colNames.append(column.name)
+    for column in table.getColumns().filter(deleted=False):
+        colNames.append(column.name.encode('utf-8'))
 
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename='" + table.name + "_" + str(datetime.now().strftime('%Y-%m-%d %H:%M')) + ".csv'"
@@ -1170,14 +1170,20 @@ def exportTable(request, tableName):
             except Column.DoesNotExist:
                 return HttpResponse(json.dumps({"errors": [{"message": _("Could not find column with name ").__unicode__() + colName + _(" in table ").__unicode__() + tableName + "."}]}))
             if column.type.type == Type.TEXT:
-                text = dataset.datatext.all().get(column=column)
-                row.append(unicode(text.content))
+                text = dataset.datatext.all()
+                if text is not None:
+                    text = text.get(column=column)
+                    row.append(unicode(text.content))
             elif column.type.type == Type.NUMERIC:
-                num = dataset.datanumeric.all().get(column=column)
-                row.append(num.content)
+                num = dataset.datanumeric.all()
+                if num is not None:
+                    num = num.get(column=column)
+                    row.append(num.content)
             elif column.type.type == Type.DATE:
-                date = dataset.datadate.all().get(column=column)
-                row.append(date.content.strftime('%Y-%m-%d %H:%M'))
+                date = dataset.datadate.all()
+                if date is not None:
+                    date = date.get(column=column)
+                    row.append(date.content.strftime('%Y-%m-%d %H:%M'))
             elif column.type.type == Type.SELECTION:
                 selection = dataset.dataselection.all().get(column=column)
                 row.append(selection.content)
