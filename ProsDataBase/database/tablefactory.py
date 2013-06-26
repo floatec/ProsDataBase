@@ -855,7 +855,6 @@ def insertData(request, tableName):
         if not column.type.getType().isValid(col["value"]):
             for obj in savedObjs:
                 obj.delete()
-            print col["value"]
             return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": _("input ").__unicode__() + unicode(col["value"]) + _(" for column ").__unicode__() + column.name + _(" is not valid. Abort.").__unicode__()}]}), content_type="application/json")
 
         if column.type.type == Type.TEXT:
