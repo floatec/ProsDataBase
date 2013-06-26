@@ -973,6 +973,8 @@ def modifyData(request, tableName, datasetID):
                 text.content = col["value"]
                 text.save()
             except DataText.DoesNotExist:
+                if "value" not in col:
+                    continue
                 dataCreatedNewly = True
                 textF = DataTextForm({"created": datetime.now(), "content": col["value"]})
                 if textF.is_valid():
@@ -995,6 +997,8 @@ def modifyData(request, tableName, datasetID):
                 num.content = col["value"]
                 num.save()
             except DataNumeric.DoesNotExist:
+                if "value" not in col:
+                    continue
                 dataCreatedNewly = True
                 numF = DataNumericForm({"created": datetime.now(), "content": col["value"]})
                 if numF.is_valid():
@@ -1017,6 +1021,8 @@ def modifyData(request, tableName, datasetID):
                 date.content = col["value"]
                 date.save()
             except DataDate.DoesNotExist:
+                if "value" not in col:
+                    continue
                 dataCreatedNewly = True
                 dateF = DataDateForm({"created": datetime.now(), "content": col["value"]})
                 if dateF.is_valid():
@@ -1039,6 +1045,8 @@ def modifyData(request, tableName, datasetID):
                 sel.content = col["value"]
                 sel.save()
             except DataSelection.DoesNotExist:
+                if "value" not in col:
+                    continue
                 dataCreatedNewly = True
                 selF = DataSelectionForm({"created": datetime.now(), "content": col["value"]})
                 if selF.is_valid():
@@ -1060,6 +1068,8 @@ def modifyData(request, tableName, datasetID):
                 bool.content = col["value"]
                 bool.save()
             except DataBool.DoesNotExist:
+                if "value" not in col:
+                    continue
                 dataCreatedNewly = True
                 boolF = DataBoolForm({"created": datetime.now(), "content": col["value"]})
                 if boolF.is_valid():
@@ -1098,6 +1108,8 @@ def modifyData(request, tableName, datasetID):
                         return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ").__unicode__() + id + "."}]}), content_type="application/json")
 
             except DataTable.DoesNotExist:
+                if "value" not in col:
+                    continue
                 dataCreatedNewly = True
                 dataTblF = DataTableForm({"created": datetime.now()})
                 if dataTblF.is_valid():
