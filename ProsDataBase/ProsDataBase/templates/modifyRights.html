@@ -182,7 +182,7 @@ jQuery.isInArray = function (value, array) {
 function getAllColumnNames() {
         allColumnNames = [];
        $.getJSON('/api/table/' + tableName + '/structure/', function (data) {
-      if(data.admin){
+      if(!data.admin){
 
           if (!data.rightsAdmin) {
             window.location = "/table/";
@@ -196,7 +196,13 @@ function getAllColumnNames() {
 
           }
       }
-
+           else{
+           for( var key in data.columns){
+                  if(data.columns[key].type != 6){
+                  allColumnNames.push(data.columns[key].name);
+                  }
+      }
+          }
 
     });
 

@@ -31,7 +31,7 @@ $(document).ready(function () {
 
             else {
                 $("#categoryManagement").remove();
-
+                $("#log").remove();
                 if (!data.tableCreator) {
                     $("#createTableButton").remove();
                 }
