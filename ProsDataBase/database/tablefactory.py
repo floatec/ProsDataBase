@@ -935,7 +935,7 @@ def modifyData(request, tableName, datasetID):
         ]
     }
     """
-    jsonRequest = json.loads(request.raw_post_data)
+    jsonRequest = json.loads(request.body)
     try:
         theTable = Table.objects.get(name=tableName, deleted=False)
     except Table.DoesNotExist:
@@ -950,24 +950,24 @@ def modifyData(request, tableName, datasetID):
     message = "ID: " + unicode(dataset.datasetID) + ". \n"  # message for the history
     history = historyfactory.writeTableHistory(None, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
     for col in jsonRequest["columns"]:
-        if "value" not in col:
-            continue
-        if col["value"] is None:
-            continue
         try:
             column = Column.objects.get(name=col["name"], table=theTable, deleted=False)
         except Column.DoesNotExist:
             HttpResponse(json.dumps({"errors": [{"code": Error.COLUMN_NOTFOUND, "message": _("Could not find column with name ").__unicode__() + col["name"] + "."}]}), content_type="application/json")
             continue
-
-        if not column.type.getType().isValid(col["value"]):
-            return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": _("input ").__unicode__() + unicode(col["value"]) + _(" for column ").__unicode__() + column.name + _(" is not valid.").__unicode__()}]}), content_type="application/json")
+        if "value" in col:
+            if not column.type.getType().isValid(col["value"]):
+                return HttpResponse(json.dumps({"errors": [{"code": Error.TYPE_INVALID, "message": _("input ").__unicode__() + unicode(col["value"]) + _(" for column ").__unicode__() + column.name + _(" is not valid.").__unicode__()}]}), content_type="application/json")
 
         if column.type.type == Type.TEXT:
             try:
                 text = dataset.datatext.get(column=column)
                 text.modified = datetime.now()
                 text.modifier = request.user
+                if "value" not in col:
+                    text.deleted = True
+                    text.save()
+                    continue
                 if text.content != col["value"]:
                     message = column.name + _(": old: '").__unicode__() + text.content + _("', new: '").__unicode__() + col["value"] + "'"
                     history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
@@ -986,6 +986,10 @@ def modifyData(request, tableName, datasetID):
                 num = dataset.datanumeric.get(column=column)
                 num.modified = datetime.now()
                 num.modifier = request.user
+                if "value" not in col:
+                    num.deleted = True
+                    num.save()
+                    continue
                 if num.content != col["value"]:
                     message = column.name + _(": old: '").__unicode__() + unicode(num.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
                     history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
@@ -1004,6 +1008,10 @@ def modifyData(request, tableName, datasetID):
                 date = dataset.datadate.get(column=column)
                 date.modified = datetime.now()
                 date.modifier = request.user
+                if "value" not in col:
+                    date.deleted = True
+                    date.save()
+                    continue
                 if unicode(date.content) != col["value"]:
                     message = column.name + _(": old: '").__unicode__() + unicode(date.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
                     history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
@@ -1022,6 +1030,10 @@ def modifyData(request, tableName, datasetID):
                 sel = dataset.dataselection.get(column=column)
                 sel.modified = datetime.now()
                 sel.modifier = request.user
+                if "value" not in col:
+                    sel.deleted = True
+                    sel.save()
+                    continue
                 if sel.content != col["value"]:
                     message = column.name + _(": old: '").__unicode__() + unicode(sel.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "'"
                     history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
@@ -1040,6 +1052,10 @@ def modifyData(request, tableName, datasetID):
                 bool = dataset.databool.get(column=column)
                 bool.modified = datetime.now()
                 bool.modifier = request.user
+                if "value" not in col:
+                    bool.deleted = True
+                    bool.save()
+                    continue
                 if bool.content != col["value"]:
                     message += column.name + _(": old: '").__unicode__() + unicode(bool.content) + _("', new: '").__unicode__() + unicode(col["value"]) + "',\n"
                 bool.content = col["value"]
@@ -1055,6 +1071,10 @@ def modifyData(request, tableName, datasetID):
         elif column.type.type == Type.TABLE:
             try:
                 dataTbl = dataset.datatable.get(column=column)
+                if "value" not in col:
+                    dataTbl.deleted = True
+                    dataTbl.save()
+                    continue
                 links = TableLink.objects.filter(dataTable=dataTbl)
                 setIDs = list()
                 #  remove all links between dataTable and datasets which are not listed in col["value"]
