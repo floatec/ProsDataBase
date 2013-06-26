@@ -14,6 +14,7 @@
     <thead>
         <th>{% trans "date" %}</th>
         <th>{% trans "user" %}</th>
+        <th>{% trans "table" %}</th>
         <th>{% trans "type" %}</th>
         <th>{% trans "message" %}</th>
 
@@ -59,18 +60,19 @@
             console.log(data);
             var historyRow = "";
             var authHistory = "";
-            for(var key in data.tableHistory){
 
-                  historyRow += "<tr><td>"+data.tableHistory[key].date+"</td><td>"+data.tableHistory[key].user+"</td><td>"+data.tableHistory[key].type+"</td><td><ul>";
-                  for(var i in data.tableHistory[key].messages){
-                        historyRow +="<li>"+data.tableHistory[key].messages[i]+"</li>";
+            for(var key in data.tableHistory){
+                for(var inner in data.tableHistory[key].history){
+                  historyRow += "<tr><td>"+data.tableHistory[key].history[inner].date+"</td><td>"+data.tableHistory[key].history[inner].user+"</td><td>"+data.tableHistory[key].table+"</td><td>"+data.tableHistory[key].history[inner].type+"</td><td><ul>";
+                  for(var i in data.tableHistory[key].history[inner].messages){
+                        historyRow +="<li>"+data.tableHistory[key].history[inner].messages[i]+"</li>";
 
                   }
 
                   historyRow += "</ul></td></tr>";
 
             }
-
+            }
             for(var key in data.authHistory){
 
                   authHistory += "<tr><td>"+data.authHistory[key].date+"</td><td>"+data.authHistory[key].user+"</td><td>"+data.authHistory[key].type+"</td><td><ul>";
