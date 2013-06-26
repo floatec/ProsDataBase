@@ -317,7 +317,7 @@ class TableSerializer:
         return result
 
     @staticmethod
-    def serializeHistory(tableName):
+    def serializeHistory(tableName, user):
         """
         {
             "history": [
@@ -358,12 +358,20 @@ class TableSerializer:
                 historyObj["messages"].append(msg.content)
             result["history"].append(historyObj)
 
+        try:  # add user's permission to view the log in case he tries to access it via url
+            tableRight = RightListForTable.objects.get(user=user, table=table)
+            viewLog = tableRight.viewLog
+        except RightListForTable.DoesNotExist:
+            viewLog = False
+
+        result["viewLog"] = user.admin or viewLog
+
         return result
 
 
 class HistorySerializer:
     @staticmethod
-    def serializeHistory():
+    def serializeHistory(user):
         """
         {
             "tableHistory": [
@@ -387,7 +395,7 @@ class HistorySerializer:
         result = dict()
         result["tableHistory"] = list()
         for table in Table.objects.all():
-            tableHist = TableSerializer.serializeHistory(table.name)
+            tableHist = TableSerializer.serializeHistory(table.name, user)
             if tableHist and tableHist is not None:
                 result["tableHistory"] = tableHist["history"]
 

@@ -272,7 +272,7 @@ def tableHistory(request, tableName):
     dataset insertion, dataset modification and dataset deletion.
     """
     if request.method == 'GET':
-        response = TableSerializer.serializeHistory(tableName)
+        response = TableSerializer.serializeHistory(tableName, request.user)
         if not response:
             return HttpResponse(json.dumps({"errors": [{"code": Error.TABLE_NOTFOUND, "message": _("Could not find table with name ").__unicode__() + tableName + "."}]}), content_type="application/json")
         return HttpResponse(json.dumps(response), content_type="application/json")
@@ -291,7 +291,7 @@ def history(request):
     """
     if not request.user.admin:
         return HttpResponse(json.dumps({"errors": [{"code": Error.RIGHTS_NO_ADMIN, "message": _("You have no right to view the log.").__unicode__()}]}))
-    return HttpResponse(json.dumps(HistorySerializer.serializeHistory()), content_type="application/json")
+    return HttpResponse(json.dumps(HistorySerializer.serializeHistory(request.user)), content_type="application/json")
 
 
 def datasets(request, tableName):
