@@ -274,11 +274,22 @@ function getTableName(){
                 dataType: 'json',
 
                 success:function(data){
-                        if(data.errors!=undefined){
+                    if(data.errors!=undefined){
                     showErrors(data.errors)
                         return
                     }else{
-                            window.location.href = '/detailview/'+getTableName();
+                           if (window.opener!=null && window.opener.document != undefined) {
+                                try{
+                               $(window.opener.document).find('#' + field).append("<span style='display:block;white-space:nowrap;'><button onClick='deleteTableType(this)'>-</button><span class='value'>" + data.id + "</span></span>");
+
+                                }catch(err){
+                                    window.opener.location.reload();
+                                }
+                                window.close();
+                    } else {
+                        window.href = window.location.href = '/detailview/' + getTableName();
+                        +'/';
+                    }
 
                         }
 
