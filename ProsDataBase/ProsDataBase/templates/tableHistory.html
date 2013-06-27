@@ -47,7 +47,7 @@
                 $("body").append("<div class='wrapContent'><div id=''content'><div id='errorblock'></div></div></div>")
             }
             else {
-                $("#tableCrumb").prepend(encodeURIComponent(getTableName()));
+                $("#tableCrumb").prepend(decodeURIComponent(getTableName()));
                 $("#tableCrumb").attr('href', '/detailview/' + getTableName() + '/')
                 $("#historyCrumb").prepend("Log");
                 $("#historyCrumb").attr('href', '/tableHistory/' + getTableName() + '/');
