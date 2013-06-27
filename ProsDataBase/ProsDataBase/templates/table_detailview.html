@@ -372,7 +372,7 @@
         $(insertTo).html("")
         $(insertTo).append(table)
         //loads teh real datasets
-        createDatasets(subtable, tableName, columns, url, post);
+        createDatasets(subtable, tableName, columns, url, post,insertTo);
     }
 
     /*
@@ -427,11 +427,12 @@
      url=the url to call to geht the datasets
      post=post data für the url to get the datasets
      */
-    function createDatasets(tableID, tableName, columns, url, post) {
+    function createDatasets(tableID, tableName, columns, url, post,insertTo) {
         //set this to local variable so they are in scope of the inner function on callback
         var columns = columns
         var tableID = tableID
         var tableName = tableName;
+        var insertTo=insertTo;
         //get the datasets from the server
         $.ajax({
             url: url,
@@ -459,7 +460,11 @@
                 console.log(data);
                 //go over all datsets
                 for (var key in allDatasets) {
-                    $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
+                    if($(insertTo).attr("id") == "headTable"){
+                            $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
+                    }else{
+                            $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
+                    }
                     //do it column after culumn
                     for (var p in columns) {
                         var sete = false
@@ -474,7 +479,7 @@
                                     } else {
                                         console.log(columns[p].name)
                                         console.log(allDatasets[key].data[i].value)
-                                        var tmp = "<table class='datasets closed'><caption  onClick='toggleTable(this.parentNode)'>" + columns[p].column + "</capton>"
+                                        var tmp = "<table class='datasets closed'><caption onClick='toggleTable(this.parentNode)'>" + columns[p].column + "</capton>"
                                         $(allDatasets[key].data[i].value).each(function () {
                                             console.log(this)
                                             tmp += "<tr style='display:none'><td>" + this.value + "</td><tr>"
