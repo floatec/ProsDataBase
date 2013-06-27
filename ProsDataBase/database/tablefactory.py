@@ -944,11 +944,11 @@ def modifyData(request, tableName, datasetID):
     except Dataset.DoesNotExist:
         return HttpResponse(json.dumps({"errors": [{"code": Error.DATASET_NOTFOUND, "message": _("Could not find dataset with id ").__unicode__() + datasetID + _(" in table ").__unicode__() + tableName + "."}]}), content_type="application/json")
 
-    dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
-    newData = None
     message = "ID: " + unicode(dataset.datasetID) + ". \n"  # message for the history
     history = historyfactory.writeTableHistory(None, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
     for col in jsonRequest["columns"]:
+        dataCreatedNewly = False  # is set to True if a data element was not modified but created newly
+        newData = None
         try:
             column = Column.objects.get(name=col["name"], table=theTable, deleted=False)
         except Column.DoesNotExist:
@@ -960,7 +960,7 @@ def modifyData(request, tableName, datasetID):
 
         if column.type.type == Type.TEXT:
             try:
-                text = dataset.datatext.get(column=column)
+                text = dataset.datatext.get(column=column, deleted=False)
                 text.modified = datetime.now()
                 text.modifier = request.user
                 if "value" not in col:
@@ -984,7 +984,7 @@ def modifyData(request, tableName, datasetID):
 
         elif column.type.type == Type.NUMERIC:
             try:
-                num = dataset.datanumeric.get(column=column)
+                num = dataset.datanumeric.get(column=column, deleted=False)
                 num.modified = datetime.now()
                 num.modifier = request.user
                 if "value" not in col:
@@ -1008,7 +1008,7 @@ def modifyData(request, tableName, datasetID):
 
         elif column.type.type == Type.DATE:
             try:
-                date = dataset.datadate.get(column=column)
+                date = dataset.datadate.get(column=column, deleted=False)
                 date.modified = datetime.now()
                 date.modifier = request.user
                 if "value" not in col:
@@ -1032,7 +1032,7 @@ def modifyData(request, tableName, datasetID):
 
         elif column.type.type == Type.SELECTION:
             try:
-                sel = dataset.dataselection.get(column=column)
+                sel = dataset.dataselection.get(column=column, deleted=False)
                 sel.modified = datetime.now()
                 sel.modifier = request.user
                 if "value" not in col:
@@ -1056,7 +1056,7 @@ def modifyData(request, tableName, datasetID):
 
         elif column.type.type == Type.BOOL:
             try:
-                bool = dataset.databool.get(column=column)
+                bool = dataset.databool.get(column=column, deleted=False)
                 bool.modified = datetime.now()
                 bool.modifier = request.user
                 if "value" not in col:
@@ -1078,8 +1078,9 @@ def modifyData(request, tableName, datasetID):
                     history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
 
         elif column.type.type == Type.TABLE:
+            print "column: " + column.name
             try:
-                dataTbl = dataset.datatable.get(column=column)
+                dataTbl = dataset.datatable.get(column=column, deleted=False)
                 if "value" not in col:
                     dataTbl.deleted = True
                     dataTbl.save()
@@ -1088,14 +1089,16 @@ def modifyData(request, tableName, datasetID):
                 setIDs = list()
                 #  remove all links between dataTable and datasets which are not listed in col["value"]
                 for link in links:
-                    setIDs.append(link.dataset_id)
-                    if link.dataset_id not in col["value"]:
+                    setIDs.append(link.dataset.datasetID)
+                    if link.dataset.datasetID not in col["value"]:
                         message = column.name + _(": removed link to dataset: '").__unicode__() + unicode(link.dataset.datasetID) + "'"
                         history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                         link.delete()
-
+                print "setIDs:" + unicode(setIDs)
                 #  now add any link that does not exist yet
+                print "col[value] - setIDs:"
                 for id in [index for index in col["value"] if index not in setIDs]:  # this list comprehension returns the difference col["value"] - setIDs
+                    print id
                     try:
                         newDataset = Dataset.objects.get(datasetID=id)
                         newLink = TableLink()
@@ -1110,10 +1113,10 @@ def modifyData(request, tableName, datasetID):
             except DataTable.DoesNotExist:
                 if "value" not in col:
                     continue
-                dataCreatedNewly = True
                 dataTblF = DataTableForm({"created": datetime.now()})
                 if dataTblF.is_valid():
                     newData = dataTblF.save(commit=False)
+                    dataCreatedNewly = True
 
         if dataCreatedNewly:
             if newData is None:
@@ -1129,10 +1132,11 @@ def modifyData(request, tableName, datasetID):
             if column.type.type == Type.TABLE and newData is not None:
                 for index in col["value"]:  # find all datasets for this
                     try:
-                        dataset = Dataset.objects.get(datasetID=index)
+
+                        newDataset = Dataset.objects.get(datasetID=index)
                         link = TableLink()
                         link.dataTable = newData
-                        link.dataset = dataset
+                        link.dataset = newDataset
                         message = column.name + _(": added link to dataset: '").__unicode__() + index + "'"
                         history = historyfactory.writeTableHistory(history, theTable, request.user, HistoryTable.DATASET_MODIFIED, message)
                         link.save()
