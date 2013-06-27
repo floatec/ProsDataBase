@@ -461,9 +461,9 @@
                 //go over all datsets
                 for (var key in allDatasets) {
                     if($(insertTo).attr("id") == "headTable"){
-                            $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
+                            $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td><input type='checkbox' class='selectDataset'></td><td><a  onClick='window.open(\"/modifyDataset/" + tableName + "/" + allDatasets[key].id + "\",\"blank\",\"height=600,width=800,modal=yes,alwaysRaised=yes,scrollbars=yes\");return false' target='_BLANK' href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
                     }else{
-                            $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td></td><td><a href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
+                            $("#tab" + tableID).append("<tr class='contentRow' id='datasetRow" + counter + "'><td></td><td><a  onClick='window.open(\"/modifyDataset/" + tableName + "/" + allDatasets[key].id + "\",\"blank\",\"height=600,width=800,modal=yes,alwaysRaised=yes,scrollbars=yes\");return false' target='_BLANK' href='/modifyDataset/" + tableName + "/" + allDatasets[key].id + "'><img width='20' src='/static/img/setting-icon.png'></a></td><td class='datasetClassCell'>" + allDatasets[key].id + "</td></tr>");
                     }
                     //do it column after culumn
                     for (var p in columns) {
