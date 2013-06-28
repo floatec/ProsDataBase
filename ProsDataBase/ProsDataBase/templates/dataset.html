@@ -48,7 +48,7 @@
                     row += '<input class="check" name="' + encode_pros(columns[i].name) + '" type="checkbox" value="true" placeholder="text">'
                 }
                 if (columns[i].type == 5) {
-                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><span style=white-space:nowrap;"> <img  src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn add" style="display:inline-block;"><img onClick="searchElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn search" src="/static/img/search-icon.png"></span>'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><span style=white-space:nowrap;"> <img  src="/static/img/add-icon.png" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn add" style="display:inline-block;"><img onClick="searchElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn search" src="/static/img/search-icon.png"></span>'
                 }
                 row += "</td><td>";
 

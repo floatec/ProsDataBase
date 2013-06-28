@@ -108,7 +108,7 @@ function init(){
                 }
                 if (columns[i].type == 5) {
                     if(columns[i].modify || struct.admin ){
-                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><span style=white-space:nowrap;"><img src="/static/img/add-icon.png/" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"></span><img class="icn" onClick="searchElement(\'' +  columns[i].table + '\',\'' + encode_pros( columns[i].name) + '\')" src="/static/img/search-icon.png"></span>'
+                    row += '<span id="' + encode_pros(columns[i].name) + '"></span><span style=white-space:nowrap;"><img src="/static/img/add-icon.png" onClick="newElement(\'' + columns[i].table + '\',\'' + encode_pros(columns[i].name) + '\')" class="icn" style="display:inline-block;"></span><img class="icn" onClick="searchElement(\'' +  columns[i].table + '\',\'' + encode_pros( columns[i].name) + '\')" src="/static/img/search-icon.png"></span>'
                     }
                     else{
                        row += '<span id="' + encode_pros(columns[i].name) + '"></span>'
