@@ -338,8 +338,11 @@ def deleteTable(name, user):
         for typeTable in typeTables:
             column = Column.objects.get(type=typeTable.type)
             tableNames.add(column.table.name)
-
-        errors.append({"code": Error.TABLE_REFERENCED, "message": _("Please delete references to this table in tables ").__unicode__() + str(tableNames) + _(" first.").__unicode__()})
+        tableNameStr = "["
+        for tableName in tableNames:
+            tableNameStr += tableName + ", "
+        tableNameStr = tableNameStr[:-2] + "]"
+        errors.append({"code": Error.TABLE_REFERENCED, "message": _("Please delete references to this table in tables ").__unicode__() + tableNameStr + _(" first.").__unicode__()})
 
     else:  # no reference exists, so delete the table
         for dataset in table.datasets.all():
@@ -1187,31 +1190,46 @@ def exportTable(request, tableName):
             if column.type.type == Type.TEXT:
                 text = dataset.datatext.all()
                 if len(text) > 0:
-                    text = text.get(column=column)
-                    row.append(unicode(text.content))
+                    try:
+                        text = text.get(column=column)
+                        row.append(text.content.encode('utf-8'))
+                    except DataText.DoesNotExist:
+                        pass
             elif column.type.type == Type.NUMERIC:
                 num = dataset.datanumeric.all()
                 if len(num) > 0:
-                    num = num.get(column=column)
-                    row.append(num.content)
+                    try:
+                        num = num.get(column=column)
+                        row.append(num.content)
+                    except DataNumeric.DoesNotExist:
+                        pass
             elif column.type.type == Type.DATE:
                 date = dataset.datadate.all()
                 if len(date) > 0:
-                    date = date.get(column=column)
-                    row.append(date.content.strftime('%Y-%m-%d %H:%M'))
+                    try:
+                        date = date.get(column=column)
+                        row.append(date.content.strftime('%Y-%m-%d %H:%M'))
+                    except DataDate.DoesNotExist:
+                        pass
             elif column.type.type == Type.SELECTION:
                 selection = dataset.dataselection.all()
                 if len(selection) > 0:
-                    selection = selection.get(column=column)
-                    row.append(selection.content)
+                    try:
+                        selection = selection.get(column=column)
+                        row.append(selection.content.encode('utf-8'))
+                    except DataSelection.DoesNotExist:
+                        pass
             elif column.type.type == Type.BOOL:
                 bool = dataset.databool.all()
                 if len(bool) > 0:
-                    bool = bool.get(column=column)
-                    if bool.content:
-                        row.append("yes")
-                    else:
-                        row.append("no")
+                    try:
+                        bool = bool.get(column=column)
+                        if bool.content:
+                            row.append("yes")
+                        else:
+                            row.append("no")
+                    except DataBool.DoesNotExist:
+                        pass
             #elif column.type.type == Type.TABLE:
             #    dataTable = dataset.datatext.all().get(column=column)
             #    row.append(data)
