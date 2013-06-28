@@ -338,8 +338,11 @@ def deleteTable(name, user):
         for typeTable in typeTables:
             column = Column.objects.get(type=typeTable.type)
             tableNames.add(column.table.name)
-
-        errors.append({"code": Error.TABLE_REFERENCED, "message": _("Please delete references to this table in tables ").__unicode__() + str(tableNames) + _(" first.").__unicode__()})
+        tableNameStr = "["
+        for tableName in tableNames:
+            tableNameStr += tableName + ", "
+        tableNameStr = tableNameStr[:-2] + "]"
+        errors.append({"code": Error.TABLE_REFERENCED, "message": _("Please delete references to this table in tables ").__unicode__() + tableNameStr + _(" first.").__unicode__()})
 
     else:  # no reference exists, so delete the table
         for dataset in table.datasets.all():
