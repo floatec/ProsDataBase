@@ -1,7 +1,0 @@
-Deployment
-==========
-
-Process
-~~~~~~~
-
-cooming soon
