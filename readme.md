@@ -1,3 +1,10 @@
+What is the ProsDataBase?
+=====================
+Its a deynemic database system with a higly customizable permisson system.
+
+The intension of this project was to make a solution for medical research data. But this software can also be used for tracking data of the weather or organising your guitar arcords. Its easy to customize your system to your need via the userinterface, wiht out changeing a single line of code.
+
+
 Install
 ====================
 Install Git
